@@ -43,6 +43,9 @@ class Result {
   int totalBayar;
   int totalQty;
   int jumlahBarang;
+  String saldoMain;
+  String saldoVoucher;
+  bool masaVoucher;
 
   Result({
     this.address,
@@ -53,6 +56,9 @@ class Result {
     this.totalBayar,
     this.totalQty,
     this.jumlahBarang,
+    this.saldoMain,
+    this.saldoVoucher,
+    this.masaVoucher,
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
@@ -64,6 +70,9 @@ class Result {
     totalBayar: json["total_bayar"],
     totalQty: json["total_qty"],
     jumlahBarang: json["jumlah_barang"],
+    saldoMain: json["saldo_main"],
+    saldoVoucher: json["saldo_voucher"],
+    masaVoucher: json["masa_voucher"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -75,6 +84,9 @@ class Result {
     "total_bayar": totalBayar,
     "total_qty": totalQty,
     "jumlah_barang": jumlahBarang,
+    "saldo_main": saldoMain,
+    "saldo_voucher": saldoVoucher,
+    "masa_voucher": masaVoucher,
   };
 }
 

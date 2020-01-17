@@ -351,25 +351,25 @@ class _ProfileUIState extends State<ProfileUI> {
       color: Colors.white,
       child: Column(
         children: <Widget>[
-          FlatButton(
-              onPressed: (){
-                Navigator.of(context, rootNavigator: true).push(
-                  new CupertinoPageRoute(builder: (context) => VideoListUI()),
-                );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text("Debugging", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                      Text("Permintaan untuk isi saldo", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12,fontFamily: 'Rubik')),
-                    ],),
-                  Icon(Icons.arrow_right)
-                ],
-              )
-          ),
+//          FlatButton(
+//              onPressed: (){
+//                Navigator.of(context, rootNavigator: true).push(
+//                  new CupertinoPageRoute(builder: (context) => VideoListUI()),
+//                );
+//              },
+//              child: Row(
+//                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                children: <Widget>[
+//                  Column(
+//                    crossAxisAlignment: CrossAxisAlignment.start,
+//                    children: <Widget>[
+//                      Text("Debugging", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+//                      Text("Permintaan untuk isi saldo", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12,fontFamily: 'Rubik')),
+//                    ],),
+//                  Icon(Icons.arrow_right)
+//                ],
+//              )
+//          ),
 //          Divider(),
 //          FlatButton(
 //              onPressed: (){

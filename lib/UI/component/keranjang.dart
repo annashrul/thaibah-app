@@ -10,7 +10,9 @@ import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/MLM/checkoutSuplemen.dart';
 import 'package:thaibah/UI/component/address/addAddress.dart';
+import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
+import 'package:thaibah/resources/MLM/getDetailChekoutSuplemenProvider.dart';
 import 'package:thaibah/resources/addressProvider.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
 
@@ -35,6 +37,8 @@ class _KeranjangState extends State<Keranjang> {
     print(total);
     print(newBerat);
     print(jumlahQty);
+//    var cek = await DetailCheckoutSuplemenProvider().fetchDetailCheckoutSuplemen();
+//    cek.result.address;
     var test = await AddressProvider().fetchAlamat();
     if(test.result.length > 0){
       setState(() {

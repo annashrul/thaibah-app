@@ -83,8 +83,15 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   bool isLoadingJasa = false;
   int totQty=0;
   int totBayar = 0;
+  String saldoMain = "0";
+  String saldoVoucher = "0";
+//  bool expiredVoucher = false;
+  var expiredVoucher;
   Future pilih() async{
     var res = await DetailCheckoutSuplemenProvider().fetchDetailCheckoutSuplemen();
+    expiredVoucher = res.result.masaVoucher;
+    saldoVoucher = res.result.saldoVoucher;
+    saldoMain = res.result.saldoMain;
 //    var res =  detailChekoutSuplemenBloc.fetchDetailChekoutSuplemenList();
     if(dropdownValue == 'Saya'){
       setState(() {
@@ -148,12 +155,35 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
   String _placeName = '';
   String alamat = '';
+  String _radioValue2 = 'utama';
+  bool cekColor = true;
+  void _handleRadioValueChange2(String value) {
+    _radioValue2 = value;
+    switch (_radioValue2) {
+      case 'utama':
+        print(_radioValue2);
+        setState(() {
+          cekColor = false;
+//            _image = null;
+        });
+        break;
+      case 'voucher':
+        print(_radioValue2);
+        setState(() {
+          cekColor = false;
+//            _image = null;
+        });
+        break;
+    }
 
+  }
 
   @override
   void initState() {
     super.initState();
     pilih();
+    print(cekColor);
+    _handleRadioValueChange2(_radioValue2);
     provinsiBloc.fetchProvinsiist();
     detailChekoutSuplemenBloc.fetchDetailChekoutSuplemenList();
     totQty   = widget.totQty;
@@ -445,8 +475,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   items: snapshot.data.result.ongkir.map((prefix3.Ongkir items) {
                     jasper = "${items.description}|${items.cost}";
                     return new DropdownMenuItem<String>(
-                      value: "${jasper}",
-                      child: Text("${snapshot.data.result.kurir} - ${items.description} | ${items.cost} | ${items.estimasi} (hari)",style:TextStyle(fontFamily: 'Rubik',fontSize: 12.0)),
+                      value: "$jasper",
+                      child: Text("${snapshot.data.result.kurir} - ${items.description} | ${formatter.format(items.cost)} | ${items.estimasi} (hari)",style:TextStyle(fontFamily: 'Rubik',fontSize: 12.0)),
                     );
                   }).toList(),
                 ),
@@ -607,7 +637,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       }
       print("#################################### $sendVoucher ##################################");
 
-      var res = await ProductMlmProvider().fetchCheckoutCart(widget.total,sendKurir,sendOngkir,sendAddress,addressType,sendVoucher,'');
+      var res = await ProductMlmProvider().fetchCheckoutCart(widget.total,sendKurir,sendOngkir,sendAddress,addressType,sendVoucher,_radioValue2);
       setState(() {Navigator.of(context).pop();});
       if(res.status=="success"){
         setState(() {Navigator.of(context).pop();});
@@ -846,8 +876,75 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   Text("${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}", style: TextStyle(color:Colors.grey,fontSize:11.0,fontWeight: FontWeight.bold, fontFamily: 'Rubik'))
                 ],
               ),
-            )
-                :Text(''),
+            ):Text(''),
+            expiredVoucher == true ? Container(
+              color: Colors.white,
+              padding:EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0, right: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('Gunakan Metode Pembayaran Dari ?', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ):Container(),
+            expiredVoucher == true ? Container(
+              padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Radio(
+                              value: 'utama',
+                              groupValue: _radioValue2,
+                              onChanged: _handleRadioValueChange2,
+                            ),
+                            new Text('Saldo Utama',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        Text("$saldoMain",style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 5.0),
+                  Container(
+                    padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Radio(
+                              value: 'voucher',
+                              groupValue: _radioValue2,
+                              onChanged: _handleRadioValueChange2,
+                            ),
+                            new Text('Saldo Voucher',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        Text("$saldoVoucher",style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+
+                      ],
+                    ),
+                  ),
+
+                ],
+              ),
+            ) : Container(),
             Container(
               color: Colors.white,
               padding:EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0, right: 10.0),
@@ -858,6 +955,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 ],
               ),
             ),
+
             buildHarga(context),
             SizedBox(height: 20.0,)
           ],
@@ -1103,10 +1201,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 Text("$addr", style:TextStyle(color:Colors.grey,fontFamily: 'Rubik',fontSize: 14.0,fontWeight: FontWeight.bold)),
                 Divider(),
                 Text("* Apabila alamat anda salah akan menghambat proses pengiriman *", style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontSize: 14.0,fontWeight: FontWeight.bold)),
-                Divider(),
                 SizedBox(height:20.0),
-                Divider(),
-                Text("Gunakan Metode Pembayaran Dari ?", style:TextStyle(color:Colors.green,fontFamily: 'Rubik',fontSize: 16.0,fontWeight: FontWeight.bold)),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
