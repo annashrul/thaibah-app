@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "407662067045",
+    "firebase_url": "https://amanpalestin-17667.firebaseio.com",
+    "project_id": "amanpalestin",
+    "storage_bucket": "amanpalestin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:407662067045:android:99e972144102e08a28758c",
+        "android_client_info": {
+          "package_name": "com.thaibah"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "407662067045-ed5sv3tiflis8jncc88e80u0prcuujuf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thaibah",
+            "certificate_hash": "8b3de40869462e599f060b7dd766344c24265d91"
+          }
+        },
+        {
+          "client_id": "407662067045-bda01eom1vm05ibb4aliom9r4lbj3s65.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRETAwR_IdPLkQlekGtGOFGBpK9wjbyD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "407662067045-bda01eom1vm05ibb4aliom9r4lbj3s65.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
