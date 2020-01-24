@@ -67,26 +67,26 @@ class Result {
 }
 
 class Datum {
-    String id;
-    String penjual;
-    String title;
-    int type;
-    int ppn;
-    String price;
-    String satuan;
-    String totalPrice;
-    String rawPrice;
-    String totalPpn;
-    int weight;
-    int qty;
-    String picture;
-    String descriptions;
-    int idCategory;
-    String category;
+    var id;
+    var penjual;
+    var title;
+    var type;
+    var ppn;
+    var price;
+    var satuan;
+    var totalPrice;
+    var rawPrice;
+    var totalPpn;
+    var weight;
+    var qty;
+    var picture;
+    var descriptions;
+    var idCategory;
+    var category;
     DateTime createdAt;
     DateTime updatedAt;
-    int status;
-    String satuanBarang;
+    var status;
+    var satuanBarang;
 
     Datum({
         this.id,

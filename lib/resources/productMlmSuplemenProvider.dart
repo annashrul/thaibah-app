@@ -20,6 +20,8 @@ class ProductMlmSuplemenProvider {
       ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
+    print("########################### PRODUK SUPLEMEN ############################");
+    print(response.body);
     print('product/mlm?page=$page&limit=$limit&category=suplemen');
     if (response.statusCode == 200) {
       // If the call to the server was successful, parse the JSON

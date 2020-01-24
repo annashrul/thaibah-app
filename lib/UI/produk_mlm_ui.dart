@@ -145,12 +145,14 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
 
   @override
   void initState() {
-    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
     super.initState();
     countCart();
     cekVersion();
     versi = true;
-    print("###################### $versionCode ###########################");
+    if(mounted){
+      productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
+    }
+    print("###################### $mounted ###########################");
   }
 //
   @override
@@ -235,7 +237,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
               child: ListView.builder(
                 primary: false,
                 physics: ScrollPhysics(),
-                itemCount: 2,
+                itemCount: 3,
                 itemBuilder: (context, index) {
                   return new GestureDetector(
                       onTap: (){
@@ -326,8 +328,29 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                   physics: ScrollPhysics(),
                   itemCount: snapshot.data.result.data.length,
                   itemBuilder: (context, index) {
-                    return new GestureDetector(
+//                    print(snapshot.data.result.data[index].satuanBarang);
+//                    print(snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 3));
+//                    String satuanBrg = '';
+//                    if(snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 3) == 'btl'){
+//                      print("substring");
+//                      satuanBrg = snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 3);
+////                      print(snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 3));
+//                    }else{
+//                      print("glebegan");
+//                      satuanBrg = snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 2);
+////                      print(snapshot.data.result.data[index].satuanBarang);
+//                      print(snapshot.data.result.data[index].satuanBarang);
+//                    }
+//                    if()
+//                    print("pure = "+ snapshot.data.result.data[index].satuanBarang);
+//                    print("teu pure = "+ snapshot.data.result.data[index].satuanBarang.split(" ").elementAt(1));
+                    return  GestureDetector(
                         onTap: (){
+                          if(snapshot.data.result.data[index].qty != 0){
+                            addCart(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
+                          }else{
+                            print('gagal');
+                          }
                         },
                         child: Card(
                           elevation: 0,
@@ -372,7 +395,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                                   // decoration: BoxDecoration(color: Styles.primaryColor),
                                                   child: Align(
                                                     alignment: Alignment.topRight,
-                                                    child: Text("Sisa "+snapshot.data.result.data[index].qty.toString()+" ${snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 3)}", style: TextStyle(color: Colors.black54),),
+                                                    child: Text("Sisa "+snapshot.data.result.data[index].qty.toString(), style: TextStyle(fontFamily: 'Rubik',color: Colors.black54),),
                                                   )
                                               ),
                                             ),

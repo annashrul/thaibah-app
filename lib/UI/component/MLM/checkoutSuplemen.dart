@@ -23,6 +23,7 @@ import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/detailHistorySuplemen.dart';
+import 'package:thaibah/UI/component/MLM/produkCheckoutSuplemen.dart';
 import 'package:thaibah/UI/component/address/indexAddress.dart';
 import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
@@ -765,18 +766,19 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 ],
               ),
             ),
-            StreamBuilder(
-                stream: detailChekoutSuplemenBloc.getResult,
-                builder: (context, AsyncSnapshot<GetDetailChekoutSuplemenModel> snapshot){
-                  if (snapshot.hasData) {
-                    totBar = snapshot.data.result.totalQty.toString();
-                    return buildProduk(snapshot,context);
-                  } else if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
-                  }
-                  return _loadingProduk(context);
-                }
-            ),
+            ProdukCheckoutSuplemen(),
+//            StreamBuilder(
+//                stream: detailChekoutSuplemenBloc.getResult,
+//                builder: (context, AsyncSnapshot<GetDetailChekoutSuplemenModel> snapshot){
+//                  if (snapshot.hasData) {
+//                    totBar = snapshot.data.result.totalQty.toString();
+//                    return buildProduk(snapshot,context);
+//                  } else if (snapshot.hasError) {
+//                    return Text(snapshot.error.toString());
+//                  }
+//                  return _loadingProduk(context);
+//                }
+//            ),
             Container(
               color: Colors.white,
               padding:EdgeInsets.only(top: 10.0, bottom: 0.0, left: 10.0, right: 10.0),
@@ -984,8 +986,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 ],
               ),
             ),
-
-
             Container(
               color: Colors.white,
               padding:EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0, right: 10.0),
@@ -996,7 +996,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 ],
               ),
             ),
-
             buildHarga(context),
             SizedBox(height: 20.0,)
           ],
