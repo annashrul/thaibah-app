@@ -105,7 +105,7 @@ class _IndexMemberState extends State<IndexMember> {
                     FlatButton(
                         onPressed: (){
                           Navigator.of(context, rootNavigator: true).push(
-                            new CupertinoPageRoute(builder: (context) => Pin()),
+                            new CupertinoPageRoute(builder: (context) => Pin(saldo: '',param:'profile')),
                           );
                         },
                         child: Row(

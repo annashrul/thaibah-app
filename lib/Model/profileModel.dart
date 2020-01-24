@@ -12,8 +12,8 @@ String profileModelToJson(ProfileModel data) => json.encode(data.toJson());
 
 class ProfileModel extends BaseModel {
   Result result;
-  var msg;
-  var status;
+  String msg;
+  String status;
 
   ProfileModel({
     this.result,
@@ -35,28 +35,30 @@ class ProfileModel extends BaseModel {
 }
 
 class Result {
-  var id;
-  var name;
-  var noHp;
-  var picture;
-  var cover;
-  var kdReferral;
-  var kdUnique;
-  var gender;
-  var qr;
-  var saldo;
-  var rawSaldo;
-  var saldoMainRaw;
-  var saldoMain;
-  var saldoBonus;
-  var saldoBonusRaw;
-  var downline;
-  var omsetJaringan;
-  var jumlahJaringan;
-  var sponsor;
-  var level;
+  String id;
+  String name;
+  String noHp;
+  String picture;
+  String cover;
+  String kdReferral;
+  String kdUnique;
+  String gender;
+  String qr;
+  String saldo;
+  String rawSaldo;
+  String saldoMainRaw;
+  String saldoMain;
+  String saldoBonus;
+  String saldoBonusRaw;
+  String saldoVoucher;
+  String downline;
+  String omsetJaringan;
+  int jumlahJaringan;
+  String sponsor;
+  int level;
   DateTime createdAt;
-  var status;
+  int status;
+  String privacy;
 
   Result({
     this.id,
@@ -74,6 +76,7 @@ class Result {
     this.saldoMain,
     this.saldoBonus,
     this.saldoBonusRaw,
+    this.saldoVoucher,
     this.downline,
     this.omsetJaringan,
     this.jumlahJaringan,
@@ -81,6 +84,7 @@ class Result {
     this.level,
     this.createdAt,
     this.status,
+    this.privacy,
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
@@ -99,6 +103,7 @@ class Result {
     saldoMain: json["saldo_main"],
     saldoBonus: json["saldo_bonus"],
     saldoBonusRaw: json["saldo_bonus_raw"],
+    saldoVoucher: json["saldo_voucher"],
     downline: json["downline"],
     omsetJaringan: json["omset_jaringan"],
     jumlahJaringan: json["jumlah_jaringan"],
@@ -106,6 +111,7 @@ class Result {
     level: json["level"],
     createdAt: DateTime.parse(json["created_at"]),
     status: json["status"],
+    privacy: json["privacy"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -124,6 +130,7 @@ class Result {
     "saldo_main": saldoMain,
     "saldo_bonus": saldoBonus,
     "saldo_bonus_raw": saldoBonusRaw,
+    "saldo_voucher": saldoVoucher,
     "downline": downline,
     "omset_jaringan": omsetJaringan,
     "jumlah_jaringan": jumlahJaringan,
@@ -131,5 +138,6 @@ class Result {
     "level": level,
     "created_at": createdAt.toIso8601String(),
     "status": status,
+    "privacy": privacy,
   };
 }

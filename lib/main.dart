@@ -201,14 +201,16 @@ class SplashState extends State<Splash> {
     print("##############################IEU CEK ${prefs.getBool('cek')} #################################");
     if (_seen) {
       Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
+      prefs.setBool('isPin', false);
     } else {
       prefs.setBool('seen', true);
       prefs.setBool('cek', true);
 
       if(prefs.getBool('cek') == true){
         Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
-
+        prefs.setBool('isPin', false);
       }else{
+        prefs.setBool('isPin', false);
         Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
       }
 
@@ -252,7 +254,7 @@ class SplashState extends State<Splash> {
                         ),
                       ),
                       SizedBox(height: 20.0,),
-                      Text('Versi 1.0.9',style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),)
+                      Text('Versi '+ApiService().versionCode,style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),)
                     ],
                   ),
                 ),

@@ -9,9 +9,11 @@ class HistoryDepositProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<HistoryDepositModel> fetchHistoryDeposit(var page,var limit,var from,var to) async{
-
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'transaction/deposit/list?page=$page&limit=$limit&datefrom=$from&dateto=$to',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'transaction/deposit/list?page=$page&limit=$limit&datefrom=$from&dateto=$to',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     if (response.statusCode == 200) {
       return compute(historyDepositModelFromJson,response.body);
     } else {

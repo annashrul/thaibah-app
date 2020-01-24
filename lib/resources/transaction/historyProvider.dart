@@ -17,8 +17,14 @@ class HistoryProvider {
     if(param == 'bonus'){
       url = 'transaction/myhistory?type=bonus&page=$page&limit=$limit&datefrom=$from&dateto=$to&q=$q';
     }
+    if(param == 'voucher'){
+      url = 'transaction/myhistory?type=voucher&page=$page&limit=$limit&datefrom=$from&dateto=$to&q=$q';
+    }
     print(url);
-    final response = await client.get(ApiService().baseUrl+url,headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+url,
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print(response.statusCode);
     if (response.statusCode == 200) {
       return compute(historyModelFromJson,response.body);

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lock_screen/flutter_lock_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 //import 'package:onesignal/onesignal.dart';
@@ -20,6 +21,7 @@ import 'package:pinput/pin_put/pin_put.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 
 class LoginPhone extends StatefulWidget {
@@ -449,77 +451,116 @@ class _SecondScreenState extends State<SecondScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool alreadyLogin = false;
   bool isLoading = false;
+  var currentText;
   @override
   Widget build(BuildContext context) {
+//    return Scaffold(
+//      appBar: AppBar(
+//        leading: IconButton(
+//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+//          onPressed: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false)
+//        ),
+//        centerTitle: false,
+//        flexibleSpace: Container(
+//          decoration: BoxDecoration(
+//            gradient: LinearGradient(
+//              begin: Alignment.centerLeft,
+//              end: Alignment.centerRight,
+//              colors: <Color>[
+//                Color(0xFF116240),
+//                Color(0xFF30cc23)
+//              ],
+//            ),
+//          ),
+//        ),
+//        elevation: 1.0,
+//        automaticallyImplyLeading: true,
+//        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//      ),
+//      key: _scaffoldKey,
+//      body: GestureDetector(
+//        onTap: () {
+//          FocusScope.of(context).requestFocus(new FocusNode());
+//        },
+//        child: Container(
+//          height: MediaQuery.of(context).size.height,
+//          width: MediaQuery.of(context).size.width,
+//          child: ListView(
+//            children: <Widget>[
+//              SizedBox(height: 30),
+//              Image.asset(
+//                'assets/images/verify.png',
+//                height: MediaQuery.of(context).size.height / 4,
+//                fit: BoxFit.fitHeight,
+//              ),
+//              SizedBox(height: 8),
+//              Padding(
+//                padding: const EdgeInsets.symmetric(vertical: 8.0),
+//                child: Text(
+//                  'Masukan Kode OTP',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: 'Rubik'),textAlign: TextAlign.center,
+//                ),
+//              ),
+//              Padding(
+//                padding: const EdgeInsets.symmetric(vertical: 0.0,horizontal: 10.0),
+//                child: Text(
+//                  'Masukan kode OTP yang telah kami kirim melalui pesan ke no whatsApp anda',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily: 'Rubik'),textAlign: TextAlign.center,
+//                ),
+//              ),
+//              Padding(
+//                padding:
+//                const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30),
+//                child: Builder(
+//                  builder: (context) => Padding(
+//                    padding: const EdgeInsets.all(5.0),
+//                    child: Center(
+//                      child: otpInput(),
+//                    ),
+//                  ),
+//                )
+//              ),
+//            ],
+//          ),
+//        ),
+//      ),
+////      bottomNavigationBar: _bottomNavBarBeli(context),
+//    );
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false)
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
+        key: _scaffoldKey,
+        body: Container(
+          child: LockScreen(
+              title: "Keamanan",
+              passLength: 4,
+              bgImage: "assets/images/bg.jpg",
+              borderColor: Colors.black,
+              showWrongPassDialog: true,
+              wrongPassContent: "Kode OTP Tidak Sesuai",
+              wrongPassTitle: "Opps!",
+              wrongPassCancelButtonText: "Batal",
+              deskripsi: 'Masukan Kode OTP Yang Telah Kami Kirim Melalui Pesan WhatsApp ${ApiService().showCode == true ? widget.otp : ""}',
+              passCodeVerify: (passcode) async {
+                var concatenate = StringBuffer();
+                passcode.forEach((item){
+                  concatenate.write(item);
+                });
+                setState(() {
+                  currentText = concatenate.toString();
+                });
+                if(currentText != widget.otp){
+                  return false;
+                }
+                return true;
+              },
+              onSuccess: () {
+                print(currentText);
+                setState(() {
+                  isLoading = true;
+                });
+
+                _check(currentText, context);
+//                _check(currentText.toString(),context);
+              }
           ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
-      key: _scaffoldKey,
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: ListView(
-            children: <Widget>[
-              SizedBox(height: 30),
-              Image.asset(
-                'assets/images/verify.png',
-                height: MediaQuery.of(context).size.height / 4,
-                fit: BoxFit.fitHeight,
-              ),
-              SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Masukan Kode OTP',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0.0,horizontal: 10.0),
-                child: Text(
-                  'Masukan kode OTP yang telah kami kirim melalui pesan ke no whatsApp anda',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-                ),
-              ),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30),
-                child: Builder(
-                  builder: (context) => Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Center(
-                      child: otpInput(),
-                    ),
-                  ),
-                )
-              ),
-            ],
-          ),
-        ),
-      ),
-//      bottomNavigationBar: _bottomNavBarBeli(context),
+        )
     );
   }
 
@@ -588,6 +629,7 @@ class _SecondScreenState extends State<SecondScreen> {
       setState(() {
         isLoading = false;
         alreadyLogin = true;
+        prefs.setBool('isPin', true);
         prefs.setBool('login', alreadyLogin);
         prefs.setString('id', widget.id);
         prefs.setString('name', widget.name);
@@ -603,6 +645,7 @@ class _SecondScreenState extends State<SecondScreen> {
         prefs.setString('nohp', widget.noHp);
         prefs.setString('ktp', widget.ktp);
         prefs.setBool('isLogin', true);
+
       });
       CircularProgressIndicator();
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);

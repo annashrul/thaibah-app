@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:thaibah/UI/component/History/historyBonus.dart';
 import 'package:thaibah/UI/component/History/historyMain.dart';
+import 'package:thaibah/UI/component/History/historyVoucher.dart';
 import 'package:thaibah/config/style.dart';
 
 
@@ -35,7 +36,7 @@ class _HistoryUIState extends State<HistoryUI> with SingleTickerProviderStateMix
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
-          length: 2,
+          length: 3,
           child: Scaffold(
             key: scaffoldKey,
             appBar: new AppBar(
@@ -65,11 +66,12 @@ class _HistoryUIState extends State<HistoryUI> with SingleTickerProviderStateMix
                   indicatorColor: Colors.white,
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.grey[400],
-                  indicatorWeight: 2,
+                  indicatorWeight: 3,
                   labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Styles.primaryColor, fontFamily: 'Rubik',fontSize: 16),
                   tabs: <Widget>[
-                    Tab(text: "Transaksi",),
+                    Tab(text: "Utama",),
                     Tab(text: "Bonus"),
+                    Tab(text: "Voucher"),
                   ]
               ),
             ),
@@ -77,6 +79,7 @@ class _HistoryUIState extends State<HistoryUI> with SingleTickerProviderStateMix
                 children: <Widget>[
                   HistoryMain(),
                   HistoryBonus(),
+                  HistoryVoucher(),
                 ]
             ),
 

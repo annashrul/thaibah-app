@@ -7,12 +7,12 @@ import 'package:thaibah/bloc/transaction/historyBloc.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:thaibah/config/user_repo.dart';
 
-class HistoryBonus extends StatefulWidget {
+class HistoryVoucher extends StatefulWidget {
   @override
-  _HistoryBonusState createState() => _HistoryBonusState();
+  _HistoryVoucherState createState() => _HistoryVoucherState();
 }
 
-class _HistoryBonusState extends State<HistoryBonus> {
+class _HistoryVoucherState extends State<HistoryVoucher> {
   final userRepository = UserRepository();
   bool isLoading = false;
   bool loadingLoadMore = false;
@@ -33,7 +33,7 @@ class _HistoryBonusState extends State<HistoryBonus> {
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
         context: context,
         initialFirstDate: new DateTime.now(),
-        initialLastDate: (new DateTime.now()).add(new Duration(days: 7)),
+        initialLastDate: (new DateTime.now()).add(new Duration(days: 1)),
         firstDate: new DateTime(2015),
         lastDate: new DateTime(2100)
     );
@@ -55,16 +55,16 @@ class _HistoryBonusState extends State<HistoryBonus> {
 
   Future _search() async{
     if(dateController.text != '' && searchController.text != ''){
-      historyBloc.fetchHistoryList('bonus', 1, perpage, '$from','$to',searchController.text);
+      historyBloc.fetchHistoryList('voucher', 1, perpage, '$from','$to',searchController.text);
     }
     if(dateController.text != '' && searchController.text == ''){
-      historyBloc.fetchHistoryList('bonus', 1, perpage, '$from','$to','');
+      historyBloc.fetchHistoryList('voucher', 1, perpage, '$from','$to','');
     }
     if(dateController.text == '' && searchController.text != ''){
-      historyBloc.fetchHistoryList('bonus', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}',searchController.text);
+      historyBloc.fetchHistoryList('voucher', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}',searchController.text);
     }
     if(dateController.text == '' && searchController.text == ''){
-      historyBloc.fetchHistoryList('bonus', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
+      historyBloc.fetchHistoryList('voucher', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
     }
     return;
   }
@@ -76,7 +76,7 @@ class _HistoryBonusState extends State<HistoryBonus> {
     });
     DateTime today = new DateTime.now();
     DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
-    historyBloc.fetchHistoryList('bonus',1, perpage,'$fiftyDaysAgo','${tahun}-${toBulan}-${toHari}','');
+    historyBloc.fetchHistoryList('voucher',1, perpage,'$fiftyDaysAgo','${tahun}-${toBulan}-${toHari}','');
     print(perpage);
   }
   Future<void> _refresh() async {
@@ -94,9 +94,10 @@ class _HistoryBonusState extends State<HistoryBonus> {
   @override
   void initState() {
     super.initState();
+//    DateTime pastMonth = DateTime.now().subtract(Duration(days: 30));
     DateTime today = new DateTime.now();
     DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
-    historyBloc.fetchHistoryList('bonus', 1, perpage, '$fiftyDaysAgo','${tahun}-${toBulan}-${toHari}','');
+    historyBloc.fetchHistoryList('voucher', 1, perpage, '${fiftyDaysAgo}','${tahun}-${toBulan}-${toHari}','');
   }
   @override
   void dispose() {
@@ -168,7 +169,7 @@ class _HistoryBonusState extends State<HistoryBonus> {
               padding: EdgeInsets.all(8.0),
               child: IconButton(
                 icon: isLoading?CircularProgressIndicator():Icon(Icons.search),
-                tooltip: 'Cari',
+                tooltip: 'Increase volume by 10',
                 onPressed: () async{
                   _search();
                 },
@@ -390,30 +391,4 @@ class _HistoryBonusState extends State<HistoryBonus> {
       },
     );
   }
-
-
-//  void _moreContent({int step:10}) {
-//    setState(() {
-//      perpage = perpage += step;
-//    });
-//    if(dateController.text != '' && searchController.text != ''){
-//      historyBloc.fetchHistoryList('mainTrx', 1, perpage, '$from','$to',searchController.text);
-//    }
-//    if(dateController.text != '' && searchController.text == ''){
-//      historyBloc.fetchHistoryList('mainTrx', 1, perpage, '$from','$to','');
-//    }
-//    if(dateController.text == '' && searchController.text != ''){
-//      historyBloc.fetchHistoryList('mainTrx', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}',searchController.text);
-//    }
-//    if(dateController.text == '' && searchController.text == ''){
-//      historyBloc.fetchHistoryList('mainTrx', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
-//    }
-////    if(searchController.text != ''){
-////      historyBloc.fetchHistoryList('mainTrx', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}',searchController.text);
-////    }else{
-////      historyBloc.fetchHistoryList('mainTrx', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
-////    }
-////    historyBloc.fetchHistoryList('mainTrx', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
-//    return;
-//  }
 }

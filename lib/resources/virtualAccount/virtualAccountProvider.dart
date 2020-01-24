@@ -13,7 +13,10 @@ class VirtualAccountProvider {
   final userRepository = UserRepository();
   Future<GetAvailableVirtualModel> fetchAvailableBank() async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'transaction/virtual/available',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'transaction/virtual/available',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     if (response.statusCode == 200) {
       return compute(getAvailableVirtualModelFromJson,response.body);
     } else {
@@ -23,7 +26,9 @@ class VirtualAccountProvider {
 
   Future fetchCreateAvailableVirtualBank(var amount,var name,var bankcode) async {
     final token = await userRepository.getToken();
-    return await client.post(ApiService().baseUrl+"transaction/virtual/create",headers: {'Authorization':token},
+    return await client.post(
+      ApiService().baseUrl+"transaction/virtual/create",
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
       body: {
         "amount":"$amount",
         "name":"$name",

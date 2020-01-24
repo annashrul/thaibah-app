@@ -20,44 +20,7 @@ class HistorySuplemen extends StatefulWidget {
 
 class _HistorySuplemenState extends State<HistorySuplemen> {
 
-  Widget _loading(){
-    return Container(
-      margin: EdgeInsets.all(15.0),
-      child: ListView.builder(
-          itemCount: 7,
-          shrinkWrap: true,
-          physics: ScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          itemBuilder: (context, index){
-            return GestureDetector(
-              child: Container(
-                decoration: BoxDecoration(color: Colors.white),
-                padding:EdgeInsets.only(top: 20.0, bottom: 20.0, left: 5.0, right: 5.0),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 16),
-                        SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 16),
-                      ],
-                    ),
-                    SizedBox(height: 20.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 16),
-                        SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 16),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-      ),
-    );
-  }
+
 
 
   bool isLoading = false;
@@ -109,12 +72,17 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
     setState(() {
       perpage = perpage += perpage;
     });
-    historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}');
+    DateTime today = new DateTime.now();
+    DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
+    historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
     print(perpage);
   }
+
+
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}');
+    load();
+//    historyBloc.fetchHistoryList('bonus',1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
   }
   Future<bool> _loadMore() async {
     print("onLoadMore");
@@ -123,10 +91,13 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
     return true;
   }
 
+
   @override
   void initState() {
     super.initState();
-    historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}');
+    DateTime today = new DateTime.now();
+    DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
+    historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
     print("1, perpage,'${tahun}-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}'");
   }
   @override
@@ -143,30 +114,33 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
             new Flexible(
               child: Padding(
                 padding: EdgeInsets.only(left:15.0),
-                child: GestureDetector(
-                  child: TextFormField(
-                    autofocus: false,
-                    style: Theme.of(context).textTheme.body1.copyWith(
-                      fontSize: 12.0,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Periode',
-                    ),
-                    controller: dateController,
-                    onTap: (){
-                      FocusScope.of(context).requestFocus(new FocusNode());
-                      _selectDate(context);
-                    },
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                    TextFormField(
+                      autofocus: false,
+                      style: Theme.of(context).textTheme.body1.copyWith(
+                        fontSize: 12.0,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Bulan Ini ...',
+                      ),
+                      controller: dateController,
+                      onTap: (){
+                        FocusScope.of(context).requestFocus(new FocusNode());
+                        _selectDate(context);
+                      },
+                    )
+                  ],
                 ),
               ),
             ),
-
             Padding(
               padding: EdgeInsets.all(8.0),
               child: IconButton(
                 icon: Icon(Icons.search),
-                tooltip: 'Increase volume by 10',
+                tooltip: 'Cari',
                 onPressed: () async{
                   _search();
                 },
@@ -264,7 +238,44 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
     );
   }
 
-
+  Widget _loading(){
+    return Container(
+      margin: EdgeInsets.all(15.0),
+      child: ListView.builder(
+          itemCount: 7,
+          shrinkWrap: true,
+          physics: ScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          itemBuilder: (context, index){
+            return GestureDetector(
+              child: Container(
+                decoration: BoxDecoration(color: Colors.white),
+                padding:EdgeInsets.only(top: 20.0, bottom: 20.0, left: 5.0, right: 5.0),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 16),
+                        SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 16),
+                      ],
+                    ),
+                    SizedBox(height: 20.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 16),
+                        SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 16),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+      ),
+    );
+  }
 
 
   Container accountItems(String kdTrx, String item, String charge, Color statColor, String dateString, String type,{Color oddColour = Colors.white}) => Container(

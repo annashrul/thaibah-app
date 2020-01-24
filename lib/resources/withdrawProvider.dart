@@ -16,7 +16,7 @@ class WithdrawProvider {
     final pin = await userRepository.getPin();
     final token = await userRepository.getToken();
     return await client.post(ApiService().baseUrl+"transaction/withdraw/create",
-        headers: {'Authorization': token},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "amount":"$amount",
           "id_bank":"$id_bank",
@@ -35,7 +35,10 @@ class WithdrawProvider {
 
   Future<HistoryPenarikanModel> fetchHistoryPenarikan(var page, var limit, var from, var to) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'transaction/withdraw/list?page=$page&limit=$limit&datefrom=$from&dateto=$to',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'transaction/withdraw/list?page=$page&limit=$limit&datefrom=$from&dateto=$to',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("################################################ HISTORY PENARIKAN #######################################");
     print('transaction/withdraw/list?page=$page&limit=$limit&datefrom=$from&dateto=$to');
     if (response.statusCode == 200) {

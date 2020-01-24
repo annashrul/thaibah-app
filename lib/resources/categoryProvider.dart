@@ -11,7 +11,10 @@ class CategoryProvider {
 
   Future<CategoryModel> fetchCategory() async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'category?type=berita',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'category?type=berita',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("###########################################################KATEGORI###############################################################");
     print(response.body);
     if (response.statusCode == 200) {

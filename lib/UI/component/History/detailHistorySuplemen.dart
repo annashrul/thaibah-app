@@ -309,7 +309,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text('Total Harga (${snapshot.data.result.pembayaran.jmlItem} barang)', style: TextStyle(color: Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text("${formatter.format(rawPrice)}", style: TextStyle(color: Colors.redAccent,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                              Text("Rp ${formatter.format(rawPrice)}", style: TextStyle(color: Colors.redAccent,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                             ],
                           ),
                           SizedBox(height: 5.0),
@@ -317,7 +317,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text('Total Ongkos Kirim (${snapshot.data.result.pembayaran.weight})', style: TextStyle(color: Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text('${formatter.format(rawOngkir)}', style: TextStyle(color: Colors.redAccent,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                              Text('Rp ${formatter.format(rawOngkir)}', style: TextStyle(color: Colors.redAccent,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ],
@@ -337,7 +337,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text("Total Pembayaran",style: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text("${formatter.format(total)}", style: TextStyle(color: Colors.redAccent, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text("Rp ${formatter.format(total)}", style: TextStyle(color: Colors.redAccent, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
                             ],
                           ),
                         ],

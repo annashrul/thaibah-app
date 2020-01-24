@@ -14,7 +14,7 @@ class SaldoProvider {
 		final pin = await userRepository.getPin();
 		final token = await userRepository.getToken();
     return await client.post(ApiService().baseUrl+"transaction/deposit",
-        headers: {'Authorization': token},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "saldo":"$saldo",
           "pin":"$pin"

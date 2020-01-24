@@ -47,6 +47,7 @@ class Result {
     String masehi;
     Ayat ayat;
     String inspiration;
+    String versionCode;
     String thumbnail;
     String level;
     List<Section> section;
@@ -66,6 +67,7 @@ class Result {
         this.masehi,
         this.ayat,
         this.inspiration,
+        this.versionCode,
         this.thumbnail,
         this.level,
         this.section,
@@ -86,6 +88,7 @@ class Result {
         masehi: json["masehi"],
         ayat: Ayat.fromJson(json["ayat"]),
         inspiration: json["inspiration"],
+        versionCode: json["version_code"],
         thumbnail: json["thumbnail"],
         level: json["level"],
         section: List<Section>.from(json["section"].map((x) => Section.fromJson(x))),
@@ -106,6 +109,7 @@ class Result {
         "masehi": masehi,
         "ayat": ayat.toJson(),
         "inspiration": inspiration,
+        "version_code": versionCode,
         "thumbnail": thumbnail,
         "level": level,
         "section": List<dynamic>.from(section.map((x) => x.toJson())),

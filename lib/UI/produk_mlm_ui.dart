@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -6,15 +8,21 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/MLM/listCartModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
+import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/Model/productMlmSuplemenModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/tab_kavling_ui.dart';
 import 'package:thaibah/UI/Widgets/tab_suplemen_ui.dart';
 import 'package:thaibah/UI/component/keranjang.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
+import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
 
 import 'Widgets/skeletonFrame.dart';
+import 'package:http/http.dart' as http;
 
 class ProdukMlmUI extends StatefulWidget {
 
@@ -34,6 +42,30 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   bool isLoading = false;
   int inc = 0;
   int total = 0;
+  final userRepository = UserRepository();
+  String versionCode = '';
+  bool versi = false;
+  Future cekVersion() async {
+    String id = await userRepository.getID();
+    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
+    if (jsonString.statusCode == 200) {
+      final jsonResponse = json.decode(jsonString.body);
+      Info response = new Info.fromJson(jsonResponse);
+      versionCode = (response.result.versionCode);
+      setState(() {
+        isLoading = false;
+      });
+      if(versionCode != ApiService().versionCode){
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+      }
+      print("###########################################################LOAD DATA HOME###############################################################");
+      print(jsonResponse);
+    } else {
+      throw Exception('Failed to load info');
+    }
+
+  }
+
   Future addCart(var id, var harga, var qty, var weight) async{
     setState(() {});
 //    print(harga);
@@ -108,11 +140,17 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     return true;
   }
 
+
+
+
   @override
   void initState() {
     productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
     super.initState();
     countCart();
+    cekVersion();
+    versi = true;
+    print("###################### $versionCode ###########################");
   }
 //
   @override
@@ -193,8 +231,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
             return Text(snapshot.error.toString());
           }
           return Padding(
-            padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
-            child: ListView.builder(
+              padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
+              child: ListView.builder(
                 primary: false,
                 physics: ScrollPhysics(),
                 itemCount: 2,
@@ -420,6 +458,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   }
 
 
-  bool get wantKeepAlive => true; // ** and here
+//  bool get wantKeepAlive => true; // ** and here
 
 }

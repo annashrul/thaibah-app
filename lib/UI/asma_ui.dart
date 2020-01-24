@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:thaibah/Model/islamic/asmaModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
+import 'package:thaibah/config/api.dart';
 
 
 class AsmaUI extends StatefulWidget {
@@ -28,7 +29,7 @@ class AsmaUIState extends State<AsmaUI> {
     setState(() {
       isLoading = true;
     });
-    var jsonString = await http.get('http://thaibah.com:3000/api/v1/islamic/');
+    var jsonString = await http.get(ApiService().baseUrl+'islamic/');
     if (jsonString.statusCode == 200) {
       // list = json.decode(response.body) as List
       final jsonResponse = json.decode(jsonString.body);

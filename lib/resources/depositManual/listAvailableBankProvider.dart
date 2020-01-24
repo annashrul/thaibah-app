@@ -10,7 +10,10 @@ class ListAvailableBankProvider {
   final userRepository = UserRepository();
   Future<ListAvailableBankModel> fetchListAvailableBank() async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'transaction/deposit/availablebank',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'transaction/deposit/availablebank',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print(response.body);
     if (response.statusCode == 200) {
       return compute(listAvailableBankModelFromJson,response.body);

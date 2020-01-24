@@ -26,7 +26,10 @@ class PpobPraProvider {
     }
 
     print(_url);
-    final response = await client.get(ApiService().baseUrl+_url,headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+_url,
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print(response.body);
     if (response.statusCode == 200) {
       return compute(ppobPraModelFromJson, response.body);
@@ -39,8 +42,9 @@ class PpobPraProvider {
     final token = await userRepository.getToken();
     final pin = await userRepository.getPin();
     return await client.post(ApiService().baseUrl+"ppob/pra/checkout",
-        headers: {'Authorization': token},
-        body: {"no":"$no","code":"$code","price":"$price","charge":"$charge","pin":"$pin","idpelanggan":idpelanggan}).then((Response response) {
+      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
+      body: {"no":"$no","code":"$code","price":"$price","charge":"$charge","pin":"$pin","idpelanggan":idpelanggan}
+    ).then((Response response) {
       var results;
       print(response.statusCode);
       if(response.statusCode == 200){

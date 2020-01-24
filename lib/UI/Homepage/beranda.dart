@@ -4,18 +4,23 @@ import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/Model/user_location.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Homepage/news.dart';
 import 'package:thaibah/UI/Homepage/newsCategory.dart';
 import 'package:thaibah/UI/Widgets/mainCompass.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/asma_ui.dart';
 import 'package:thaibah/UI/component/about.dart';
@@ -23,6 +28,7 @@ import 'package:thaibah/UI/component/inspirasi.dart';
 import 'package:thaibah/UI/component/inspirasiHome.dart';
 import 'package:thaibah/UI/component/news/newsPage.dart';
 import 'package:thaibah/UI/component/penarikan.dart';
+import 'package:thaibah/UI/component/pin/indexPin.dart';
 import 'package:thaibah/UI/component/prayerList.dart';
 import 'package:thaibah/UI/component/royalti/infoRoyaltiLevel.dart';
 import 'package:thaibah/UI/component/royalti/level.dart';
@@ -36,6 +42,7 @@ import 'package:thaibah/UI/lainnya/ppobPrabayar.dart';
 import 'package:thaibah/UI/lainnya/subDoaHadist.dart';
 import 'package:thaibah/UI/lainnya/telkom.dart';
 import 'package:thaibah/UI/lainnya/wifiId.dart';
+import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/UI/ppob/listrik_ui.dart';
 import 'package:thaibah/UI/ppob/pulsa_ui.dart';
 import 'package:thaibah/UI/ppob/zakat_ui.dart';
@@ -68,18 +75,33 @@ class _BerandaState extends State<Beranda>{
   String _idSurat='', _surat='',_suratAyat='',_terjemahan='',_ayat='',_suratNama='';
   String _hijri='',_masehi='',_name='',_saldo="Rp 0",_saldoBonus="0",_inspiration='',_saldoMain="0", _saldoVoucher="0";
   String pinku = "", id="", _nohp='', _level='';
-  String _picture='',_kdRefferal='',_qr='', _thumbnail='';
+  String _picture='',_kdRefferal='',_qr='', _thumbnail='', _versionCode='';
   bool showAlignmentCards = false;
   bool isLoading = false;
   double _height;
   double _width;
+  var isPin;
 
   int jam    = 0;
   int menit  = 0;
   String waktuSholat = '';
   String keterangan = '';
   String latitude = '', longitude = '';
+  bool versi = false;
+
+  Future cekStatusLogin()async{
+    final prefs = await SharedPreferences.getInstance();
+    if(prefs.getString('id') == null || prefs.getString('id') == ''){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+    }
+  }
   Future<void> loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    print(prefs.getBool('isPin'));
+    final isPinZero  = await userRepository.getPin();
+    cekStatusLogin();
+
+
     String id = await userRepository.getID();
     var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
     if (jsonString.statusCode == 200) {
@@ -105,6 +127,29 @@ class _BerandaState extends State<Beranda>{
       _terjemahan   = (response.result.ayat.terjemahan);
       _inspiration  = (response.result.inspiration);
       _thumbnail  = (response.result.thumbnail);
+      _versionCode = (response.result.versionCode);
+      if(_versionCode != ApiService().versionCode){
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+      }else{
+        if(isPinZero == 0){
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
+          print("############################ CAN BOGA PIN ########################");
+        }else{
+          setState(() {
+            isPin = prefs.getBool('isPin');
+          });
+          if(isPin == false){
+            prefs.setBool('isPin', true);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+                builder: (BuildContext context) => PinScreen(callback: _callBackPin)
+            ), (Route<dynamic> route) => false);
+            print("############################ KUDU NGABUSKEUN PIN ########################");
+          }else{
+            print("############################ TEU KUDU NGABUSKEUN PIN $isPinZero ########################");
+
+          }
+        }
+      }
       setState(() {
         isLoading = false;
       });
@@ -114,6 +159,33 @@ class _BerandaState extends State<Beranda>{
       throw Exception('Failed to load info');
     }
   }
+
+  _callBackPin(BuildContext context,bool isTrue) async{
+    if(isTrue){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+    }
+    else{
+//      setState(() {Navigator.of(context).pop();});
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("Pin Salah!"),
+            content: new Text("Masukan pin yang sesuai."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   DateTime dt = DateTime.now();
   Duration duration;
@@ -133,7 +205,7 @@ class _BerandaState extends State<Beranda>{
   bool showVolume = false;
   var shubuh; var sunrise; var dzuhur; var ashar; var maghrib; var isya;
   var menitShubuh;var menitSunrise;var menitDzuhur;var menitAshar; var menitMaghrib; var menitIsya;
-  String _timeString, _timeStringClone;
+  String _timeString='', _timeStringClone='';
   String detikDzuhur = '0';
 
   PrayerModel prayerModel;
@@ -167,7 +239,6 @@ class _BerandaState extends State<Beranda>{
       showVolume = false;
 //      isActive = 0;
     });
-
   }
   int isActive = 0;
 
@@ -192,6 +263,7 @@ class _BerandaState extends State<Beranda>{
 //    print('islamic/jadwalsholat?long=${widget.lng}&lat=${widget.lat}');
     print("###################################### JADWAL SHOLAT ###################################");
     print(jsonString.body);
+
     if (jsonString.statusCode == 200) {
       final jsonResponse = json.decode(jsonString.body);
       prayerModel = new PrayerModel.fromJson(jsonResponse);
@@ -394,8 +466,10 @@ class _BerandaState extends State<Beranda>{
   void initState() {
     // TODO: implement initState
     super.initState();
+    cekStatusLogin();
 //    print("######################################")
     loadData();
+    versi = true;
     isLoading=true;
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -439,7 +513,6 @@ class _BerandaState extends State<Beranda>{
 
   @override
   Widget build(BuildContext context) {
-
     return buildContent(context);
   }
 
@@ -668,7 +741,7 @@ class _BerandaState extends State<Beranda>{
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
                     isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 12.0):InkWell(
-                      child: Text('Versi : 1.0.9',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                      child: Text('Versi : '+ApiService().versionCode,style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
                     ),
                     SizedBox(height:10.0),
                     isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 12.0):InkWell(
@@ -711,22 +784,55 @@ class _BerandaState extends State<Beranda>{
         children: <Widget>[
           Expanded(
             child: ListTile(
-              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text("Saldo Utama", style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-              subtitle: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text(_saldoMain, style: TextStyle(fontSize: 11.0,fontFamily: 'Rubik')),
+              contentPadding: EdgeInsets.all(10.0),
+              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Center(child: Column(
+                children: <Widget>[
+                  Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQ-rQgCZkgFg-Om5juLS6DMUZSkcipOcMhFUi36URkc2CCBn5J0',width: 20.0,),
+                  SizedBox(height: 5.0),
+                  Text("Saldo Utama", style: TextStyle(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                  SizedBox(height: 5.0),
+                  Text(_saldoMain, style: TextStyle(color:Colors.red,fontWeight:FontWeight.bold,fontSize: 10.0,fontFamily: 'Rubik'))
+                ],
+              )),
+//              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Center(child: Text("Saldo Utama", style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),),
+//              subtitle: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Center(child:Text(_saldoMain, style: TextStyle(color:Colors.red,fontWeight:FontWeight.bold,fontSize: 10.0,fontFamily: 'Rubik'))),
             ),
           ),
-          VerticalDivider(),
+          SizedBox(height: MediaQuery.of(context).size.height/13,width: 1.0,child: Container(color: Colors.green),),
           Expanded(
             child: ListTile(
-              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text("Saldo Bonus", style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-              subtitle: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text(_saldoBonus, style: TextStyle(fontSize: 11.0,fontFamily: 'Rubik')),
+              contentPadding: EdgeInsets.all(10.0),
+              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Center(child: Column(
+                children: <Widget>[
+                  Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQ-rQgCZkgFg-Om5juLS6DMUZSkcipOcMhFUi36URkc2CCBn5J0',width: 20.0,),
+                  SizedBox(height: 5.0),
+                  Text("Saldo Bonus", style: TextStyle(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                  SizedBox(height: 5.0),
+                  Text(_saldoBonus, style: TextStyle(color:Colors.red,fontWeight:FontWeight.bold,fontSize: 10.0,fontFamily: 'Rubik'))
+                ],
+              )),
+//              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Center(child: Text("Saldo Bonus", style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),),
+//              subtitle: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Center(child:Text(_saldoBonus, style: TextStyle(color:Colors.red,fontWeight:FontWeight.bold,fontSize: 10.0,fontFamily: 'Rubik'))),
+//              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text("Saldo Bonus", style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//              subtitle: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text(_saldoBonus, style: TextStyle(color:Colors.red,fontWeight:FontWeight.bold,fontSize: 11.0,fontFamily: 'Rubik')),
             ),
           ),
-          VerticalDivider(),
+          SizedBox(height: MediaQuery.of(context).size.height/13,width: 1.0,child: Container(color: Colors.green),),
           Expanded(
             child: ListTile(
-              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text("Saldo Voucher", style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-              subtitle: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text(_saldoVoucher, style: TextStyle(fontSize: 11.0,fontFamily: 'Rubik')),
+              contentPadding: EdgeInsets.all(10.0),
+              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Center(child: Column(
+                children: <Widget>[
+                  Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQ-rQgCZkgFg-Om5juLS6DMUZSkcipOcMhFUi36URkc2CCBn5J0',width: 20.0,),
+                  SizedBox(height: 5.0),
+                  Text("Saldo Voucher", style: TextStyle(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                  SizedBox(height: 5.0),
+                  Text(_saldoVoucher, style: TextStyle(color:Colors.red,fontWeight:FontWeight.bold,fontSize: 10.0,fontFamily: 'Rubik'))
+                ],
+              )),
+//              subtitle: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Center(child:Text(_saldoVoucher, style: TextStyle(color:Colors.red,fontWeight:FontWeight.bold,fontSize: 10.0,fontFamily: 'Rubik'))),
+//              title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text("Saldo Voucher", style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//              subtitle: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/1,height:16.0):Text(_saldoVoucher, style: TextStyle(color:Colors.red,fontWeight:FontWeight.bold,fontSize: 11.0,fontFamily: 'Rubik')),
             ),
           ),
         ],
@@ -1022,3 +1128,144 @@ class _CompasPageState extends State<CompasPage> {
     );
   }
 }
+
+
+class IsPIN extends StatefulWidget {
+  @override
+  _IsPINState createState() => _IsPINState();
+}
+
+class _IsPINState extends State<IsPIN> {
+  @override
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  var onTapRecognizer;
+  bool hasError = false;
+  String currentText = "";
+  final userRepository = UserRepository();
+  var pin;
+  @override
+  void initState() {
+    onTapRecognizer = TapGestureRecognizer()
+      ..onTap = () {
+        Navigator.pop(context);
+      };
+
+    super.initState();
+    _check();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+  bool _isLoading = false;
+  Future _check() async {
+    pin = await userRepository.getPin();
+  }
+  void showInSnackBar(String value,background) {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    _scaffoldKey.currentState?.removeCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text(
+        value,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Rubik"),
+      ),
+      backgroundColor: background,
+      duration: Duration(seconds: 3),
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        centerTitle: false,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: <Color>[
+                Color(0xFF116240),
+                Color(0xFF30cc23)
+              ],
+            ),
+          ),
+        ),
+        elevation: 1.0,
+        automaticallyImplyLeading: true,
+        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+      ),
+      key: _scaffoldKey,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: ListView(
+            children: <Widget>[
+              SizedBox(height: 30),
+              Image.asset(
+                'assets/images/verify.png',
+                height: MediaQuery.of(context).size.height / 3,
+                fit: BoxFit.fitHeight,
+              ),
+              SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  'Masukan Pin',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Padding(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
+                  child: Builder(
+                    builder: (context) => Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Center(
+                        child: PinPut(
+                          fieldsCount: 6,
+                          isTextObscure: true,
+                          onSubmit: (String txtPin){
+                            setState(() {
+                              _isLoading=true;
+                            });
+                            if(int.parse(txtPin) == pin){
+                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                            }else{
+                              print('salaha');
+                            }
+                          },
+                          actionButtonsEnabled: false,
+                          clearInput: true,
+                        ),
+                      ),
+                    ),
+                  )
+              ),
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+

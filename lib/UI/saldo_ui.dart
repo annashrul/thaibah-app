@@ -56,9 +56,8 @@ class _SaldoUIState extends State<SaldoUI> {
                   label: 'Buat PIN',
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).push(
-                      new CupertinoPageRoute(builder: (context) => Pin(saldo: widget.saldo)),
+                      new CupertinoPageRoute(builder: (context) => Pin(saldo: widget.saldo,param:'topup')),
                     );
-
                   },
                 ),
               )
@@ -99,7 +98,7 @@ class _SaldoUIState extends State<SaldoUI> {
       onPressed: () {
         saldoController.text = "$val";
       },
-      child: Text("$nominal",style: TextStyle(color:Color(0xFF116240),fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+      child: Text("$nominal",style: TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
     );
   }
 

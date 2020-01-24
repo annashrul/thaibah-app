@@ -132,7 +132,7 @@ class Repository{
   Future fetchMember(var id) => memberProvider.fetchMember(id);
   Future fetchCreateMyBank(var bankname,var bankcode,var acc_no, var acc_name) => myBankProvider.fetchCreateMyBank(bankname, bankcode, acc_no, acc_name);
   Future fetchdeleteMyBank(var id) => myBankProvider.fetchDeleteMyBank(id);
-  Future fetchCreateMember(/*var pin,*/ var name,var ismobile,var no_hp, var referral/*, var ktp*/) => memberProvider.fetchCreateMember(/*pin,*/name, ismobile, no_hp, referral/*, ktp*/);
+  Future fetchCreateMember(var pin, var name,var ismobile,var no_hp, var referral/*, var ktp*/) => memberProvider.fetchCreateMember(pin,name, ismobile, no_hp, referral/*, ktp*/);
   Future fetchUpdateMember(var name,var no_hp, var gender, var picture, var cover, var ktp) => memberProvider.fetchUpdateMember(name, no_hp, gender, picture, cover, ktp);
   Future fetchUpdatePinMember(var pin) => memberProvider.fetchUpdatePinMember(pin);
   Future<ProfileModel> fetchAllProfile() => profileProvider.fetchProfile();

@@ -13,7 +13,10 @@ class RoyaltiLevelProvider {
   final userRepository = UserRepository();
   Future<LevelModel> fetchLevel() async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'transaction/royalti/level',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'transaction/royalti/level',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("###########################################################ROYALTI LEVEL###############################################################");
     print(response.body);
     if (response.statusCode == 200) {
@@ -26,13 +29,11 @@ class RoyaltiLevelProvider {
 
   Future<RoyaltiMemberModel> fetchRoyaltiMember(var param) async{
     final token = await userRepository.getToken();
-    var level;
-    if(param == 'kosong'){
-      level = 'DIRHAM';
-    }else{
-      level = param;
-    }
-    final response = await client.get(ApiService().baseUrl+'transaction/royalti/member/$level',headers: {'Authorization':token});
+    var level = param == 'kosong' ? 'DIRHAM' : param;
+    final response = await client.get(
+      ApiService().baseUrl+'transaction/royalti/member/$level',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("###########################################################ROYALTI MEMBER###############################################################");
     print(response.body);
     print(param);

@@ -14,7 +14,10 @@ class PpobPascaProvider {
   final userRepository = UserRepository();
   Future<PpobPascaModel> fetchPpobPasca(var type) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'ppob/pasca/get/$type',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'ppob/pasca/get/$type',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print(response.body);
     if (response.statusCode == 200) {
       return compute(ppobPascaModelFromJson, response.body);
@@ -26,9 +29,11 @@ class PpobPascaProvider {
   Future fetchPpobPascaCekTagihan(var code,var no,var idpelanggan) async {
     final token = await userRepository.getToken();
     final pin = await userRepository.getPin();
-    return await client.post(ApiService().baseUrl+"ppob/pasca/cektagihan",
-        headers: {'Authorization': token},
-        body: {"code":"$code","no":"$no","idpelanggan":"$idpelanggan"}).then((Response response) {
+    return await client.post(
+      ApiService().baseUrl+"ppob/pasca/cektagihan",
+      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
+      body: {"code":"$code","no":"$no","idpelanggan":"$idpelanggan"}
+    ).then((Response response) {
       var results;
       print(response.statusCode);
       if(response.statusCode == 200){
@@ -44,7 +49,7 @@ class PpobPascaProvider {
     final token = await userRepository.getToken();
     final pin = await userRepository.getPin();
     return await client.post(ApiService().baseUrl+"ppob/pasca/checkout",
-        headers: {'Authorization': token},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {"code":"$code","orderid":"$orderid","price":"$price"}).then((Response response) {
       var results;
       print(response.statusCode);

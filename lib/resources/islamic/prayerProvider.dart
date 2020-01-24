@@ -11,7 +11,10 @@ class PrayerProvider {
 
   Future<PrayerModel> fetchPrayer(var long,var lat) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'islamic/jadwalsholat?long=$long&lat=$lat',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'islamic/jadwalsholat?long=$long&lat=$lat',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print(response.body);
     if (response.statusCode == 200) {
       return compute(prayerModelFromJson,response.body);

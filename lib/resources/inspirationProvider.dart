@@ -11,7 +11,10 @@ class InspirationProvider {
 
   Future<InspirationModel> fetchInspiration(var page, var limit) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'info/inspiration?page=$page&limit=$limit',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'info/inspiration?page=$page&limit=$limit',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("######################################## INSPIRASI #################################");
     print('info/inspiration?page=$page&limit=$limit');
     print(response.body);

@@ -19,7 +19,10 @@ class TestimoniProvider {
 //      _url = 'testi?tipe=1&page=0&limit=$limit';
 //    }
 		final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'testi?tipe=$param&page=$page&limit=$limit',headers: {'Authorization':token});
+    final response = await client.get(
+        ApiService().baseUrl+'testi?tipe=$param&page=$page&limit=$limit',
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     if (response.statusCode == 200) {
       // If the call to the server was successful, parse the JSON
       return compute(testimoniModelFromJson,response.body);

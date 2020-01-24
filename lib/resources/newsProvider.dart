@@ -13,7 +13,10 @@ class NewsProvider {
 
   Future<NewsModel> fetchNews(var page,var limit) async{
 		final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'berita?page=$page&limit=$limit',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'berita?page=$page&limit=$limit',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("###########################################################BERITA###############################################################");
     print(response.body);
     if (response.statusCode == 200) {
@@ -25,7 +28,10 @@ class NewsProvider {
 
   Future<NewsDetailModel> fetchDetailNews(String id) async{
 		final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'berita/get/'+id,headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'berita/get/'+id,
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     if (response.statusCode == 200) {
       return compute(newsDetailModelFromJson,response.body);
     } else {
@@ -36,7 +42,10 @@ class NewsProvider {
 
   Future<NewsModel> fetchHomeNews(String title) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'berita?category='+title,headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'berita?category='+title,
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     if (response.statusCode == 200) {
       return compute(newsModelFromJson,response.body);
     } else {
@@ -46,7 +55,10 @@ class NewsProvider {
 
   Future<DetailNewsPerCategoryModel> fetchDetailNewsPerCategory(var page,var limit,var title) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'berita?page=$page&limit=$limit&category='+title,headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'berita?page=$page&limit=$limit&category='+title,
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("###########################################################DETAIL NESW PER CATEGORY###############################################################");
     print("########################'berita?berita?page=$page&limit=$limit&category=$title###########################");
     print(response.body);

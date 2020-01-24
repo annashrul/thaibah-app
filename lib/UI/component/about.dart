@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,10 +7,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/Model/promosiModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/detail_promosi_ui.dart';
 import 'package:thaibah/bloc/promosiBloc.dart';
+import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
+import 'package:http/http.dart' as http;
 
 class About extends StatefulWidget {
 //  About({Key key}) : super(key: key);
@@ -25,6 +31,31 @@ class _AboutState extends State<About>{
   double _width;
 
   int perpage = 4;
+
+
+  final userRepository = UserRepository();
+  String versionCode = '';
+  bool versi = false;
+  Future cekVersion() async {
+    String id = await userRepository.getID();
+    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
+    if (jsonString.statusCode == 200) {
+      final jsonResponse = json.decode(jsonString.body);
+      Info response = new Info.fromJson(jsonResponse);
+      versionCode = (response.result.versionCode);
+      if(versionCode != ApiService().versionCode){
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+      }
+      setState(() {
+        isLoading = false;
+      });
+      print("###########################################################LOAD DATA HOME###############################################################");
+      print(jsonResponse);
+    } else {
+      throw Exception('Failed to load info');
+    }
+
+  }
 
   void load() {
     print("load $perpage");
@@ -56,6 +87,7 @@ class _AboutState extends State<About>{
   void initState() {
     promosiListBloc.fetchAllPromosiList(1,perpage);
     super.initState();
+    cekVersion();
   }
 //
   @override

@@ -348,7 +348,7 @@ class SingleCartProductState extends State<SingleCartProduct> {
                   children: <Widget>[
                     new Text(widget.CartProdName,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
                     SizedBox(height: 10.0),
-                    new Text("Rp ${formatter.format(updatePrice)}",style: TextStyle(color: Colors.red,fontFamily: 'Rubik'),),
+                    new Text("Rp ${formatter.format(updatePrice)}",style: TextStyle(fontWeight:FontWeight.bold,color: Colors.red,fontFamily: 'Rubik'),),
                     SizedBox(height: 10.0),
                     ChangeQuantity(
                         valueChanged: (int newValue){

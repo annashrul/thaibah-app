@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lock_screen/flutter_lock_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -17,6 +18,7 @@ import 'package:thaibah/UI/Widgets/responsive_ui.dart';
 import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -56,11 +58,13 @@ class _CreateMemberState extends State<CreateMember> {
   bool _large;
   bool _medium;
   var pinController   = TextEditingController();
+  var confirmPinController   = TextEditingController();
   var nameController = TextEditingController();
   var reffController = TextEditingController();
   var noHpController = TextEditingController();
 
   final FocusNode pinFocus       = FocusNode();
+  final FocusNode confirmPinFocus       = FocusNode();
   final FocusNode nameFocus       = FocusNode();
   final FocusNode reffFocus       = FocusNode();
   final FocusNode nohpFocus       = FocusNode();
@@ -155,6 +159,7 @@ class _CreateMemberState extends State<CreateMember> {
     var res = await MemberProvider().resendOtp(no,reffController.text,"register");
     if(res is ResendOtp){
       ResendOtp result = res;
+      print(result.result.otp);
       print(result.status);
       if(result.status == 'success'){
         setState(() {_isLoading = false;});
@@ -162,7 +167,7 @@ class _CreateMemberState extends State<CreateMember> {
           context,
           MaterialPageRoute(
             builder: (context) => OtpPage(
-//              pin:pinController.text,
+              pin:pinController.text,
               name:nameController.text,
               isMobile:"ya",
               noHp:no,
@@ -313,14 +318,22 @@ class _CreateMemberState extends State<CreateMember> {
 //                  return showInSnackBar("Silahkan Upload Photo KTP");
 //                }
                 else {
+                  if(pinController.text != confirmPinController.text){
+                    pinController.clear();
+                    confirmPinController.clear();
+                    return showInSnackBar("PIN Yang Anda Masukan Tidak Sesuai");
+                  }else{
+                    setState(() {_isLoading = true;});
+                    create();
+                  }
 //                  if(pinController.text.length < 6){
 //                    return showInSnackBar("PIN Yang Anda Masukan Kurang Dari 6 Digit");
 //                  }else{
 //                    setState(() {_isLoading = true;});
 //                    create();
 //                  }
-                  setState(() {_isLoading = true;});
-                  create();
+//                  setState(() {_isLoading = true;});
+//                  create();
 
                 }
               },
@@ -388,7 +401,16 @@ class _CreateMemberState extends State<CreateMember> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text("No WhatsApp",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                    RichText(
+                      text: TextSpan(
+                        text: 'No WhatsApp ',
+                        style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+                        children: <TextSpan>[
+                          TextSpan(text: '( Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+//                    Text("No WhatsApp",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                     Row(
                       children: <Widget>[
                         Container(
@@ -423,6 +445,75 @@ class _CreateMemberState extends State<CreateMember> {
 
                       ],
                     )
+                  ],
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    RichText(
+                      text: TextSpan(
+                        text: 'PIN ',
+                        style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+//                        style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
+                        children: <TextSpan>[
+                          TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                    TextFormField(
+                      obscureText: _secureText,
+                      maxLength: 6,
+                      maxLengthEnforced: true,
+                      controller: pinController,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      ),
+                      keyboardType: TextInputType.number,
+                      focusNode: pinFocus,
+                      onFieldSubmitted: (term){
+                        _fieldFocusChange(context, pinFocus, confirmPinFocus);
+                      },
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    RichText(
+                      text: TextSpan(
+                        text: 'Konfirmasi PIN ',
+                        style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+//                        style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
+                        children: <TextSpan>[
+//                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                    TextFormField(
+                      obscureText: _secureText,
+                      maxLength: 6,
+                      maxLengthEnforced: true,
+                      controller: confirmPinController,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      ),
+                      keyboardType: TextInputType.number,
+                      focusNode: confirmPinFocus,
+                      onFieldSubmitted: (term){
+                        _fieldFocusChange(context, confirmPinFocus, reffFocus);
+                      },
+                      textInputAction: TextInputAction.next,
+                    ),
                   ],
                 ),
               ),
@@ -567,11 +658,11 @@ class _CreateMemberState extends State<CreateMember> {
 
 
 class OtpPage extends StatefulWidget {
-  final String /*pin,*/name,isMobile,noHp,kdReferral/*,ktp*/,otp,statusOtp;
+  final String pin,name,isMobile,noHp,kdReferral/*,ktp*/,otp,statusOtp;
   OtpPage({
     Key key,
     @required
-//    this.pin,
+    this.pin,
     this.name,
     this.isMobile,
     this.noHp,
@@ -592,7 +683,7 @@ class _OtpPageStatefulState extends State<OtpPage> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool alreadyLogin = false;
-
+  var currentText;
   bool _apiCall = false;
 
   String _response = '';
@@ -611,7 +702,7 @@ class _OtpPageStatefulState extends State<OtpPage> {
       );
     });
     var res = await createMemberBloc.fetchCreateMember(
-//      widget.pin,
+      widget.pin,
       widget.name,
       widget.isMobile,
       widget.noHp,
@@ -667,74 +758,114 @@ class _OtpPageStatefulState extends State<OtpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
+        key: _scaffoldKey,
+        body: Container(
+          child: LockScreen(
+              title: "Keamanan",
+              passLength: 4,
+              bgImage: "assets/images/bg.jpg",
+              borderColor: Colors.black,
+              showWrongPassDialog: true,
+              wrongPassContent: "Kode OTP Tidak Sesuai",
+              wrongPassTitle: "Opps!",
+              wrongPassCancelButtonText: "Batal",
+              deskripsi: 'Masukan Kode OTP Yang Telah Kami Kirim Melalui Pesan WhatsApp ${ApiService().showCode == true ? widget.otp : ""}',
+              passCodeVerify: (passcode) async {
+                var concatenate = StringBuffer();
+                passcode.forEach((item){
+                  concatenate.write(item);
+                });
+                setState(() {
+                  currentText = concatenate.toString();
+                });
+                if(currentText != widget.otp){
+                  return false;
+                }
+                return true;
+              },
+              onSuccess: () {
+                print(currentText);
+                setState(() {
+                  _isLoading = true;
+                });
 
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
+                create();
+//                _check(currentText.toString(),context);
+              }
           ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: ListView(
-            children: <Widget>[
-              SizedBox(height: 30),
-              Image.asset(
-                'assets/images/verify.png',
-                height: MediaQuery.of(context).size.height / 4,
-                fit: BoxFit.fitHeight,
-              ),
-              SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Masukan Kode OTP',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0.0,horizontal: 10.0),
-                child: Text(
-                  'Masukan kode OTP yang telah kami kirim melalui pesan ke no whatsApp anda',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-                ),
-              ),
-              Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30),
-                  child: Builder(
-                    builder: (context) => Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Center(
-                        child: otpInput(),
-                      ),
-                    ),
-                  )
-              ),
-            ],
-          ),
-        ),
-      ),
+        )
     );
+//
+//
+//    return Scaffold(
+//      key: scaffoldKey,
+//
+//      appBar: AppBar(
+//        leading: IconButton(
+//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+//          onPressed: () => Navigator.of(context).pop(),
+//        ),
+//        centerTitle: false,
+//        flexibleSpace: Container(
+//          decoration: BoxDecoration(
+//            gradient: LinearGradient(
+//              begin: Alignment.centerLeft,
+//              end: Alignment.centerRight,
+//              colors: <Color>[
+//                Color(0xFF116240),
+//                Color(0xFF30cc23)
+//              ],
+//            ),
+//          ),
+//        ),
+//        elevation: 1.0,
+//        automaticallyImplyLeading: true,
+//        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//      ),
+//      body: GestureDetector(
+//        onTap: () {
+//          FocusScope.of(context).requestFocus(new FocusNode());
+//        },
+//        child: Container(
+//          height: MediaQuery.of(context).size.height,
+//          width: MediaQuery.of(context).size.width,
+//          child: ListView(
+//            children: <Widget>[
+//              SizedBox(height: 30),
+//              Image.asset(
+//                'assets/images/verify.png',
+//                height: MediaQuery.of(context).size.height / 4,
+//                fit: BoxFit.fitHeight,
+//              ),
+//              SizedBox(height: 8),
+//              Padding(
+//                padding: const EdgeInsets.symmetric(vertical: 8.0),
+//                child: Text(
+//                  'Masukan Kode OTP',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: 'Rubik'),textAlign: TextAlign.center,
+//                ),
+//              ),
+//              Padding(
+//                padding: const EdgeInsets.symmetric(vertical: 0.0,horizontal: 10.0),
+//                child: Text(
+//                  'Masukan kode OTP yang telah kami kirim melalui pesan ke no whatsApp anda',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily: 'Rubik'),textAlign: TextAlign.center,
+//                ),
+//              ),
+//              Padding(
+//                  padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30),
+//                  child: Builder(
+//                    builder: (context) => Padding(
+//                      padding: const EdgeInsets.all(5.0),
+//                      child: Center(
+//                        child: otpInput(),
+//                      ),
+//                    ),
+//                  )
+//              ),
+//            ],
+//          ),
+//        ),
+//      ),
+//    );
   }
   // receive data from the FirstScreen as a parameter
 

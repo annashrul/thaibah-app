@@ -70,7 +70,9 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
     setState(() {
       perpage = perpage += 20;
     });
-    historyPenarikanBloc.fetchHistoryPenarikan(1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}');
+    DateTime today = new DateTime.now();
+    DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
+    historyPenarikanBloc.fetchHistoryPenarikan(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
     print(perpage);
   }
   Future<void> _refresh() async {
@@ -88,7 +90,9 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
   @override
   void initState() {
     super.initState();
-    historyPenarikanBloc.fetchHistoryPenarikan(1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}');
+    DateTime today = new DateTime.now();
+    DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
+    historyPenarikanBloc.fetchHistoryPenarikan(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
   }
   @override
   void dispose() {
@@ -132,30 +136,33 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
               new Flexible(
                 child: Padding(
                   padding: EdgeInsets.only(left:15.0),
-                  child: GestureDetector(
-                    child: TextFormField(
-                      autofocus: false,
-                      style: Theme.of(context).textTheme.body1.copyWith(
-                        fontSize: 12.0,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Periode',
-                      ),
-                      controller: dateController,
-                      onTap: (){
-                        FocusScope.of(context).requestFocus(new FocusNode());
-                        _selectDate(context);
-                      },
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                      TextFormField(
+                        autofocus: false,
+                        style: Theme.of(context).textTheme.body1.copyWith(
+                          fontSize: 12.0,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Bulan Ini ...',
+                        ),
+                        controller: dateController,
+                        onTap: (){
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                          _selectDate(context);
+                        },
+                      )
+                    ],
                   ),
                 ),
               ),
-
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: IconButton(
                   icon: Icon(Icons.search),
-                  tooltip: 'Increase volume by 10',
+                  tooltip: 'Cari',
                   onPressed: () async{
                     _search();
                   },

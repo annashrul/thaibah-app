@@ -10,7 +10,10 @@ class BankProvider {
   final userRepository = UserRepository();
   Future<BankModel> fetchBank() async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'transaction/withdraw/available',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'transaction/withdraw/available',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print(response.body);
     if (response.statusCode == 200) {
       return compute(bankModelFromJson,response.body);

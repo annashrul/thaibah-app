@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,7 +10,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/Model/profileModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/deposit.dart';
 import 'package:thaibah/UI/component/History/historyDeposit.dart';
@@ -18,14 +21,18 @@ import 'package:thaibah/UI/component/History/indexHistory.dart';
 import 'package:thaibah/UI/component/dataDiri/indexMember.dart';
 import 'package:thaibah/UI/component/penarikan.dart';
 import 'package:thaibah/UI/component/penukaranBonus.dart';
+import 'package:thaibah/UI/component/privacyPolicy.dart';
 import 'package:thaibah/UI/history_ui.dart';
 import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/UI/socmed/listFeed.dart';
 import 'package:thaibah/UI/video_list_ui.dart';
 import 'package:thaibah/bloc/profileBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/memberProvider.dart';
+import 'package:http/http.dart' as http;
 
 import 'loginPhone.dart';
 
@@ -46,10 +53,36 @@ class _ProfileUIState extends State<ProfileUI> {
   Future<File> file;
   File _image;
   String base64Image;
+
+  final userRepository = UserRepository();
+  String versionCode = '';
+  bool versi = false;
+  Future cekVersion() async {
+    String id = await userRepository.getID();
+    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
+    if (jsonString.statusCode == 200) {
+      final jsonResponse = json.decode(jsonString.body);
+      Info response = new Info.fromJson(jsonResponse);
+      versionCode = (response.result.versionCode);
+      if(versionCode != ApiService().versionCode){
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+      }
+      setState(() {
+        isLoading = false;
+      });
+      print("###########################################################LOAD DATA HOME###############################################################");
+      print(jsonResponse);
+    } else {
+      throw Exception('Failed to load info');
+    }
+
+  }
+
   @override
   void initState() {
     super.initState();
     profileBloc.fetchProfileList();
+    cekVersion();
   }
 
   @override
@@ -345,7 +378,7 @@ class _ProfileUIState extends State<ProfileUI> {
 
   }
 
-  Widget _menuMember(var kdReferral, var jumlahJaringan,var omsetJaringan,var name,var saldoMain,var saldoBonus, var id){
+  Widget _menuMember(var privasi,var kdReferral, var jumlahJaringan,var omsetJaringan,var name,var saldoMain,var saldoBonus, var id){
     return Container(
       margin: EdgeInsets.only(top: 5),
       color: Colors.white,
@@ -602,6 +635,28 @@ class _ProfileUIState extends State<ProfileUI> {
 //          ),
           Divider(),
           FlatButton(
+              onPressed: () async {
+                Navigator.of(context, rootNavigator: true).push(
+                  new CupertinoPageRoute(builder: (context) => PrivacyPolicy(privasi: privasi)),
+                );
+//                logout();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text("Kebijakan & Privasi", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                      Text("Informasi Tentang Kebijakan & Privasi", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12,fontFamily: 'Rubik')),
+                    ],
+                  ),
+                  Icon(Icons.arrow_right)
+                ],
+              )
+          ),
+          Divider(),
+          FlatButton(
             onPressed: () async {
               logout();
             },
@@ -647,7 +702,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         return Column(
                           children: <Widget>[
                             _headerProfile(snapshot.data.result.jumlahJaringan,snapshot.data.result.name, snapshot.data.result.picture, snapshot.data.result.cover, snapshot.data.result.kdReferral, snapshot.data.result.saldo, snapshot.data.result.rawSaldo, snapshot.data.result.saldoMain, snapshot.data.result.saldoBonus, snapshot.data.result.downline),
-                            _menuMember(snapshot.data.result.kdReferral,snapshot.data.result.jumlahJaringan,snapshot.data.result.omsetJaringan,snapshot.data.result.name,snapshot.data.result.saldoMain,snapshot.data.result.saldoBonus,snapshot.data.result.id),
+                            _menuMember(snapshot.data.result.privacy,snapshot.data.result.kdReferral,snapshot.data.result.jumlahJaringan,snapshot.data.result.omsetJaringan,snapshot.data.result.name,snapshot.data.result.saldoMain,snapshot.data.result.saldoBonus,snapshot.data.result.id),
                           ],
                         );
                       } else if (snapshot.hasError) {

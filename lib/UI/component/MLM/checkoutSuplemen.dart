@@ -90,8 +90,13 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   Future pilih() async{
     var res = await DetailCheckoutSuplemenProvider().fetchDetailCheckoutSuplemen();
     expiredVoucher = res.result.masaVoucher;
-    saldoVoucher = res.result.saldoVoucher;
-    saldoMain = res.result.saldoMain;
+    setState(() {
+
+      saldoVoucher = res.result.saldoVoucher;
+      saldoMain = res.result.saldoMain;
+    });
+    print("##################### EXPIRED VOUCHER LUHUR $expiredVoucher ###############################");
+
 //    var res =  detailChekoutSuplemenBloc.fetchDetailChekoutSuplemenList();
     if(dropdownValue == 'Saya'){
       setState(() {
@@ -155,12 +160,12 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
   String _placeName = '';
   String alamat = '';
-  String _radioValue2 = 'utama';
+  String _radioValue2 = 'saldo';
   bool cekColor = true;
   void _handleRadioValueChange2(String value) {
     _radioValue2 = value;
     switch (_radioValue2) {
-      case 'utama':
+      case 'saldo':
         print(_radioValue2);
         setState(() {
           cekColor = false;
@@ -178,10 +183,42 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
 
   }
 
+  void _onDropDownItemSelectedJasa(String newValueSelected) async{
+    final val = newValueSelected;
+    setState(() {
+      _currentItemSelectedJasa = val;
+    });
+  }
+  void _onDropDownItemSelectedKurir(String newValueSelected) async{
+    final val = newValueSelected;
+    setState(() {
+      _currentItemSelectedKurir = val;
+    });
+  }
+  void _onDropDownItemSelectedProvinsi(String newValueSelected) async{
+    final val = newValueSelected;
+    setState(() {
+      _currentItemSelectedProvinsi = val;
+    });
+  }
+  void _onDropDownItemSelectedKota(String newValueSelected) async{
+    final val = newValueSelected;
+    setState(() {
+      _currentItemSelectedKota = val;
+    });
+  }
+  void _onDropDownItemSelectedKecamatan(String newValueSelected) async{
+    final val = newValueSelected;
+    setState(() {
+      _currentItemSelectedKecamatan = val;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     pilih();
+    print("############################ EXPIRED VOUCHER = $expiredVoucher ############################");
     print(cekColor);
     _handleRadioValueChange2(_radioValue2);
     provinsiBloc.fetchProvinsiist();
@@ -491,37 +528,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     ):Container();
   }
 
-  void _onDropDownItemSelectedJasa(String newValueSelected) async{
-    final val = newValueSelected;
-    setState(() {
-      _currentItemSelectedJasa = val;
-    });
-  }
-  void _onDropDownItemSelectedKurir(String newValueSelected) async{
-    final val = newValueSelected;
-    setState(() {
-      _currentItemSelectedKurir = val;
-    });
-  }
-  void _onDropDownItemSelectedProvinsi(String newValueSelected) async{
-    final val = newValueSelected;
-    setState(() {
-      _currentItemSelectedProvinsi = val;
-    });
-  }
-  void _onDropDownItemSelectedKota(String newValueSelected) async{
-    final val = newValueSelected;
-    setState(() {
-      _currentItemSelectedKota = val;
-    });
-  }
-  void _onDropDownItemSelectedKecamatan(String newValueSelected) async{
-    final val = newValueSelected;
-    setState(() {
-      _currentItemSelectedKecamatan = val;
-    });
-  }
-
   Widget _bottomNavBarBeli(BuildContext context){
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
@@ -605,6 +611,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   _callBackPin(BuildContext context,bool isTrue) async{
+    print('chekout');
     if(isTrue){
       setState(() {
         showDialog(
@@ -652,14 +659,15 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   FlatButton(
                     child: Text("Lihat Riwayat"),
                     onPressed: (){
-                      setState(() {
-                        Navigator.pop(context);
-                      });
+//                      setState(() {
+//                        Navigator.pop(context);
+//                      });
+                      print(res.result);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailHistorySuplemen(
-                              id: res.result,
+                              id: res.result.toString(),
                               resi: 'kosong',
                               status: 0,
                               param:'checkout'
@@ -877,7 +885,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 ],
               ),
             ):Text(''),
-            expiredVoucher == true ? Container(
+            Container(
               color: Colors.white,
               padding:EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0, right: 10.0),
               child: Row(
@@ -886,7 +894,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   Text('Gunakan Metode Pembayaran Dari ?', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                 ],
               ),
-            ):Container(),
+            ),
             expiredVoucher == true ? Container(
               padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
               child: Column(
@@ -904,7 +912,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                         Row(
                           children: <Widget>[
                             Radio(
-                              value: 'utama',
+                              value: 'saldo',
                               groupValue: _radioValue2,
                               onChanged: _handleRadioValueChange2,
                             ),
@@ -944,7 +952,40 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
 
                 ],
               ),
-            ) : Container(),
+            ) : Container(
+              padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Radio(
+                              value: 'saldo',
+                              groupValue: _radioValue2,
+                              onChanged: _handleRadioValueChange2,
+                            ),
+                            new Text('Saldo Utama',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        Text("$saldoMain",style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+
             Container(
               color: Colors.white,
               padding:EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0, right: 10.0),
@@ -1016,54 +1057,53 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                         child: new Row(
                           children: <Widget>[
                             Container(
-                                margin: const EdgeInsets.only(left:10.0,right:5.0),
-                                width: 70.0,
-                                height: 70.0,
-                                child: Stack(
-                                  children: <Widget>[
-                                    CachedNetworkImage(
-                                      imageUrl: snapshot.data.result.produk[i].picture,
-                                      placeholder: (context, url) => Center(
-                                        child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-                                      ),
-                                      errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                      imageBuilder: (context, imageProvider) => Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: new BorderRadius.circular(10.0),
-                                          color: Colors.transparent,
-                                          image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.fill,
-                                          ),
-                                          boxShadow: [new BoxShadow(color:Colors.transparent,blurRadius: 5.0,offset: new Offset(2.0, 5.0))],
+                              margin: const EdgeInsets.only(left:10.0,right:5.0),
+                              width: 70.0,
+                              height: 70.0,
+                              child: Stack(
+                                children: <Widget>[
+                                  CachedNetworkImage(
+                                    imageUrl: snapshot.data.result.produk[i].picture,
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+                                    ),
+                                    errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: new BorderRadius.circular(10.0),
+                                        color: Colors.transparent,
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.fill,
                                         ),
+                                        boxShadow: [new BoxShadow(color:Colors.transparent,blurRadius: 5.0,offset: new Offset(2.0, 5.0))],
                                       ),
                                     ),
-
-                                  ],
-                                )
+                                  ),
+                                ],
+                              )
                             )
                           ],
-
                         ),
                       ),
                       new Expanded(
-                          child: new Container(
-                            margin: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
-                            child: new Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(0.0),
-                                  child: new Text('${snapshot.data.result.produk[i].title}',style: new TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black),),
-                                ),
-                                SizedBox(height: 5.0),
-                                Text('${snapshot.data.result.produk[i].qty} Barang (${snapshot.data.result.produk[i].weight} Gram) x ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice))}',style: TextStyle(fontSize: 10,fontFamily: 'Rubik',color:Colors.grey,fontWeight: FontWeight.bold),),
-                                SizedBox(height: 5.0),
-                                Text('Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice)*int.parse(snapshot.data.result.produk[i].qty) )}',style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.redAccent,fontWeight: FontWeight.bold),)
-                              ],
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                            ),
-                          )),
+                        child: new Container(
+                          margin: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
+                          child: new Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(0.0),
+                                child: new Text('${snapshot.data.result.produk[i].title}',style: new TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black),),
+                              ),
+                              SizedBox(height: 5.0),
+                              Text('${snapshot.data.result.produk[i].qty} Barang (${snapshot.data.result.produk[i].weight} Gram) x ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice))}',style: TextStyle(fontSize: 10,fontFamily: 'Rubik',color:Colors.grey,fontWeight: FontWeight.bold),),
+                              SizedBox(height: 5.0),
+                              Text('Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice)*int.parse(snapshot.data.result.produk[i].qty) )}',style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.redAccent,fontWeight: FontWeight.bold),)
+                            ],
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                          ),
+                        )
+                      ),
                     ],
                   ),
                   Container(

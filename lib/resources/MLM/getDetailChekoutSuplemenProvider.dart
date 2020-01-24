@@ -10,7 +10,10 @@ class DetailCheckoutSuplemenProvider {
   final userRepository = UserRepository();
   Future<GetDetailChekoutSuplemenModel> fetchDetailCheckoutSuplemen() async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'transaction/checkout/detail',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'transaction/checkout/detail',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print(response.body);
     if (response.statusCode == 200) {
       return compute(getDetailChekoutSuplemenModelFromJson,response.body);

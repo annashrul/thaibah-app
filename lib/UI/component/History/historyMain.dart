@@ -79,7 +79,11 @@ class _HistoryMainState extends State<HistoryMain> {
     setState(() {
       perpage = perpage += 20;
     });
-    historyBloc.fetchHistoryList('mainTrx',1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
+    DateTime today = new DateTime.now();
+    DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
+    historyBloc.fetchHistoryList('mainTrx', 1, perpage, fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}','');
+
+//    historyBloc.fetchHistoryList('mainTrx',1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
     print(perpage);
   }
   Future<void> _refresh() async {
@@ -97,7 +101,9 @@ class _HistoryMainState extends State<HistoryMain> {
   @override
   void initState() {
     super.initState();
-    historyBloc.fetchHistoryList('mainTrx', 1, perpage, '${tahun}-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
+    DateTime today = new DateTime.now();
+    DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
+    historyBloc.fetchHistoryList('mainTrx', 1, perpage, fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}','');
   }
   @override
   void dispose() {
@@ -115,19 +121,26 @@ class _HistoryMainState extends State<HistoryMain> {
                 child: Padding(
                   padding: EdgeInsets.only(left:8.0),
                   child: GestureDetector(
-                    child: TextFormField(
-                      autofocus: false,
-                      style: Theme.of(context).textTheme.body1.copyWith(
-                        fontSize: 12.0,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Periode',
-                      ),
-                      controller: dateController,
-                      onTap: (){
-                        FocusScope.of(context).requestFocus(new FocusNode());
-                        _selectDate(context);
-                      },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                        TextFormField(
+                          autofocus: false,
+                          style: Theme.of(context).textTheme.body1.copyWith(
+                            fontSize: 12.0,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Bulan Ini ...',
+                            hintStyle: TextStyle(color:Colors.grey,fontFamily: 'Rubik')
+                          ),
+                          controller: dateController,
+                          onTap: (){
+                            FocusScope.of(context).requestFocus(new FocusNode());
+                            _selectDate(context);
+                          },
+                        )
+                      ],
                     ),
                   ),
                 ),
@@ -135,19 +148,26 @@ class _HistoryMainState extends State<HistoryMain> {
               new Flexible(
                 child: Padding(
                   padding: EdgeInsets.only(left:8.0),
-                  child: new TextFormField(
-                    autofocus: false,
-                    style: Theme.of(context).textTheme.body1.copyWith(
-                      fontSize: 12.0,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Cari disini ...',
-                    ),
-                    controller: searchController,
-                    focusNode: searchFocus,
-                    onFieldSubmitted: (term){
-                      _search();
-                    }
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text('Cari',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                      TextFormField(
+                          autofocus: false,
+                          style: Theme.of(context).textTheme.body1.copyWith(
+                            fontSize: 12.0,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Tulis Disini ...',
+                              hintStyle: TextStyle(color:Colors.grey,fontFamily: 'Rubik')
+                          ),
+                          controller: searchController,
+                          focusNode: searchFocus,
+                          onFieldSubmitted: (term){
+                            _search();
+                          }
+                      )
+                    ],
                   ),
                 ),
               ),

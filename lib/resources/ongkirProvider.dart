@@ -13,20 +13,24 @@ class OngkirProvider {
   final userRepository = UserRepository();
   Future<ProvinsiModel> fetchProvinsi() async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'ongkir/provinsi',headers: {'Authorization':token});
-     print(response.body);
+    final response = await client.get(
+      ApiService().baseUrl+'ongkir/provinsi',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
+    print(response.body);
     if (response.statusCode == 200) {
-      // If the call to the server was successful, parse the JSON
       return compute(provinsiModelFromJson, response.body);
     } else {
-      // If that call was not successful, throw an error.
       throw Exception('Failed to load product mlm');
     }
   }
   
   Future<KotaModel> fetchKota(var idProv) async {
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'ongkir/kota/'+idProv, headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'ongkir/kota/'+idProv,
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     // print(response.body);
     if (response.statusCode == 200) {
       // If the call to the server was successful, parse the JSON
@@ -39,7 +43,10 @@ class OngkirProvider {
 
   Future<KecamatanModel> fetchKecamatan(var idKota) async {
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'ongkir/kecamatan/'+idKota, headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'ongkir/kecamatan/'+idKota,
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     // print(response.body);
     if (response.statusCode == 200) {
       // If the call to the server was successful, parse the JSON
@@ -53,8 +60,9 @@ class OngkirProvider {
 
   Future<OngkirModel> fetchAllOngkir(var dari,var ke,var berat, var kurir) async {
     final token = await userRepository.getToken();
-    return await client.post(ApiService().baseUrl+"ongkir/cekHarga",
-        headers: {'Authorization': token},
+    return await client.post(
+        ApiService().baseUrl+"ongkir/cekHarga",
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
           'dari':dari,
           'ke':ke,

@@ -67,8 +67,8 @@ class _WrapperLevelState extends State<WrapperLevel> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20.0),
-            bottomRight: Radius.circular(20.0),
+            bottomLeft: Radius.circular(10.0),
+            bottomRight: Radius.circular(10.0),
           ),
           gradient: LinearGradient(
             begin: Alignment.centerLeft,

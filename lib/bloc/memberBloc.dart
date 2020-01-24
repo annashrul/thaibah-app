@@ -38,14 +38,14 @@ class ContactBloc extends BaseBloc{
 class CreateMemberBloc extends BaseBloc {
   Observable get getResult => fetcher.stream;
   Future fetchCreateMember(
-//    var pin,
+    var pin,
     var name,
     var ismobile,
     var no_hp,
     var referral,
 //    var ktp
   ) async =>  await repository.fetchCreateMember(
-//    pin,
+    pin,
     name,
     ismobile,
     no_hp,

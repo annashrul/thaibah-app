@@ -11,7 +11,10 @@ class DownlineProvider {
   Future<DownlineModel> fetchDownline() async{
     final token = await userRepository.getToken();
     final referral = await userRepository.getReff();
-    final response = await client.get(ApiService().baseUrl+'member/jaringan/$referral?ismobile=ya',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'member/jaringan/$referral?ismobile=ya',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("##################################################### INDEX DOWNLINE ###############################################");
     print(response.body);
     if (response.statusCode == 200) {
@@ -23,7 +26,10 @@ class DownlineProvider {
 
   Future<DownlineModel> fetchDetailDownline(var kdReff) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'member/jaringan/$kdReff?ismobile=ya',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'member/jaringan/$kdReff?ismobile=ya',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("##################################################### DETAIL DOWNLINE ###############################################");
     print(response.body);
     if (response.statusCode == 200) {

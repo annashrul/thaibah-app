@@ -28,6 +28,7 @@ class _RegistState extends State<Regist> {
   var emailController     = TextEditingController();
   var passwordController  = TextEditingController();
   var pinController       = TextEditingController();
+  var confirmPinController       = TextEditingController();
   var reffController      = TextEditingController();
   var noHpController      = TextEditingController();
   var addressController   = TextEditingController();
@@ -37,6 +38,7 @@ class _RegistState extends State<Regist> {
   final FocusNode nameFocus = FocusNode();
   final FocusNode nohpFocus = FocusNode();
   final FocusNode pinFocus = FocusNode();
+  final FocusNode confirmPinFocus = FocusNode();
   final FocusNode reffFocus = FocusNode();
   final userRepository = UserRepository();
 
@@ -92,18 +94,18 @@ class _RegistState extends State<Regist> {
       setState(() {_isLoading = false;});
       return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
     }else{
-
       var res = await MemberProvider().resendOtp(no,reffController.text,"register");
       if(res is ResendOtp){
         ResendOtp result = res;
-        print(result.status);
+        print(result.result.otp);
         if(result.status == 'success'){
           setState(() {_isLoading = false;});
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => prefix1.SecondScreen(
-//                pin:pinController.text,
+              builder: (context) =>
+              prefix1.SecondScreen(
+                pin:pinController.text,
                 name:nameController.text,
                 isMobile:"ya",
                 noHp:no,
@@ -301,7 +303,17 @@ class _RegistState extends State<Regist> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan)",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),                        Row(
+                        RichText(
+                          text: TextSpan(
+                            text: 'No WhatsApp ',
+                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
+                            children: <TextSpan>[
+                              TextSpan(text: '( Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+//                        Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan)",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+                        Row(
                           children: <Widget>[
                             Container(
                               child: CountryCodePicker(
@@ -338,38 +350,78 @@ class _RegistState extends State<Regist> {
                       ],
                     ),
                   ),
-//                  Padding(
-//                    padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
-//                    child: Column(
-//                      crossAxisAlignment: CrossAxisAlignment.start,
-//                      children: <Widget>[
-//                        Text("PIN (buat pin sebanyak 6 digit)",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
-//                        TextFormField(
-//                          obscureText: _secureText,
-//                          maxLength: 6,
-//                          maxLengthEnforced: true,
-//                          controller: pinController,
-//                          decoration: InputDecoration(
-//                              suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
-//                              hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
-//                          ),
-//                          keyboardType: TextInputType.number,
-//                          focusNode: pinFocus,
-//                          onFieldSubmitted: (term){
-//                            _fieldFocusChange(context, pinFocus, reffFocus);
-//                          },
-//                          textInputAction: TextInputAction.next,
-//                        ),
-//                      ],
-//                    ),
-//                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        RichText(
+                          text: TextSpan(
+                            text: 'PIN ',
+                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
+                            children: <TextSpan>[
+                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                        TextFormField(
+                          obscureText: _secureText,
+                          maxLength: 6,
+                          maxLengthEnforced: true,
+                          controller: pinController,
+                          decoration: InputDecoration(
+                              suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
+                              hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                          keyboardType: TextInputType.number,
+                          focusNode: pinFocus,
+                          onFieldSubmitted: (term){
+                            _fieldFocusChange(context, pinFocus, confirmPinFocus);
+                          },
+                          textInputAction: TextInputAction.next,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        RichText(
+                          text: TextSpan(
+                            text: 'Konfirmasi PIN ',
+                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
+                            children: <TextSpan>[
+//                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                        TextFormField(
+                          obscureText: _secureText,
+                          maxLength: 6,
+                          maxLengthEnforced: true,
+                          controller: confirmPinController,
+                          decoration: InputDecoration(
+                            suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                          keyboardType: TextInputType.number,
+                          focusNode: confirmPinFocus,
+                          onFieldSubmitted: (term){
+                            _fieldFocusChange(context, pinFocus, reffFocus);
+                          },
+                          textInputAction: TextInputAction.next,
+                        ),
+                      ],
+                    ),
+                  ),
                   Padding(
                     padding: EdgeInsets.only(left:16.0,right:16.0,top:16.0,bottom:0.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text("Kode Referral",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
-
                         TextFormField(
                           maxLength: 15,
                           maxLengthEnforced: true,
@@ -382,7 +434,6 @@ class _RegistState extends State<Regist> {
                               reffController.value = reffController.value.copyWith(text: value.toUpperCase());
                           },
                           controller: reffController,
-
                           keyboardType: TextInputType.number,
                           focusNode: reffFocus,
                           onFieldSubmitted: (term){
@@ -504,8 +555,14 @@ class _RegistState extends State<Regist> {
 //                        setState(() {_isLoading = true;});
 //                        create();
 //                      }
-                      setState(() {_isLoading = true;});
-                      create();
+                      if(pinController.text != confirmPinController.text){
+                        pinController.clear();
+                        confirmPinController.clear();
+                        return showInSnackBar("PIN Yang Anda Masukan Tidak Sesuai");
+                      }else{
+                        setState(() {_isLoading = true;});
+                        create();
+                      }
 
                     }
 

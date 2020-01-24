@@ -17,7 +17,10 @@ class HistoryPembelianProvider {
   final userRepository = UserRepository();
   Future<HistoryPembelianTanahModel> fetchHistoryPembelianTanah(var page, var limit, var from, var to) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'pembelian/tanah?page=$page&limit=$limit&datefrom=$from&dateto=$to',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'pembelian/tanah?page=$page&limit=$limit&datefrom=$from&dateto=$to',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print(response.body);
     if (response.statusCode == 200) {
       return compute(historyPembelianTanahModelFromJson,response.body);
@@ -28,7 +31,10 @@ class HistoryPembelianProvider {
 
   Future<HistoryPembelianSuplemenModel> fetchHistoryPembelianSuplemen(var page,var limit, var from, var to) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'pembelian/suplemen?page=$page&limit=$limit&datefrom=$from&dateto=$to',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'pembelian/suplemen?page=$page&limit=$limit&datefrom=$from&dateto=$to',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("####################################### HISTORY PEMBELIAN SUPLEMEN #######################################");
     print(response.body);
     print('pembelian/suplemen?page=$page&limit=$limit&datefrom=$from&dateto=$to');
@@ -42,7 +48,10 @@ class HistoryPembelianProvider {
 
   Future<HistoryPpobModel> fetchHistoryPPOB(var page, var limit, var from, var to) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'pembelian/ppob?page=$page&limit=$limit&datefrom=$from&dateto=$to',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'pembelian/ppob?page=$page&limit=$limit&datefrom=$from&dateto=$to',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     if (response.statusCode == 200) {
       return compute(historyPpobModelFromJson,response.body);
     } else {
@@ -52,7 +61,10 @@ class HistoryPembelianProvider {
 
   Future<DetailHistoryPpobModel> fetchDetailHistoryPPOB(var kdTrx) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'ppob/cektrx/$kdTrx',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'ppob/cektrx/$kdTrx',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     if (response.statusCode == 200) {
       return compute(detailHistoryPpobModelFromJson,response.body);
     } else {
@@ -63,7 +75,10 @@ class HistoryPembelianProvider {
 
   Future<DetailHistoryPembelianSuplemenModel> fetchdetailHistoryPembelianSuplemen(var id) async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'pembelian/suplemen/get/$id',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'pembelian/suplemen/get/$id',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     print("####################################### DETAIL HISTORY PEMBELIAN SUPLEMEN #######################################");
     print(response.body);
     if (response.statusCode == 200) {
@@ -75,7 +90,9 @@ class HistoryPembelianProvider {
 
   Future fetchResi(var resi, var kurir) async {
     final token = await userRepository.getToken();
-    return await client.post(ApiService().baseUrl+"ongkir/cekResi",headers: {'Authorization':token},
+    return await client.post(
+        ApiService().baseUrl+"ongkir/cekResi",
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "resi":"$resi",
           "kurir":"$kurir",
@@ -93,7 +110,9 @@ class HistoryPembelianProvider {
 
   Future fetchConfirm(var id) async {
     final token = await userRepository.getToken();
-    return await client.post(ApiService().baseUrl+"pembelian/konfirmasi",headers: {'Authorization':token},
+    return await client.post(
+        ApiService().baseUrl+"pembelian/konfirmasi",
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "id":"$id",
         }).then((Response response) {

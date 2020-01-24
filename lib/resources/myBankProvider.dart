@@ -13,7 +13,10 @@ class MyBankProvider {
   final userRepository = UserRepository();
   Future<MyBankModel> fetchMyBank() async{
     final token = await userRepository.getToken();
-    final response = await client.get(ApiService().baseUrl+'member/bank/list',headers: {'Authorization':token});
+    final response = await client.get(
+      ApiService().baseUrl+'member/bank/list',
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    );
     if (response.statusCode == 200) {
       return compute(myBankModelFromJson,response.body);
     } else {
@@ -24,7 +27,9 @@ class MyBankProvider {
 
   Future fetchCreateMyBank(var bankname,var bankcode,var acc_no, var acc_name) async {
     final token = await userRepository.getToken();
-    return await client.post(ApiService().baseUrl+"member/bank/create",headers: {'Authorization':token},
+    return await client.post(
+        ApiService().baseUrl+"member/bank/create",
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "bankname":"$bankname",
           "bankcode":"$bankcode",
@@ -44,7 +49,9 @@ class MyBankProvider {
 
   Future fetchDeleteMyBank(var id) async {
     final token = await userRepository.getToken();
-    return await client.post(ApiService().baseUrl+"member/bank/delete",headers: {'Authorization':token},
+    return await client.post(
+        ApiService().baseUrl+"member/bank/delete",
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "id":"$id",
         }).then((Response response) {

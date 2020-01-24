@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/Homepage/beranda.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
 import 'package:thaibah/UI/component/about.dart';
@@ -17,8 +19,11 @@ import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/configProvider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 
 
@@ -37,6 +42,38 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
   bool showAlignmentCards = false;
   bool isLoading = false;
   bool isLoading2 = false;
+
+  String versionCode = '';
+  Future cekVersion() async {
+    var res = await ConfigProvider().cekVersion();
+    if(res is Info){
+      Info results = res;
+      versionCode = results.result.versionCode;
+    }
+  }
+
+
+//  String versionCode = '';
+//
+//  Future<void> cekVersion() async {
+//    String id = await userRepository.getID();
+//    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
+//    if (jsonString.statusCode == 200) {
+//      final jsonResponse = json.decode(jsonString.body);
+//      Info response = new Info.fromJson(jsonResponse);
+//      print("##################################### INFO ${response.result.versionCode} #################################################");
+//      versionCode = (response.result.versionCode);
+//      if(versionCode == ApiService().versionCode){
+//        setState(() {
+//          isLoading = true;
+//        });
+//      }
+//
+//
+//    } else {
+//      throw Exception('Failed to load info');
+//    }
+//  }
 
   Future<Null> checkLoginStatus() async {
     preferences = await SharedPreferences.getInstance();
@@ -69,6 +106,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
   @override
   void initState(){
+    cekVersion();
     location.onLocationChanged().listen((value) {
       if(mounted){
         setState(() {
@@ -139,7 +177,6 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
     });
 
 
-
   }
 
 
@@ -171,19 +208,15 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
   static const snackBarDuration = Duration(seconds: 3);
 
   final snackBar = SnackBar(
-    content: Text('Press back again to leave'),
+    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
     duration: snackBarDuration,
   );
-
-
 
   DateTime backButtonPressTime;
 
 
   Future<bool> onWillPop() async {
     DateTime currentTime = DateTime.now();
-//    preferences = await SharedPreferences.getInstance();
-//    preferences.setBool('isLogin', true);
     bool backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
         backButtonPressTime == null || currentTime.difference(backButtonPressTime) > snackBarDuration;
     if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
@@ -191,7 +224,10 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
       scaffoldKey.currentState.showSnackBar(snackBar);
       return false;
     }
-
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isPin', true);
+//    var cek = prefs.setBool('isPin', true);
+    print("################################# KALUAR APLIKASI ${prefs.getBool('isPin')} ##############################");
     return true;
   }
 
@@ -202,16 +238,10 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-//    LocationService()
-//    var lat = Provider.of<UserLocation>(context).latitude==null?'':Provider.of<UserLocation>(context).latitude.toString();
-//    var lng = Provider.of<UserLocation>(context).longitude==null?'':Provider.of<UserLocation>(context).longitude.toString();
-//    print("############################## LOCATION ##########################");
-//    print(userLocation.latitude.toString());
-    return latitude == null || longitude == null
-        ? CircularProgressIndicator()
-        :Scaffold(
+    return latitude == null || longitude == null ? CircularProgressIndicator() :Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
+//      body: UpdatePage(),
       body: Container(
         color: const Color(0xffF4F7FA),
         child: WillPopScope(
@@ -256,6 +286,120 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
               },
             );
           }
+      ),
+    );
+  }
+}
+
+
+class UpdatePage extends StatefulWidget {
+  @override
+  _UpdatePageState createState() => _UpdatePageState();
+}
+
+class _UpdatePageState extends State<UpdatePage> {
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  static const snackBarDuration = Duration(seconds: 3);
+
+  final snackBar = SnackBar(
+    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+    duration: snackBarDuration,
+  );
+
+  DateTime backButtonPressTime;
+
+
+  Future<bool> onWillPop() async {
+    DateTime currentTime = DateTime.now();
+    bool backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
+        backButtonPressTime == null || currentTime.difference(backButtonPressTime) > snackBarDuration;
+    if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
+      backButtonPressTime = currentTime;
+      scaffoldKey.currentState.showSnackBar(snackBar);
+      return false;
+    }
+
+    return true;
+  }
+  Future updateApk() async{
+    String url = 'https://play.google.com/store/apps/details?id=com.thaibah';
+    if (await canLaunch(url)) {
+      await launch(url);
+    }else{
+      print(url);
+    }
+  }
+  Future cekStatusLogin()async{
+    final prefs = await SharedPreferences.getInstance();
+    if(prefs.getString('id') == null || prefs.getString('id') == ''){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    cekStatusLogin();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: scaffoldKey,
+      body: WillPopScope(
+        child: Container(
+          padding: EdgeInsets.all(20.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  child: Center(
+                    child: Image.asset("assets/images/warning.png",width: 100.0),
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                Container(
+                  child: Center(
+                    child: Text("Silahkan Perbaharui Aplikasi Anda Ke Versi ${ApiService().versionCode} !!".toUpperCase(), style:TextStyle(color:Colors.red,fontSize:14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                Container(
+                  child: Center(
+                    child: Text("Tekan Tombol Dibawah Ini Untuk Memperbaharui Aplikasi ...".toUpperCase(), style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                Container(
+                  child: Center(
+                    child: FlatButton(
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(18.0),
+                          side: BorderSide(color: Colors.green)
+                      ),
+                      color: Colors.white,
+                      textColor: Colors.green,
+                      padding: EdgeInsets.all(20.0),
+                      onPressed: () {
+                        updateApk();
+                      },
+                      child: Text(
+                        "Perbaharui Aplikasi Sekarang".toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        onWillPop: onWillPop
       ),
     );
   }
