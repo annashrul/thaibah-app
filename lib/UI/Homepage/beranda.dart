@@ -477,9 +477,9 @@ class _BerandaState extends State<Beranda>{
     var initSetttings = new InitializationSettings(android, iOS);
     flutterLocalNotificationsPlugin.initialize(initSetttings, onSelectNotification: onSelectNotification);
     _timeString = "${DateTime.now().hour} : ${DateTime.now().minute} :${DateTime.now().second}";
-//    _timer = new Timer.periodic(Duration(seconds:1), (Timer t) => _getCurrentTime());
+    _timer = new Timer.periodic(Duration(seconds:1), (Timer t) => _getCurrentTime());
     _timeStringClone = "${DateTime.now().hour} : ${DateTime.now().minute} :${DateTime.now().second}";
-//    _timer2 = new Timer.periodic(Duration(seconds:1), (Timer t) => _getCurrentTimeClone());
+    _timer2 = new Timer.periodic(Duration(seconds:1), (Timer t) => _getCurrentTimeClone());
 //    var userLocation = Provider.of<UserLocation>(context);
     loadPrayer();
     print(isActive);
@@ -489,6 +489,14 @@ class _BerandaState extends State<Beranda>{
 
 
 
+
+
+  @override
+  void dispose(){
+    super.dispose();
+    _timer.cancel();
+    _timer2.cancel();
+  }
   Duration parseDuration(String s) {
     int hours = 0;
     int minutes = 0;
@@ -503,14 +511,6 @@ class _BerandaState extends State<Beranda>{
     micros = (double.parse(parts[parts.length - 1]) * 1000000).round();
     print(Duration(hours: hours, minutes: minutes, microseconds: micros));
   }
-
-  @override
-  void dispose(){
-    super.dispose();
-//    _timer.cancel();
-//    _timer2.cancel();
-  }
-
   @override
   Widget build(BuildContext context) {
     return buildContent(context);

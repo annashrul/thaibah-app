@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +75,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
       countCart();
       return showInSnackBar("Produk Berhasil Dimasukan Ke Keranjang");
     }else{
+      Navigator.pop(context);
       return showInSnackBar(res.msg);
     }
   }
@@ -139,6 +141,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     print(perpage);
     return true;
   }
+
+
 
 
 
@@ -479,8 +483,4 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
       );
     }
   }
-
-
-//  bool get wantKeepAlive => true; // ** and here
-
 }
