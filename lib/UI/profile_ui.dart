@@ -170,7 +170,7 @@ class _ProfileUIState extends State<ProfileUI> {
 
           },
           child: Container(
-            height: 300,
+            height: 200,
             decoration: new BoxDecoration(
               color: Colors.black.withOpacity(0.5),
               image: new DecorationImage(
@@ -826,70 +826,6 @@ class _ProfileUIState extends State<ProfileUI> {
                   ],
                 )
             ),
-
-            Positioned(
-                bottom: 0.0,
-                child: Container(
-                    padding: EdgeInsets.all(15),
-                    width: _width,
-                    margin: EdgeInsets.only(top:5),
-                    // color: Colors.white,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        color: Colors.white
-                    ),
-                    child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              FlatButton(
-
-                                child: Row(children: <Widget>[
-                                  Container(
-                                    width: 40.0,
-                                    height: 50.0,
-                                    // color: Colors.white,
-                                    padding: EdgeInsets.fromLTRB(0,10,10,10),
-                                    child: Image.asset('assets/images/ic_money_bag_100.png'),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      SkeletonFrame(width: 80.0, height: 16.0),
-                                      SkeletonFrame(width: 80.0, height: 16.0),
-                                    ],
-                                  ),
-                                ]
-                                ),
-                              ),
-                              FlatButton(
-
-                                child: Row(children: <Widget>[
-                                  Container(
-                                    width: 50.0,
-                                    height: 50.0,
-                                    // color: Colors.white,
-                                    padding: EdgeInsets.all(10),
-                                    child: Image.asset('assets/images/icons8-tree-structure-100.png'),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      SkeletonFrame(width: 80.0, height: 16.0),
-                                      SkeletonFrame(width: 80.0, height: 16.0),
-                                    ],
-                                  ),
-                                ]
-                                ),
-                              )
-                            ],
-                          ),
-                        ]
-                    )
-                )
-            )
           ],
         ),
         Container(
@@ -906,7 +842,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         children: <Widget>[
                           SkeletonFrame(width: 80.0, height: 16.0),
                           SizedBox(height:5.0),
-                          SkeletonFrame(width: 300.0, height: 16.0),
+                          SkeletonFrame(width: 250.0, height: 16.0),
                         ],
                       ),
                       Icon(Icons.arrow_right)
@@ -923,7 +859,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         children: <Widget>[
                           SkeletonFrame(width: 80.0, height: 16.0),
                           SizedBox(height:5.0),
-                          SkeletonFrame(width: 300.0, height: 16.0),
+                          SkeletonFrame(width: 250.0, height: 16.0),
                         ],
                       ),
                       Icon(Icons.arrow_right)
@@ -940,7 +876,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         children: <Widget>[
                           SkeletonFrame(width: 80.0, height: 16.0),
                           SizedBox(height:5.0),
-                          SkeletonFrame(width: 300.0, height: 16.0),
+                          SkeletonFrame(width: 250.0, height: 16.0),
                         ],
                       ),
                       Icon(Icons.arrow_right)
@@ -957,7 +893,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         children: <Widget>[
                           SkeletonFrame(width: 80.0, height: 16.0),
                           SizedBox(height:5.0),
-                          SkeletonFrame(width: 300.0, height: 16.0),
+                          SkeletonFrame(width: 250.0, height: 16.0),
                         ],
                       ),
                       Icon(Icons.arrow_right)
@@ -974,7 +910,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         children: <Widget>[
                           SkeletonFrame(width: 80.0, height: 16.0),
                           SizedBox(height:5.0),
-                          SkeletonFrame(width: 300.0, height: 16.0),
+                          SkeletonFrame(width: 250.0, height: 16.0),
                         ],
                       ),
                       Icon(Icons.arrow_right)
@@ -991,7 +927,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         children: <Widget>[
                           SkeletonFrame(width: 80.0, height: 16.0),
                           SizedBox(height:5.0),
-                          SkeletonFrame(width: 300.0, height: 16.0),
+                          SkeletonFrame(width: 250.0, height: 16.0),
                         ],
                       ),
                       Icon(Icons.arrow_right)
@@ -1008,7 +944,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         children: <Widget>[
                           SkeletonFrame(width: 80.0, height: 16.0),
                           SizedBox(height:5.0),
-                          SkeletonFrame(width: 300.0, height: 16.0),
+                          SkeletonFrame(width: 250.0, height: 16.0),
                         ],
                       ),
                       Icon(Icons.arrow_right)

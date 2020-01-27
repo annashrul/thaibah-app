@@ -23,54 +23,75 @@ class PinScreenState extends State<PinScreen> {
   var pinQ;var pin;var cek;
   bool isLoading = false;
   Future cekPin() async{
+    setState(() {
+      isLoading = false;
+    });
     pinQ = await userRepository.getPin();
     setState(() {
       pin = pinQ.toString();
       cek = pin.split('');
     });
     print("############## PIN ABI = $pinQ $cek #######################");
+    print("############## LOADING = $isLoading #######################");
   }
 
-  Future<Null> biometrics() async {
-    var res=await MemberProvider().forgotPin();
-    setState(() {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: LinearProgressIndicator(),
-          );
-        },
-      );
-    });
+  Future biometrics() async {
 
+//    if(res)
+//    setState(() {
+//      showDialog(
+//        barrierDismissible: false,
+//        context: context,
+//        builder: (BuildContext context) {
+//          return AlertDialog(
+//            content: LinearProgressIndicator(),
+//          );
+//        },
+//      );
+//    });
+
+    setState(() {
+      isLoading = true;
+    });
+    print("################## STATUS LOADING $isLoading ###########################");
+    var res= await MemberProvider().forgotPin();
     if(res is ResendOtp){
       setState(() {
-        Navigator.of(context).pop();
+        isLoading = true;
       });
       ResendOtp results = res;
       print(results.result);
       if(results.status == 'success'){
+        setState(() {
+          isLoading = true;
+        });
         print(results.result.otp);
         Timer(Duration(seconds: 4), () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ResendAuth(otp:results.result.otp),
-            ),
-          );
+          Navigator.of(context).push(new MaterialPageRoute(builder: (context) => ResendAuth(otp:results.result.otp))).whenComplete(cekPin);
+
+//          Navigator.push(
+//            context,
+//            MaterialPageRoute(
+//              builder: (context) => ResendAuth(otp:results.result.otp),
+//            ),
+//          );
 //          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
         });
         return showInSnackBar("Cek OTP Yang Kami Kirim Ke No WhatsApp Anda",Colors.green);
+      }else{
+        setState(() {
+          isLoading = true;
+        });
+        return showInSnackBar(results.msg,Colors.green);
       }
     }else{
       setState(() {
-        Navigator.of(context).pop();
+        isLoading = true;
       });
       General results = res;
       return showInSnackBar(results.msg,Colors.red);
     }
+
   }
 
   void showInSnackBar(String value,background){
@@ -94,8 +115,12 @@ class PinScreenState extends State<PinScreen> {
   @override
   void initState() {
 //    print
+    print('abus halaman');
     cekPin();
-
+    setState(() {
+      isLoading=false;
+    });
+    isLoading=false;
     super.initState();
   }
   final userRepository = UserRepository();
@@ -106,7 +131,7 @@ class PinScreenState extends State<PinScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: LockScreen(
+      body: isLoading? Container(child: Center(child: CircularProgressIndicator()),):LockScreen(
         showFingerPass: true,
         forgotPin: 'Lupa Pin ? Klik Disini',
         fingerFunction: biometrics,

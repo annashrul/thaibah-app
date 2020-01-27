@@ -217,7 +217,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text("Masuk",style: TextStyle(fontSize: ScreenUtil.getInstance().setSp(45),fontFamily: "Rubik",letterSpacing: .6,fontWeight: FontWeight.bold)),
-                          SizedBox(height: ScreenUtil.getInstance().setHeight(30)),
+                          SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
                           Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Telah Anda Daftarkan)",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
                           Row(
                             children: <Widget>[

@@ -464,10 +464,10 @@ class _FancyBottomNavigationState extends State<FancyBottomNavigation> {
 
   Widget _buildItem(FancyBottomNavigationItem item, bool isSelected) {
     return AnimatedContainer(
-      width: isSelected ? 124 : 50,
+      width: isSelected ? 100 : 50,
       height: double.maxFinite,
       duration: Duration(milliseconds: 250),
-      padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+      padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
@@ -511,9 +511,9 @@ class _FancyBottomNavigationState extends State<FancyBottomNavigation> {
     activeColor = (activeColor == null) ? Theme.of(context).accentColor : activeColor;
     backgroundColor = (backgroundColor == null) ? Theme.of(context).bottomAppBarColor : backgroundColor;
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.of(context).size.width/2,
       height: 56,
-      padding: EdgeInsets.only(left: 8, right: 8, top: 6, bottom: 6),
+      padding: EdgeInsets.only(left: 6, right: 6, top: 6, bottom: 6),
       decoration: BoxDecoration(
           color: backgroundColor,
           boxShadow: [BoxShadow(color: Colors.green, blurRadius: 2)]),

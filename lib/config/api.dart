@@ -1,5 +1,5 @@
 class ApiService {
- final String baseUrl   = "http://thaibah.com:3000/api/v1/";
+ final String baseUrl     = "http://thaibah.com:3000/api/v1/";
 // final String baseUrl     = "http://thaibah.com:3010/api/v1/";
 // final String baseUrl   = "http://192.168.1.9:3010/api/v1/";
  final String baseAssets  = "http://thaibah.com:3000/assets/";
