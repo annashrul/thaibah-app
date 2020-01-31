@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pinput/pin_put/pin_put.dart';
@@ -358,6 +359,9 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                         Container(
                           width: MediaQuery.of(context).size.width/1.5-18.0,
                           child: TextFormField(
+                            inputFormatters: <TextInputFormatter>[
+                              WhitelistingTextInputFormatter.digitsOnly
+                            ],
                             maxLength: 15,
                             controller: nohpController,
                             keyboardType: TextInputType.number,

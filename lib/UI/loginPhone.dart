@@ -248,6 +248,9 @@ class _LoginPhoneState extends State<LoginPhone> {
                                   controller: _noHpController,
                                   keyboardType: TextInputType.number,
                                   textInputAction: TextInputAction.done,
+                                  inputFormatters: <TextInputFormatter>[
+                                    WhitelistingTextInputFormatter.digitsOnly
+                                  ],
                                   focusNode: _noHpFocus,
                                   onFieldSubmitted: (value){
                                     _noHpFocus.unfocus();
@@ -264,7 +267,6 @@ class _LoginPhoneState extends State<LoginPhone> {
                                   decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
                                 ),
                               ),
-
                             ],
                           ),
                           SizedBox(height:10.0),

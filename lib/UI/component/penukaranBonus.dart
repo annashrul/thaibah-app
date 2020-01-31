@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
@@ -239,6 +240,10 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                           hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
                           prefixText: 'Rp.',
                         ),
+                        inputFormatters: <TextInputFormatter>[
+                          WhitelistingTextInputFormatter.digitsOnly
+                        ],
+
                         textInputAction: TextInputAction.done,
                         focusNode: saldoFocus,
                         onFieldSubmitted: (value){

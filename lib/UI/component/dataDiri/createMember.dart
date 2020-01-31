@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_lock_screen/flutter_lock_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -438,6 +439,9 @@ class _CreateMemberState extends State<CreateMember> {
                             onFieldSubmitted: (term){
                               _fieldFocusChange(context, nohpFocus, pinFocus);
                             },
+                            inputFormatters: <TextInputFormatter>[
+                              WhitelistingTextInputFormatter.digitsOnly
+                            ],
                             textInputAction: TextInputAction.next,
                             decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
                           ),

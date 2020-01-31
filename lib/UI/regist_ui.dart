@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -258,7 +259,6 @@ class _RegistState extends State<Regist> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-
                   Padding(
                     padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 0),
                     child: Column(
@@ -340,6 +340,9 @@ class _RegistState extends State<Regist> {
                                 onFieldSubmitted: (term){
                                   _fieldFocusChange(context, nohpFocus, pinFocus);
                                 },
+                                inputFormatters: <TextInputFormatter>[
+                                  WhitelistingTextInputFormatter.digitsOnly
+                                ],
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
                               ),

@@ -82,14 +82,11 @@ class _HistoryMainState extends State<HistoryMain> {
     DateTime today = new DateTime.now();
     DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
     historyBloc.fetchHistoryList('mainTrx', 1, perpage, fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}','');
-
-//    historyBloc.fetchHistoryList('mainTrx',1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
     print(perpage);
   }
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     load();
-//    historyBloc.fetchHistoryList('bonus',1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
   }
   Future<bool> _loadMore() async {
     print("onLoadMore");

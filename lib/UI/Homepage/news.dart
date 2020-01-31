@@ -99,78 +99,74 @@ class _NewsHomePageState extends State<NewsHomePage> {
   }
 
   Widget buildContent(AsyncSnapshot<NewsModel> snapshot, BuildContext context){
-    return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height/2.6,
-            color: Colors.transparent,
-            padding: EdgeInsets.all(16.0),
-            child: Swiper(
-              autoplay: true,
-              fade: 0.0,
-              itemBuilder: (BuildContext context, int index) {
-                var cap = ""; var tit = "";
-                if(snapshot.data.result.data[index].title.length > 40){
-                  tit = snapshot.data.result.data[index].title.substring(0,40)+" ...";
-                }else{
-                  tit = snapshot.data.result.data[index].title;
-                }
-                if(snapshot.data.result.data[index].caption.length > 40){
-                  cap = snapshot.data.result.data[index].caption.substring(0,40)+" ...";
-                }else{
-                  cap = snapshot.data.result.data[index].caption;
-                }
+    return Container(
+      height: MediaQuery.of(context).size.height/2.6,
+      color: Colors.transparent,
+      padding: EdgeInsets.all(16.0),
+      child: Swiper(
+        autoplay: true,
+        fade: 0.0,
+        itemBuilder: (BuildContext context, int index) {
+          var cap = ""; var tit = "";
+          if(snapshot.data.result.data[index].title.length > 40){
+            tit = snapshot.data.result.data[index].title.substring(0,40)+" ...";
+          }else{
+            tit = snapshot.data.result.data[index].title;
+          }
+          if(snapshot.data.result.data[index].caption.length > 40){
+            cap = snapshot.data.result.data[index].caption.substring(0,40)+" ...";
+          }else{
+            cap = snapshot.data.result.data[index].caption;
+          }
 
-                return GestureDetector(
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DetailBeritaUI(id: snapshot.data.result.data[index].id, category: snapshot.data.result.data[index].category)
-                      ),
-                    );
-                  },
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        height:  MediaQuery.of(context).size.height/4.0,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-                            image: DecorationImage(
-                                image: CachedNetworkImageProvider(snapshot.data.result.data[index].picture==''||snapshot.data.result.data[index].picture==null?IconImgs.noImage:snapshot.data.result.data[index].picture),
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DetailBeritaUI(id: snapshot.data.result.data[index].id, category: snapshot.data.result.data[index].category)
+                ),
+              );
+            },
+            child: Column(
+              children: <Widget>[
+                Container(
+                  height:  MediaQuery.of(context).size.height/4.0,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+                      image: DecorationImage(
+                          image: CachedNetworkImageProvider(snapshot.data.result.data[index].picture==''||snapshot.data.result.data[index].picture==null?IconImgs.noImage:snapshot.data.result.data[index].picture),
 //                                image: CachedNetworkImageProvider(IconImgs.noImage),
-                                fit: BoxFit.fill
-                            )
-                        ),
-                      ),
-                      Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
-                            border: Border.all(
-                              color:  Colors.black.withOpacity(.10),
-                              width: 0.0,
-                            ),
-
-                          ),
-                          child: ListTile(
-                              subtitle: Html(data: cap,defaultTextStyle: TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontStyle: FontStyle.normal),),
-                              title: Text(tit,style: new TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black))
-                          )
+                          fit: BoxFit.fill
                       )
-                    ],
                   ),
-                );
-              },
-              itemCount: snapshot.data.result.data.length,
-              viewportFraction: 0.8,
-              scale: 0.9,
-//              pagination: SwiperPagination(),
-            ),
-          ),
+                ),
+                Flexible(
+                  child: Container(
+                      height:  MediaQuery.of(context).size.height/4.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
+                        border: Border.all(
+                          color:  Colors.black.withOpacity(.10),
+                          width: 0.0,
+                        ),
 
-        ],
+                      ),
+                      child: ListTile(
+                          subtitle: Html(data: cap,defaultTextStyle: TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontStyle: FontStyle.normal),),
+                          title: Text(tit,style: new TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black))
+                      )
+                  )
+                )
+              ],
+            ),
+          );
+        },
+        itemCount: snapshot.data.result.data.length,
+        viewportFraction: 0.8,
+        scale: 0.9,
+//              pagination: SwiperPagination(),
       ),
     );
   }

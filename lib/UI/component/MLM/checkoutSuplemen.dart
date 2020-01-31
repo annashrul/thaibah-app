@@ -606,7 +606,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>PinScreen(callback: _callBackPin),
+        builder: (context) => PinScreen(callback: _callBackPin),
       ),
     );
   }

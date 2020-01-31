@@ -173,6 +173,9 @@ class _SaldoUIState extends State<SaldoUI> {
                             hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
                             prefixText: 'Rp.',
                           ),
+                          inputFormatters: <TextInputFormatter>[
+                            WhitelistingTextInputFormatter.digitsOnly
+                          ],
                           textInputAction: TextInputAction.done,
                           focusNode: saldoFocus,
                           onFieldSubmitted: (value){

@@ -246,6 +246,9 @@ class _TransferUIState extends State<TransferUI> {
                           ),
                           keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.next,
+                          inputFormatters: <TextInputFormatter>[
+                            WhitelistingTextInputFormatter.digitsOnly
+                          ],
                           focusNode: tfFocus,
                           onFieldSubmitted: (term){
                             tfFocus.unfocus();

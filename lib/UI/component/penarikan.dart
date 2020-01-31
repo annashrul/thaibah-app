@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -135,6 +136,9 @@ class _PenarikanState extends State<Penarikan> {
                             hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
                             prefixText: 'Rp.',
                           ),
+                          inputFormatters: <TextInputFormatter>[
+                            WhitelistingTextInputFormatter.digitsOnly
+                          ],
                           textInputAction: TextInputAction.done,
                           focusNode: saldoFocus,
                           onFieldSubmitted: (value){
