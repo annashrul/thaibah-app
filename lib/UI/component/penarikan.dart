@@ -413,7 +413,7 @@ class _PenarikanState extends State<Penarikan> {
             title: new Text("Pin Salah!"),
             content: new Text("Masukan pin yang sesuai."),
             actions: <Widget>[
-              new FlatButton(
+              FlatButton(
                 child: new Text("Close"),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -425,5 +425,4 @@ class _PenarikanState extends State<Penarikan> {
       );
     }
   }
-
 }
