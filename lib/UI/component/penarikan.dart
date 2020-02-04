@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -13,6 +14,8 @@ import 'package:thaibah/bloc/bankBloc.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
 import 'package:thaibah/bloc/withdrawBloc.dart';
 
+import '../saldo_ui.dart';
+
 class Penarikan extends StatefulWidget {
   final String saldoMain;
   Penarikan({this.saldoMain});
@@ -21,6 +24,11 @@ class Penarikan extends StatefulWidget {
 }
 
 class _PenarikanState extends State<Penarikan> {
+  List<RadioModel> sampleData = new List<RadioModel>();
+  double _crossAxisSpacing = 8, _mainAxisSpacing = 12, _aspectRatio = 2;
+  int _crossAxisCount = 3;
+  var moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
+
   var scaffoldKey = GlobalKey<ScaffoldState>();
   double _height;
   double _width;
@@ -31,9 +39,33 @@ class _PenarikanState extends State<Penarikan> {
   TextEditingController accNumberController = TextEditingController();
   final FocusNode saldoFocus = FocusNode();
 
+  int selectedRadioTile;
+  int selectedRadio;
+  setSelectedRadioTile(int val) {
+    setState(() {
+      selectedRadioTile = val;
+    });
+  }
+  var amount;
+  Future allReplace(String saldo) async {
+    print(saldo);
+    var rplcComa = saldo.replaceAll(",", "");
+    var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
+    moneyController.updateValue(double.parse(sbtrLast3));
+    amount = sbtrLast3;
+    print(amount);
+  }
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
+    sampleData.add(new RadioModel(false, '100,000.00', 'Rp 100,000.00'));
+    sampleData.add(new RadioModel(false, '200,000.00', 'Rp 200,000.00'));
+    sampleData.add(new RadioModel(false, '300,000.00', 'Rp 300,000.00'));
+    sampleData.add(new RadioModel(false, '400,000.00', 'Rp 400,000.00'));
+    sampleData.add(new RadioModel(false, '500,000.00', 'Rp 500,000.00'));
+    sampleData.add(new RadioModel(false, '1,000,000.00', 'Rp 1,000,000.00'));
+
 
   }
   Future<void> _getRefresh() async{
@@ -128,7 +160,7 @@ class _PenarikanState extends State<Penarikan> {
                       children: <Widget>[
                         Text("Nominal",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                         TextFormField(
-                          controller: saldoController,
+                          controller: moneyController,
                           keyboardType: TextInputType.number,
                           maxLines: 1,
                           autofocus: false,
@@ -143,7 +175,7 @@ class _PenarikanState extends State<Penarikan> {
                           focusNode: saldoFocus,
                           onFieldSubmitted: (value){
                             saldoFocus.unfocus();
-                            if(saldoController.text == '' || bankCodeController == '' || bankCodeController == null){
+                            if(moneyController.text == '0.00' || moneyController.text == null || bankCodeController == '' || bankCodeController == null){
                               return showInSnackBar("Lengkapi Form Yang Tersedia");
                             }
                             else{
@@ -159,7 +191,40 @@ class _PenarikanState extends State<Penarikan> {
                     ),
                   ),
 
-
+                  Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                        GridView.builder(
+                          padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: _crossAxisCount,
+                            crossAxisSpacing: _crossAxisSpacing,
+                            mainAxisSpacing: _mainAxisSpacing,
+                            childAspectRatio: _aspectRatio,
+                          ),
+                          itemCount: sampleData.length,
+                          itemBuilder: (BuildContext context, int index){
+                            return new InkWell(
+                              onTap: () {
+                                setState(() {
+                                  sampleData.forEach((element) => element.isSelected = false);
+                                  sampleData[index].isSelected = true;
+                                  FocusScope.of(context).requestFocus(FocusNode());
+                                });
+                                allReplace(sampleData[index].buttonText);
+                              },
+                              child: RadioItem(sampleData[index]),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                   Align(
                       alignment: Alignment.centerRight,
                       child: Container(
@@ -169,7 +234,7 @@ class _PenarikanState extends State<Penarikan> {
                         child: IconButton(
                           color: Colors.white,
                           onPressed: () {
-                            if(saldoController.text == '' || bankCodeController == '' || bankCodeController == null){
+                            if(moneyController.text == '0.00' || moneyController.text == null ||  bankCodeController == '' || bankCodeController == null){
                               return showInSnackBar("Lengkapi Form Yang Tersedia");
                             }
                             else{
@@ -304,37 +369,37 @@ class _PenarikanState extends State<Penarikan> {
         );
       });
       print(saldoController.text);
-      var res = await withdrawBloc.fetchWithdraw(saldoController.text, bankCodeController);
+      var rplcComa = moneyController.text.replaceAll(",", "");
+      var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
+      var res = await withdrawBloc.fetchWithdraw(sbtrLast3, bankCodeController);
       Navigator.of(context).pop();
       if(res is GeneralInsertId){
         GeneralInsertId results = res;
         if(results.status=="success"){
           showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return RichAlertDialog(
-                  alertTitle: richTitle("Transaksi Berhasil"),
-                  alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
-                  alertType: RichAlertType.SUCCESS,
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text("Kembali"),
-                      onPressed: (){
-                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-                      },
-                    ),
-                  ],
-                );
-              }
+            context: context,
+            builder: (BuildContext context) {
+              return RichAlertDialog(
+                alertTitle: richTitle("Transaksi Berhasil"),
+                alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
+                alertType: RichAlertType.SUCCESS,
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text("Kembali"),
+                    onPressed: (){
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                    },
+                  ),
+                ],
+              );
+            }
           );
         }
         else{
-          saldoController.text = '';
           Navigator.of(context).pop();
           scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));
         }
       }else{
-        saldoController.text = '';
         General results = res;
         Navigator.of(context).pop();
         scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));

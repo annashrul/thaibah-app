@@ -142,11 +142,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     return true;
   }
 
-
-
-
-
-
   @override
   void initState() {
     super.initState();
@@ -332,22 +327,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                   physics: ScrollPhysics(),
                   itemCount: snapshot.data.result.data.length,
                   itemBuilder: (context, index) {
-//                    print(snapshot.data.result.data[index].satuanBarang);
-//                    print(snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 3));
-//                    String satuanBrg = '';
-//                    if(snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 3) == 'btl'){
-//                      print("substring");
-//                      satuanBrg = snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 3);
-////                      print(snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 3));
-//                    }else{
-//                      print("glebegan");
-//                      satuanBrg = snapshot.data.result.data[index].satuanBarang.substring(snapshot.data.result.data[index].satuanBarang.length - 2);
-////                      print(snapshot.data.result.data[index].satuanBarang);
-//                      print(snapshot.data.result.data[index].satuanBarang);
-//                    }
-//                    if()
-//                    print("pure = "+ snapshot.data.result.data[index].satuanBarang);
-//                    print("teu pure = "+ snapshot.data.result.data[index].satuanBarang.split(" ").elementAt(1));
                     return  GestureDetector(
                         onTap: (){
                           if(snapshot.data.result.data[index].qty != 0){
@@ -388,8 +367,25 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                               flex: 7,
                                               child: Container(
                                                 padding: EdgeInsets.all(5),
-                                                // decoration: BoxDecoration(color: Styles.primaryColor),
-                                                child: Text(snapshot.data.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily: 'Rubik',fontSize: 20.0,fontWeight: FontWeight.bold),),
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Text(snapshot.data.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily: 'Rubik',fontSize: 20.0,fontWeight: FontWeight.bold),),
+                                                    SizedBox(width: 5.0),
+                                                    snapshot.data.result.data[index].isplatinum == 1 ?
+                                                    Container(
+                                                      padding: EdgeInsets.all(2),
+                                                      decoration: new BoxDecoration(
+                                                        color: Colors.red,
+                                                        borderRadius: BorderRadius.circular(6),
+                                                      ),
+                                                      constraints: BoxConstraints(
+                                                        minWidth: 14,
+                                                        minHeight: 14,
+                                                      ),
+                                                      child: Text("PRODUK PLATINUM",style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontSize: 12.0,fontWeight: FontWeight.bold),),
+                                                    ) : Container()
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                             Expanded(
@@ -409,7 +405,24 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                           padding: EdgeInsets.all(5),
                                           child: Text("Harga : "+ snapshot.data.result.data[index].satuan+"/${snapshot.data.result.data[index].satuanBarang}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
                                         ),
-
+                                        snapshot.data.result.data[index].isplatinum == 1 ?
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Container(
+                                              padding: EdgeInsets.all(5),
+                                              child: Text("Detail Produk Platinum", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
+                                            ),
+                                            Container(
+                                              padding: EdgeInsets.all(5),
+                                              child: Html(
+                                                data: "- "+snapshot.data.result.data[index].detail,
+                                                defaultTextStyle: TextStyle(fontFamily: 'Rubik'),
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                         : Container(),
                                         Container(
                                           padding: EdgeInsets.all(5),
                                           child: Html(

@@ -27,7 +27,7 @@ class TransferProvider {
     });
   }
 
-  Future<TransferDetailModel> transferDetail(var nominal,var referral_penerima,var pesan) async {
+  Future transferDetail(var nominal,var referral_penerima,var pesan) async {
     final token = await userRepository.getToken();
     return await client.post(ApiService().baseUrl+"transaction/transfer/detail",
       headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
@@ -36,8 +36,14 @@ class TransferProvider {
         "referral_penerima":"$referral_penerima",
         "pesan":"$pesan",
       }).then((Response response) {
+        var result;
+        if(response.statusCode == 200){
+          result = TransferDetailModel.fromJson(jsonDecode(response.body));
+        }else if(response.statusCode == 400){
+          result =  General.fromJson(json.decode(response.body));
+        }
       // print(response.statusCode);
-      var result =  TransferDetailModel.fromJson(jsonDecode(response.body));
+//      var result =  TransferDetailModel.fromJson(jsonDecode(response.body));
       return result;
     });
   }

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Model/depositManual/listAvailableBank.dart';
+import 'package:thaibah/UI/component/History/detailDeposit.dart';
 import 'package:thaibah/UI/component/detail/detailTopUp.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/resources/virtualAccount/virtualAccountProvider.dart';
@@ -17,6 +20,7 @@ class GetAvailableBank extends StatefulWidget {
 }
 
 class _GetAvailableBankState extends State<GetAvailableBank> {
+  var scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _isLoading = false;
 
@@ -28,19 +32,47 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
     var res = await detailDepositBloc.fetchDetailDeposit(id_bank, widget.amount);
     if(res.status == 'success'){
       setState(() {_isLoading = false;});
-      Navigator.of(context, rootNavigator: true).push(
-        new CupertinoPageRoute(builder: (context) => DetailTopUp(
-            amount: res.result.amount,
-            raw_amount: res.result.rawAmount,
-            unique: res.result.unique,
-            bank_name: res.result.bankName,
-            atas_nama: res.result.atasNama,
-            no_rekening: res.result.noRekening,
-            picture:picture,
-            id_deposit:res.result.idDeposit,
-            bank_code : bank_code
-        )),
-      );
+      if(res.result.status == 1){
+        Timer(Duration(seconds: 5), () {
+          Navigator.of(context, rootNavigator: true).push(
+            new CupertinoPageRoute(builder: (context) => DetailDeposit(
+              amount: res.result.amount,
+              bank_name: res.result.bankName,
+              atas_nama: res.result.atasNama,
+              no_rekening: res.result.noRekening,
+              id_deposit: res.result.idDeposit,
+              picture: res.result.picture,
+              status: res.result.status,
+              created_at: DateFormat.yMMMd().add_jm().format(res.result.createdAt.toLocal()),
+              bukti: res.result.bukti,
+              saldo: widget.saldo,
+            )),
+          );
+        });
+        scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+              content: Text('anda telah melakukan deposit, silahkan cancel untuk membuat deposit baru. Anda akan dialihkan ke halaman detail deposit',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+            )
+        );
+
+      }else{
+        Navigator.of(context, rootNavigator: true).push(
+          new CupertinoPageRoute(builder: (context) => DetailTopUp(
+              amount: res.result.amount,
+              raw_amount: res.result.rawAmount,
+              unique: res.result.unique,
+              bank_name: res.result.bankName,
+              atas_nama: res.result.atasNama,
+              no_rekening: res.result.noRekening,
+              picture:picture,
+              id_deposit:res.result.idDeposit,
+              bank_code : bank_code
+          )),
+        );
+      }
+
     }
   }
   Future cek() async{
@@ -60,6 +92,7 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
 //    availableBankBloc.fetchAvailableBank();
     listAvailableBankBloc.fetchListAvailableBank();
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: BoxDecoration(

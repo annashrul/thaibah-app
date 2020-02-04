@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +17,7 @@ import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/dataDiri/updateKtp.dart';
+import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 
@@ -33,17 +35,19 @@ class PenukaranBonus extends StatefulWidget {
 }
 
 class _PenukaranBonusState extends State<PenukaranBonus> {
-
+  List<RadioModel> sampleData = new List<RadioModel>();
   final userRepository = UserRepository();
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
+  var moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
 
   double _height;
   TextEditingController saldoController = TextEditingController();
   TextEditingController pinController = TextEditingController();
   final FocusNode saldoFocus = FocusNode();
   double _width;
-
+  double _crossAxisSpacing = 8, _mainAxisSpacing = 12, _aspectRatio = 2;
+  int _crossAxisCount = 3;
   bool _isLoading = false;
 
 
@@ -64,7 +68,66 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
       duration: Duration(seconds: 3),
     ));
   }
+  int selectedRadioTile;
+  int selectedRadio;
+  setSelectedRadioTile(int val) {
+    setState(() {
+      selectedRadioTile = val;
+    });
+  }
+  var amount;
+  Future allReplace(String saldo) async {
+    print(saldo);
+    var rplcComa = saldo.replaceAll(",", "");
+    var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
+    moneyController.updateValue(double.parse(sbtrLast3));
+    amount = sbtrLast3;
+    print(amount);
+  }
 
+  Future save() async{
+    if(moneyController.text == null || moneyController.text == '0.00'){
+      print('cek');
+      return showInSnackBar("Nominal Harus Diisi","gagal");
+    }else{
+      final ktp = await userRepository.getKtp();
+      print(ktp);
+      if(ktp == '-'){
+        scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+              content: Text('Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+              action: SnackBarAction(
+                textColor: Colors.green,
+                label: 'Upload KTP',
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    new CupertinoPageRoute(builder: (context) => UpdateKtp(saldo: widget.saldo,saldoBonus: widget.saldoBonus)),
+                  );
+                },
+              ),
+            )
+        );
+      }else{
+        _pinBottomSheet(context);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sampleData.add(new RadioModel(false, '100,000.00', 'Rp 100,000.00'));
+    sampleData.add(new RadioModel(false, '200,000.00', 'Rp 200,000.00'));
+    sampleData.add(new RadioModel(false, '300,000.00', 'Rp 300,000.00'));
+    sampleData.add(new RadioModel(false, '400,000.00', 'Rp 400,000.00'));
+    sampleData.add(new RadioModel(false, '500,000.00', 'Rp 500,000.00'));
+    sampleData.add(new RadioModel(false, '1,000,000.00', 'Rp 1,000,000.00'));
+
+
+  }
 
   Widget _saldoCepat(){
     return Container(
@@ -147,6 +210,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
         children: <Widget>[
           Container(
             padding:EdgeInsets.all(10.0),
+
             decoration: BoxDecoration(
                 boxShadow: [
                   new BoxShadow(
@@ -168,71 +232,71 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(0),
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
                   child:Container(
-                    color: Color.fromRGBO(178,223,219,1),
-//                    decoration: BoxDecoration(gradient: RadialGradient(colors: [Color(0xFF015FFF), Color(0xFF015FFF)])),
                     padding: EdgeInsets.all(0.0),
-                    child: Card(
-                      elevation: 0.0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
-                      color: Colors.transparent,
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: ListTile(
-                              leading: Container(
-                                alignment: Alignment.bottomCenter,
-                                width: 40.0,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    Container(height: 20,width: 8.0,color: Colors.white),
-                                    const SizedBox(width: 1.0),
-                                    Container(height: 25,width: 8.0, color: Colors.white),
-                                    const SizedBox(width: 1.0),
-                                    Container(height: 40,width: 8.0, color: Color(0xFF116240)),
-                                  ],
-                                ),
-                              ),
-                              title: Text("Saldo Utama", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black54,fontFamily: 'Rubik')),
-                              subtitle: Text(widget.saldo, style: TextStyle(fontSize: 11.0,color: Colors.black54,fontFamily: 'Rubik')),
-                            ),
-                          ),
-
-                          Expanded(
-                            child: ListTile(
-                              leading: Container(
-                                alignment: Alignment.bottomCenter,
-                                width: 45.0,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    Container(height: 20,width: 8.0,color: Colors.white),
-                                    const SizedBox(width: 1.0),
-                                    Container(height: 25,width: 8.0, color: Colors.white),
-                                    const SizedBox(width: 1.0),
-                                    Container(height: 40,width: 8.0, color: Color(0xFF30cc23)),
-                                  ],
-                                ),
-                              ),
-                              title: Text("Saldo Bonus", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black54,fontFamily: 'Rubik')),
-                              subtitle: Text(widget.saldoBonus, style: TextStyle(fontSize: 11.0,color: Colors.black54,fontFamily: 'Rubik')),
-                            ),
-                          ),
-                        ],
+                    decoration: new BoxDecoration(
+                      border: new Border.all(
+                          width: 2.0,
+                          color: Colors.green
                       ),
+                      borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: ListTile(
+                            leading: Container(
+                              alignment: Alignment.bottomCenter,
+                              width: 40.0,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Container(height: 20,width: 8.0,color: Color(0xFF30cc23)),
+                                  const SizedBox(width: 1.0),
+                                  Container(height: 25,width: 8.0, color: Colors.lightGreen),
+                                  const SizedBox(width: 1.0),
+                                  Container(height: 40,width: 8.0, color: Color(0xFF116240)),
+                                ],
+                              ),
+                            ),
+                            title: Text("Saldo Utama", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black,fontFamily: 'Rubik')),
+                            subtitle: Text(widget.saldo, style: TextStyle(fontSize: 11.0,color: Colors.black,fontFamily: 'Rubik')),
+                          ),
+                        ),
+
+                        Expanded(
+                          child: ListTile(
+                            leading: Container(
+                              alignment: Alignment.bottomCenter,
+                              width: 45.0,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Container(height: 20,width: 8.0,color: Color(0xFF116240)),
+                                  const SizedBox(width: 1.0),
+                                  Container(height: 25,width: 8.0, color: Colors.lightGreen),
+                                  const SizedBox(width: 1.0),
+                                  Container(height: 40,width: 8.0, color: Color(0xFF30cc23)),
+                                ],
+                              ),
+                            ),
+                            title: Text("Saldo Bonus", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black,fontFamily: 'Rubik')),
+                            subtitle: Text(widget.saldoBonus, style: TextStyle(fontSize: 11.0,color: Colors.black,fontFamily: 'Rubik')),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 0, right: 0, top: 32, bottom: 8),
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text("Nominal",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                       TextFormField(
-                        controller: saldoController,
+                        controller: moneyController,
                         keyboardType: TextInputType.number,
                         maxLines: 1,
                         autofocus: false,
@@ -241,27 +305,57 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                           prefixText: 'Rp.',
                         ),
                         inputFormatters: <TextInputFormatter>[
-                          WhitelistingTextInputFormatter.digitsOnly
+                          LengthLimitingTextInputFormatter(13),
+                          WhitelistingTextInputFormatter.digitsOnly,
+                          BlacklistingTextInputFormatter.singleLineFormatter,
                         ],
-
                         textInputAction: TextInputAction.done,
                         focusNode: saldoFocus,
                         onFieldSubmitted: (value){
                           saldoFocus.unfocus();
-                          if(saldoController.text == ""){
-                            print('cek');
-                            return showInSnackBar("Nominal Harus Diisi","gagal");
-                          }else{
-                            _pinBottomSheet(context);
-                          }
+                          save();
+                        },
+                        onChanged: (par){
+                          sampleData.forEach((element) => element.isSelected = false);
                         },
                       )
                     ],
                   ),
                 ),
-
-                SizedBox(height: 20.0),
-                _saldoCepat(),
+                Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                      GridView.builder(
+                        padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: _crossAxisCount,
+                          crossAxisSpacing: _crossAxisSpacing,
+                          mainAxisSpacing: _mainAxisSpacing,
+                          childAspectRatio: _aspectRatio,
+                        ),
+                        itemCount: sampleData.length,
+                        itemBuilder: (BuildContext context, int index){
+                          return new InkWell(
+                            onTap: () {
+                              setState(() {
+                                sampleData.forEach((element) => element.isSelected = false);
+                                sampleData[index].isSelected = true;
+                                FocusScope.of(context).requestFocus(FocusNode());
+                              });
+                              allReplace(sampleData[index].buttonText);
+                            },
+                            child: RadioItem(sampleData[index]),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
                 Align(
                     alignment: Alignment.centerRight,
                     child: Container(
@@ -270,34 +364,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                       child: IconButton(
                         color: Colors.white,
                         onPressed: () async {
-                          if(saldoController.text == ""){
-                            print('cek');
-                            return showInSnackBar("Nominal Harus Diisi","gagal");
-                          }else{
-                            final ktp = await userRepository.getKtp();
-                            print(ktp);
-                            if(ktp == '-'){
-                              scaffoldKey.currentState.showSnackBar(
-                                  SnackBar(
-                                    backgroundColor: Colors.red,
-                                    duration: const Duration(seconds: 5),
-                                    content: Text('Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                                    action: SnackBarAction(
-                                      textColor: Colors.green,
-                                      label: 'Upload KTP',
-                                      onPressed: () {
-                                        Navigator.of(context, rootNavigator: true).push(
-                                          new CupertinoPageRoute(builder: (context) => UpdateKtp(saldo: widget.saldo,saldoBonus: widget.saldoBonus)),
-                                        );
-                                      },
-                                    ),
-                                  )
-                              );
-                            }else{
-                              _pinBottomSheet(context);
-
-                            }
-                          }
+                          save();
                         },
                         icon: Icon(Icons.arrow_forward),
                       ),
@@ -335,12 +402,14 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
           },
         );
       });
-      var res = await transferBonusBloc.fetchTransferBonus(saldoController.text);
+      var rplcComa = moneyController.text.replaceAll(",", "");
+      var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
+      print("##################################### $sbtrLast3 #####################################");
+      var res = await transferBonusBloc.fetchTransferBonus(sbtrLast3);
       if(res is GeneralInsertId){
         GeneralInsertId results = res;
         setState(() {Navigator.of(context).pop();});
         if(results.status=="success"){
-//          setState(() {Navigator.pop(context);});
           showDialog(
               context: context,
               builder: (BuildContext context) {

@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -46,9 +47,11 @@ import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/UI/ppob/listrik_ui.dart';
 import 'package:thaibah/UI/ppob/pulsa_ui.dart';
 import 'package:thaibah/UI/ppob/zakat_ui.dart';
+import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/UI/quran_list_ui.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/UI/transfer_ui.dart';
+import 'package:thaibah/UI/upgradePlatinum.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
@@ -75,7 +78,7 @@ class _BerandaState extends State<Beranda>{
   String _idSurat='', _surat='',_suratAyat='',_terjemahan='',_ayat='',_suratNama='';
   String _hijri='',_masehi='',_name='',_saldo="Rp 0",_saldoBonus="0",_inspiration='',_saldoMain="0", _saldoVoucher="0";
   String pinku = "", id="", _nohp='', _level='';
-  String _picture='',_kdRefferal='',_qr='', _thumbnail='', _versionCode='';
+  String _picture='',_kdRefferal='',_qr='', _thumbnail='', _versionCode='',_levelPlatinum='';
   bool showAlignmentCards = false;
   bool isLoading = false;
   double _height;
@@ -100,7 +103,6 @@ class _BerandaState extends State<Beranda>{
     print(prefs.getBool('isPin'));
     final isPinZero  = await userRepository.getPin();
     cekStatusLogin();
-
 
     String id = await userRepository.getID();
     var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
@@ -128,6 +130,8 @@ class _BerandaState extends State<Beranda>{
       _inspiration  = (response.result.inspiration);
       _thumbnail  = (response.result.thumbnail);
       _versionCode = (response.result.versionCode);
+      _levelPlatinum = (response.result.levelPlatinum);
+
       if(_versionCode != ApiService().versionCode){
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
       }else{
@@ -190,14 +194,9 @@ class _BerandaState extends State<Beranda>{
   DateTime dt = DateTime.now();
   Duration duration;
   Duration position;
-
   String localFilePath;
-
-
-
   get durationText => duration != null ? duration.toString().split('.').first : '';
   get positionText => position != null ? position.toString().split('.').first : '';
-
   bool isMuted = false;
   bool isPlay = false;
   AudioPlayer audioPlayer = AudioPlayer();
@@ -207,10 +206,7 @@ class _BerandaState extends State<Beranda>{
   var menitShubuh;var menitSunrise;var menitDzuhur;var menitAshar; var menitMaghrib; var menitIsya;
   String _timeString='', _timeStringClone='';
   String detikDzuhur = '0';
-
   PrayerModel prayerModel;
-
-
   void play(mp3URL) async {
     print(mp3URL);
     if (!isPlay) {
@@ -229,9 +225,6 @@ class _BerandaState extends State<Beranda>{
       }
     }
   }
-
-
-
   Future onSelectNotification(String payload) async {
     await audioPlayer.stop();
     setState(() {
@@ -241,7 +234,6 @@ class _BerandaState extends State<Beranda>{
     });
   }
   int isActive = 0;
-
   showNotification(String title, desc, ) async {
     var android = new AndroidNotificationDetails(
         'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
@@ -251,10 +243,6 @@ class _BerandaState extends State<Beranda>{
     var platform = new NotificationDetails(android, iOS);
     await flutterLocalNotificationsPlugin.show(0, '$title', '$desc', platform,payload: 'Nitish Kumar Singh is part time Youtuber');
   }
-
-
-//  BuildContext context = context;
-//  BuildContext context;
   Future<void> loadPrayer() async {
     print("############################## LOCATION ##########################");
 //    print(Provider.of<UserLocation>(context).latitude);
@@ -453,15 +441,11 @@ class _BerandaState extends State<Beranda>{
     print(    int.parse(compareNow) == int.parse(compareShubuh));
 
   }
-
-
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     loadData();
     loadPrayer();
   }
-
-
   @override
   void initState() {
     // TODO: implement initState
@@ -486,11 +470,6 @@ class _BerandaState extends State<Beranda>{
     latitude  = widget.lat;
     longitude = widget.lng;
   }
-
-
-
-
-
   @override
   void dispose(){
     super.dispose();
@@ -679,9 +658,32 @@ class _BerandaState extends State<Beranda>{
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0),
-                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 16.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(left: 0.0),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 16.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                            ),
+                            SizedBox(width: 7.0),
+                            GestureDetector(
+                              onTap: (){
+                                Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
+                              },
+                              child: Container(
+                                  padding: EdgeInsets.all(5),
+                                  decoration: new BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  constraints: BoxConstraints(
+                                    minWidth: 14,
+                                    minHeight: 14,
+                                  ),
+                                  child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
+                              ),
+                            )
+                          ],
                         ),
                         SizedBox(height: 7.0),
                         Padding(
@@ -692,6 +694,11 @@ class _BerandaState extends State<Beranda>{
                         Padding(
                           padding: const EdgeInsets.only(left: 0.0),
                           child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : ${_level}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                        ),
+                        SizedBox(height: 7.0),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 0.0),
+                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Platinum : ${_levelPlatinum}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                         ),
                       ],
                     )
@@ -884,15 +891,19 @@ class _BerandaState extends State<Beranda>{
             }
             if(type == 'riwayat'){
               print('riwayat');
+
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(builder: (context) => HistoryUI(page: 'home')),
               );
             }
             if(type == 'transfer'){
               print('transfer');
+//              Navigator.of(context, rootNavigator: true).push(
+//                new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),
+//              );
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),
-              );
+              ).whenComplete(loadData);
             }
             if(type == 'alquran'){
               print('alquran');

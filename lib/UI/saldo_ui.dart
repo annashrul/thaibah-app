@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/component/bank/getAvailableBank.dart';
 import 'package:thaibah/UI/component/pin/indexPin.dart';
@@ -21,7 +22,7 @@ class SaldoUI extends StatefulWidget {
 }
 
 class _SaldoUIState extends State<SaldoUI> {
-
+  List<RadioModel> sampleData = new List<RadioModel>();
   final userRepository = UserRepository();
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
@@ -30,43 +31,45 @@ class _SaldoUIState extends State<SaldoUI> {
   TextEditingController saldoController = TextEditingController();
   TextEditingController pinController = TextEditingController();
   final FocusNode saldoFocus = FocusNode();
+//  MoneyMaskedTextController moneyMaskedTextController;
+  var moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
   String _saldo;
   bool isLoading = false;
-
+  double _crossAxisSpacing = 8, _mainAxisSpacing = 12, _aspectRatio = 2;
+  int _crossAxisCount = 3;
   getBank() async {
     setState(() {
       isLoading = false;
     });
-    final pin  = await userRepository.getPin();
-    print(pin);
-    if(saldoController.text == ''){
-      return showInSnackBar("Masukan Nominal Minimal 100001");
+    print("##################################### ${moneyController.text} #####################################");
+    if(moneyController.text == null || moneyController.text == '0.00'){
+      return showInSnackBar("Masukan Nominal Anda");
     }else{
-      if(int.parse(saldoController.text) <= 100000){
-        return showInSnackBar("Masukan Nominal Minimal 100001");
+      final pin  = await userRepository.getPin();
+      if(pin == 0){
+        scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+              content: Text('Silahkan Buat PIN untuk Melanjutkan Transaksi',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+              action: SnackBarAction(
+                textColor: Colors.green,
+                label: 'Buat PIN',
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    new CupertinoPageRoute(builder: (context) => Pin(saldo: widget.saldo,param:'topup')),
+                  );
+                },
+              ),
+            )
+        );
       }else{
-        if(pin == 0){
-          scaffoldKey.currentState.showSnackBar(
-              SnackBar(
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 5),
-                content: Text('Silahkan Buat PIN untuk Melanjutkan Transaksi',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                action: SnackBarAction(
-                  textColor: Colors.green,
-                  label: 'Buat PIN',
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      new CupertinoPageRoute(builder: (context) => Pin(saldo: widget.saldo,param:'topup')),
-                    );
-                  },
-                ),
-              )
-          );
-        }else{
-          Navigator.of(context, rootNavigator: true).push(
-            new CupertinoPageRoute(builder: (context) => GetAvailableBank(amount:int.parse(saldoController.text),name: widget.name,saldo:widget.saldo)),
-          );
-        }
+        var rplcComa = moneyController.text.replaceAll(",", "");
+        var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
+        print("##################################### $sbtrLast3 #####################################");
+        Navigator.of(context, rootNavigator: true).push(
+          new CupertinoPageRoute(builder: (context) => GetAvailableBank(amount:int.parse(sbtrLast3),name: widget.name,saldo:widget.saldo)),
+        );
       }
     }
   }
@@ -88,7 +91,37 @@ class _SaldoUIState extends State<SaldoUI> {
       duration: Duration(seconds: 3),
     ));
   }
+  var amount;
+  Future allReplace(String saldo) async {
+    print(saldo);
+    var rplcComa = saldo.replaceAll(",", "");
+    var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
+    moneyController.updateValue(double.parse(sbtrLast3));
+    amount = sbtrLast3;
+    print(amount);
+  }
 
+  int selectedRadioTile;
+  int selectedRadio;
+  setSelectedRadioTile(int val) {
+    setState(() {
+      selectedRadioTile = val;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sampleData.add(new RadioModel(false, '100,000.00', 'Rp 100,000.00'));
+    sampleData.add(new RadioModel(false, '200,000.00', 'Rp 200,000.00'));
+    sampleData.add(new RadioModel(false, '300,000.00', 'Rp 300,000.00'));
+    sampleData.add(new RadioModel(false, '400,000.00', 'Rp 400,000.00'));
+    sampleData.add(new RadioModel(false, '500,000.00', 'Rp 500,000.00'));
+    sampleData.add(new RadioModel(false, '1,000,000.00', 'Rp 1,000,000.00'));
+    
+
+  }
 
   Widget cepat(String val, String nominal){
     return RaisedButton(
@@ -105,6 +138,14 @@ class _SaldoUIState extends State<SaldoUI> {
 
   @override
   Widget build(BuildContext context) {
+//    var moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
+//    moneyController.updateValue(0.00);
+//    moneyController.addListener((){
+//      print(moneyController.numberValue);
+//    });
+    double screenWidth = MediaQuery.of(context).size.width;
+    var width = (screenWidth - ((_crossAxisCount - 1) * _crossAxisSpacing)) / _crossAxisCount;
+    var height = width / _aspectRatio;
     return Scaffold(
         key: scaffoldKey,
         appBar: AppBar(
@@ -165,7 +206,7 @@ class _SaldoUIState extends State<SaldoUI> {
                       children: <Widget>[
                         Text("Nominal",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                         TextFormField(
-                          controller: saldoController,
+                          controller: moneyController,
                           keyboardType: TextInputType.number,
                           maxLines: 1,
                           autofocus: false,
@@ -174,7 +215,9 @@ class _SaldoUIState extends State<SaldoUI> {
                             prefixText: 'Rp.',
                           ),
                           inputFormatters: <TextInputFormatter>[
-                            WhitelistingTextInputFormatter.digitsOnly
+                            LengthLimitingTextInputFormatter(13),
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            BlacklistingTextInputFormatter.singleLineFormatter,
                           ],
                           textInputAction: TextInputAction.done,
                           focusNode: saldoFocus,
@@ -185,33 +228,44 @@ class _SaldoUIState extends State<SaldoUI> {
                             });
                             getBank();
                           },
+                          onChanged: (par){
+                            sampleData.forEach((element) => element.isSelected = false);
+                          },
                         )
                       ],
                     ),
                   ),
 
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                        GridView.count(
+                        GridView.builder(
                           padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          crossAxisCount: 3,
                           physics: NeverScrollableScrollPhysics(),
-                          childAspectRatio: 2,
                           shrinkWrap: true,
-                          children: <Widget>[
-                            cepat("100001", "Rp. 100.001,-"),
-                            cepat("200000", "Rp. 200.000,-"),
-                            cepat("300000", "Rp. 300.000,-"),
-                            cepat("400000", "Rp. 400.000,-"),
-                            cepat("500000", "Rp. 500.000,-"),
-                            cepat("1000000", "Rp. 1.000.000,-"),
-                          ],
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: _crossAxisCount,
+                            crossAxisSpacing: _crossAxisSpacing,
+                            mainAxisSpacing: _mainAxisSpacing,
+                            childAspectRatio: _aspectRatio,
+                          ),
+                          itemCount: sampleData.length,
+                          itemBuilder: (BuildContext context, int index){
+                            return new InkWell(
+                              onTap: () {
+                                setState(() {
+                                  sampleData.forEach((element) => element.isSelected = false);
+                                  sampleData[index].isSelected = true;
+                                  FocusScope.of(context).requestFocus(FocusNode());
+                                });
+                                allReplace(sampleData[index].buttonText);
+                              },
+                              child: RadioItem(sampleData[index]),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -240,5 +294,36 @@ class _SaldoUIState extends State<SaldoUI> {
         )
     );
   }
+}
 
+class RadioItem extends StatelessWidget {
+  final RadioModel _item;
+  RadioItem(this._item);
+  @override
+  Widget build(BuildContext context) {
+
+    return new Container(
+      child: new Center(
+        child: new Text(
+          _item.buttonText,
+          style: new TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold,color:_item.isSelected ? Colors.green : Colors.black,fontSize: 18.0)
+        ),
+      ),
+      decoration: new BoxDecoration(
+        color: Colors.transparent,
+        border: new Border.all(
+          width: 1.0,
+          color: _item.isSelected ? Colors.green : Colors.black
+        ),
+        borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+      ),
+    );
+  }
+}
+class RadioModel {
+  bool isSelected;
+  final String buttonText;
+  final String text;
+
+  RadioModel(this.isSelected, this.buttonText, this.text);
 }

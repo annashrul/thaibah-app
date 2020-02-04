@@ -4,9 +4,12 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:thaibah/Model/configModel.dart';
+import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/member/contactModel.dart' as prefix0;
+import 'package:thaibah/Model/transferDetailModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/component/detailTransfer.dart';
@@ -14,6 +17,7 @@ import 'package:thaibah/bloc/configBloc.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
 import 'package:thaibah/resources/configProvider.dart';
+import 'package:thaibah/resources/transferProvider.dart';
 
 class TransferUI extends StatefulWidget {
   final String saldo, qr;
@@ -33,6 +37,7 @@ class _TransferUIState extends State<TransferUI> {
   final FocusNode tfFocus       = FocusNode();
   final FocusNode penerimaFocus = FocusNode();
   final FocusNode pesanFocus    = FocusNode();
+  var moneyMaskedTextController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
 
   _fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
     currentFocus.unfocus();
@@ -58,7 +63,6 @@ class _TransferUIState extends State<TransferUI> {
   Future scanCode() async {
     try {
       String barcode = await BarcodeScanner.scan();
-//      setState(() => this.barcode = barcode);
       setState(() {
         penerimaController.text = barcode;
       });
@@ -76,6 +80,7 @@ class _TransferUIState extends State<TransferUI> {
   void initState() {
     super.initState();
     cek();
+    configBloc.fetchConfigList();
   }
   void dispose() {
     // TODO: implement dispose
@@ -83,35 +88,45 @@ class _TransferUIState extends State<TransferUI> {
     tfController.dispose();
   }
   Future sendTransferDetail() async {
-    String nominal = tfController.text;
+    var rplcComa = moneyMaskedTextController.text.replaceAll(",", "");
+    var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
+    String nominal = sbtrLast3;
+    print(nominal);
     String referral_penerima = penerimaController.text != "" ? penerimaController.text : _currentItemSelectedContact ;
     String pesan = pesanController.text!=''?pesanController.text:'-';
     print(referral_penerima);
-    var res =  await transferDetailBloc.fetchTransferDetail(nominal, referral_penerima,pesan);
-    if(res.status == 'success'){
-      setState(() {
-        _isLoading = false;
-        tfController.text = '';
-      });
-      Navigator.of(context, rootNavigator: true).push(
-        new CupertinoPageRoute(builder: (context) => DetailTransfer(
-            nominal: res.result.nominal.toString(),
-            fee_charge: res.result.feeCharge.toString(),
-            total_bayar: res.result.totalBayar.toString(),
-            penerima: res.result.penerima,
-            picture: res.result.picture,
-            referralpenerima: res.result.referralpenerima,
-            pesan:pesanController.text,
-            statusFee:res.result.statusFeecharge
-        )),
-      );
+    var res = await TransferProvider().transferDetail(nominal, referral_penerima, pesan);
+    if(res is TransferDetailModel){
+      TransferDetailModel results = res;
+      if(results.status == 'success'){
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context, rootNavigator: true).push(
+          new CupertinoPageRoute(builder: (context) => DetailTransfer(
+              nominal: results.result.nominal.toString(),
+              fee_charge: results.result.feeCharge.toString(),
+              total_bayar: results.result.totalBayar.toString(),
+              penerima: results.result.penerima,
+              picture: results.result.picture,
+              referralpenerima: results.result.referralpenerima,
+              pesan:pesanController.text,
+              statusFee:results.result.statusFeecharge
+          )),
+        );
+      }else{
+        setState(() {
+          _isLoading = false;
+          penerimaController.text = '';
+        });
+        return showInSnackBar(results.msg);
+      }
     }else{
-      _isLoading = false;
+      General results = res;
       setState(() {
-        tfController.text = '';
         _isLoading = false;
       });
-      return showInSnackBar(res.msg);
+      return showInSnackBar(results.msg);
     }
   }
   void showInSnackBar(String value) {
@@ -164,9 +179,13 @@ class _TransferUIState extends State<TransferUI> {
   }
   @override
   Widget build(BuildContext context) {
+//    moneyMaskedTextController.updateValue(0.00);
+//    moneyMaskedTextController.addListener((){
+//      print(moneyMaskedTextController.numberValue);
+//    });
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
-    configBloc.fetchConfigList();
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         // bottomNavigationBar: _bottomNavBar(),
@@ -187,7 +206,9 @@ class _TransferUIState extends State<TransferUI> {
           ],
           leading: IconButton(
             icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-            onPressed: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
           ),
           centerTitle: false,
           flexibleSpace: Container(
@@ -239,7 +260,7 @@ class _TransferUIState extends State<TransferUI> {
                       children: <Widget>[
                         Text("Nominal",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                         TextFormField(
-                          controller: tfController,
+                          controller: moneyMaskedTextController,
                           decoration: InputDecoration(
                             hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
                             prefixText: 'Rp.',
@@ -247,13 +268,22 @@ class _TransferUIState extends State<TransferUI> {
                           keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.next,
                           inputFormatters: <TextInputFormatter>[
-                            WhitelistingTextInputFormatter.digitsOnly
+                            LengthLimitingTextInputFormatter(13),
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            BlacklistingTextInputFormatter.singleLineFormatter,
                           ],
                           focusNode: tfFocus,
                           onFieldSubmitted: (term){
+//                            print(double.parse(term));
+//                            moneyMaskedTextController.updateValue(double.parse(term));
                             tfFocus.unfocus();
                             _fieldFocusChange(context, tfFocus, penerimaFocus);
                           },
+//                          onChanged: (x){
+//                            print("########################### $x ########################");
+//                            tfController.text = x;
+//                            moneyMaskedTextController.text = x;
+//                          },
                         ),
                       ],
                     ),
@@ -294,7 +324,12 @@ class _TransferUIState extends State<TransferUI> {
                                         ),
                                       ),
                                     ),
-                                    keyboardType: TextInputType.text,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+//                                      LengthLimitingTextInputFormatter(13),
+                                      WhitelistingTextInputFormatter.digitsOnly,
+                                      BlacklistingTextInputFormatter.singleLineFormatter,
+                                    ],
                                     textInputAction: TextInputAction.next,
                                     focusNode: penerimaFocus,
                                     onFieldSubmitted: (term){
@@ -332,7 +367,11 @@ class _TransferUIState extends State<TransferUI> {
                           focusNode: pesanFocus,
                           onFieldSubmitted: (term){
                             pesanFocus.unfocus();
-                            if(tfController.text == ''){
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            sendTransferDetail();
+                            if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
                               return showInSnackBar("Nominal Tidak Boleh Kosong");
                             }
                             else{
@@ -351,6 +390,7 @@ class _TransferUIState extends State<TransferUI> {
                               });
                               sendTransferDetail();
                             }
+//                            sendTransferDetail();
                           },
                         ),
                       ],

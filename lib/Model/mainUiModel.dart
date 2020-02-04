@@ -50,6 +50,8 @@ class Result {
     String versionCode;
     String thumbnail;
     String level;
+    String levelPlatinum;
+    int levelPlatinumRaw;
     List<Section> section;
 
     Result({
@@ -70,6 +72,8 @@ class Result {
         this.versionCode,
         this.thumbnail,
         this.level,
+        this.levelPlatinum,
+        this.levelPlatinumRaw,
         this.section,
     });
 
@@ -91,6 +95,8 @@ class Result {
         versionCode: json["version_code"],
         thumbnail: json["thumbnail"],
         level: json["level"],
+        levelPlatinum: json["level_platinum"],
+        levelPlatinumRaw: json["level_platinum_raw"],
         section: List<Section>.from(json["section"].map((x) => Section.fromJson(x))),
     );
 
@@ -112,6 +118,8 @@ class Result {
         "version_code": versionCode,
         "thumbnail": thumbnail,
         "level": level,
+        "level_platinum": levelPlatinum,
+        "level_platinum_raw": levelPlatinumRaw,
         "section": List<dynamic>.from(section.map((x) => x.toJson())),
     };
 }

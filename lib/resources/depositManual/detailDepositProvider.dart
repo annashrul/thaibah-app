@@ -34,6 +34,20 @@ class DetailDepositProvider {
     });
   }
 
+  Future<General> cancelDeposit(var id_deposit) async {
+    final token = await userRepository.getToken();
+    final name = await userRepository.getName();
+    return await client.post(ApiService().baseUrl+"transaction/deposit/approve",
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+        body: {
+          "id_deposit":"$id_deposit",
+          "name":"$name",
+          "password":"netindo35a",
+        }).then((Response response) {
+      return General.fromJson(json.decode(response.body));
+    });
+  }
+
 
 
 

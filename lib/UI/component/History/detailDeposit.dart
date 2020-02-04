@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -10,8 +11,11 @@ import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
+import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/style.dart';
+import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/depositManual/detailDepositProvider.dart';
 
 
 var orange = Color(0xFFfc9f6a);
@@ -20,10 +24,10 @@ var blue = Color(0xFF8bccd6);
 var darkBlue = Color(0xFF60a0d7);
 var valueBlue = Color(0xFF5fa0d6);
 class DetailDeposit extends StatefulWidget {
-  final String amount,bank_name,atas_nama,no_rekening,id_deposit,picture,created_at,name,bukti;
+  final String amount,bank_name,atas_nama,no_rekening,id_deposit,picture,created_at,bukti,saldo;
   final int status;
   DetailDeposit({
-    this.amount,this.bank_name,this.atas_nama,this.no_rekening,this.id_deposit,this.picture,this.status,this.created_at,this.name,this.bukti
+    this.amount,this.bank_name,this.atas_nama,this.no_rekening,this.id_deposit,this.picture,this.status,this.created_at,this.bukti,this.saldo
   });
   @override
   _DetailDepositState createState() => _DetailDepositState();
@@ -38,7 +42,7 @@ class _DetailDepositState extends State<DetailDeposit> {
   bool isLoading = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   String fileName;
-
+  final userRepository = UserRepository();
   Future upload() async{
     setState(() {
       showDialog(
@@ -107,6 +111,38 @@ class _DetailDepositState extends State<DetailDeposit> {
     }
   }
 
+  Future cancelDeposit() async{
+    final name = await userRepository.getName();
+    var res = await DetailDepositProvider().cancelDeposit(widget.id_deposit);
+    if(res.status == 'success'){
+      setState(() {isLoading=false;});
+      Timer(Duration(seconds: 5), () {
+        Navigator.of(context, rootNavigator: true).push(
+          new CupertinoPageRoute(builder: (context) => SaldoUI(
+            saldo: widget.saldo,name: name,
+          )),
+        );
+      });
+      scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+            content: Text('Berhasil !!!! \nanda akan dialihkan ke halaman deposit',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+          )
+      );
+    }else{
+      setState(() {isLoading=false;});
+      scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+            content: Text(res.msg,style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+          )
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     var cek;
@@ -118,6 +154,7 @@ class _DetailDepositState extends State<DetailDeposit> {
       cek = 'Ditolak';
     }
     return Scaffold(
+      key: scaffoldKey,
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(
@@ -192,10 +229,26 @@ class _DetailDepositState extends State<DetailDeposit> {
   }
   Widget _bottomNavBarBeli(BuildContext context){
     return Container(
-      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
+          Container(
+              height: kBottomNavigationBarHeight,
+              child: FlatButton(
+                shape:RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(10)),
+                ),
+                color: Styles.primaryColor,
+                onPressed: (){
+                  setState(() {
+                    isLoading = true;
+                  });
+                  cancelDeposit();
+                },
+                child: Text(isLoading ? "Pengecekan data ...." : "Batalkan Deposit", style: TextStyle(color: Colors.white)),
+              )
+          ),
           Container(
               height: kBottomNavigationBarHeight,
               child: FlatButton(
@@ -207,127 +260,17 @@ class _DetailDepositState extends State<DetailDeposit> {
                   Navigator.of(context, rootNavigator: true).push(
                     new CupertinoPageRoute(builder: (context) => BuktiTransfer(id_deposit: widget.id_deposit)),
                   );
-//                  showDialog(
-//                    context: context,
-//                    builder: (BuildContext context) {
-//                      // return object of type Dialog
-//                      return AlertDialog(
-//                        title:SizedBox(
-//                          width: double.infinity,
-//                          height: ScreenUtil.getInstance().setHeight(130),
-//                          child: new OutlineButton(
-//                            borderSide: BorderSide(color: Colors.grey,width: 1.0),
-//                            child: Column(
-//                              crossAxisAlignment: CrossAxisAlignment.center,
-//                              children: <Widget>[
-//                                SizedBox(height: ScreenUtil.getInstance().setHeight(30),),
-//                                Icon(Icons.cloud_upload),
-//                                _image == null ? Text('Upload Photo',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.red)) : Text('Photo KTP Berhasil DIupload',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.green))
-//                              ],
-//                            ),
-//                            onPressed: () async {
-//                              try{
-//                                var image = await ImagePicker.pickImage(
-//                                    source: ImageSource.gallery,
-//
-//                                );
-//                                setState(() {
-//                                  _image = image;
-//                                });
-//                              }catch(e){
-//                                print(e);
-//                              }
-//
-//                            },
-//                          ),
-//                        ),
-//                        actions: <Widget>[
-//                          Row (
-//                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                              children: <Widget>[
-//                                FlatButton(
-//                                  child: new Text("Kembali"),
-//                                  onPressed: () {
-//                                    Navigator.of(context).pop();
-//                                  },
-//                                ), // button 1
-//                                FlatButton(
-//                                  child: new Text("Simpan"),
-//                                  onPressed: () {
-//                                    if(_image!=null){
-//                                      upload();
-//                                    }
-//
-//                                  },
-//                                ), // button 2
-//                              ]
-//                          ),
-//
-//                        ],
-//                      );
-//                    },
-//                  );
                 },
                 child: Text("Upload Bukti Transfer", style: TextStyle(color: Colors.white)),
               )
-          )
-
+          ),
         ],
       ),
     );
   }
 }
 
-class ValueCard extends StatelessWidget {
-  final name;
-  final value;
-  final date;
-  final bank;
-  ValueCard(this.name,this.value,this.date, this.bank);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  name,
-                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black.withOpacity(0.6)),
-                ),
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: valueBlue,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,),
-                )
-              ],
-            ),
-            SizedBox(
-              height: 4.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  date,
-                  style: TextStyle(color: Colors.grey),
-                ),
-                Text(
-                  bank,
-                  style: TextStyle(color: Colors.grey),
-                )
-              ],
-            ),
-            SizedBox(height: 4.0,),
-            Divider()
-          ],
-        ));
-  }
-}
+
 
 class ItemCard extends StatelessWidget {
   final titel;

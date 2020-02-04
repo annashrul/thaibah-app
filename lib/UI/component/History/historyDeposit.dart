@@ -257,7 +257,7 @@ class _HistoryDepositState extends State<HistoryDeposit> {
                               picture: snapshot.data.result.data[index].picture,
                               status: snapshot.data.result.data[index].status,
                               created_at: DateFormat.yMMMd().add_jm().format(snapshot.data.result.data[index].createdAt.toLocal()),
-                              name: snapshot.data.result.data[index].name,
+//                              name: snapshot.data.result.data[index].name,
                               bukti: snapshot.data.result.data[index].bukti,
                               )),
                             );

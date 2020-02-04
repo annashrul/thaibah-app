@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:thaibah/Model/base_model.dart';
+import 'base_model.dart';
 
 ProductMlmSuplemenModel productMlmSuplemenModelFromJson(String str) => ProductMlmSuplemenModel.fromJson(json.decode(str));
 
@@ -12,8 +12,8 @@ String productMlmSuplemenModelToJson(ProductMlmSuplemenModel data) => json.encod
 
 class ProductMlmSuplemenModel extends BaseModel {
     Result result;
-    String msg;
-    String status;
+    var msg;
+    var status;
 
     ProductMlmSuplemenModel({
         this.result,
@@ -36,10 +36,10 @@ class ProductMlmSuplemenModel extends BaseModel {
 
 class Result {
     List<Datum> data;
-    int count;
-    int currentPage;
-    String perpage;
-    int lastPage;
+    var count;
+    var currentPage;
+    var perpage;
+    var lastPage;
 
     Result({
         this.data,
@@ -87,6 +87,8 @@ class Datum {
     DateTime updatedAt;
     var status;
     var satuanBarang;
+    var isplatinum;
+    var detail;
 
     Datum({
         this.id,
@@ -109,6 +111,8 @@ class Datum {
         this.updatedAt,
         this.status,
         this.satuanBarang,
+        this.isplatinum,
+        this.detail,
     });
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -132,6 +136,8 @@ class Datum {
         updatedAt: DateTime.parse(json["updated_at"]),
         status: json["status"],
         satuanBarang: json["satuan_barang"],
+        isplatinum: json["isplatinum"],
+        detail: json["detail"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -155,5 +161,7 @@ class Datum {
         "updated_at": updatedAt.toIso8601String(),
         "status": status,
         "satuan_barang": satuanBarang,
+        "isplatinum": isplatinum,
+        "detail": detail,
     };
 }

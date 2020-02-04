@@ -16,11 +16,12 @@ import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/UI/splash/introViews.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:http/http.dart' show Client, Response;
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/location_service.dart';
 import 'package:connectivity/connectivity.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-void main(){
+main() {
   runApp(MyApp());
 }
 
@@ -51,7 +52,6 @@ class _MyAppState extends State<MyApp>  {
     print("######################################################$id##############################################");
     super.initState();
     checkLoginStatus();
-//    initDynamicLinks();
     isLoading = true;
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
   }
@@ -162,23 +162,10 @@ class _MyAppState extends State<MyApp>  {
         builder: (context) => LocationService().locationStream,
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-//          title: 'Flutter Demo',
           home: Splash()
         )
     );
-//    return MaterialApp(
-//      debugShowCheckedModeBanner: false,
-//      title: 'IntroViews Flutter', //title of app
-//      theme: ThemeData(
-//        primarySwatch: Colors.blue,
-//      ), //ThemeData
-//      home: Splash(), //Builder
-//    ); //Material App
   }
-
-
-
-
 }
 
 class Splash extends StatefulWidget {
@@ -208,7 +195,6 @@ class SplashState extends State<Splash> {
         prefs.setBool('isPin', false);
         Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
       }
-
     }
   }
   @override
@@ -264,9 +250,6 @@ class SplashState extends State<Splash> {
   }
 }
 
-//class IntroScreen extends StatelessWidget {
-//
-//}
 
 
 class IntroScreen extends StatefulWidget {

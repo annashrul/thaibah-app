@@ -101,6 +101,7 @@ class _LoginPhoneState extends State<LoginPhone> {
             pin: result.result.pin.toString(),
             noHp: result.result.noHp.toString(),
             ktp: result.result.ktp.toString(),
+
           )), (Route<dynamic> route) => false);
         }else{
           setState(() {_isLoading = false;});

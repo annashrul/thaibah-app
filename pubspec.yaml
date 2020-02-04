@@ -28,9 +28,9 @@ dependencies:
   expandable: ^2.1.1
   provider:
   intl: ^0.15.7
-  image_picker: ^0.6.0+10
-  image_cropper: ^1.0.2
-  flutter_image_compress: ^0.6.3
+  image_picker:
+  image_cropper:
+  flutter_image_compress:
   hijri: ^0.2.5
 
 #  image_picker:
@@ -56,7 +56,7 @@ dependencies:
   cached_network_image: any
 #  extended_image: ^0.6.4
 #  flutter_masked_text: ^0.8.0
-
+  flutter_masked_text: ^0.8.0
   flutter_icons: ^0.1.4
   flutter_parallax: "^0.1.2"
   audioplayers: ^0.13.2

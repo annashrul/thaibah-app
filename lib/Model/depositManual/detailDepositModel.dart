@@ -42,7 +42,10 @@ class Result {
   String atasNama;
   String noRekening;
   String idDeposit;
+  int status;
   String picture;
+  DateTime createdAt;
+  String bukti;
 
   Result({
     this.amount,
@@ -52,7 +55,10 @@ class Result {
     this.atasNama,
     this.noRekening,
     this.idDeposit,
+    this.status,
     this.picture,
+    this.createdAt,
+    this.bukti,
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
@@ -63,7 +69,10 @@ class Result {
     atasNama: json["atas_nama"],
     noRekening: json["no_rekening"],
     idDeposit: json["id_deposit"],
+    status: json["status"],
     picture: json["picture"],
+    createdAt: DateTime.parse(json["created_at"]),
+    bukti: json["bukti"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -74,6 +83,9 @@ class Result {
     "atas_nama": atasNama,
     "no_rekening": noRekening,
     "id_deposit": idDeposit,
+    "status": status,
     "picture": picture,
+    "created_at": createdAt.toIso8601String(),
+    "bukti": bukti,
   };
 }
