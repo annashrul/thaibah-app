@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +15,7 @@ import 'package:thaibah/UI/component/bank/indexBank.dart';
 import 'package:thaibah/bloc/bankBloc.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
 import 'package:thaibah/bloc/withdrawBloc.dart';
+import 'package:thaibah/config/api.dart';
 
 import '../saldo_ui.dart';
 
@@ -55,6 +58,10 @@ class _PenarikanState extends State<Penarikan> {
     amount = sbtrLast3;
     print(amount);
   }
+
+
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -66,13 +73,8 @@ class _PenarikanState extends State<Penarikan> {
     sampleData.add(new RadioModel(false, '500,000.00', 'Rp 500,000.00'));
     sampleData.add(new RadioModel(false, '1,000,000.00', 'Rp 1,000,000.00'));
 
+  }
 
-  }
-  Future<void> _getRefresh() async{
-    await Future<void>.delayed(Duration(seconds: 2));
-    var cek = bankBloc.fetchBankList();
-    print(cek);
-  }
   void showInSnackBar(String value) {
     FocusScope.of(context).requestFocus(new FocusNode());
     scaffoldKey.currentState?.removeCurrentSnackBar();
@@ -102,7 +104,9 @@ class _PenarikanState extends State<Penarikan> {
               Icons.keyboard_backspace,
               color: Colors.white,
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
           ),
           title: new Text("Penarikan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
           flexibleSpace: Container(
@@ -154,7 +158,7 @@ class _PenarikanState extends State<Penarikan> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[

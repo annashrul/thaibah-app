@@ -1,5 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class DetailInspirasi extends StatefulWidget {
@@ -34,24 +39,19 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
     print(cek);
     print(widget.type);
   }
-
   int currentPos;
-
-
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   YoutubePlayerController _controller;
   TextEditingController _idController;
   TextEditingController _seekToController;
-
   PlayerState _playerState;
   YoutubeMetaData _videoMetaData;
   double _volume = 100;
   bool _muted = false;
   bool _isPlayerReady = false;
-
-
   int count = 0;
+
+
 
   @override
   void initState() {
@@ -105,7 +105,9 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
       appBar:  AppBar(
         leading: IconButton(
           icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: (){
+            Navigator.of(context).pop();
+          },
         ),
         centerTitle: false,
         elevation: 0.0,

@@ -15,6 +15,8 @@ import 'package:thaibah/Model/createMemberModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/registUIModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/responsive_ui.dart';
 import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
@@ -227,6 +229,13 @@ class _CreateMemberState extends State<CreateMember> {
     });
   }
 
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   void dispose() {

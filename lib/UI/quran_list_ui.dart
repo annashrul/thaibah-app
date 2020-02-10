@@ -10,6 +10,7 @@ import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/islamic/myQuran.dart';
 import 'package:thaibah/UI/quran_read_ui.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:unicorndial/unicorndial.dart';
 
 
@@ -18,6 +19,9 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'Homepage/index.dart';
+import 'Widgets/pin_screen.dart';
 
 class QuranListUI extends StatefulWidget {
   @override
@@ -89,6 +93,9 @@ class QuranListUIState extends State<QuranListUI> {
       });
     }
   }
+
+
+
 
   @override
   void initState() {
@@ -166,11 +173,11 @@ class QuranListUIState extends State<QuranListUI> {
 //    return PlayerWidget(url: "http://ia802609.us.archive.org/13/items/quraninindonesia/010Yunus.mp3",);
     return Scaffold(
       floatingActionButton: UnicornDialer(
-        backgroundColor: Color.fromRGBO(255, 255, 255, 0.6),
-        parentButtonBackground: Colors.green,
-        orientation: UnicornOrientation.VERTICAL,
-        parentButton: Icon(Icons.toc),
-        childButtons: childButtons
+          backgroundColor: Color.fromRGBO(255, 255, 255, 0.6),
+          parentButtonBackground: Colors.green,
+          orientation: UnicornOrientation.VERTICAL,
+          parentButton: Icon(Icons.toc),
+          childButtons: childButtons
       ),
       bottomNavigationBar: !isLoaded ? null: controls(),
       appBar: buildBar(context),
@@ -184,20 +191,20 @@ class QuranListUIState extends State<QuranListUI> {
             return Text(snapshot.error.toString());
           }
           return ListView.builder(
-            itemCount: 9,
-            itemBuilder: (context, index){
-              return GestureDetector(
-                child: Card(
-                  elevation: 0,
-                  child: ListTile(
-                    leading:SkeletonFrame(width: 50.0,height: 50.0),
-                    title: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 16),
-                    subtitle:SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16),
-                    isThreeLine: false,
-                  ),
-                )
-              );
-            }
+              itemCount: 9,
+              itemBuilder: (context, index){
+                return GestureDetector(
+                    child: Card(
+                      elevation: 0,
+                      child: ListTile(
+                        leading:SkeletonFrame(width: 50.0,height: 50.0),
+                        title: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 16),
+                        subtitle:SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16),
+                        isThreeLine: false,
+                      ),
+                    )
+                );
+              }
           );
         },
       ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:core';
 
 import 'package:barcode_scan/barcode_scan.dart';
@@ -16,8 +17,11 @@ import 'package:thaibah/UI/component/detailTransfer.dart';
 import 'package:thaibah/bloc/configBloc.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/transferProvider.dart';
+
+import 'Widgets/pin_screen.dart';
 
 class TransferUI extends StatefulWidget {
   final String saldo, qr;
@@ -75,17 +79,6 @@ class _TransferUIState extends State<TransferUI> {
         setState(() => this.barcode = 'Unknown error: $e');
       }
     }
-  }
-  @override
-  void initState() {
-    super.initState();
-    cek();
-    configBloc.fetchConfigList();
-  }
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    tfController.dispose();
   }
   Future sendTransferDetail() async {
     var rplcComa = moneyMaskedTextController.text.replaceAll(",", "");
@@ -146,7 +139,6 @@ class _TransferUIState extends State<TransferUI> {
       duration: Duration(seconds: 3),
     ));
   }
-
   void _lainnyaModalBottomSheet(context){
     showModalBottomSheet(
         context: context,
@@ -177,6 +169,22 @@ class _TransferUIState extends State<TransferUI> {
         }
     );
   }
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    cek();
+    configBloc.fetchConfigList();
+  }
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    tfController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
 //    moneyMaskedTextController.updateValue(0.00);
@@ -367,10 +375,11 @@ class _TransferUIState extends State<TransferUI> {
                           focusNode: pesanFocus,
                           onFieldSubmitted: (term){
                             pesanFocus.unfocus();
-                            setState(() {
-                              _isLoading = true;
-                            });
-                            sendTransferDetail();
+                            print(moneyMaskedTextController.text);
+//                              setState(() {
+//                                _isLoading = true;
+//                              });
+//                              sendTransferDetail();
                             if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
                               return showInSnackBar("Nominal Tidak Boleh Kosong");
                             }
@@ -408,7 +417,7 @@ class _TransferUIState extends State<TransferUI> {
                         child: IconButton(
                           color: Colors.white,
                           onPressed: () {
-                            if(tfController.text == ''){
+                            if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
                               return showInSnackBar("Nominal Tidak Boleh Kosong");
                             }
                             else{

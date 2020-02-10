@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart';
@@ -9,6 +11,9 @@ import 'package:thaibah/Model/pageViewModel.dart';
 import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/UI/splash/introViews.dart';
 import 'package:thaibah/config/api.dart';
+
+import 'Homepage/index.dart';
+import 'Widgets/pin_screen.dart';
 
 class UpgradePlatinum extends StatefulWidget {
   @override
@@ -22,7 +27,7 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
   var res;
   Future load() async{
     Client client = Client();
-    final response = await client.get(ApiService().baseUrl+'info/onboarding');
+    final response = await client.get(ApiService().baseUrl+'info/platinumData');
 
 
     if(response.statusCode == 200){
@@ -33,19 +38,20 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
           setState(() {
             wrapOnboarding.add(PageViewModel(
               pageColor: Colors.white,
-              bubbleBackgroundColor: Colors.indigo,
-              title: Text('acuy'),
-              body: Column(
+              bubbleBackgroundColor: Colors.green,
+              title: Container(),
+              body: Container(),
+              mainImage: Column(
                 children: <Widget>[
+                  Image.network(
+                    items.picture,
+                    width: 150.0,
+                    height:150.0,
+                    alignment: Alignment.center,
+                  ),
                   Text(items.title,style: TextStyle(fontFamily: 'Rubik',color: Color(0xFF116240),fontWeight: FontWeight.bold)),
                   Text(items.description,style: TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                 ],
-              ),
-              mainImage: Image.network(
-                items.picture,
-                width: 250.0,
-                height:250.0,
-                alignment: Alignment.center,
               ),
               textStyle: TextStyle(color: Colors.black,fontFamily: 'Rubik',),
             ));
@@ -61,6 +67,9 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
       throw Exception('Failed to load info');
     }
   }
+
+
+
   @override
   void initState(){
     load();
@@ -73,8 +82,15 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
   Widget build(BuildContext context) {
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
-    return new Scaffold(
+    return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          ),
+          centerTitle: false,
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -87,62 +103,32 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
               ),
             ),
           ),
-          centerTitle: false,
-          elevation: 0.0,
+          elevation: 1.0,
           automaticallyImplyLeading: true,
-          title: new Text("Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+          title: new Text("Upgrade Platinum tes", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
         ),
         body: isLoading?Container(child: Center(child: CircularProgressIndicator())):Stack(
           children: <Widget>[
-            IntroViewsFlutter(
-              wrapOnboarding,
-              onTapDoneButton: (){
-
-              },
-              showSkipButton: false,
-              doneText: Text("",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-              pageButtonsColor: Colors.green,
-              pageButtonTextStyles: new TextStyle(
-                  fontSize: 16.0,
-                  fontFamily: "Rubik",
-                  fontWeight: FontWeight.bold
+            Container(
+              child: IntroViewsFlutter(
+                wrapOnboarding,
+                onTapDoneButton: (){
+                  Navigator.of(context, rootNavigator: true).push(
+                    new CupertinoPageRoute(builder: (context) => ProdukMlmUI()),
+                  );
+                },
+                showSkipButton: true,
+                doneText: Text("Mulai",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                pageButtonsColor: Colors.green,
+                pageButtonTextStyles: new TextStyle(
+                    fontSize: 12.0,
+                    fontFamily: "Rubik",
+                    fontWeight: FontWeight.bold
+                ),
               ),
             ),
-            Positioned(
-                top: 600.0,
-                left: 50.0,
-                right:50.0,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    InkWell(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width/1,
-                        height: ScreenUtil.getInstance().setHeight(100),
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
-                            borderRadius: BorderRadius.circular(6.0),
-                            boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () async {
-                              Navigator.of(context).push(new MaterialPageRoute(builder: (_) => ProdukMlmUI()));
-                            },
-                            child: Center(
-                              child: Text("Masuk",style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-                            ),
-                          ),
-                        ),
-                      ),
-                      onTap: (){
-                        Navigator.of(context).push(new MaterialPageRoute(builder: (_) => ProdukMlmUI()));
-                      },
-                    )
-                  ],
-                ),
-            )
+
+
           ],
         )
     );

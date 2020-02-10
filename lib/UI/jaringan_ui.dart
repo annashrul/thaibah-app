@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,10 @@ import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/dataDiri/createMember.dart';
 import 'package:thaibah/UI/component/detailDownline.dart';
 import 'package:thaibah/bloc/downlineBloc.dart';
+import 'package:thaibah/config/api.dart';
+
+import 'Homepage/index.dart';
+import 'Widgets/pin_screen.dart';
 
 
 class JaringanUI extends StatefulWidget {
@@ -38,6 +44,7 @@ class _JaringanUIState extends State<JaringanUI> {
       new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral:kdReferral,name: name,)),
     ).whenComplete(get);
   }
+
 
 
   @override
@@ -86,15 +93,15 @@ class _JaringanUIState extends State<JaringanUI> {
         ),
       ),
       body: StreamBuilder(
-        stream: detailDownlineBloc.allDetailDownline,
-        builder: (context, AsyncSnapshot<DownlineModel> snapshot) {
-          if(snapshot.hasData){
-            return buildContent(snapshot, context);
-          }else if(snapshot.hasError){
-            return Text(snapshot.error.toString());
+          stream: detailDownlineBloc.allDetailDownline,
+          builder: (context, AsyncSnapshot<DownlineModel> snapshot) {
+            if(snapshot.hasData){
+              return buildContent(snapshot, context);
+            }else if(snapshot.hasError){
+              return Text(snapshot.error.toString());
+            }
+            return _loading();
           }
-          return _loading();
-        }
       ),
     );
   }
@@ -188,6 +195,20 @@ class _JaringanUIState extends State<JaringanUI> {
                                   style: TextStyle(fontSize:11.0,color: Colors.grey, fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
                                   children: <TextSpan>[
                                     TextSpan(text: ' Rp ${formatter.format(int.parse(snapshot.data.result[index].downlineOmset))}', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily: 'Rubik',fontSize: 11.0)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              RichText(
+                                text: TextSpan(
+                                  text: 'Jumlah STP : ',
+                                  style: TextStyle(fontSize:11.0,color: Colors.grey, fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                                  children: <TextSpan>[
+                                    TextSpan(text: '${snapshot.data.result[index].downlineStp}', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily: 'Rubik',fontSize: 11.0)),
                                   ],
                                 ),
                               ),

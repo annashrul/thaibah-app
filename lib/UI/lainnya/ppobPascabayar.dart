@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/PPOB/PPOBPascaCekTagihanModel.dart';
 import 'package:thaibah/Model/PPOB/PPOBPascaModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/ppob/detailPpobPasca.dart';
 import 'package:thaibah/bloc/PPOB/PPOBPascaBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/PPOB/PPOBPascaProvider.dart';
 
@@ -38,9 +43,6 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
     if(res is PpobPascaCekTagihanModel){
       PpobPascaCekTagihanModel results = res;
       if(results.status == 'success'){
-        setState(() {
-          isLoading = false;
-        });
         Navigator.of(context, rootNavigator: true).push(
           new CupertinoPageRoute(builder: (context) => DetailPpobPasca(
               param : "${widget.title}",
@@ -90,6 +92,8 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
       duration: Duration(seconds: 3),
     ));
   }
+
+
   @override
   void initState() {
     super.initState();
@@ -123,7 +127,7 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
           ),
         ),
       ),
-      body: ListView(
+      body: isLoading==true ? Container(child: Center(child: CircularProgressIndicator())):ListView(
         children: <Widget>[
           Container(
             padding:EdgeInsets.only(left:10.0,right:10.0),

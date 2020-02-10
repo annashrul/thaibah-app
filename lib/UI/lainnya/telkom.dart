@@ -40,6 +40,7 @@ class _TelkomState extends State<Telkom> {
         setState(() {
           isLoading = false;
         });
+
         Navigator.of(context, rootNavigator: true).push(
           new CupertinoPageRoute(builder: (context) => DetailPpobPasca(
               param : "Internet / Telepon",

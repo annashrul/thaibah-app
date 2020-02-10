@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/penukaranBonus.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
+import 'package:thaibah/config/api.dart';
 
 
 class UpdateKtp extends StatefulWidget {
@@ -41,102 +44,162 @@ class _UpdateKtpState extends State<UpdateKtp> {
       }
     });
   }
+
+  Timer _timer;
+  _callBackPins(BuildContext context,bool isTrue) async{
+    if(isTrue){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+    }
+    else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("Pin Salah!"),
+            content: new Text("Masukan pin yang sesuai."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+  void _initializeTimer() {
+    _timer = Timer.periodic(Duration(seconds:ApiService().timerActivity), (Timer t) => _logOutUser());
+    print(_timer);
+  }
+  void _logOutUser()  {
+    print('logout');
+    _timer.cancel();
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+        builder: (BuildContext context) => PinScreen(callback: _callBackPins)
+    ), (Route<dynamic> route) => false);
+    print("############################ EWEH AKTIFITAS KUDU NGABUSKEUN PIN  ########################");
+  }
+  void _handleUserInteraction([_]) {
+    if (!_timer.isActive) {
+      print('_handleUserInteraction');
+      return;
+    }
+    print(_timer.isActive);
+    _timer.cancel();
+    _initializeTimer();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _initializeTimer();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
+    return GestureDetector(
+      onTap: _handleUserInteraction,
+      onPanDown: _handleUserInteraction,
+      onScaleStart: _handleUserInteraction,
+      child: Scaffold(
+        key: scaffoldKey,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
           ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Upload Ktp", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left:16.0,right:16.0,top:16.0,bottom:0.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text("Silahkan Upload atau Ambil Photo KTP",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
-                  Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.only(top:10.0),
-                      child: OutlineButton(
-                        borderSide: BorderSide(color: Colors.grey,width: 1.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Radio(
-                                  value: 'camera',
-                                  groupValue: _radioValue2,
-                                  onChanged: _handleRadioValueChange2,
-                                ),
-
-                                new Text('Kamera',style: new TextStyle(fontSize: 11.0,fontFamily: "Rubik")),
-                                Radio(
-                                  value: 'gallery',
-                                  groupValue: _radioValue2,
-                                  onChanged: _handleRadioValueChange2,
-                                ),
-                                new Text('Galeri',style: new TextStyle(fontSize: 11.0,fontFamily: "Rubik")),
-                              ],
-                            ),
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
-                            _radioValue2 == 'camera' ? Icon(Icons.camera_alt) : Icon(Icons.folder),
-                            _image == null ? _radioValue2 == 'camera' ? Text('Ambil Photo',style:TextStyle(fontFamily: "Rubik")) : Text('Upload Photo',style:TextStyle(fontFamily: "Rubik")) : Text('$_image',style:TextStyle(fontFamily: "Rubik")),
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
-                          ],
-                        ),
-                        onPressed: () async {
-                          try{
-                            var image = await ImagePicker.pickImage(
-                              source: _radioValue2 == 'camera' ? ImageSource.camera : ImageSource.gallery,
-                              maxHeight: 600, maxWidth: 600,
-                            );
-                            setState(() {_image = image;});
-                          }catch(e){
-                            print(e);
-                          }
-                        },
-                      )
-                  ),
+          centerTitle: false,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: <Color>[
+                  Color(0xFF116240),
+                  Color(0xFF30cc23)
                 ],
               ),
             ),
-            Flexible(
-                child: _image == null ? new Center(child: Text('')): Container(
-                  padding: EdgeInsets.only(left:16.0,right:16.0),
-                  child: new Image.file(_image,fit: BoxFit.fill,filterQuality: FilterQuality.high,),
-                )
-            ),
-          ],
+          ),
+          elevation: 1.0,
+          automaticallyImplyLeading: true,
+          title: new Text("Upload Ktp", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
         ),
-      ),
-      bottomNavigationBar: _bottomNavBarBeli(context),
+        body: Container(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(left:16.0,right:16.0,top:16.0,bottom:0.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text("Silahkan Upload atau Ambil Photo KTP",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+                    Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.only(top:10.0),
+                        child: OutlineButton(
+                          borderSide: BorderSide(color: Colors.grey,width: 1.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Radio(
+                                    value: 'camera',
+                                    groupValue: _radioValue2,
+                                    onChanged: _handleRadioValueChange2,
+                                  ),
 
+                                  new Text('Kamera',style: new TextStyle(fontSize: 11.0,fontFamily: "Rubik")),
+                                  Radio(
+                                    value: 'gallery',
+                                    groupValue: _radioValue2,
+                                    onChanged: _handleRadioValueChange2,
+                                  ),
+                                  new Text('Galeri',style: new TextStyle(fontSize: 11.0,fontFamily: "Rubik")),
+                                ],
+                              ),
+                              SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
+                              _radioValue2 == 'camera' ? Icon(Icons.camera_alt) : Icon(Icons.folder),
+                              _image == null ? _radioValue2 == 'camera' ? Text('Ambil Photo',style:TextStyle(fontFamily: "Rubik")) : Text('Upload Photo',style:TextStyle(fontFamily: "Rubik")) : Text('$_image',style:TextStyle(fontFamily: "Rubik")),
+                              SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
+                            ],
+                          ),
+                          onPressed: () async {
+                            try{
+                              var image = await ImagePicker.pickImage(
+                                source: _radioValue2 == 'camera' ? ImageSource.camera : ImageSource.gallery,
+                                maxHeight: 600, maxWidth: 600,
+                              );
+                              setState(() {_image = image;});
+                            }catch(e){
+                              print(e);
+                            }
+                          },
+                        )
+                    ),
+                  ],
+                ),
+              ),
+              Flexible(
+                  child: _image == null ? new Center(child: Text('')): Container(
+                    padding: EdgeInsets.only(left:16.0,right:16.0),
+                    child: new Image.file(_image,fit: BoxFit.fill,filterQuality: FilterQuality.high,),
+                  )
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: _bottomNavBarBeli(context),
+
+      ),
     );
   }
 

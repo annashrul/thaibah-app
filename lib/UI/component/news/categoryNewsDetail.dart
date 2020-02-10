@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/detailNewsPerCategoryModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/detail_berita_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
+import 'package:thaibah/config/api.dart';
 
 class CategoryNewsDetail extends StatefulWidget {
   String category;
@@ -77,15 +82,15 @@ class _CategoryNewsDetailState extends State<CategoryNewsDetail> {
                             ),
                           ),
                           Container(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  SkeletonFrame(width: 215,height: 16)
-                                ],
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      SkeletonFrame(width: 215,height: 16)
+                                    ],
+                                  )
                               )
-                            )
                           )
                         ],
                       ),

@@ -1,10 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:thaibah/UI/component/History/historyBonus.dart';
 import 'package:thaibah/UI/component/History/historyMain.dart';
 import 'package:thaibah/UI/component/History/historyVoucher.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
+
+import 'Homepage/index.dart';
+import 'Widgets/pin_screen.dart';
 
 
 class HistoryUI extends StatefulWidget {
@@ -28,12 +33,11 @@ class _HistoryUIState extends State<HistoryUI> with SingleTickerProviderStateMix
     super.initState();
 
   }
-
   @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
-    return MaterialApp(
+    return  MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
           length: 3,
@@ -45,7 +49,9 @@ class _HistoryUIState extends State<HistoryUI> with SingleTickerProviderStateMix
                   Icons.keyboard_backspace,
                   color: Colors.white,
                 ),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
               ),
               centerTitle: false,
               elevation: 0.0,
@@ -76,6 +82,7 @@ class _HistoryUIState extends State<HistoryUI> with SingleTickerProviderStateMix
               ),
             ),
             body: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
                 children: <Widget>[
                   HistoryMain(),
                   HistoryBonus(),

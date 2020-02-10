@@ -9,10 +9,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/depositManual/detailDepositProvider.dart';
@@ -144,6 +146,12 @@ class _DetailDepositState extends State<DetailDeposit> {
 
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var cek;
     if(widget.status == 0){
@@ -154,14 +162,16 @@ class _DetailDepositState extends State<DetailDeposit> {
       cek = 'Ditolak';
     }
     return Scaffold(
-      key: scaffoldKey,
+        key: scaffoldKey,
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(
               Icons.keyboard_backspace,
               color: Colors.white,
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
           ),
           automaticallyImplyLeading: true,
           title: new Text("Riwayat Topup", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
@@ -189,32 +199,25 @@ class _DetailDepositState extends State<DetailDeposit> {
               SizedBox(
                 height: 20.0,
               ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(
-
-                  children: <Widget>[
-                    Container(
-                      height: 500,
-                      width: MediaQuery.of(context).size.width/1.060,
-                      child: CachedNetworkImage(
-                          imageUrl: widget.bukti != '' ? widget.bukti:'http://lequytong.com/Content/Images/no-image-02.png',
-                          placeholder: (context, url) => Center(
-                            child: SkeletonFrame(width: 400,height: 400),
-                          ),
-                          errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                          imageBuilder: (context, imageProvider) => Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                          ),
-                        ),
+              Container(
+                padding:EdgeInsets.only(left:10.0,right:10.0),
+                height: MediaQuery.of(context).size.height/1.3,
+                width: MediaQuery.of(context).size.width/1,
+                child: CachedNetworkImage(
+                  imageUrl: widget.bukti != '' ? widget.bukti:'http://lequytong.com/Content/Images/no-image-02.png',
+                  placeholder: (context, url) => Center(
+                    child: SkeletonFrame(width: 400,height: 400),
+                  ),
+                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                  imageBuilder: (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -239,7 +242,7 @@ class _DetailDepositState extends State<DetailDeposit> {
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topRight: Radius.circular(10)),
                 ),
-                color: Styles.primaryColor,
+                color: Color(0xFF30cc23),
                 onPressed: (){
                   setState(() {
                     isLoading = true;
@@ -383,6 +386,7 @@ class CreditCardContainer extends StatelessWidget {
                 fontSize: 19,
               ),
             ),
+
           ],
         ),
       ),

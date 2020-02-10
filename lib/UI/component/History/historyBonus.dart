@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/historyModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/transaction/historyBloc.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 
 class HistoryBonus extends StatefulWidget {
@@ -52,7 +57,6 @@ class _HistoryBonusState extends State<HistoryBonus> {
       print(isLoading);
     }
   }
-
   Future _search() async{
     if(dateController.text != '' && searchController.text != ''){
       historyBloc.fetchHistoryList('bonus', 1, perpage, '$from','$to',searchController.text);
@@ -68,7 +72,6 @@ class _HistoryBonusState extends State<HistoryBonus> {
     }
     return;
   }
-
   void load() {
     print("load $perpage");
     setState(() {
@@ -90,6 +93,9 @@ class _HistoryBonusState extends State<HistoryBonus> {
     load();
     return true;
   }
+
+
+
 
   @override
   void initState() {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:audioplayers/audio_cache.dart';
@@ -8,14 +9,19 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/user_location.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/prayerBloc.dart';
+import 'package:thaibah/config/api.dart';
 
 enum PlayerState { stopped, playing, paused }
 typedef void OnError(Exception exception);
 
 class PrayerList extends StatefulWidget {
-  PrayerList({Key key}) : super(key: key);
+  final String lng;
+  final String lat;
+  PrayerList({Key key,this.lng,this.lat}) : super(key: key);
   @override
   _PrayerListState createState() => _PrayerListState();
 }
@@ -108,14 +114,29 @@ class _PrayerListState extends State<PrayerList> {
     setState(() => playerState = PlayerState.stopped);
   }
 
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
-    var userLocation = Provider.of<UserLocation>(context);
-    prayerBloc.fetchPrayerList(userLocation.longitude==null?'':userLocation.longitude,userLocation.latitude==null?'':userLocation.latitude);
-    return new Scaffold(
+//    var userLocation = Provider.of<UserLocation>(context);
+//    prayerBloc.fetchPrayerList(userLocation.longitude==null?'':userLocation.longitude,userLocation.latitude==null?'':userLocation.latitude);
+    prayerBloc.fetchPrayerList(widget.lng, widget.lat);
+    return Scaffold(
       appBar: new AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+          onPressed: (){
+            Navigator.of(context).pop();
+          },
+        ),
         title: Text("Jadwal Sholat ",style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -152,33 +173,33 @@ class _PrayerListState extends State<PrayerList> {
             }
             return Container(
               child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: 5,
-                itemBuilder: (context,i){
-                  return Card(
-                    color: Colors.white,
-                    elevation: 0.0,
-                    margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                    child: Container(
-                      decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0)),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                        title: SkeletonFrame(width: _width/2,height: 16),
-                        subtitle: Container(
-                          margin: EdgeInsets.only(top: 10.0),
-                          child: Row(
-                            children: <Widget>[
-                              SkeletonFrame(width: _width/5,height: 16),
-                              SizedBox(width: 5.0),
-                              SkeletonFrame(width: _width/4,height: 16),
-                            ],
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: 5,
+                  itemBuilder: (context,i){
+                    return Card(
+                      color: Colors.white,
+                      elevation: 0.0,
+                      margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                      child: Container(
+                        decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0)),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                          title: SkeletonFrame(width: _width/2,height: 16),
+                          subtitle: Container(
+                            margin: EdgeInsets.only(top: 10.0),
+                            child: Row(
+                              children: <Widget>[
+                                SkeletonFrame(width: _width/5,height: 16),
+                                SizedBox(width: 5.0),
+                                SkeletonFrame(width: _width/4,height: 16),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }
+                    );
+                  }
 
 
               ),

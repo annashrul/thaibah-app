@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Model/islamic/doaModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
+import 'package:thaibah/config/api.dart';
 
 class ListDoaHadist extends StatefulWidget {
   final String type,id,title,search;

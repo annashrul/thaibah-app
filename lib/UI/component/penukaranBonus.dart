@@ -19,6 +19,7 @@ import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/dataDiri/updateKtp.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 
 
@@ -115,6 +116,8 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
     }
   }
 
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -126,52 +129,9 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
     sampleData.add(new RadioModel(false, '500,000.00', 'Rp 500,000.00'));
     sampleData.add(new RadioModel(false, '1,000,000.00', 'Rp 1,000,000.00'));
 
-
   }
 
-  Widget _saldoCepat(){
-    return Container(
-      color: Colors.transparent,
-      padding: EdgeInsets.only(left: 0, right: 0),
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-            GridView.count(
-              padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              crossAxisCount: 3,
-              physics: NeverScrollableScrollPhysics(),
-              childAspectRatio: 2,
-              shrinkWrap: true,
-              children: <Widget>[
-                cepat("100000", "Rp. 100.000,-"),
-                cepat("200000", "Rp. 200.000,-"),
-                cepat("300000", "Rp. 300.000,-"),
-                cepat("400000", "Rp. 400.000,-"),
-                cepat("500000", "Rp. 500.000,-"),
-                cepat("1000000", "Rp. 1.000.000,-"),
-              ],
-            ),
-          ]
-      ),
-    );
-  }
 
-  Widget cepat(String val, String nominal){
-    return RaisedButton(
-      elevation: 0.5,
-      padding: EdgeInsets.all(1),
-      color: Colors.white,
-      onPressed: () {
-        saldoController.text = "$val";
-      },
-      child: Text("$nominal",style: TextStyle(color:Color(0xFF116240),fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-    );
-  }
 
 
   @override

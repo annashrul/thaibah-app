@@ -12,6 +12,7 @@ import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/PPOB/PPOBPraBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 
 
@@ -63,6 +64,7 @@ class _DetailPulsaUIState extends State<DetailPulsaUI> with SingleTickerProvider
   bool _isLoading = false;
 
 
+
   @override
   initState(){
     super.initState();
@@ -78,106 +80,91 @@ class _DetailPulsaUIState extends State<DetailPulsaUI> with SingleTickerProvider
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
     return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: ()=>Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
+        key: scaffoldKey,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+            onPressed: ()=>Navigator.of(context).pop(),
+          ),
+          centerTitle: false,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: <Color>[
+                  Color(0xFF116240),
+                  Color(0xFF30cc23)
+                ],
+              ),
             ),
           ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Detail Pembelian ${widget.cmd.replaceAll('_', '-')}", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+          elevation: 1.0,
+          automaticallyImplyLeading: true,
+          title: new Text("Detail Pembelian ${widget.cmd.replaceAll('_', '-')}", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
 
-      ),
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              child: homePageContent(nominal: widget.price),
-              top: 0,
-              right: 0,
-              left: 0,
-            ),
-            Positioned(
-              top: 215,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: ListView(
-                children: <Widget>[
-                  TokenCard(
-                    param: widget.param,
-                    iconUrl: widget.imgUrl,
-                    provider: widget.provider,
-                    no: widget.no,
-                    price: widget.nominal,
-                    note: widget.note,
-                  ),
-                  Container(
-                    margin:
-                    EdgeInsets.symmetric(vertical: 9.0, horizontal: 21.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15.0),
+        ),
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                child: homePageContent(nominal: widget.price),
+                top: 0,
+                right: 0,
+                left: 0,
+              ),
+              Positioned(
+                top: 215,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: ListView(
+                  children: <Widget>[
+                    TokenCard(
+                      param: widget.param,
+                      iconUrl: widget.imgUrl,
+                      provider: widget.provider,
+                      no: widget.no,
+                      price: widget.nominal,
+                      note: widget.note,
                     ),
-                    padding: EdgeInsets.all(21),
-                    child: Row(
-                      children: <Widget>[
-                        Material(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              shape: BoxShape.circle,
-                            ),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 21.0),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        shape: BoxShape.circle,
+                      ),
+                      child: InkWell(
+                        child: Container(
+                          width: ScreenUtil.getInstance().setWidth(595),
+                          height: ScreenUtil.getInstance().setHeight(100),
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
+                              borderRadius: BorderRadius.circular(6.0),
+                              boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
                             child: InkWell(
-                              child: Container(
-                                width: ScreenUtil.getInstance().setWidth(595),
-                                height: ScreenUtil.getInstance().setHeight(100),
-                                decoration: BoxDecoration(
-                                    gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
-                                    borderRadius: BorderRadius.circular(6.0),
-                                    boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {
-                                      print("${widget.no}, ${widget.code},${widget.raw_price},${widget.fee_charge}");
-                                      _pinBottomSheet(context);
-                                    },
-                                    child: Center(
-                                      child: Text("Bayar",style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-                                    ),
-                                  ),
-                                ),
+                              onTap: () {
+                                print("${widget.no}, ${widget.code},${widget.raw_price},${widget.fee_charge}");
+                                _pinBottomSheet(context);
+                              },
+                              child: Center(
+                                child: Text("Bayar",style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
                               ),
                             ),
                           ),
                         ),
-
-                      ],
-                    ),
-                  ),
-                ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      )
+            ],
+          ),
+        )
     );
   }
 

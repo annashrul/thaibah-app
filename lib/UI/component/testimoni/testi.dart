@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/testimoni/testiKavling.dart';
 import 'package:thaibah/UI/component/testimoni/testiSuplemen.dart';
 import 'package:thaibah/config/api.dart';
@@ -47,8 +49,10 @@ class _TestimoniState extends State<Testimoni> with SingleTickerProviderStateMix
   }
 
 
+
   @override
   void initState() {
+    print('#################### AKTIF INDEX TESTIMONI #####################');
     currentPos = 0;
     stateText = "Video not started";
     super.initState();

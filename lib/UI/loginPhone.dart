@@ -52,10 +52,8 @@ class _LoginPhoneState extends State<LoginPhone> {
     String rplc = _noHpController.text[0];
     String replaced = '';
     String cek62 = "${rplc}${indexHiji}";
-    print(replaced);
+
     if(rplc == '0'){
-      print("nu kahiji 0");
-      print("####################${_noHpController.text.substring(1,_noHpController.text.length)}####################");
       replaced = "${_noHpController.text.substring(1,_noHpController.text.length)}";
     }
     else if(cek62 == '62'){
@@ -63,10 +61,10 @@ class _LoginPhoneState extends State<LoginPhone> {
     }
     else{
       replaced = "${_noHpController.text}";
-      print("nu kahiji lain 0");
+
     }
     String no = "${codeCountry}${replaced}";
-    print(no);
+
 
     var status = await OneSignal.shared.getPermissionSubscriptionState();
     String onesignalUserId = status.subscriptionStatus.userId;
@@ -78,7 +76,6 @@ class _LoginPhoneState extends State<LoginPhone> {
       var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId);
       if(res is AuthModel){
         AuthModel result = res;
-        print(result.status);
         if(result.status == 'success'){
           setState(() {
             _isLoading = false;
@@ -227,7 +224,6 @@ class _LoginPhoneState extends State<LoginPhone> {
                                   onChanged: (CountryCode  countryCode){
                                     setState(() {
                                       codeCountry = "${countryCode.dialCode.replaceAll('+', '')}";
-//                                      print("${countryCode.dialCode.replaceAll('+', '')}");
                                     });
                                   },
                                   initialSelection: 'ID',
@@ -554,7 +550,7 @@ class _SecondScreenState extends State<SecondScreen> {
                 return true;
               },
               onSuccess: () {
-                print(currentText);
+
                 setState(() {
                   isLoading = true;
                 });
@@ -609,7 +605,7 @@ class _SecondScreenState extends State<SecondScreen> {
 //            clearButtonIcon: Icon(Icons.backspace, size: 30),
             clearInput: true,
             onClear: (value){
-              print(value);
+
             },
           ),
         ),

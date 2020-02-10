@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,8 +12,10 @@ import 'package:intl/intl.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
 
 class DetailTopUp extends StatefulWidget {
@@ -119,19 +122,27 @@ class _DetailTopUpState extends State<DetailTopUp> {
     ));
   }
 
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
     final key = new GlobalKey<ScaffoldState>();
-
     return Scaffold(
         key: key,
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-            }
+              icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+              }
           ),
           centerTitle: false,
           flexibleSpace: Container(
@@ -152,176 +163,150 @@ class _DetailTopUpState extends State<DetailTopUp> {
         ),
         resizeToAvoidBottomInset: false,
 
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(bottom: 20.0),
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    new BoxShadow(
-                      color: Colors.black26,
-                      offset: new Offset(0.0, 2.0),
-                      blurRadius: 25.0,
-                    )
-                  ],
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(32),
-                    bottomRight: Radius.circular(32)
-                  )
+        body: Scrollbar(
+            child: ListView(
+              children: <Widget>[
+                SizedBox(height: 30),
+                Image.asset(
+                  'assets/images/checkmark.gif',
+                  height: MediaQuery.of(context).size.height / 7,
+                  fit: BoxFit.fitHeight,
                 ),
-                alignment: Alignment.topCenter,
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: ListView(
-                  children: <Widget>[
-                    SizedBox(height: 30),
-                    Image.asset(
-                      'assets/images/checkmark.gif',
-                      height: MediaQuery.of(context).size.height / 7,
-                      fit: BoxFit.fitHeight,
-                    ),
-                    SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        'Silahkan transfer tepat sebesar',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 8.0),
-                      child: Text(
-                        widget.amount,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'Silahkan transfer tepat sebesar',
+                    style: TextStyle(fontFamily:"Rubik",fontWeight: FontWeight.bold, fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 8.0),
+                  child: Text(
+                    widget.amount,
+                    style: TextStyle(fontFamily:"Rubik",fontWeight: FontWeight.bold, fontSize: 30),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
 
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                      child: Text(
-                        'Pembayaran dapat dilakukan ke rekening berikut :',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Card(
-                      elevation: 0.0,
-                      margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-                      child: Container(
-                        padding:EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(color: Colors.white),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                          leading: Container(
-                            width: 90.0,
-                            height: 50.0,
-                            padding: EdgeInsets.all(10),
-                            child: CircleAvatar(
-                              minRadius: 150,
-                              maxRadius: 150,
-                              child: CachedNetworkImage(
-                                imageUrl: widget.picture,
-                                placeholder: (context, url) => Center(
-                                  child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-                                ),
-                                errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                imageBuilder: (context, imageProvider) => Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: new BorderRadius.circular(0.0),
-                                    color: Colors.white,
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                  child: Text(
+                    'Pembayaran dapat dilakukan ke rekening berikut :',
+                    style: TextStyle(fontFamily:"Rubik",fontWeight: FontWeight.bold, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Card(
+                  elevation: 0.0,
+                  margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  child: Container(
+                    padding:EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(color: Colors.white),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                      leading: Container(
+                        width: 90.0,
+                        height: 50.0,
+                        padding: EdgeInsets.all(10),
+                        child: CircleAvatar(
+                          minRadius: 150,
+                          maxRadius: 150,
+                          child: CachedNetworkImage(
+                            imageUrl: widget.picture,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+                            ),
+                            errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: new BorderRadius.circular(0.0),
+                                color: Colors.white,
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.fill,
                                 ),
                               ),
                             ),
                           ),
-                          title: Text(widget.atas_nama),
-                          subtitle: GestureDetector(
-                            onTap: () {
-                              Clipboard.setData(new ClipboardData(text: widget.no_rekening));
-                              key.currentState.showSnackBar(new SnackBar(content: new Text("no rekening berhasil disalin")));
-                            },
-                            child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text( widget.no_rekening),
-                                  SizedBox(width: 5),
-                                  Icon(Icons.content_copy, color: Colors.black, size: 15,),
-                                ]
-                            ),
-
-                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                        child: Container(
-                          color: Colors.green,
-                          padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                          child: Text(
-                            'VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT',
-                            style: TextStyle(fontSize: 14,fontFamily: 'Rubik',color:Colors.white,fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                        child: Container(
-                          color: const Color(0xffF4F7FA),
-                          padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                          child: RichText(
-                            text: TextSpan(
-                              text: 'Anda Dapat Melakukan Transfer Menggunakan ATM, Mobile Banking atau SMS Banking Dengan Memasukan Kode Bank',
-                              style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.black),
-                              children: <TextSpan>[
-                                TextSpan(text: ' ${widget.bank_name} ${widget.bank_code}',style: TextStyle(color: Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                TextSpan(text: ' Di Depan No Rekening Atas Nama',style: TextStyle(fontSize: 12,fontFamily: 'Rubik')),
-                                TextSpan(text: ' ${widget.atas_nama}',style: TextStyle(color: Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                              ]
-                            ),
-                          ),
-                        )
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                      child: Container(
-                        color: const Color(0xffF4F7FA),
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                        child: Text(
-                          'mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi',
-                          style: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
-                          textAlign: TextAlign.left,
+                      title: Text(widget.atas_nama),
+                      subtitle: GestureDetector(
+                        onTap: () {
+                          Clipboard.setData(new ClipboardData(text: widget.no_rekening));
+                          key.currentState.showSnackBar(new SnackBar(content: new Text("no rekening berhasil disalin")));
+                        },
+                        child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text( widget.no_rekening),
+                              SizedBox(width: 5),
+                              Icon(Icons.content_copy, color: Colors.black, size: 15,),
+                            ]
                         ),
-                      )
+
+                      ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                      child: Container(
-                        color: const Color(0xffF4F7FA),
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                        child: Text(
-                          'Pastikan anda transfer sebelum tanggal $hari-$bulan-$tahun 23:00 WIB atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini atau di halaman riwayat topup',
-                          style: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
-                          textAlign: TextAlign.left,
-                        ),
-                      )
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 20,)
-            ],
-          ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                    child: Container(
+                      color: Colors.green,
+                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                      child: Text(
+                        'VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT',
+                        style: TextStyle(fontSize: 14,fontFamily: 'Rubik',color:Colors.white,fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                    child: Container(
+                      color: const Color(0xffF4F7FA),
+                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                      child: RichText(
+                        text: TextSpan(
+                            text: 'Anda Dapat Melakukan Transfer Menggunakan ATM, Mobile Banking atau SMS Banking Dengan Memasukan Kode Bank',
+                            style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.black),
+                            children: <TextSpan>[
+                              TextSpan(text: ' ${widget.bank_name} ${widget.bank_code}',style: TextStyle(color: Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                              TextSpan(text: ' Di Depan No Rekening Atas Nama',style: TextStyle(fontSize: 12,fontFamily: 'Rubik')),
+                              TextSpan(text: ' ${widget.atas_nama}',style: TextStyle(color: Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                            ]
+                        ),
+                      ),
+                    )
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                    child: Container(
+                      color: const Color(0xffF4F7FA),
+                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                      child: Text(
+                        'mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi',
+                        style: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
+                        textAlign: TextAlign.left,
+                      ),
+                    )
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                    child: Container(
+                      color: const Color(0xffF4F7FA),
+                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                      child: Text(
+                        'Pastikan anda transfer sebelum tanggal $hari-$bulan-$tahun 23:00 WIB atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini atau di halaman riwayat topup',
+                        style: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
+                        textAlign: TextAlign.left,
+                      ),
+                    )
+                ),
+              ],
+            )
         ),
         bottomNavigationBar: _bottomNavBarBeli(context)
     );

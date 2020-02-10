@@ -17,7 +17,7 @@ class TabTokenPra extends StatefulWidget {
 class _TabTokenPraState extends State<TabTokenPra> {
   double _height;
   double _width;
-
+  var scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     // TODO: implement initState
@@ -27,20 +27,44 @@ class _TabTokenPraState extends State<TabTokenPra> {
 
   @override
   Widget build(BuildContext context) {
-//    ppobPraBloc.fetchPpobPra("TOKEN", widget.nohp);
-//    pulsaBloc.fetchPulsa("TOKEN", widget.nohp);
-    return StreamBuilder(
-      stream: ppobPraBloc.getResult,
-      builder: (context, AsyncSnapshot<PpobPraModel> snapshot) {
-        if (snapshot.hasData) {
-          return vwPulsa(snapshot, context);
-        } else if (snapshot.hasError) {
-          return Text(snapshot.error.toString());
-        }
-        return Container(
-            padding: EdgeInsets.all(20.0),
-            child: Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF116240)))));
-      },
+    return Scaffold(
+      key: scaffoldKey,
+      appBar: new AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        centerTitle: false,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: <Color>[
+                Color(0xFF116240),
+                Color(0xFF30cc23)
+              ],
+            ),
+          ),
+        ),
+        automaticallyImplyLeading: true,
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        title: Text('Internet / Telepon', style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+      ),
+      body: StreamBuilder(
+        stream: ppobPraBloc.getResult,
+        builder: (context, AsyncSnapshot<PpobPraModel> snapshot) {
+          if (snapshot.hasData) {
+            return vwPulsa(snapshot, context);
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          return Container(
+              padding: EdgeInsets.all(20.0),
+              child: Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF116240)))));
+        },
+      ),
     );
   }
 

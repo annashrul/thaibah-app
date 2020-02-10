@@ -21,9 +21,7 @@ import 'package:thaibah/resources/location_service.dart';
 import 'package:connectivity/connectivity.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-main() {
-  runApp(MyApp());
-}
+main() => runApp(MyApp());
 
 
 class MyApp extends StatefulWidget {

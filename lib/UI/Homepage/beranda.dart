@@ -6,17 +6,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:pinput/pin_put/pin_put.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
-import 'package:thaibah/Model/user_location.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Homepage/news.dart';
 import 'package:thaibah/UI/Homepage/newsCategory.dart';
@@ -24,7 +21,6 @@ import 'package:thaibah/UI/Widgets/mainCompass.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/asma_ui.dart';
-import 'package:thaibah/UI/component/about.dart';
 import 'package:thaibah/UI/component/inspirasi.dart';
 import 'package:thaibah/UI/component/inspirasiHome.dart';
 import 'package:thaibah/UI/component/news/newsPage.dart';
@@ -41,13 +37,10 @@ import 'package:thaibah/UI/lainnya/masjidTerdekat.dart';
 import 'package:thaibah/UI/lainnya/ppobPascabayar.dart';
 import 'package:thaibah/UI/lainnya/ppobPrabayar.dart';
 import 'package:thaibah/UI/lainnya/subDoaHadist.dart';
-import 'package:thaibah/UI/lainnya/telkom.dart';
-import 'package:thaibah/UI/lainnya/wifiId.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/UI/ppob/listrik_ui.dart';
 import 'package:thaibah/UI/ppob/pulsa_ui.dart';
 import 'package:thaibah/UI/ppob/zakat_ui.dart';
-import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/UI/quran_list_ui.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/UI/transfer_ui.dart';
@@ -56,8 +49,6 @@ import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thaibah/resources/location_service.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
@@ -68,10 +59,10 @@ class Beranda extends StatefulWidget {
   final String lng;
   Beranda({this.lat,this.lng});
   @override
-  _BerandaState createState() => _BerandaState();
+  BerandaState createState() => BerandaState();
 }
 
-class _BerandaState extends State<Beranda>{
+class BerandaState extends State<Beranda>{
   final TextStyle whiteText = TextStyle(color: Colors.white);
   final userRepository = UserRepository();
 
@@ -79,6 +70,7 @@ class _BerandaState extends State<Beranda>{
   String _hijri='',_masehi='',_name='',_saldo="Rp 0",_saldoBonus="0",_inspiration='',_saldoMain="0", _saldoVoucher="0";
   String pinku = "", id="", _nohp='', _level='';
   String _picture='',_kdRefferal='',_qr='', _thumbnail='', _versionCode='',_levelPlatinum='';
+  int levelPlatinumRaw=0;
   bool showAlignmentCards = false;
   bool isLoading = false;
   double _height;
@@ -103,7 +95,6 @@ class _BerandaState extends State<Beranda>{
     print(prefs.getBool('isPin'));
     final isPinZero  = await userRepository.getPin();
     cekStatusLogin();
-
     String id = await userRepository.getID();
     var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
     if (jsonString.statusCode == 200) {
@@ -131,6 +122,7 @@ class _BerandaState extends State<Beranda>{
       _thumbnail  = (response.result.thumbnail);
       _versionCode = (response.result.versionCode);
       _levelPlatinum = (response.result.levelPlatinum);
+      levelPlatinumRaw = (response.result.levelPlatinumRaw);
 
       if(_versionCode != ApiService().versionCode){
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
@@ -150,7 +142,6 @@ class _BerandaState extends State<Beranda>{
             print("############################ KUDU NGABUSKEUN PIN ########################");
           }else{
             print("############################ TEU KUDU NGABUSKEUN PIN $isPinZero ########################");
-
           }
         }
       }
@@ -169,7 +160,6 @@ class _BerandaState extends State<Beranda>{
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
     }
     else{
-//      setState(() {Navigator.of(context).pop();});
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -446,12 +436,12 @@ class _BerandaState extends State<Beranda>{
     loadData();
     loadPrayer();
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     cekStatusLogin();
-//    print("######################################")
     loadData();
     versi = true;
     isLoading=true;
@@ -461,21 +451,46 @@ class _BerandaState extends State<Beranda>{
     var initSetttings = new InitializationSettings(android, iOS);
     flutterLocalNotificationsPlugin.initialize(initSetttings, onSelectNotification: onSelectNotification);
     _timeString = "${DateTime.now().hour} : ${DateTime.now().minute} :${DateTime.now().second}";
-//    _timer = new Timer.periodic(Duration(seconds:1), (Timer t) => _getCurrentTime());
+    _timer = new Timer.periodic(Duration(seconds:1), (Timer t) => _getCurrentTime());
     _timeStringClone = "${DateTime.now().hour} : ${DateTime.now().minute} :${DateTime.now().second}";
-//    _timer2 = new Timer.periodic(Duration(seconds:1), (Timer t) => _getCurrentTimeClone());
+    _timer2 = new Timer.periodic(Duration(seconds:1), (Timer t) => _getCurrentTimeClone());
 //    var userLocation = Provider.of<UserLocation>(context);
     loadPrayer();
     print(isActive);
     latitude  = widget.lat;
     longitude = widget.lng;
+    print('########################## ACTIVE HALAMAN BERANDA #########################');
+
+
   }
+
+
+
+
   @override
   void dispose(){
+    print('########################## DISPOSE #########################');
     super.dispose();
-//    _timer.cancel();
-//    _timer2.cancel();
+    _timer.cancel();
+    _timer2.cancel();
   }
+
+
+
+
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+
+    loadData();
+    print('########################## DEACTIVE HALAMAN BERANDA #########################');
+  }
+
+
+
+
   Duration parseDuration(String s) {
     int hours = 0;
     int minutes = 0;
@@ -490,6 +505,9 @@ class _BerandaState extends State<Beranda>{
     micros = (double.parse(parts[parts.length - 1]) * 1000000).round();
     print(Duration(hours: hours, minutes: minutes, microseconds: micros));
   }
+
+
+
   @override
   Widget build(BuildContext context) {
     return buildContent(context);
@@ -497,49 +515,49 @@ class _BerandaState extends State<Beranda>{
 
   Widget buildContent(BuildContext context){
     return RefreshIndicator(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          buildCardHeader(),
-          const SizedBox(height: 10.0),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                children: <Widget>[
-                  buildCardSecond(context),
-                  titleQ("Rincian Saldo Anda",Colors.black,false,''),
-                  buildCardSaldo(),
-                  buildCardIcon(),
-                  SizedBox(height: 5.0,child: Container(color: Color(0xFFf5f5f5))),
-                  const SizedBox(height: 16.0),
-                  isLoading?SuratHomeLoading():SuratHome(idSurat: _idSurat,surat: _surat,suratAyat: _suratAyat,terjemahan: _terjemahan, kdReferral: _kdRefferal,suratNama:_suratNama),
-                  SizedBox(height: 16.0),
-                  SizedBox(height: 5.0,child: Container(color: Color(0xFFf5f5f5))),
-                  const SizedBox(height: 15.0),
-                  titleQ("Kategori Berita",Colors.black,false,'category'),
-                  NewsCategoryHomePage(),
-                  SizedBox(height: 5.0,child: Container(color: Color(0xFFf5f5f5))),
-                  const SizedBox(height: 15.0),
-                  titleQ("Berita Terkini",Colors.black,true,'news'),
-                  NewsHomePage(),
-                  SizedBox(height: 5.0,child: Container(color: Colors.transparent)),
-                  const SizedBox(height: 15.0),
-                  titleQ("Jenjang Karir",Colors.black,true,'level'),
-                  const SizedBox(height: 15.0),
-                  WrapperLevel(),
-                  const SizedBox(height: 15.0),
-                  titleQ("Informasi & Inspirasi",Colors.black,true,'inspirasi'),
-                  const SizedBox(height: 15.0),
-                  isLoading?SuratHomeLoading():InspirasiHome(imgInspiration: _inspiration, kdReferral:_kdRefferal,thumbnail:_thumbnail),
-                  const SizedBox(height: 15.0),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            buildCardHeader(),
+            const SizedBox(height: 10.0),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: <Widget>[
+                    buildCardSecond(context),
+                    titleQ("Rincian Saldo Anda",Colors.black,false,''),
+                    buildCardSaldo(),
+                    buildCardIcon(),
+                    SizedBox(height: 5.0,child: Container(color: Color(0xFFf5f5f5))),
+                    const SizedBox(height: 16.0),
+                    isLoading?SuratHomeLoading():SuratHome(idSurat: _idSurat,surat: _surat,suratAyat: _suratAyat,terjemahan: _terjemahan, kdReferral: _kdRefferal,suratNama:_suratNama),
+                    SizedBox(height: 16.0),
+                    SizedBox(height: 5.0,child: Container(color: Color(0xFFf5f5f5))),
+                    const SizedBox(height: 15.0),
+                    titleQ("Kategori Berita",Colors.black,false,'category'),
+                    NewsCategoryHomePage(),
+                    SizedBox(height: 5.0,child: Container(color: Color(0xFFf5f5f5))),
+                    const SizedBox(height: 15.0),
+                    titleQ("Berita Terkini",Colors.black,true,'news'),
+                    NewsHomePage(),
+                    SizedBox(height: 5.0,child: Container(color: Colors.transparent)),
+                    const SizedBox(height: 15.0),
+                    titleQ("Jenjang Karir",Colors.black,true,'level'),
+                    const SizedBox(height: 15.0),
+                    WrapperLevel(),
+                    const SizedBox(height: 15.0),
+                    titleQ("Informasi & Inspirasi",Colors.black,true,'inspirasi'),
+                    const SizedBox(height: 15.0),
+                    isLoading?SuratHomeLoading():InspirasiHome(imgInspiration: _inspiration, kdReferral:_kdRefferal,thumbnail:_thumbnail),
+                    const SizedBox(height: 15.0),
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
-      ),
-      onRefresh: _refresh
+            )
+          ],
+        ),
+        onRefresh: _refresh
     );
   }
 
@@ -658,15 +676,16 @@ class _BerandaState extends State<Beranda>{
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
+//
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 16.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                             ),
                             SizedBox(width: 7.0),
-                            GestureDetector(
+                            levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
                               onTap: (){
                                 Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
                               },
@@ -682,10 +701,10 @@ class _BerandaState extends State<Beranda>{
                                   ),
                                   child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
                               ),
-                            )
+                            ):Container(child:Image.asset("assets/images/platinum.png",height:20.0,width:20.0))
                           ],
                         ),
-                        SizedBox(height: 7.0),
+                        levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
                         Padding(
                           padding: const EdgeInsets.only(left: 0.0),
                           child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
@@ -695,11 +714,11 @@ class _BerandaState extends State<Beranda>{
                           padding: const EdgeInsets.only(left: 0.0),
                           child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : ${_level}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                         ),
-                        SizedBox(height: 7.0),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0),
-                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Platinum : ${_levelPlatinum}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                        ),
+//                        SizedBox(height: 7.0),
+//                        Padding(
+//                          padding: const EdgeInsets.only(left: 0.0),
+//                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Platinum : ${_levelPlatinum}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//                        ),
                       ],
                     )
 
@@ -753,6 +772,7 @@ class _BerandaState extends State<Beranda>{
                     SizedBox(height:10.0),
                     isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 12.0):InkWell(
                       onTap: (){
+
                         Navigator.of(context, rootNavigator: true).push(
                           new CupertinoPageRoute(builder: (context) => CompasPage()),
                         );
@@ -885,6 +905,7 @@ class _BerandaState extends State<Beranda>{
           onTap: () {
             if(type == 'topup'){
               print('topup');
+
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),
               ).whenComplete(loadData);
@@ -894,37 +915,39 @@ class _BerandaState extends State<Beranda>{
 
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(builder: (context) => HistoryUI(page: 'home')),
-              );
+              ).whenComplete(loadData);
             }
             if(type == 'transfer'){
               print('transfer');
-//              Navigator.of(context, rootNavigator: true).push(
-//                new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),
-//              );
+
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),
               ).whenComplete(loadData);
             }
             if(type == 'alquran'){
               print('alquran');
+
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(builder: (context) => QuranListUI()),
               );
             }
             if(type == 'prayer'){
               print('prayer');
+
               Navigator.of(context, rootNavigator: true).push(
-                new CupertinoPageRoute(builder: (context) => PrayerList()),
+                new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)),
               );
             }
             if(type == 'penarikan'){
               print('tentang');
+
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(builder: (context) => Penarikan(saldoMain: _saldoMain)),
-              );
+              ).whenComplete(loadData);
             }
             if(type == 'asma'){
               print('asma');
+
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(builder: (context) => AsmaUI()),
               );
@@ -953,25 +976,28 @@ class _BerandaState extends State<Beranda>{
       backgroundColor: Colors.transparent,
       builder: (BuildContext bc){
         if(param == 'barcode'){
-          return Container(
-            height: MediaQuery.of(context).size.height/1,
-            child: Material(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
-              elevation: 5.0,
-              color:Colors.grey[50],
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 20,),
-                  Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                  SizedBox(height: 10.0,),
-                  Container(
-                    height:MediaQuery.of(context).size.height/2,
-                    padding: EdgeInsets.all(10),
-                    child: Image.network(_qr),
-                  )
-                ]
+          return Wrap(
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width/1,
+                child: Material(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
+                    elevation: 5.0,
+                    color:Colors.grey[50],
+                    child: Column(
+                        children: <Widget>[
+                          SizedBox(height: 20,),
+                          Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                          SizedBox(height: 10.0,),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: Image.network(_qr,fit: BoxFit.contain,),
+                          )
+                        ]
+                    )
+                ),
               )
-            ),
+            ],
           );
         }
         else if(param == 'compass'){
@@ -1028,6 +1054,7 @@ class _BerandaState extends State<Beranda>{
       padding: const EdgeInsets.only(left: 15.0,right: 15.0),
       child: GestureDetector(
         onTap: (){
+
           if(type == 'news'){
             Navigator.of(context, rootNavigator: true).push(
               new CupertinoPageRoute(builder: (context) => NewsPage()),
@@ -1062,22 +1089,22 @@ class _BerandaState extends State<Beranda>{
       children: <Widget>[
         InkWell(
           onTap: () {
-            if(page == 'pulsa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PulsaUI(nohp: _nohp)));}
-            if(page == 'listrik'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ListrikUI(nohp: _nohp)));}
-            if(page == 'telepon'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'telkom',title:'Telepon / Internet')));}
-            if(page == 'zakat'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ZakatUI()));}
+            if(page == 'pulsa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PulsaUI(nohp: _nohp))).whenComplete(loadData);}
+            if(page == 'listrik'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ListrikUI(nohp: _nohp))).whenComplete(loadData);}
+            if(page == 'telepon'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'telkom',title:'Telepon / Internet'))).whenComplete(loadData);}
+            if(page == 'zakat'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ZakatUI())).whenComplete(loadData);}
             if(page == 'masjid'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));}
             if(page == 'hadis'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));}
             if(page == 'doa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));}
             if(page == 'kalender'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));}
-            if(page == 'emoney'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPrabayar(nohp:_nohp,param: "E_MONEY",title:'E-Money')));}
-            if(page == 'bpjs'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'BPJS',title:'BPJS')));}
-            if(page == 'asuransi'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'ASURANSI',title:'Asuransi')));}
+            if(page == 'emoney'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPrabayar(nohp:_nohp,param: "E_MONEY",title:'E-Money'))).whenComplete(loadData);}
+            if(page == 'bpjs'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'BPJS',title:'BPJS'))).whenComplete(loadData);}
+            if(page == 'asuransi'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'ASURANSI',title:'Asuransi'))).whenComplete(loadData);}
 //            if(page == 'telpPasca'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'TELEPHONE_PASCABAYAR',title:'Telepon Pascabayar')));}
-            if(page == 'pdam'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'PDAM',title:'PDAM')));}
-            if(page == 'multiFinance'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'MULTIFINANCE',title:'Multi Finance')));}
-            if(page == 'wifiId'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPrabayar(nohp:_nohp,param: "VOUCHER_WIFIID",title:'Voucher Wifi ID')));}
-            if(page == 'tvKabel'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: "PEMBAYARAN_TV",title:'Tv Kabel')));}
+            if(page == 'pdam'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'PDAM',title:'PDAM'))).whenComplete(loadData);}
+            if(page == 'multiFinance'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'MULTIFINANCE',title:'Multi Finance'))).whenComplete(loadData);}
+            if(page == 'wifiId'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPrabayar(nohp:_nohp,param: "VOUCHER_WIFIID",title:'Voucher Wifi ID'))).whenComplete(loadData);}
+            if(page == 'tvKabel'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: "PEMBAYARAN_TV",title:'Tv Kabel'))).whenComplete(loadData);}
           },
           child: SvgPicture.network(
             ApiService().iconUrl+iconUrl,
@@ -1101,9 +1128,12 @@ class CompasPage extends StatefulWidget {
 }
 
 class _CompasPageState extends State<CompasPage> {
+
+
+
   @override
   Widget build(BuildContext context) {
-    return new WebviewScaffold(
+    return WebviewScaffold(
       url: 'https://qiblafinder.withgoogle.com/intl/id/onboarding',
       appBar: AppBar(
         leading: IconButton(

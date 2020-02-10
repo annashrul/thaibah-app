@@ -15,9 +15,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 
 class UpdateDataDiri extends StatefulWidget {
@@ -48,12 +50,15 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
   String base64Image;
   String base64Image2;
 
+
+
   @override
   void initState() {
     super.initState();
     nameController.text = widget.name;
     nohpController.text = widget.nohp;
     dropdownValue = widget.gender;
+
   }
 
   @override
@@ -251,6 +256,10 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
       duration: Duration(seconds: 3),
     ));
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {

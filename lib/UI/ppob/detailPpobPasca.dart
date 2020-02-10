@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +11,7 @@ import 'package:thaibah/Model/PPOB/PPOBPascaCheckoutModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/PPOB/PPOBPascaProvider.dart';
 
@@ -58,6 +61,7 @@ class _DetailPpobPascaState extends State<DetailPpobPasca> {
   final formatter = new NumberFormat("#,###");
 
 
+
   @override
   void initState() {
     // TODO: implement initState
@@ -84,6 +88,7 @@ class _DetailPpobPascaState extends State<DetailPpobPasca> {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
     return Scaffold(
+        key: scaffoldKey,
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.keyboard_backspace,color: Colors.white),

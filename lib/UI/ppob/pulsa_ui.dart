@@ -1,10 +1,14 @@
+import 'dart:async';
 import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/tabData.dart';
 import 'package:thaibah/UI/component/tabPulsa.dart';
 import 'package:thaibah/UI/lainnya/produkPpobPra.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
 
 
@@ -29,7 +33,7 @@ class _PulsaUIState extends State<PulsaUI> with SingleTickerProviderStateMixin{
   Widget dataV;
   var nohp = "";
   String _currentItemSelectedLayanan = 'Pulsa';
-
+  Timer _timer;
 
   Future cek() async{
     String layanan = '';
@@ -44,11 +48,15 @@ class _PulsaUIState extends State<PulsaUI> with SingleTickerProviderStateMixin{
       }else{
         layanan = 'pulsa';
       }
+      _timer.cancel();
       Navigator.of(context, rootNavigator: true).push(
         new CupertinoPageRoute(builder: (context) => ProdukPpobPra(param: layanan.toUpperCase(),layanan: '',nohp: nohpController.text)),
       );
     }
   }
+
+
+
 
   @override
   void initState() {
@@ -226,49 +234,49 @@ class _PulsaUIState extends State<PulsaUI> with SingleTickerProviderStateMixin{
       ),
 
       body: Scrollbar(
-        child: ListView(
-          children: <Widget>[
-            Container(
-              padding:EdgeInsets.all(10.0),
-              decoration: BoxDecoration(
-                boxShadow: [
-                  new BoxShadow(
-                    color: Colors.black26,
-                    offset: new Offset(0.0, 2.0),
-                    blurRadius: 25.0,
-                  )
-                ],
-                color: Colors.white,
-              ),
-              alignment: Alignment.topCenter,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left:16,right:16,top:32,bottom:8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        new InputDecorator(
-                          decoration: const InputDecoration(
-                              labelText: 'Layanan',
-                              labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 16)
-                          ),
-                          isEmpty: _currentItemSelectedLayanan == null,
-                          child: DropdownButtonHideUnderline(
-                            child: new DropdownButton<String>(
-                              value:_currentItemSelectedLayanan,
-                              isDense: true,
-                              items: <String>['Pulsa', 'Paket Data'].map((String value){
-                                return new DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value,style: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                                );
-                              }).toList(),
-                              onChanged: (String newValue) {
-                                setState(() {
+          child: ListView(
+            children: <Widget>[
+              Container(
+                padding:EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    new BoxShadow(
+                      color: Colors.black26,
+                      offset: new Offset(0.0, 2.0),
+                      blurRadius: 25.0,
+                    )
+                  ],
+                  color: Colors.white,
+                ),
+                alignment: Alignment.topCenter,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left:16,right:16,top:32,bottom:8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new InputDecorator(
+                            decoration: const InputDecoration(
+                                labelText: 'Layanan',
+                                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 16)
+                            ),
+                            isEmpty: _currentItemSelectedLayanan == null,
+                            child: DropdownButtonHideUnderline(
+                              child: new DropdownButton<String>(
+                                value:_currentItemSelectedLayanan,
+                                isDense: true,
+                                items: <String>['Pulsa', 'Paket Data'].map((String value){
+                                  return new DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value,style: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                                  );
+                                }).toList(),
+                                onChanged: (String newValue) {
+                                  setState(() {
 //                                  print(newValue);
 //                                  print(newValue.substring(6,newValue.length));
 //                                  if(newValue.length > 5){
@@ -276,37 +284,37 @@ class _PulsaUIState extends State<PulsaUI> with SingleTickerProviderStateMixin{
 //                                  }else{
 //
 //                                  }
-                                  _currentItemSelectedLayanan = newValue;
-                                  print(_currentItemSelectedLayanan);
+                                    _currentItemSelectedLayanan = newValue;
+                                    print(_currentItemSelectedLayanan);
 
-                                });
-                              },
+                                  });
+                                },
 
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text("No Telepon",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                        TextFormField(
-                          keyboardType: TextInputType.number,
-                          maxLines: 1,
-                          autofocus: false,
-                          decoration: InputDecoration(
-                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
-                          ),
-                          textInputAction: TextInputAction.done,
-                          controller: nohpController,
-                          focusNode: nohpFoucs,
-                          onFieldSubmitted: (value){
-                            nohpFoucs.unfocus();
-                            cek();
+                    Padding(
+                      padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text("No Telepon",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                          TextFormField(
+                            keyboardType: TextInputType.number,
+                            maxLines: 1,
+                            autofocus: false,
+                            decoration: InputDecoration(
+                              hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                            ),
+                            textInputAction: TextInputAction.done,
+                            controller: nohpController,
+                            focusNode: nohpFoucs,
+                            onFieldSubmitted: (value){
+                              nohpFoucs.unfocus();
+                              cek();
 //                            if(nohpController.text == ""){
 //                              return showInSnackBar("No Handphone Harus Diisi");
 //                            }else{
@@ -317,33 +325,33 @@ class _PulsaUIState extends State<PulsaUI> with SingleTickerProviderStateMixin{
 //                            }
 //                            nohpController.clear();
 //                            _isLoading = false;
-                          },
-                        )
-                      ],
+                            },
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            color: Colors.green, shape: BoxShape.circle
-                        ),
-                        child: IconButton(
-                          color: Colors.white,
-                          onPressed: () {
-                            cek();
-                          },
-                          icon: Icon(Icons.arrow_forward),
-                        ),
-                      )
-                  ),
+                    Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          margin: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                              color: Colors.green, shape: BoxShape.circle
+                          ),
+                          child: IconButton(
+                            color: Colors.white,
+                            onPressed: () {
+                              cek();
+                            },
+                            icon: Icon(Icons.arrow_forward),
+                          ),
+                        )
+                    ),
 //                  _pulsaCepat(),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
-        )
+            ],
+          )
       ),
 
     );

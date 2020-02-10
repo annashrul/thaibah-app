@@ -1,12 +1,17 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:thaibah/Model/PPOB/PPOBPraModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/tabData.dart';
 import 'package:thaibah/UI/ppob/pulsa_detail_ui.dart';
 import 'package:thaibah/bloc/PPOB/PPOBPraBloc.dart';
+import 'package:thaibah/config/api.dart';
 
 class ProdukPpobPra extends StatefulWidget{
   final String param,layanan,nohp;
@@ -18,21 +23,22 @@ class ProdukPpobPra extends StatefulWidget{
 class _ProdukPpobPraState extends State<ProdukPpobPra> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   String param = '';
+
+
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-//    param = widget.param;
     if(widget.param == 'E_MONEY'){
       param = 'emoney|${widget.layanan}';
     }else{
       param = widget.param;
     }
-
     if(mounted){
       ppobPraBloc.fetchPpobPra("$param", widget.nohp);
     }
-
   }
 
   @override

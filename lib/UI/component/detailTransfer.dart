@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
 
@@ -30,14 +33,15 @@ class _DetailTransferState extends State<DetailTransfer> {
   final userRepository = UserRepository();
   final formatter = new NumberFormat("#,###");
 
+
+
   @override
-  /*Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white.withOpacity(0.90),
-      body: detail(context),
-      bottomNavigationBar: bottomButton(context),
-    );
-  }*/
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
@@ -67,8 +71,10 @@ class _DetailTransferState extends State<DetailTransfer> {
         child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-                onPressed: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false),
+                  icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+                  onPressed: (){
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                  }
               ),
               centerTitle: false,
               flexibleSpace: Container(
@@ -122,7 +128,7 @@ class _DetailTransferState extends State<DetailTransfer> {
                                 ),
                                 child: CircleAvatar(
                                   backgroundImage: NetworkImage(
-                                    widget.picture
+                                      widget.picture
                                   ),
                                 ),
                               ),
@@ -131,7 +137,7 @@ class _DetailTransferState extends State<DetailTransfer> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                   widget.penerima,
+                                    widget.penerima,
                                     style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
                                   ),
                                   Text(
@@ -170,6 +176,7 @@ class _DetailTransferState extends State<DetailTransfer> {
                                   ],
                                 ),
                                 onPressed: () {
+
                                   print('tap');
                                   _pinBottomSheet(context);
                                 },

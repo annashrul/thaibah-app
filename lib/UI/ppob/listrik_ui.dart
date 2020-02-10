@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
@@ -6,10 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/PPOB/PPOBPascaCekTagihanModel.dart';
 import 'package:thaibah/Model/PPOB/PPOBPascaModel.dart' as prefix0;
 import 'package:thaibah/Model/generalModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/tabTokenPasca.dart';
 import 'package:thaibah/UI/component/tabTokenPra.dart';
+import 'package:thaibah/UI/lainnya/produkPpobPra.dart';
 import 'package:thaibah/UI/ppob/detailPpobPasca.dart';
 import 'package:thaibah/bloc/PPOB/PPOBPascaBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/PPOB/PPOBPascaProvider.dart';
@@ -49,7 +54,7 @@ class _ListrikUIState extends State<ListrikUI> with SingleTickerProviderStateMix
       _currentItemSelectedLayanan = val;
     });
   }
-  void showInSnackBar(String value) {
+  void showInSnackBar(String value, String param) {
     FocusScope.of(context).requestFocus(new FocusNode());
     scaffoldKey.currentState?.removeCurrentSnackBar();
     scaffoldKey.currentState.showSnackBar(new SnackBar(
@@ -58,7 +63,7 @@ class _ListrikUIState extends State<ListrikUI> with SingleTickerProviderStateMix
         textAlign: TextAlign.center,
         style: TextStyle(color: Colors.white, fontSize: 16.0,fontWeight: FontWeight.bold,fontFamily: "Rubik"),
       ),
-      backgroundColor: Color(0xFFd50000),
+      backgroundColor: param == 'failed' ? Color(0xFFd50000) : Colors.green,
       duration: Duration(seconds: 5),
     ));
   }
@@ -69,26 +74,26 @@ class _ListrikUIState extends State<ListrikUI> with SingleTickerProviderStateMix
   }
 
   Future cekTagihan(var layanan,var meteran,var nohp) async{
-    setState(() {_isLoading=true;});
     if(layanan == '' || layanan == null){
-      setState(() {_isLoading = false;});
-      return showInSnackBar("Silahkan Pilih Layanan");
+      setState(() {isLoading = false;});
+      return showInSnackBar("Silahkan Pilih Layanan",'failed');
     }
     else if(meteran == '' || layanan == null){
-      setState(() {_isLoading = false;});
-      return showInSnackBar("Silahkan Isi No Meteran");
+      setState(() {isLoading = false;});
+      return showInSnackBar("Silahkan Isi No Meteran",'failed');
     }else if(nohp == '' || nohp == null){
-      setState(() {_isLoading = false;});
-      return showInSnackBar("Silahkan Isi No Telepon");
+      setState(() {isLoading = false;});
+      return showInSnackBar("Silahkan Isi No Telepon",'failed');
     }else{
+
       print("$layanan, $nohp, $meteran");
       var res = await PpobPascaProvider().fetchPpobPascaCekTagihan(layanan, nohp, meteran);
       if(res is PpobPascaCekTagihanModel){
         PpobPascaCekTagihanModel results = res;
         if(results.status == 'success'){
-          setState(() {_isLoading = false;});
-          Navigator.of(context, rootNavigator: true).push(
-            new CupertinoPageRoute(builder: (context) => DetailPpobPasca(
+          Timer(Duration(seconds: 1), () {
+            Navigator.of(context, rootNavigator: true).push(
+              new CupertinoPageRoute(builder: (context) => DetailPpobPasca(
                 param : "TOKEN",
                 tagihan_id:results.result.tagihanId,
                 code:results.result.code,
@@ -103,48 +108,67 @@ class _ListrikUIState extends State<ListrikUI> with SingleTickerProviderStateMix
                 jumlah_bayar:results.result.jumlahBayar.toString(),
                 status:results.result.status,
                 nominal:'0'
-            )),
-          );
+              )),
+            ).whenComplete(loadingFalse);
+          });
+          return showInSnackBar(results.msg,'success');
         }else{
           setState(() {
-            _isLoading = false;
+            isLoading = false;
           });
-          return showInSnackBar(results.msg);
+          return showInSnackBar(results.msg,'failed');
         }
       }else{
+        setState(() {
+          isLoading = false;
+        });
         General results = res;
-        return showInSnackBar(results.msg);
+        return showInSnackBar(results.msg,'failed');
       }
     }
 
   }
 
   Future cekPra() async{
+    setState(() {
+      _isLoading = false;
+    });
     if(nometeran.text == ''){
-      return showInSnackBar("No Meteran / ID Pelanggan Harus Diisi");
+      return showInSnackBar("No Meteran / ID Pelanggan Harus Diisi",'failed');
     }
     else if(nohpController.text == ""){
-      return showInSnackBar("No Handphone Harus Diisi");
+      return showInSnackBar("No Handphone Harus Diisi",'failed');
     }
     else{
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('idpelanggan',nometeran.text);
       setState(() {
-        _isLoading = true;
+        _isLoading = false;
         noHp = nohpController.text;
         noMeteran = nometeran.text;
       });
+      Navigator.of(context, rootNavigator: true).push(
+        new CupertinoPageRoute(builder: (context) => ProdukPpobPra(param: "TOKEN".toUpperCase(),layanan: '',nohp: noMeteran)),
+      );
       print("ID PELANGGAN" + prefs.getString('idpelanggan'));
     }
-    _isLoading = false;
+
   }
 
 
+  Future<void> loadingFalse() async{
+    setState(() {
+      isLoading = false;
+    });
+  }
+  
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     nohpController.text = widget.nohp;
+//    _isLoading = false;
+//    _initializeTimer();
   }
 
   @override
@@ -160,8 +184,8 @@ class _ListrikUIState extends State<ListrikUI> with SingleTickerProviderStateMix
     return Stack(
       children: <Widget>[
         new MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: DefaultTabController(
+            debugShowCheckedModeBanner: false,
+            home: DefaultTabController(
               length:2,
               child: Scaffold(
                 key: scaffoldKey,
@@ -196,12 +220,15 @@ class _ListrikUIState extends State<ListrikUI> with SingleTickerProviderStateMix
                     ],
                   ),
                 ),
-                body: new TabBarView(
+                body: TabBarView(
                   children: <Widget>[
                     tokenPra(context),
-                    TabTokenPasca(nohp:widget.nohp,valid: cekTagihan)
-//                    TabTokenPasca(function (String layanan,String meteran,String nohp){cek(layanan,meteran,nohp)}),
-//                    tokenPasca(context)
+                    isLoading?Container(child: Center(child: CircularProgressIndicator())) : TabTokenPasca(nohp:widget.nohp,valid:(String layanan,String meteran, String nohp ){
+                      setState(() {
+                        isLoading = true;
+                      });
+                      cekTagihan(layanan,meteran,nohp);
+                    })
                   ],
                 ),
               ),
@@ -264,7 +291,7 @@ class _ListrikUIState extends State<ListrikUI> with SingleTickerProviderStateMix
                       onFieldSubmitted: (value){
                         nohpFocus.unfocus();
                         setState(() {
-                          isLoading = true;
+                          _isLoading = true;
                         });
                         cekPra();
 
@@ -284,7 +311,7 @@ class _ListrikUIState extends State<ListrikUI> with SingleTickerProviderStateMix
                       color: Colors.white,
                       onPressed: () {
                         setState(() {
-                          isLoading = true;
+                          _isLoading = true;
                         });
                         cekPra();
 
@@ -293,8 +320,8 @@ class _ListrikUIState extends State<ListrikUI> with SingleTickerProviderStateMix
                     ),
                   )
               ),
-              noMeteran != "" ? TabTokenPra(nohp: noMeteran) : Center(child: Text('Data Belum Tersedia',style: TextStyle(fontWeight: FontWeight.bold),),),
-              SizedBox(height: 20.0),
+//              noMeteran != "" ? TabTokenPra(nohp: noMeteran) : Center(child: Text('Data Belum Tersedia',style: TextStyle(fontWeight: FontWeight.bold),),),
+//              SizedBox(height: 20.0),
             ],
           ),
         ),

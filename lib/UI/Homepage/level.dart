@@ -38,7 +38,7 @@ class _LevelState extends State<Level> {
           else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return CircularProgressIndicator();
+          return Container(child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white))));
         }
       ),
     );
@@ -61,10 +61,9 @@ class _LevelState extends State<Level> {
                         setState(() {
                           aktif = true;
                         });
-                        print(aktif);
                         widget.onItemInteraction(snapshot.data.result.data[index].name);
                       },
-                      child: ChoiceChip(aktif?Icons.graphic_eq:Icons.add, snapshot.data.result.data[index].name)
+                      child: ChoiceChip(Icons.graphic_eq, snapshot.data.result.data[index].name,aktif)
                   ),
                 ),
 
@@ -79,8 +78,8 @@ class _LevelState extends State<Level> {
 class ChoiceChip extends StatefulWidget {
   final IconData icon;
   final String text;
-//  final bool isflightSelected;
-  ChoiceChip(this.icon, this.text);
+  final bool isflightSelected;
+  ChoiceChip(this.icon, this.text,this.isflightSelected);
 //  ChoiceChip(this.icon, this.text);
   @override
   _ChoiceChipState createState() => _ChoiceChipState();
@@ -103,7 +102,7 @@ class _ChoiceChipState extends State<ChoiceChip> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
-          color: Colors.black.withOpacity(.15),
+          color: widget.isflightSelected==true?Colors.black.withOpacity(.15):Colors.green,
           borderRadius: BorderRadius.all(Radius.circular(20))
       ),
       child: Row(

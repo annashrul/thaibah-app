@@ -7,11 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/kotaModel.dart';
 import 'package:thaibah/Model/provinsiModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/addressBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
 import 'package:thaibah/Model/kotaModel.dart' as prefix1;
 import 'package:thaibah/Model/kecamatanModel.dart' as prefix2;
+import 'package:thaibah/config/api.dart';
 class UpdateAddress extends StatefulWidget {
   final String main_address,kd_prov,kd_kota,kd_kec,id;
   UpdateAddress({this.main_address,this.kd_prov,this.kd_kota,this.kd_kec,this.id});
@@ -87,6 +90,8 @@ class _UpdateAddressState extends State<UpdateAddress> {
   }
 
 
+
+
   @override
   void initState() {
     super.initState();
@@ -144,9 +149,9 @@ class _UpdateAddressState extends State<UpdateAddress> {
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomPadding: true,
+        key: _scaffoldKey,
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomPadding: true,
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.keyboard_backspace,color: Colors.white),
@@ -228,16 +233,16 @@ class _UpdateAddressState extends State<UpdateAddress> {
                       children: <Widget>[
                         RichText(
                           text: TextSpan(
-                            text: 'Alamat',
-                            style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Color(0xFF116240),fontWeight: FontWeight.bold),
-                            children: <TextSpan>[
-                              TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.grey,fontSize: 10,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                            ]
+                              text: 'Alamat',
+                              style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Color(0xFF116240),fontWeight: FontWeight.bold),
+                              children: <TextSpan>[
+                                TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.grey,fontSize: 10,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                              ]
                           ),
                         ),
                         TextField(
                           decoration: InputDecoration(
-                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
+                              hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
                           ),
                           controller: mainAddressController,
                           maxLines: null,

@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+//import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -34,6 +35,7 @@ import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 import 'package:http/http.dart' as http;
 
+import 'Widgets/pin_screen.dart';
 import 'loginPhone.dart';
 
 
@@ -53,7 +55,7 @@ class _ProfileUIState extends State<ProfileUI> {
   Future<File> file;
   File _image;
   String base64Image;
-
+  final formatter = new NumberFormat("#,###");
   final userRepository = UserRepository();
   String versionCode = '';
   bool versi = false;
@@ -75,19 +77,6 @@ class _ProfileUIState extends State<ProfileUI> {
     } else {
       throw Exception('Failed to load info');
     }
-
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    profileBloc.fetchProfileList();
-    cekVersion();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
@@ -147,6 +136,7 @@ class _ProfileUIState extends State<ProfileUI> {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             var res = await MemberProvider().logout();
             if(res.status == 'success'){
+//              prefs.clear();
               prefs.setBool('cek', true);
               prefs.setString('id', null);
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
@@ -159,6 +149,66 @@ class _ProfileUIState extends State<ProfileUI> {
         )
       ],
     ).show();
+  }
+
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    print('########################## DEACTIVE #########################');
+  }
+  @override
+  void initState() {
+    super.initState();
+    profileBloc.fetchProfileList();
+    cekVersion();
+  }
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    _height = MediaQuery.of(context).size.height;
+    _width = MediaQuery.of(context).size.width;
+    return Scaffold(
+      key: scaffoldKey,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      body: RefreshIndicator(
+          child: Container(
+            height: _height,
+            width: _width,
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  StreamBuilder(
+                      stream: profileBloc.getResult,
+                      builder: (context,AsyncSnapshot<ProfileModel> snapshot){
+                        if (snapshot.hasData) {
+                          return Column(
+                            children: <Widget>[
+                              _headerProfile(snapshot.data.result.jumlahJaringan,snapshot.data.result.name, snapshot.data.result.picture, snapshot.data.result.cover, snapshot.data.result.kdReferral, snapshot.data.result.saldo, snapshot.data.result.rawSaldo, snapshot.data.result.saldoMain, snapshot.data.result.saldoBonus, snapshot.data.result.downline),
+                              _menuMember(snapshot.data.result.kaki1,snapshot.data.result.kaki2,snapshot.data.result.kaki3,snapshot.data.result.privacy,snapshot.data.result.kdReferral,snapshot.data.result.jumlahJaringan,snapshot.data.result.omsetJaringan,snapshot.data.result.name,snapshot.data.result.saldoMain,snapshot.data.result.saldoBonus,snapshot.data.result.id),
+                            ],
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text(snapshot.error.toString());
+                        }
+                        return _loading();
+                      }
+                  ),
+                ],
+              ),
+            ),
+          ),
+          onRefresh: _refresh
+      ),
+
+    );
   }
 
   Widget _headerProfile(var jumlahJaringan,var name,picture,var cover,var kdRefferal,var saldo,var rawSaldo,var saldoMain,var saldoBonus,var downline){
@@ -287,7 +337,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         ),
                         SizedBox(width: 5),
                         Icon(Icons.content_copy, color: Colors.white, size: 15,),]),
-                        onTap: () {
+                  onTap: () {
                     Clipboard.setData(new ClipboardData(text: kdRefferal));
                     scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Kode Referral Berhasil Disalin")));
                   },
@@ -378,7 +428,7 @@ class _ProfileUIState extends State<ProfileUI> {
 
   }
 
-  Widget _menuMember(var privasi,var kdReferral, var jumlahJaringan,var omsetJaringan,var name,var saldoMain,var saldoBonus, var id){
+  Widget _menuMember(var kaki1,var kaki2,var kaki3,var privasi,var kdReferral, var jumlahJaringan,var omsetJaringan,var name,var saldoMain,var saldoBonus, var id){
     return Container(
       margin: EdgeInsets.only(top: 5),
       color: Colors.white,
@@ -427,7 +477,7 @@ class _ProfileUIState extends State<ProfileUI> {
           Padding(
             padding: EdgeInsets.all(10.0),
             child: Container(
-              color: Color(0xFF116240),
+                color: Color(0xFF116240),
                 padding: EdgeInsets.all(20.0),
                 child: Column(
                   children: <Widget>[
@@ -457,7 +507,52 @@ class _ProfileUIState extends State<ProfileUI> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text("Jaringan Saya", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                          Text("$jumlahJaringan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                          Text("$jumlahJaringan ( Orang )", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    InkWell(
+                      onTap: (){
+                        Navigator.of(context, rootNavigator: true).push(
+                          new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral: kdReferral,name:name)),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text("Kaki Besar 1", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                          Text("$kaki1 ( STP )", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    InkWell(
+                      onTap: (){
+                        Navigator.of(context, rootNavigator: true).push(
+                          new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral: kdReferral,name:name)),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text("Kaki Besar 2", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                          Text("$kaki2 ( STP )", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    InkWell(
+                      onTap: (){
+                        Navigator.of(context, rootNavigator: true).push(
+                          new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral: kdReferral,name:name)),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text("Kaki Besar 3", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                          Text("$kaki3 ( STP )", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
                         ],
                       ),
                     )
@@ -468,12 +563,12 @@ class _ProfileUIState extends State<ProfileUI> {
 
           ),
           SizedBox(height:4.0,child: Container(color: Color(0xFFf5f5f5)),),
+
           FlatButton(
               onPressed: (){
                 Navigator.of(context, rootNavigator: true).push(
                   new CupertinoPageRoute(builder: (context) => PenukaranBonus(saldo: saldoMain, saldoBonus:saldoBonus)),
                 );
-
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -657,67 +752,26 @@ class _ProfileUIState extends State<ProfileUI> {
           ),
           Divider(),
           FlatButton(
-            onPressed: () async {
-              logout();
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text("Keluar", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                    Text("Permintaan untuk keluar sesi aplikasi", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12,fontFamily: 'Rubik')),
-                  ],
-                ),
-                Icon(Icons.arrow_right)
-              ],
-            )
+              onPressed: () async {
+                logout();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text("Keluar", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                      Text("Permintaan untuk keluar sesi aplikasi", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12,fontFamily: 'Rubik')),
+                    ],
+                  ),
+                  Icon(Icons.arrow_right)
+                ],
+              )
           ),
 
         ],
       ),
-    );
-  }
-  final formatter = new NumberFormat("#,###");
-
-  @override
-  Widget build(BuildContext context) {
-    _height = MediaQuery.of(context).size.height;
-    _width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      key: scaffoldKey,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: RefreshIndicator(
-        child: Container(
-          height: _height,
-          width: _width,
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                StreamBuilder(
-                    stream: profileBloc.getResult,
-                    builder: (context,AsyncSnapshot<ProfileModel> snapshot){
-                      if (snapshot.hasData) {
-                        return Column(
-                          children: <Widget>[
-                            _headerProfile(snapshot.data.result.jumlahJaringan,snapshot.data.result.name, snapshot.data.result.picture, snapshot.data.result.cover, snapshot.data.result.kdReferral, snapshot.data.result.saldo, snapshot.data.result.rawSaldo, snapshot.data.result.saldoMain, snapshot.data.result.saldoBonus, snapshot.data.result.downline),
-                            _menuMember(snapshot.data.result.privacy,snapshot.data.result.kdReferral,snapshot.data.result.jumlahJaringan,snapshot.data.result.omsetJaringan,snapshot.data.result.name,snapshot.data.result.saldoMain,snapshot.data.result.saldoBonus,snapshot.data.result.id),
-                          ],
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text(snapshot.error.toString());
-                      }
-                      return _loading();
-                    }
-                ),
-              ],
-            ),
-          ),
-        ),
-        onRefresh: _refresh
-      ),
-
     );
   }
 

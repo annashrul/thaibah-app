@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/myBankModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/listBank.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
+import 'package:thaibah/config/api.dart';
 class Bank extends StatefulWidget {
   @override
   _BankState createState() => _BankState();
@@ -69,11 +74,15 @@ class _BankState extends State<Bank> {
     }
   }
 
+
+  
+
   @override
   void initState() {
     super.initState();
     accNoController = TextEditingController();
     accNameController = TextEditingController();
+    myBankBloc.fetchMyBankList();
   }
 
   @override
@@ -102,7 +111,6 @@ class _BankState extends State<Bank> {
 
   @override
   Widget build(BuildContext context) {
-    myBankBloc.fetchMyBankList();
     return Scaffold(
       key: _scaffoldKey,
       appBar: _buildAppBar(),

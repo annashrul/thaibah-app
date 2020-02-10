@@ -1,12 +1,17 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/islamic/categoryDoaModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/tabPulsa.dart';
 import 'package:thaibah/UI/lainnya/listDoaHadist.dart';
 import 'package:thaibah/UI/lainnya/subDoaHadist.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
+import 'package:thaibah/config/api.dart';
 
 class DoaHarian extends StatefulWidget {
   final String param;
@@ -25,6 +30,22 @@ class _DoaHarianState extends State<DoaHarian> {
   var searchController = TextEditingController();
   final FocusNode searchFocus = FocusNode();
   String title = '';
+
+  Future search() async{
+    print('tap');
+    Navigator.of(context, rootNavigator: true).push(
+      new CupertinoPageRoute(builder: (context) => ListDoaHadist(
+        title:'Daftar Pencarian',
+        type:widget.param,
+        id: "1",
+        search: searchController.text,
+      )
+      ),
+    );
+  }
+
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -34,18 +55,9 @@ class _DoaHarianState extends State<DoaHarian> {
     categoryDoaBloc.fetchCategoryDoa('$paramLocal');
   }
 
-  Future search() async{
-    print('tap');
-    Navigator.of(context, rootNavigator: true).push(
-      new CupertinoPageRoute(builder: (context) => ListDoaHadist(
-          title:'Daftar Pencarian',
-          type:widget.param,
-          id: "1",
-          search: searchController.text,
-        )
-      ),
-    );
-  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -78,100 +90,100 @@ class _DoaHarianState extends State<DoaHarian> {
       body: Column(
         children: <Widget>[
           Flexible(
-            child: new Container (
-              padding: const EdgeInsets.only(left:15.0,right:15.0,top:15.0),
-              color: Colors.white,
-              child: new Container(
-                child: new Center(
-                    child: new Column(
-                        children : [
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                              labelText: "Cari Do`a Disini ......",
-                              fillColor: Colors.grey,
-                              border: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(10.0),
-                                borderSide: new BorderSide(
-                                  color: Colors.grey
+              child: new Container (
+                  padding: const EdgeInsets.only(left:15.0,right:15.0,top:15.0),
+                  color: Colors.white,
+                  child: new Container(
+                    child: new Center(
+                        child: new Column(
+                            children : [
+                              new TextFormField(
+                                decoration: new InputDecoration(
+                                  labelText: "Cari Do`a Disini ......",
+                                  fillColor: Colors.grey,
+                                  border: new OutlineInputBorder(
+                                    borderRadius: new BorderRadius.circular(10.0),
+                                    borderSide: new BorderSide(
+                                        color: Colors.grey
+                                    ),
+                                  ),
+                                  //fillColor: Colors.green
                                 ),
+                                validator: (val) {
+                                  if(val.length==0) {
+                                    return "Email cannot be empty";
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                                controller: searchController,
+                                autofocus: false,
+                                keyboardType: TextInputType.text,
+                                style: new TextStyle(
+                                  fontFamily: "Rubik",
+                                ),
+                                focusNode: searchFocus,
+                                onFieldSubmitted: (value){
+                                  searchFocus.unfocus();
+                                  if(searchController.text != ''){
+                                    search();
+                                  }
+
+                                },
                               ),
-                              //fillColor: Colors.green
-                            ),
-                            validator: (val) {
-                              if(val.length==0) {
-                                return "Email cannot be empty";
-                              }else{
-                                return null;
-                              }
-                            },
-                            controller: searchController,
-                            autofocus: false,
-                            keyboardType: TextInputType.text,
-                            style: new TextStyle(
-                              fontFamily: "Rubik",
-                            ),
-                            focusNode: searchFocus,
-                            onFieldSubmitted: (value){
-                              searchFocus.unfocus();
-                              if(searchController.text != ''){
-                                search();
-                              }
+                              SizedBox(height: 10.0),
 
-                            },
-                          ),
-                          SizedBox(height: 10.0),
+                              Expanded(
+                                  child: ListView(
+                                    children: <Widget>[
+                                      StreamBuilder(
+                                        stream: categoryDoaBloc.getResult,
+                                        builder: (context, AsyncSnapshot<CategoryDoaModel> snapshot) {
+                                          if (snapshot.hasData) {
+                                            return vwPulsa(snapshot, context);
+                                          } else if (snapshot.hasError) {
+                                            return Text(snapshot.error.toString());
+                                          }
 
-                          Expanded(
-                              child: ListView(
-                                children: <Widget>[
-                                  StreamBuilder(
-                                    stream: categoryDoaBloc.getResult,
-                                    builder: (context, AsyncSnapshot<CategoryDoaModel> snapshot) {
-                                      if (snapshot.hasData) {
-                                        return vwPulsa(snapshot, context);
-                                      } else if (snapshot.hasError) {
-                                        return Text(snapshot.error.toString());
-                                      }
-
-                                      return GridView.builder(
-                                        itemCount: 9,
-                                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemBuilder: (BuildContext context, int index) {
-                                          return GestureDetector(
-                                            child: Container(
-                                              padding: EdgeInsets.all(10.0),
-                                              margin: EdgeInsets.all(1.0),
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(color: Colors.grey, width: 0.5)
-                                              ),
-                                              child: Center(
-                                                child: GridTile(
-                                                    header: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 16),
-                                                    footer: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 16),
-                                                    child: Container(
-                                                      padding: EdgeInsets.all(20.0),
-                                                      child: Center(
-                                                        child: CircleImage(imgUrl: 'http://lequytong.com/Content/Images/no-image-02.png'),
-                                                      ),
-                                                    )
+                                          return GridView.builder(
+                                            itemCount: 9,
+                                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                                            physics: NeverScrollableScrollPhysics(),
+                                            shrinkWrap: true,
+                                            itemBuilder: (BuildContext context, int index) {
+                                              return GestureDetector(
+                                                child: Container(
+                                                  padding: EdgeInsets.all(10.0),
+                                                  margin: EdgeInsets.all(1.0),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(color: Colors.grey, width: 0.5)
+                                                  ),
+                                                  child: Center(
+                                                    child: GridTile(
+                                                        header: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 16),
+                                                        footer: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 16),
+                                                        child: Container(
+                                                          padding: EdgeInsets.all(20.0),
+                                                          child: Center(
+                                                            child: CircleImage(imgUrl: 'http://lequytong.com/Content/Images/no-image-02.png'),
+                                                          ),
+                                                        )
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
+                                              );
+                                            },
                                           );
                                         },
-                                      );
-                                    },
+                                      )
+                                    ],
                                   )
-                                ],
                               )
-                          )
-                        ]
-                    )
-                  ),
-                )
-            )
+                            ]
+                        )
+                    ),
+                  )
+              )
           ),
         ],
       ),

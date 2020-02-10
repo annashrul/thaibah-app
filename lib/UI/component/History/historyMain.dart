@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -5,9 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/historyModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/historyPPOB.dart';
 import 'package:thaibah/bloc/transaction/historyBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 
@@ -95,6 +99,8 @@ class _HistoryMainState extends State<HistoryMain> {
     return true;
   }
 
+
+
   @override
   void initState() {
     super.initState();
@@ -111,92 +117,92 @@ class _HistoryMainState extends State<HistoryMain> {
   @override
   Widget build(BuildContext context) {
     return Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              new Flexible(
-                child: Padding(
-                  padding: EdgeInsets.only(left:8.0),
-                  child: GestureDetector(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                        TextFormField(
-                          autofocus: false,
-                          style: Theme.of(context).textTheme.body1.copyWith(
-                            fontSize: 12.0,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Bulan Ini ...',
-                            hintStyle: TextStyle(color:Colors.grey,fontFamily: 'Rubik')
-                          ),
-                          controller: dateController,
-                          onTap: (){
-                            FocusScope.of(context).requestFocus(new FocusNode());
-                            _selectDate(context);
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              new Flexible(
-                child: Padding(
-                  padding: EdgeInsets.only(left:8.0),
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            new Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(left:8.0),
+                child: GestureDetector(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Cari',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                      Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
                       TextFormField(
-                          autofocus: false,
-                          style: Theme.of(context).textTheme.body1.copyWith(
-                            fontSize: 12.0,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Tulis Disini ...',
-                              hintStyle: TextStyle(color:Colors.grey,fontFamily: 'Rubik')
-                          ),
-                          controller: searchController,
-                          focusNode: searchFocus,
-                          onFieldSubmitted: (term){
-                            _search();
-                          }
+                        autofocus: false,
+                        style: Theme.of(context).textTheme.body1.copyWith(
+                          fontSize: 12.0,
+                        ),
+                        decoration: InputDecoration(
+                            hintText: 'Bulan Ini ...',
+                            hintStyle: TextStyle(color:Colors.grey,fontFamily: 'Rubik')
+                        ),
+                        controller: dateController,
+                        onTap: (){
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                          _selectDate(context);
+                        },
                       )
                     ],
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: IconButton(
-                  icon: isLoading?CircularProgressIndicator():Icon(Icons.search),
-                  tooltip: 'Increase volume by 10',
-                  onPressed: () async{
-                    _search();
-                  },
+            ),
+            new Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(left:8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Cari',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                    TextFormField(
+                        autofocus: false,
+                        style: Theme.of(context).textTheme.body1.copyWith(
+                          fontSize: 12.0,
+                        ),
+                        decoration: InputDecoration(
+                            hintText: 'Tulis Disini ...',
+                            hintStyle: TextStyle(color:Colors.grey,fontFamily: 'Rubik')
+                        ),
+                        controller: searchController,
+                        focusNode: searchFocus,
+                        onFieldSubmitted: (term){
+                          _search();
+                        }
+                    )
+                  ],
                 ),
-              )
-            ],
-          ),
-
-          Expanded(
-              child:  StreamBuilder(
-                stream: historyBloc.getResult,
-                builder: (context, AsyncSnapshot<HistoryModel> snapshot) {
-                  if (snapshot.hasData) {
-                    return buildContent(snapshot, context);
-                  } else if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
-                  }
-                  return _loading();
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: IconButton(
+                icon: isLoading?CircularProgressIndicator():Icon(Icons.search),
+                tooltip: 'Increase volume by 10',
+                onPressed: () async{
+                  _search();
                 },
-              )
-          ),
+              ),
+            )
+          ],
+        ),
+
+        Expanded(
+            child:  StreamBuilder(
+              stream: historyBloc.getResult,
+              builder: (context, AsyncSnapshot<HistoryModel> snapshot) {
+                if (snapshot.hasData) {
+                  return buildContent(snapshot, context);
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                return _loading();
+              },
+            )
+        ),
 
 
-        ],
+      ],
     );
   }
 

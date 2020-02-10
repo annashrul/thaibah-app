@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,9 +7,12 @@ import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:intl/intl.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/depositManual/historyDepositModel.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/detailDeposit.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
+import 'package:thaibah/config/api.dart';
 
 class HistoryDeposit extends StatefulWidget {
   @override
@@ -184,10 +189,10 @@ class _HistoryDepositState extends State<HistoryDeposit> {
                                   height: 50.0,
                                   padding: EdgeInsets.all(10),
                                   child: CircleAvatar(
-                                    backgroundColor: Colors.transparent,
-                                    minRadius: 150,
-                                    maxRadius: 150,
-                                    child: SkeletonFrame(width: 90.0,height: 90.0)
+                                      backgroundColor: Colors.transparent,
+                                      minRadius: 150,
+                                      maxRadius: 150,
+                                      child: SkeletonFrame(width: 90.0,height: 90.0)
                                   ),
                                 ),
                                 title: Row(

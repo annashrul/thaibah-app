@@ -9,7 +9,11 @@ import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/islamic/ayatModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/islamic/islamicProvider.dart';
+
+import 'Homepage/index.dart';
+import 'Widgets/pin_screen.dart';
 
 
 //import 'package:audioplayer/audioplayer.dart';
@@ -129,6 +133,53 @@ class QuranReadUIState extends State<QuranReadUI> {
   }
 
 
+  Timer _timer;
+  _callBackPins(BuildContext context,bool isTrue) async{
+    if(isTrue){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+    }
+    else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("Pin Salah!"),
+            content: new Text("Masukan pin yang sesuai."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+  void _initializeTimer() {
+    _timer = Timer.periodic(Duration(seconds:ApiService().timerActivity), (Timer t) => _logOutUser());
+    print(_timer);
+  }
+  void _logOutUser()  {
+    print('logout');
+    _timer.cancel();
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+        builder: (BuildContext context) => PinScreen(callback: _callBackPins)
+    ), (Route<dynamic> route) => false);
+    print("############################ EWEH AKTIFITAS KUDU NGABUSKEUN PIN  ########################");
+  }
+  void _handleUserInteraction([_]) {
+    if (!_timer.isActive) {
+      print('_handleUserInteraction');
+      return;
+    }
+    print(_timer.isActive);
+    _timer.cancel();
+    _initializeTimer();
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -136,6 +187,7 @@ class QuranReadUIState extends State<QuranReadUI> {
     id    = widget.id;
     param = widget.param;
     ayatBloc.fetchAyatList(int.parse(id),param,1,perpage);
+    _initializeTimer();
   }
 
   Duration duration;
@@ -209,68 +261,73 @@ class QuranReadUIState extends State<QuranReadUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: (){
-            Navigator.of(context).pop();
-          },
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
+    return GestureDetector(
+      onTap: _handleUserInteraction,
+      onPanDown: _handleUserInteraction,
+      onScaleStart: _handleUserInteraction,
+      child: Scaffold(
+        key: scaffoldKey,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          ),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: <Color>[
+                  Color(0xFF116240),
+                  Color(0xFF30cc23)
+                ],
+              ),
             ),
           ),
+          title: Text(param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param',style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
         ),
-        title: Text(param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param',style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
-      body: StreamBuilder(
-        stream: ayatBloc.allAyat,
-        builder: (context, AsyncSnapshot<AyatModel> snapshot) {
-          if (snapshot.hasData) {
-            total = snapshot.data.result.data.length;
-            return Column(
-              children: <Widget>[
-                Expanded(
-                  flex: 10,
-                  child: buildContent(snapshot,context),
-                ),
-                Expanded(
-                    flex: 1,
-                    child: Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              param == 'detail' ? Text("Total Ayat : ${widget.total}", style: TextStyle(color: Colors.black54),):Text("Total Pencarian : ${snapshot.data.result.data.length}", style: TextStyle(color: Colors.black54,fontFamily: 'Rubik'),),
-                            ],
-                          ),
+        body: StreamBuilder(
+          stream: ayatBloc.allAyat,
+          builder: (context, AsyncSnapshot<AyatModel> snapshot) {
+            if (snapshot.hasData) {
+              total = snapshot.data.result.data.length;
+              return Column(
+                children: <Widget>[
+                  Expanded(
+                    flex: 10,
+                    child: buildContent(snapshot,context),
+                  ),
+                  Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                param == 'detail' ? Text("Total Ayat : ${widget.total}", style: TextStyle(color: Colors.black54),):Text("Total Pencarian : ${snapshot.data.result.data.length}", style: TextStyle(color: Colors.black54,fontFamily: 'Rubik'),),
+                              ],
+                            ),
 
-                        ],
-                      ),
-                    )
-                )
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return _loading();
-        },
-      ),
+                          ],
+                        ),
+                      )
+                  )
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+            return _loading();
+          },
+        ),
 //      bottomNavigationBar: ,
+      ),
     );
   }
 

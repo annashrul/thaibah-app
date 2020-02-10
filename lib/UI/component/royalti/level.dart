@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/royalti/royaltiMemberModel.dart';
 import 'package:thaibah/UI/Homepage/level.dart';
+import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/royalti/royaltiBloc.dart';
 
 class WrapperLevel extends StatefulWidget {
@@ -16,27 +20,35 @@ class _WrapperLevelState extends State<WrapperLevel> {
   bool isLoading = false;
 
   Future searchMember(param) async{
-    setState(() {
-      isLoading = true;
-    });
-    if(param == 'kosong'){
-      setState(() {
-        isLoading = false;
-      });
-      if(mounted){
-        royaltiMemberBloc.fetchRoyaltiMemberList('kosong');
-      }
 
-    }else{
-      setState(() {
-        isLoading = false;
-      });
-      if(mounted){
-        royaltiMemberBloc.fetchRoyaltiMemberList(param);
-      }
+    if(mounted){
 
+      Timer(Duration(seconds: 1), () {
+        setState(() {
+          isLoading = false;
+        });
+      });
+      royaltiMemberBloc.fetchRoyaltiMemberList(param);
 
     }
+//    if(param == 'kosong'){
+//      setState(() {
+//        isLoading = false;
+//      });
+//      if(mounted){
+//        royaltiMemberBloc.fetchRoyaltiMemberList('kosong');
+//      }
+//
+//    }else{
+//      setState(() {
+//        isLoading = false;
+//      });
+//      if(mounted){
+//        royaltiMemberBloc.fetchRoyaltiMemberList(param);
+//      }
+//
+//
+//    }
 
 //    return CircularProgressIndicator(backgroundColor: Colors.green,);
   }
@@ -45,8 +57,9 @@ class _WrapperLevelState extends State<WrapperLevel> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    searchMember('kosong');
-    isLoading = true;
+    if(mounted){
+      royaltiMemberBloc.fetchRoyaltiMemberList('kosong');
+    }
   }
 
   @override
@@ -85,6 +98,9 @@ class _WrapperLevelState extends State<WrapperLevel> {
             Padding(
               padding: const EdgeInsets.only(left: 16.0,right: 16.0),
               child: Level(onItemInteraction:(param){
+                setState(() {
+                  isLoading = true;
+                });
                 searchMember(param);
               }),
             ),
@@ -98,7 +114,7 @@ class _WrapperLevelState extends State<WrapperLevel> {
                   } else if (snapshot.hasError) {
                     return Text(snapshot.error.toString());
                   }
-                  return CircularProgressIndicator(backgroundColor: Colors.green,);
+                  return Container(child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white))));
                 }
             ),
           ],
@@ -109,7 +125,7 @@ class _WrapperLevelState extends State<WrapperLevel> {
 
   Widget buildContent(AsyncSnapshot<RoyaltiMemberModel> snapshot, BuildContext context){
     if(snapshot.data.result.length > 0){
-      return Container(
+      return isLoading?Container(child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Container(
         height: 150,
         margin: EdgeInsets.symmetric(horizontal: 16.0),
         child: ListView.builder(
@@ -152,10 +168,12 @@ class _WrapperLevelState extends State<WrapperLevel> {
       return Container(
         margin: EdgeInsets.symmetric(vertical: 16.0),
         child: Center(
-          child: Text('tidak ada data',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+          child: isLoading?Container(child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Text('tidak ada data',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
         ),
       );
     }
   }
+
+
 
 }

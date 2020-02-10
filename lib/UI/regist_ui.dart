@@ -75,10 +75,7 @@ class _RegistState extends State<Regist> {
     String replaced = '';
     String cek62 = "${rplc}${indexHiji}";
 
-    print(replaced);
     if(rplc == '0'){
-      print("nu kahiji 0");
-      print("####################${noHpController.text.substring(1,noHpController.text.length)}####################");
       replaced = "${noHpController.text.substring(1,noHpController.text.length)}";
     }
     else if(cek62 == '62'){
@@ -86,10 +83,8 @@ class _RegistState extends State<Regist> {
     }
     else{
       replaced = "${noHpController.text}";
-      print("nu kahiji lain 0");
     }
     String no = "${codeCountry}${replaced}";
-    print(no);
     final checkConnection = await userRepository.check();
     if(checkConnection == false){
       setState(() {_isLoading = false;});
@@ -98,7 +93,6 @@ class _RegistState extends State<Regist> {
       var res = await MemberProvider().resendOtp(no,reffController.text,"register");
       if(res is ResendOtp){
         ResendOtp result = res;
-        print(result.result.otp);
         if(result.status == 'success'){
           setState(() {_isLoading = false;});
           Navigator.push(
@@ -138,7 +132,6 @@ class _RegistState extends State<Regist> {
     setState(() {
       monVal = value;
     });
-    print('cek');
     if(monVal == false){
       disableReferral = true;
       reffController..text = '';
@@ -153,11 +146,9 @@ class _RegistState extends State<Regist> {
       _radioValue1 = value;
       switch (_radioValue1) {
         case 'available':
-          print(_radioValue1);
           reffController.text = '';
           break;
         case 'notAvailable':
-          print(_radioValue1);
           reffController.text = '-';
           break;
       }
@@ -168,14 +159,12 @@ class _RegistState extends State<Regist> {
       _radioValue2 = value;
       switch (_radioValue2) {
         case 'gallery':
-          print(_radioValue2);
           setState(() {
             _image = null;
           });
 
           break;
         case 'camera':
-          print(_radioValue2);
           setState(() {
             _image = null;
           });

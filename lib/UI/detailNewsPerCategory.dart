@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,9 @@ import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/detail_berita_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
+import 'package:thaibah/config/api.dart';
+
+import 'Widgets/pin_screen.dart';
 
 class DetailNewsPerCategory extends StatefulWidget {
   DetailNewsPerCategory({this.title,Key key})  : super(key: key);
@@ -56,7 +61,6 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
     super.initState();
 //    load();
     newsDetailPerCategory.fetchDetailNewsPerCategory(1,perpage,localTitle);
-
   }
 
   @override
@@ -67,7 +71,7 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
@@ -142,31 +146,31 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                                             borderRadius: new BorderRadius.circular(10.0),
                                             color: Colors.grey,
                                             image: new DecorationImage(
-                                              image: new NetworkImage("http://lequytong.com/Content/Images/no-image-02.png"),
-                                              fit: BoxFit.cover
+                                                image: new NetworkImage("http://lequytong.com/Content/Images/no-image-02.png"),
+                                                fit: BoxFit.cover
                                             ),
                                             boxShadow: [
                                               new BoxShadow(
-                                                color: mainColor,
-                                                blurRadius: 5.0,
-                                                offset: new Offset(2.0, 5.0)
+                                                  color: mainColor,
+                                                  blurRadius: 5.0,
+                                                  offset: new Offset(2.0, 5.0)
                                               )
                                             ],
                                           ),
                                         ),
                                       ),
                                       new Expanded(
-                                        child: new Container(
-                                          margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                                          child: new Column(children: [
-                                            SkeletonFrame(width: 300,height: 15),
-                                            new Padding(padding: const EdgeInsets.all(2.0)),
-                                            SkeletonFrame(width: 300,height: 50),
-                                            new Padding(padding: const EdgeInsets.all(2.0)),
-                                            SkeletonFrame(width: 300,height: 15),
-                                          ],
-                                          crossAxisAlignment: CrossAxisAlignment.start,),
-                                        )
+                                          child: new Container(
+                                            margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                                            child: new Column(children: [
+                                              SkeletonFrame(width: 300,height: 15),
+                                              new Padding(padding: const EdgeInsets.all(2.0)),
+                                              SkeletonFrame(width: 300,height: 50),
+                                              new Padding(padding: const EdgeInsets.all(2.0)),
+                                              SkeletonFrame(width: 300,height: 15),
+                                            ],
+                                              crossAxisAlignment: CrossAxisAlignment.start,),
+                                          )
                                       ),
                                     ],
                                   ),

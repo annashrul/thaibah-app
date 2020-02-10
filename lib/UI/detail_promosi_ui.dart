@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_villains/villain.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as prefix0;
+import 'package:thaibah/config/api.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'Homepage/index.dart';
+import 'Widgets/pin_screen.dart';
 
 
 class DetailPromosiUI extends StatefulWidget {
@@ -23,11 +29,16 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // double _height;
-  // double _width;
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -36,7 +47,10 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
             Icons.keyboard_backspace,
             color: Colors.white,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: (){
+
+            Navigator.of(context).pop();
+          },
         ),
         centerTitle: false,
         elevation: 0.0,
@@ -75,9 +89,9 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
                     child: Text(
                       '${(widget.createdAt)}',
                       style: Theme.of(context).textTheme.body1.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
-                        fontFamily: 'Rubik'
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
+                          fontFamily: 'Rubik'
                       ),
                     ),
                   ),
@@ -106,11 +120,11 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
             await launch(url);
           }else{
             scaffoldKey.currentState.showSnackBar(
-              SnackBar(
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 5),
-                content: Text('Tidak Ada Link Terkait',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-              )
+                SnackBar(
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 5),
+                  content: Text('Tidak Ada Link Terkait',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                )
             );
           }
         },

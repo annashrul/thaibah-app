@@ -1,4 +1,4 @@
-
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
 
@@ -10,6 +10,7 @@ import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/Model/promosiModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/detail_promosi_ui.dart';
 import 'package:thaibah/bloc/promosiBloc.dart';
@@ -82,6 +83,8 @@ class _AboutState extends State<About>{
     print(perpage);
     return true;
   }
+
+
 
   @override
   void initState() {

@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -12,6 +13,7 @@ import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/Model/productMlmSuplemenModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/tab_kavling_ui.dart';
 import 'package:thaibah/UI/Widgets/tab_suplemen_ui.dart';
 import 'package:thaibah/UI/component/keranjang.dart';
@@ -93,7 +95,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         total = 0;
       });
     }
-
   }
 
   void showInSnackBar(String value) {
@@ -142,38 +143,36 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     return true;
   }
 
+
+
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    countCart();
+    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
+    print('####################### te aktif ############################');
+  }
+
   @override
   void initState() {
     super.initState();
     countCart();
+    print('####################### aktif ############################');
     cekVersion();
     versi = true;
     if(mounted){
       productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
     }
+
     print("###################### $mounted ###########################");
   }
-//
+
   @override
   void dispose() {
     super.dispose();
   }
-
-
-//  @override
-//  void dispose() {
-//    _tabController.dispose();
-//    super.dispose();
-//  }
-//
-//  @override
-//  void initState() {
-//    countCart();
-//    super.initState();
-//    _tabController = new TabController(vsync: this, length: 2);
-//    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,1);
-//
-//  }
 
 
   @override
@@ -193,10 +192,12 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
             ),
           ),
         ),
+
         actions: <Widget>[
           new Stack(
             children: <Widget>[
               new IconButton(icon: Icon(Icons.shopping_cart), onPressed: () {
+
                 if(total!=0){
                   Navigator.of(context).push(new MaterialPageRoute(builder: (_) => Keranjang())).whenComplete(countCart);
                 }
@@ -319,174 +320,168 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   Widget buildContent(AsyncSnapshot<ProductMlmSuplemenModel> snapshot, BuildContext context) {
     if(snapshot.data.result.data.length > 0){
       return RefreshIndicator(
-          child: Padding(
-              padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
-              child: LoadMore(
-                child: ListView.builder(
-                  primary: false,
-                  physics: ScrollPhysics(),
-                  itemCount: snapshot.data.result.data.length,
-                  itemBuilder: (context, index) {
-                    return  GestureDetector(
-                        onTap: (){
-                          if(snapshot.data.result.data[index].qty != 0){
-                            addCart(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
-                          }else{
-                            print('gagal');
-                          }
-                        },
-                        child: Card(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
-                          child: new Column(
+        child: Padding(
+          padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
+          child: LoadMore(
+            child: ListView.builder(
+              primary: false,
+              physics: ScrollPhysics(),
+              itemCount: snapshot.data.result.data.length,
+              itemBuilder: (context, index) {
+                return  GestureDetector(
+                    onTap: (){
+                      if(snapshot.data.result.data[index].qty != 0){
+                        addCart(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
+                      }else{
+                        print('gagal');
+                      }
+                    },
+                    child: Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
+                      child: new Column(
+                        children: <Widget>[
+                          new Stack(
                             children: <Widget>[
-                              new Stack(
-                                children: <Widget>[
-                                  //new Center(child: new CircularProgressIndicator()),
-                                  new Center(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(10.0),
-                                          topRight: Radius.circular( 10.0)
-                                      ),
-                                      child: Image.network(snapshot.data.result.data[index].picture),
-                                    ),
+                              //new Center(child: new CircularProgressIndicator()),
+                              new Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10.0),
+                                      topRight: Radius.circular( 10.0)
                                   ),
-                                ],
+                                  child: Image.network(snapshot.data.result.data[index].picture),
+                                ),
                               ),
-                              new Padding(
-                                padding: const EdgeInsets.all(0.0),
-                                child: new Column(
+                            ],
+                          ),
+                          new Padding(
+                            padding: const EdgeInsets.all(0.0),
+                            child: new Column(
+                              children: <Widget>[
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 10,
+                                          child: Container(
+                                            padding: EdgeInsets.all(5),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Text(snapshot.data.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily: 'Rubik',fontSize: 14.0,fontWeight: FontWeight.bold),),
+                                                SizedBox(width: 5.0),
+                                                snapshot.data.result.data[index].isplatinum == 1 ?
+                                                Container(
+                                                  padding: EdgeInsets.all(2),
+                                                  decoration: new BoxDecoration(
+                                                    color: Colors.red,
+                                                    borderRadius: BorderRadius.circular(6),
+                                                  ),
+                                                  constraints: BoxConstraints(
+                                                    minWidth: 14,
+                                                    minHeight: 14,
+                                                  ),
+                                                  child: Text("PRODUK PLATINUM",style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontSize: 12.0,fontWeight: FontWeight.bold),),
+                                                ) : Container()
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+
+                                      ],
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.all(5),
+                                      child: Text("Sisa : "+ snapshot.data.result.data[index].qty.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.all(5),
+                                      child: Text("Harga : "+ snapshot.data.result.data[index].satuan+"/${snapshot.data.result.data[index].satuanBarang}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
+                                    ),
+                                    snapshot.data.result.data[index].isplatinum == 1 ?
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        Row(
-                                          children: <Widget>[
-                                            Expanded(
-                                              flex: 7,
-                                              child: Container(
-                                                padding: EdgeInsets.all(5),
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Text(snapshot.data.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily: 'Rubik',fontSize: 20.0,fontWeight: FontWeight.bold),),
-                                                    SizedBox(width: 5.0),
-                                                    snapshot.data.result.data[index].isplatinum == 1 ?
-                                                    Container(
-                                                      padding: EdgeInsets.all(2),
-                                                      decoration: new BoxDecoration(
-                                                        color: Colors.red,
-                                                        borderRadius: BorderRadius.circular(6),
-                                                      ),
-                                                      constraints: BoxConstraints(
-                                                        minWidth: 14,
-                                                        minHeight: 14,
-                                                      ),
-                                                      child: Text("PRODUK PLATINUM",style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontSize: 12.0,fontWeight: FontWeight.bold),),
-                                                    ) : Container()
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Container(
-                                                  padding: EdgeInsets.all(5),
-                                                  // decoration: BoxDecoration(color: Styles.primaryColor),
-                                                  child: Align(
-                                                    alignment: Alignment.topRight,
-                                                    child: Text("Sisa "+snapshot.data.result.data[index].qty.toString(), style: TextStyle(fontFamily: 'Rubik',color: Colors.black54),),
-                                                  )
-                                              ),
-                                            ),
-                                          ],
-                                        ),
                                         Container(
                                           padding: EdgeInsets.all(5),
-                                          child: Text("Harga : "+ snapshot.data.result.data[index].satuan+"/${snapshot.data.result.data[index].satuanBarang}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
+                                          child: Text("Detail Produk Platinum", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
                                         ),
-                                        snapshot.data.result.data[index].isplatinum == 1 ?
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Container(
-                                              padding: EdgeInsets.all(5),
-                                              child: Text("Detail Produk Platinum", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.all(5),
-                                              child: Html(
-                                                data: "- "+snapshot.data.result.data[index].detail,
-                                                defaultTextStyle: TextStyle(fontFamily: 'Rubik'),
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                         : Container(),
                                         Container(
                                           padding: EdgeInsets.all(5),
                                           child: Html(
-                                            data: snapshot.data.result.data[index].descriptions,
-                                            defaultTextStyle: TextStyle(fontFamily: 'Rubik'),
+                                            data: "- "+snapshot.data.result.data[index].detail,
+                                            defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
                                           ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
-                                          child: Row(
-                                            children: <Widget>[
-                                              Expanded(
-                                                flex: 7,
-                                                child: Container(
-                                                  padding: EdgeInsets.all(5),
-                                                  // decoration: BoxDecoration(color: Styles.primaryColor),
-                                                  child: Text('',style: TextStyle(color: Colors.black54)),
-                                                ),
-                                              ),
-                                              SizedBox(width: 5,),
-
-                                              Expanded(
-                                                flex: 2,
-                                                child: Container(
-                                                  // padding: EdgeInsets.all(5),
-                                                    decoration: BoxDecoration(color:Colors.green),
-                                                    child: Align(
-                                                        alignment: Alignment.center,
-                                                        child: FlatButton(
-                                                          child: Icon(Icons.add_shopping_cart, color: Colors.white),
-                                                          onPressed: () {
-                                                            if(snapshot.data.result.data[index].qty != 0){
-                                                              addCart(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
-//                                                        widget.onItemInteraction(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
-                                                            }else{
-
-                                                            }
-                                                          },
-                                                        )
-                                                    )
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                        )
                                       ],
                                     )
+                                     : Container(),
+                                    Container(
+                                      padding: EdgeInsets.all(5),
+                                      child: Html(
+                                        data: snapshot.data.result.data[index].descriptions,
+                                        defaultTextStyle: TextStyle(fontFamily: 'Rubik'),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Expanded(
+                                            flex: 7,
+                                            child: Container(
+                                              padding: EdgeInsets.all(5),
+                                              // decoration: BoxDecoration(color: Styles.primaryColor),
+                                              child: Text('',style: TextStyle(color: Colors.black54)),
+                                            ),
+                                          ),
+                                          SizedBox(width: 5,),
+
+                                          Expanded(
+                                            flex: 2,
+                                            child: Container(
+                                              // padding: EdgeInsets.all(5),
+                                              decoration: BoxDecoration(color:Colors.green),
+                                              child: Align(
+                                                alignment: Alignment.center,
+                                                child: FlatButton(
+                                                  child: Icon(Icons.add_shopping_cart, color: Colors.white),
+                                                  onPressed: () {
+                                                    if(snapshot.data.result.data[index].qty != 0){
+                                                      addCart(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
+//                                                        widget.onItemInteraction(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
+                                                    }else{
+
+                                                    }
+                                                  },
+                                                )
+                                              )
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                    );
-                  },
-                ),
-                onLoadMore: _loadMore,
-                whenEmptyLoad: true,
-                delegate: DefaultLoadMoreDelegate(),
-                textBuilder: DefaultLoadMoreTextBuilder.english,
-                isFinish: snapshot.data.result.data.length < perpage,
-              )
-          ),
-          onRefresh: _refresh
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                );
+              },
+            ),
+            onLoadMore: _loadMore,
+            whenEmptyLoad: true,
+            delegate: DefaultLoadMoreDelegate(),
+            textBuilder: DefaultLoadMoreTextBuilder.english,
+            isFinish: snapshot.data.result.data.length < perpage,
+          )
+        ),
+        onRefresh: _refresh
       );
     }else{
       return Container(

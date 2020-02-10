@@ -43,12 +43,14 @@ class Result {
   String downlineName;
   String downlineKdFounder;
   String downlineOmset;
+  String downlineStp;
   String downlineSocketid;
   String downlineReferral;
   String downlineReferralRaw;
   String downlinePicture;
   String downline;
   DateTime createdAt;
+  int generasi;
 
   Result({
     this.id,
@@ -59,12 +61,14 @@ class Result {
     this.downlineName,
     this.downlineKdFounder,
     this.downlineOmset,
+    this.downlineStp,
     this.downlineSocketid,
     this.downlineReferral,
     this.downlineReferralRaw,
     this.downlinePicture,
     this.downline,
     this.createdAt,
+    this.generasi,
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
@@ -76,12 +80,14 @@ class Result {
     downlineName: json["downline_name"],
     downlineKdFounder: json["downline_kd_founder"],
     downlineOmset: json["downline_omset"],
+    downlineStp: json["downline_stp"],
     downlineSocketid: json["downline_socketid"],
     downlineReferral: json["downline_referral"],
     downlineReferralRaw: json["downline_referral_raw"],
     downlinePicture: json["downline_picture"],
     downline: json["downline"],
     createdAt: DateTime.parse(json["created_at"]),
+    generasi: json["generasi"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -93,11 +99,13 @@ class Result {
     "downline_name": downlineName,
     "downline_kd_founder": downlineKdFounder,
     "downline_omset": downlineOmset,
+    "downline_stp": downlineStp,
     "downline_socketid": downlineSocketid,
     "downline_referral": downlineReferral,
     "downline_referral_raw": downlineReferralRaw,
     "downline_picture": downlinePicture,
     "downline": downline,
     "created_at": createdAt.toIso8601String(),
+    "generasi": generasi,
   };
 }

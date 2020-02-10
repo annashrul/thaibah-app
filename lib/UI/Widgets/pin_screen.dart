@@ -37,18 +37,6 @@ class PinScreenState extends State<PinScreen> {
 
   Future biometrics() async {
 
-//    if(res)
-//    setState(() {
-//      showDialog(
-//        barrierDismissible: false,
-//        context: context,
-//        builder: (BuildContext context) {
-//          return AlertDialog(
-//            content: LinearProgressIndicator(),
-//          );
-//        },
-//      );
-//    });
 
     setState(() {
       isLoading = true;
@@ -68,14 +56,6 @@ class PinScreenState extends State<PinScreen> {
         print(results.result.otp);
         Timer(Duration(seconds: 4), () {
           Navigator.of(context).push(new MaterialPageRoute(builder: (context) => ResendAuth(otp:results.result.otp))).whenComplete(cekPin);
-
-//          Navigator.push(
-//            context,
-//            MaterialPageRoute(
-//              builder: (context) => ResendAuth(otp:results.result.otp),
-//            ),
-//          );
-//          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
         });
         return showInSnackBar("Cek OTP Yang Kami Kirim Ke No WhatsApp Anda",Colors.green);
       }else{

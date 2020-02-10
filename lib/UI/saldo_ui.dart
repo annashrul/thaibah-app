@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
@@ -7,7 +8,11 @@ import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/component/bank/getAvailableBank.dart';
 import 'package:thaibah/UI/component/pin/indexPin.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+
+import 'Homepage/index.dart';
+import 'Widgets/pin_screen.dart';
 
 String pin = "";
 
@@ -109,6 +114,8 @@ class _SaldoUIState extends State<SaldoUI> {
     });
   }
 
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -119,30 +126,12 @@ class _SaldoUIState extends State<SaldoUI> {
     sampleData.add(new RadioModel(false, '400,000.00', 'Rp 400,000.00'));
     sampleData.add(new RadioModel(false, '500,000.00', 'Rp 500,000.00'));
     sampleData.add(new RadioModel(false, '1,000,000.00', 'Rp 1,000,000.00'));
-    
 
-  }
-
-  Widget cepat(String val, String nominal){
-    return RaisedButton(
-      elevation: 0.5,
-      padding: EdgeInsets.all(1),
-      color: Colors.white,
-      onPressed: () {
-        saldoController.text = "$val";
-      },
-      child: Text("$nominal",style: TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-    );
   }
 
 
   @override
   Widget build(BuildContext context) {
-//    var moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
-//    moneyController.updateValue(0.00);
-//    moneyController.addListener((){
-//      print(moneyController.numberValue);
-//    });
     double screenWidth = MediaQuery.of(context).size.width;
     var width = (screenWidth - ((_crossAxisCount - 1) * _crossAxisSpacing)) / _crossAxisCount;
     var height = width / _aspectRatio;
@@ -153,7 +142,6 @@ class _SaldoUIState extends State<SaldoUI> {
             icon: Icon(Icons.keyboard_backspace,color: Colors.white),
             onPressed: (){
               Navigator.of(context).pop();
-//              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
             },
           ),
           centerTitle: false,
@@ -179,18 +167,18 @@ class _SaldoUIState extends State<SaldoUI> {
             Container(
               padding:EdgeInsets.all(10.0),
               decoration: BoxDecoration(
-                boxShadow: [
-                  new BoxShadow(
-                    color: Colors.black26,
-                    offset: new Offset(0.0, 2.0),
-                    blurRadius: 25.0,
+                  boxShadow: [
+                    new BoxShadow(
+                      color: Colors.black26,
+                      offset: new Offset(0.0, 2.0),
+                      blurRadius: 25.0,
+                    )
+                  ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(32),
+                      bottomRight: Radius.circular(32)
                   )
-                ],
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(32),
-                  bottomRight: Radius.circular(32)
-                )
               ),
               alignment: Alignment.topCenter,
               child: Column(
@@ -272,20 +260,20 @@ class _SaldoUIState extends State<SaldoUI> {
                   ),
 
                   Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      margin: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                          color: Colors.green, shape: BoxShape.circle),
-                      child: IconButton(
-                        color: Colors.white,
-                        onPressed: () {
-                          setState(() {isLoading = true;});
-                          getBank();
-                        },
-                        icon: isLoading?CircularProgressIndicator():Icon(Icons.arrow_forward),
-                      ),
-                    )
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        margin: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                            color: Colors.green, shape: BoxShape.circle),
+                        child: IconButton(
+                          color: Colors.white,
+                          onPressed: () {
+                            setState(() {isLoading = true;});
+                            getBank();
+                          },
+                          icon: isLoading?CircularProgressIndicator():Icon(Icons.arrow_forward),
+                        ),
+                      )
                   ),
                 ],
               ),
@@ -303,10 +291,11 @@ class RadioItem extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return new Container(
+      padding:EdgeInsets.all(10.0),
       child: new Center(
         child: new Text(
           _item.buttonText,
-          style: new TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold,color:_item.isSelected ? Colors.green : Colors.black,fontSize: 18.0)
+          style: new TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold,color:_item.isSelected ? Colors.green : Colors.black,fontSize: 12.0)
         ),
       ),
       decoration: new BoxDecoration(

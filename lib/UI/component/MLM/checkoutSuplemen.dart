@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -29,6 +30,7 @@ import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart' as prefix4;
 import 'package:thaibah/bloc/productMlmBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/MLM/getDetailChekoutSuplemenProvider.dart';
 import 'package:thaibah/resources/productMlmProvider.dart';
 
@@ -215,6 +217,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     });
   }
 
+
+
   @override
   void initState() {
     super.initState();
@@ -226,6 +230,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     detailChekoutSuplemenBloc.fetchDetailChekoutSuplemenList();
     totQty   = widget.totQty;
     totBayar = widget.total;
+
 //    PluginGooglePlacePicker.initialize(
 //      androidApiKey: "AIzaSyA1uxab8JTufkfuXgCX8ULSIhhSPJs-WC0",
 //    );
@@ -460,7 +465,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                     setState(() {
                       print("############################ ${newValue} #########################");
                       _onDropDownItemSelectedKurir(newValue);
-                      newValue !='COD'?getOngkir():null;
+                      newValue !='COD' ? getOngkir():null;
+                      if(newValue=='COD'){
+                        totOngkir=0;
+                      }
                       _onDropDownItemSelectedJasa(null);
                     });
                   },
@@ -503,8 +511,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   isDense: true,
                   onChanged: (String newValue) {
                     setState(() {
+                      print(newValue);
                       _onDropDownItemSelectedJasa(newValue);
                       paket = newValue.split("|");
+                      print(int.parse(paket[1]));
                       total=widget.total+int.parse(paket[1]);
                       totOngkir = int.parse(paket[1]);
                       print(total);
@@ -542,7 +552,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text("Total Tagihan", style: TextStyle(color: Colors.black54),),
-              Text("Rp ${formatter.format(total==0?widget.total:total)}",style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+              Text("Rp ${_currentItemSelectedKurir=='COD'?widget.total: formatter.format(total==0?widget.total:total)}",style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
             ],
           ),
           Container(
@@ -727,7 +737,9 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: (){
+            Navigator.of(context).pop();
+          },
         ),
         centerTitle: false,
         flexibleSpace: Container(
@@ -767,18 +779,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               ),
             ),
             ProdukCheckoutSuplemen(),
-//            StreamBuilder(
-//                stream: detailChekoutSuplemenBloc.getResult,
-//                builder: (context, AsyncSnapshot<GetDetailChekoutSuplemenModel> snapshot){
-//                  if (snapshot.hasData) {
-//                    totBar = snapshot.data.result.totalQty.toString();
-//                    return buildProduk(snapshot,context);
-//                  } else if (snapshot.hasError) {
-//                    return Text(snapshot.error.toString());
-//                  }
-//                  return _loadingProduk(context);
-//                }
-//            ),
             Container(
               color: Colors.white,
               padding:EdgeInsets.only(top: 10.0, bottom: 0.0, left: 10.0, right: 10.0),
@@ -802,7 +802,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               ),
             ),
             SizedBox(height:10.0),
-            _currentItemSelectedKurir == 'COD'?Container(
+            _currentItemSelectedKurir == 'COD' ? Container(
               padding: EdgeInsets.only(left:10.0,right:10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1032,189 +1032,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     );
   }
 
-  Widget buildProduk(AsyncSnapshot<GetDetailChekoutSuplemenModel> snapshot, BuildContext context){
-    var width = MediaQuery.of(context).size.width;
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
-    return Container(
-      width:  width / 1,
-      color: Colors.white,
-      child: ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          itemCount: snapshot.data.result.produk.length,
-          shrinkWrap: true,
-          itemBuilder: (context, i) {
-            return new FlatButton(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  new Row(
-                    children: <Widget>[
-                      new Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: new Row(
-                          children: <Widget>[
-                            Container(
-                              margin: const EdgeInsets.only(left:10.0,right:5.0),
-                              width: 70.0,
-                              height: 70.0,
-                              child: Stack(
-                                children: <Widget>[
-                                  CachedNetworkImage(
-                                    imageUrl: snapshot.data.result.produk[i].picture,
-                                    placeholder: (context, url) => Center(
-                                      child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-                                    ),
-                                    errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                    imageBuilder: (context, imageProvider) => Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: new BorderRadius.circular(10.0),
-                                        color: Colors.transparent,
-                                        image: DecorationImage(
-                                          image: imageProvider,
-                                          fit: BoxFit.fill,
-                                        ),
-                                        boxShadow: [new BoxShadow(color:Colors.transparent,blurRadius: 5.0,offset: new Offset(2.0, 5.0))],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            )
-                          ],
-                        ),
-                      ),
-                      new Expanded(
-                        child: new Container(
-                          margin: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
-                          child: new Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(0.0),
-                                child: new Text('${snapshot.data.result.produk[i].title}',style: new TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black),),
-                              ),
-                              SizedBox(height: 5.0),
-                              Text('${snapshot.data.result.produk[i].qty} Barang (${snapshot.data.result.produk[i].weight} Gram) x Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice))}',style: TextStyle(fontSize: 10,fontFamily: 'Rubik',color:Colors.grey,fontWeight: FontWeight.bold),),
-                              SizedBox(height: 5.0),
-                              Text('Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice)*int.parse(snapshot.data.result.produk[i].qty) )}',style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.redAccent,fontWeight: FontWeight.bold),)
-                            ],
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                          ),
-                        )
-                      ),
-                    ],
-                  ),
-                  Container(
-                    padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 15.0, right: 15.0),
-                    color: Colors.white,
-                    child: Divider(),
-                  ),
-//                  SizedBox(height: 10.0,child: Container(color: Colors.transparent)),
-                ],
-              ),
-              padding: const EdgeInsets.all(0.0),
-              onPressed: () {
-
-              },
-//              color: Colors.white,
-            );
-          }),
-    );
-  }
-
-  Widget _loadingProduk(BuildContext context){
-    var width = MediaQuery.of(context).size.width;
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
-    return Container(
-      width:  width / 1,
-      color: Colors.white,
-      child: ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          itemCount: 3,
-          shrinkWrap: true,
-          itemBuilder: (context, i) {
-            return new FlatButton(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  new Row(
-                    children: <Widget>[
-                      new Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: new Row(
-                          children: <Widget>[
-                            Container(
-                                margin: const EdgeInsets.only(left:10.0,right:5.0),
-                                width: 70.0,
-                                height: 70.0,
-                                child: Stack(
-                                  children: <Widget>[
-                                    CachedNetworkImage(
-                                      imageUrl: 'http://design-ec.com/d/e_others_50/l_e_others_500.png',
-                                      placeholder: (context, url) => Center(
-                                        child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-                                      ),
-                                      errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                      imageBuilder: (context, imageProvider) => Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: new BorderRadius.circular(10.0),
-                                          color: Colors.transparent,
-                                          image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.fill,
-                                          ),
-                                          boxShadow: [new BoxShadow(color:Colors.transparent,blurRadius: 5.0,offset: new Offset(2.0, 5.0))],
-                                        ),
-                                      ),
-                                    ),
-
-                                  ],
-                                )
-                            )
-                          ],
-
-                        ),
-                      ),
-                      new Expanded(
-                          child: new Container(
-                            margin: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
-                            child: new Column(
-                              children: [
-                                Container(
-                                    padding: const EdgeInsets.all(0.0),
-                                    child: SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0)
-                                ),
-                                SizedBox(height: 5.0),
-                                SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0),
-                                SizedBox(height: 5.0),
-                                SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0)
-                              ],
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                            ),
-                          )),
-                    ],
-                  ),
-                  Container(
-                    padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 15.0, right: 15.0),
-                    color: Colors.white,
-                    child: Divider(),
-                  ),
-//                  SizedBox(height: 10.0,child: Container(color: Colors.transparent)),
-                ],
-              ),
-              padding: const EdgeInsets.all(0.0),
-              onPressed: () {
-
-              },
-//              color: Colors.white,
-            );
-          }),
-    );
-  }
-
   void _lainnyaModalBottomSheet(context){
     showModalBottomSheet(
         context: context,
@@ -1281,3 +1098,4 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     );
   }
 }
+

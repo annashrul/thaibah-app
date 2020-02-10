@@ -42,7 +42,7 @@ class Result {
   String cover;
   String kdReferral;
   String kdUnique;
-  String gender;
+  dynamic gender;
   String qr;
   String saldo;
   String rawSaldo;
@@ -58,6 +58,9 @@ class Result {
   int level;
   DateTime createdAt;
   int status;
+  String kaki1;
+  String kaki2;
+  String kaki3;
   String privacy;
 
   Result({
@@ -84,6 +87,9 @@ class Result {
     this.level,
     this.createdAt,
     this.status,
+    this.kaki1,
+    this.kaki2,
+    this.kaki3,
     this.privacy,
   });
 
@@ -111,6 +117,9 @@ class Result {
     level: json["level"],
     createdAt: DateTime.parse(json["created_at"]),
     status: json["status"],
+    kaki1: json["kaki1"],
+    kaki2: json["kaki2"],
+    kaki3: json["kaki3"],
     privacy: json["privacy"],
   );
 
@@ -138,6 +147,9 @@ class Result {
     "level": level,
     "created_at": createdAt.toIso8601String(),
     "status": status,
+    "kaki1": kaki1,
+    "kaki2": kaki2,
+    "kaki3": kaki3,
     "privacy": privacy,
   };
 }

@@ -51,14 +51,14 @@ class Page extends StatelessWidget {
           ),
         ), //Transform
         Expanded(
-          flex: 3,
+          flex: 4,
           child: new _ImagePageTransform(
             percentVisible: percentVisible,
             pageViewModel: pageViewModel,
           ),
         ), //Transform
         Flexible(
-          flex: 3,
+          flex: 2,
           child: new _BodyPageTransform(
             percentVisible: percentVisible,
             pageViewModel: pageViewModel,

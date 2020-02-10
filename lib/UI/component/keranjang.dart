@@ -1,18 +1,17 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart';
 import 'package:thaibah/Model/MLM/listCartModel.dart';
+import 'package:thaibah/Model/address/getListAddressModel.dart';
+import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/MLM/checkoutSuplemen.dart';
 import 'package:thaibah/UI/component/address/addAddress.dart';
-import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
-import 'package:thaibah/resources/MLM/getDetailChekoutSuplemenProvider.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/addressProvider.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
 
@@ -39,42 +38,70 @@ class _KeranjangState extends State<Keranjang> {
     print(jumlahQty);
 //    var cek = await DetailCheckoutSuplemenProvider().fetchDetailCheckoutSuplemen();
 //    cek.result.address;
-    var test = await AddressProvider().fetchAlamat();
-    if(test.result.length > 0){
+    var test = await AddressProvider().cekAlamat();
+    if(test is GetDetailChekoutSuplemenModel){
+      GetDetailChekoutSuplemenModel results = test;
       setState(() {
         isLoading = false;
       });
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CheckOutSuplemen(total:total,berat: newBerat,totQty:jumlahQty),
-        ),
-      );
+      if(test.status == 'success'){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CheckOutSuplemen(total:total,berat: newBerat,totQty:jumlahQty),
+          ),
+        );
+      }else{
+        setState(() {
+          isLoading = false;
+        });
+        scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+              content: Text(results.msg,style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+            )
+        );
+      }
     }
     else{
       setState(() {
-        isLoading  = false;
+        isLoading = false;
       });
-      scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 5),
-          content: Text('Silahkan isi  alamat lengkap untuk pengiriman barang ke tempat anda',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-          action: SnackBarAction(
-            textColor: Colors.green,
-            label: 'Buat Alamat',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddAddress(),
-                ),
-              );
-            },
-          ),
-        )
-      );
+      General results = test;
+      if(results.msg == 'Alamat kosong.'){
+        setState(() {isLoading  = false;});
+        scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 10),
+              content: Text('Silahkan isi  alamat lengkap untuk pengiriman barang ke tempat anda',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+              action: SnackBarAction(
+                textColor: Colors.white,
+                label: 'BUAT ALAMAT',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddAddress(),
+                    ),
+                  );
+                },
+              ),
+            )
+        );
+      }else{
+        scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+              content: Text(results.msg,style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+            )
+        );
+      }
+
     }
+
   }
 
 
@@ -109,18 +136,18 @@ class _KeranjangState extends State<Keranjang> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-//    listCartBloc.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-//      bottomNavigationBar: _bottomNavBarBeli(context),
       key: scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: (){
+            Navigator.of(context).pop();
+          },
         ),
         centerTitle: false,
         flexibleSpace: Container(

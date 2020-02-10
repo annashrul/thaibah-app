@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,10 @@ import 'package:thaibah/UI/component/news/categoryNewsDetail.dart';
 import 'package:thaibah/UI/detailNewsPerCategory.dart';
 import 'package:thaibah/bloc/categoryBloc.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
+import 'package:thaibah/config/api.dart';
+
+import 'Homepage/index.dart';
+import 'Widgets/pin_screen.dart';
 
 class DetailBeritaUI extends StatefulWidget {
   final String id;
@@ -35,6 +40,9 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
   var localId;
   var localCategory;
 
+
+
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -52,193 +60,192 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            new SliverAppBar(
-              floating: true,
-              elevation: 0,
-              snap: true,
-              backgroundColor: AppTheme.Colors.white,
-              brightness: Brightness.light,
-              actions: <Widget>[
-                Expanded(
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 40,
-                        child: IconButton(
-                          icon: Icon(SimpleLineIcons.getIconData("arrow-left")),
-                          color: AppTheme.Colors.black,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: ToggleButton(),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ];
-        },
-        body: Container(
-          color: AppTheme.Colors.white,
-          child: ListView(
-            children: <Widget>[
-              StreamBuilder(
-                stream: newsDetailBloc.allDetailNews,
-                builder: (context,AsyncSnapshot<NewsDetailModel> snapshot){
-                  return snapshot.hasData ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              new SliverAppBar(
+                floating: true,
+                elevation: 0,
+                snap: true,
+                backgroundColor: AppTheme.Colors.white,
+                brightness: Brightness.light,
+                actions: <Widget>[
+                  Expanded(
+                    child: Row(
                       children: <Widget>[
-
                         Container(
-                            height: 200,
-                            child: Stack(
-                              children: <Widget>[
-                                CachedNetworkImage(
-                                  imageUrl: snapshot.data.result.picture,
-                                  placeholder: (context, url) => Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                  imageBuilder: (context, imageProvider) => Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.fitHeight,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                              ],
-                            )
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                snapshot.data.result.category,
-                                style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: 'Rubik',fontWeight: FontWeight.w500,fontSize: 16),
-                              ),
-                              Text(
-                                snapshot.data.result.createdAt,
-                                style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: 'Rubik',fontWeight: FontWeight.w500,fontSize: 16),
-                              )
-                            ],
+                          width: 40,
+                          child: IconButton(
+                            icon: Icon(SimpleLineIcons.getIconData("arrow-left")),
+                            color: AppTheme.Colors.black,
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
-                        Container(
-                            margin: EdgeInsets.only(bottom: 10.0),
-                            child: Text(snapshot.data.result.title,style: TextStyle(fontFamily: 'Rubik',color: Colors.black,fontWeight: FontWeight.bold),)
+                        Expanded(
+                          child: ToggleButton(),
                         ),
-                        Container(
-                            margin: EdgeInsets.only(bottom: 10.0),
-                            child: Text(snapshot.data.result.penulis,style: TextStyle(fontFamily: 'Rubik',color: Color(0xFFB1B1B1),fontWeight: FontWeight.bold),)
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 0),
-                          child: Html(data:removeAllHtmlTags(snapshot.data.result.caption))
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 30, bottom: 10),
-                          child: RichText(
-                            text: TextSpan(children: [
-                              TextSpan(text: "Berita ",style: AppTheme.TextTheme.titleRegularBlack),
-                              TextSpan(text: "Lainnya",style: AppTheme.TextTheme.titleRegularOrange),
-                            ]),
-                          ),
-                        ),
-
                       ],
                     ),
+                  )
+                ],
+              ),
+            ];
+          },
+          body: Container(
+            color: AppTheme.Colors.white,
+            child: ListView(
+              children: <Widget>[
+                StreamBuilder(
+                  stream: newsDetailBloc.allDetailNews,
+                  builder: (context,AsyncSnapshot<NewsDetailModel> snapshot){
+                    return snapshot.hasData ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
 
-                  ):
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                            height: 200,
-                            child: Stack(
-                              children: <Widget>[
-                                CachedNetworkImage(
-                                  imageUrl: "http://lequytong.com/Content/Images/no-image-02.png",
-                                  placeholder: (context, url) => Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                  imageBuilder: (context, imageProvider) => Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
+                          Container(
+                              height: 200,
+                              child: Stack(
+                                children: <Widget>[
+                                  CachedNetworkImage(
+                                    imageUrl: snapshot.data.result.picture,
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                    errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.fitHeight,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
 
-                              ],
-                            )
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              SkeletonFrame(width: 150,height: 16),
-                              SkeletonFrame(width: 150,height: 16),
-                            ],
+                                ],
+                              )
                           ),
-                        ),
-                        Container(
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  snapshot.data.result.category,
+                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: 'Rubik',fontWeight: FontWeight.w500,fontSize: 16),
+                                ),
+                                Text(
+                                  snapshot.data.result.createdAt,
+                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: 'Rubik',fontWeight: FontWeight.w500,fontSize: 16),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                              margin: EdgeInsets.only(bottom: 10.0),
+                              child: Text(snapshot.data.result.title,style: TextStyle(fontFamily: 'Rubik',color: Colors.black,fontWeight: FontWeight.bold),)
+                          ),
+                          Container(
+                              margin: EdgeInsets.only(bottom: 10.0),
+                              child: Text(snapshot.data.result.penulis,style: TextStyle(fontFamily: 'Rubik',color: Color(0xFFB1B1B1),fontWeight: FontWeight.bold),)
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.only(right: 0),
+                              child: Html(data:removeAllHtmlTags(snapshot.data.result.caption))
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30, bottom: 10),
+                            child: RichText(
+                              text: TextSpan(children: [
+                                TextSpan(text: "Berita ",style: AppTheme.TextTheme.titleRegularBlack),
+                                TextSpan(text: "Lainnya",style: AppTheme.TextTheme.titleRegularOrange),
+                              ]),
+                            ),
+                          ),
+
+                        ],
+                      ),
+
+                    ):
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                              height: 200,
+                              child: Stack(
+                                children: <Widget>[
+                                  CachedNetworkImage(
+                                    imageUrl: "http://lequytong.com/Content/Images/no-image-02.png",
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                    errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                ],
+                              )
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                SkeletonFrame(width: 150,height: 16),
+                                SkeletonFrame(width: 150,height: 16),
+                              ],
+                            ),
+                          ),
+                          Container(
                             margin: EdgeInsets.only(bottom: 10.0),
                             child: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 16),
-                        ),
-                        Container(
+                          ),
+                          Container(
                             margin: EdgeInsets.only(bottom: 10.0),
                             child: SkeletonFrame(width: 150,height: 16),
-                        ),
-                        Padding(
+                          ),
+                          Padding(
                             padding: const EdgeInsets.only(right: 0),
                             child: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 300),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 30, bottom: 10),
-                          child: RichText(
-                            text: TextSpan(children: [
-                              TextSpan(text: "Berita ",style: AppTheme.TextTheme.titleRegularBlack),
-                              TextSpan(text: "Lainnya",style: AppTheme.TextTheme.titleRegularOrange),
-                            ]),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30, bottom: 10),
+                            child: RichText(
+                              text: TextSpan(children: [
+                                TextSpan(text: "Berita ",style: AppTheme.TextTheme.titleRegularBlack),
+                                TextSpan(text: "Lainnya",style: AppTheme.TextTheme.titleRegularOrange),
+                              ]),
+                            ),
+                          ),
 
-                      ],
-                    ),
+                        ],
+                      ),
 
-                  );
-                },
-              ),
-              CategoryNewsDetail(category:localCategory)
-              //ieu
-            ],
+                    );
+                  },
+                ),
+                CategoryNewsDetail(category:localCategory)
+                //ieu
+              ],
+            ),
           ),
-        ),
-      )
+        )
     );
   }
 }
@@ -258,6 +265,7 @@ class _ToggleButtonState extends State<ToggleButton> {
     AppTheme.Colors.primaryColor,
   ];
   Random random = new Random();
+
 
   @override
   void initState() {
@@ -287,8 +295,8 @@ class _ToggleButtonState extends State<ToggleButton> {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Align(
-                      alignment: Alignment.center,
-                      child: SkeletonFrame(width: 50,height: 16,)
+                        alignment: Alignment.center,
+                        child: SkeletonFrame(width: 50,height: 16,)
                     ),
                     decoration: BoxDecoration(
                         color: Colors.white,

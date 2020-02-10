@@ -10,6 +10,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/Homepage/beranda.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
 import 'package:thaibah/UI/component/about.dart';
 import 'package:thaibah/UI/component/testimoni/testi.dart';
@@ -53,27 +54,6 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
   }
 
 
-//  String versionCode = '';
-//
-//  Future<void> cekVersion() async {
-//    String id = await userRepository.getID();
-//    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
-//    if (jsonString.statusCode == 200) {
-//      final jsonResponse = json.decode(jsonString.body);
-//      Info response = new Info.fromJson(jsonResponse);
-//      print("##################################### INFO ${response.result.versionCode} #################################################");
-//      versionCode = (response.result.versionCode);
-//      if(versionCode == ApiService().versionCode){
-//        setState(() {
-//          isLoading = true;
-//        });
-//      }
-//
-//
-//    } else {
-//      throw Exception('Failed to load info');
-//    }
-//  }
 
   Future<Null> checkLoginStatus() async {
     preferences = await SharedPreferences.getInstance();
@@ -102,6 +82,9 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
   String latitude = '';
   String longitude = '';
+
+
+
 
 
   @override
@@ -214,7 +197,6 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
   DateTime backButtonPressTime;
 
-
   Future<bool> onWillPop() async {
     DateTime currentTime = DateTime.now();
     bool backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
@@ -230,8 +212,22 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
     print("################################# KALUAR APLIKASI ${prefs.getBool('isPin')} ##############################");
     return true;
   }
-
-
+//  int _page = 0;
+//
+//  GlobalKey _bottomNavigationKey = GlobalKey();
+//  moves(page){
+//    if(page == 0){
+//      return Beranda(lat:latitude,lng:longitude);
+//    }else if(page == 1){
+//      return ProdukMlmUI();
+//    }else if(page == 2){
+//      return About();
+//    }else if(page == 3){
+//      return Testimoni();
+//    }else if(page == 4){
+//      return ProfileUI();
+//    }
+//  }
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -239,8 +235,8 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
       DeviceOrientation.portraitDown,
     ]);
     return latitude == null || longitude == null ? CircularProgressIndicator() :Scaffold(
-      key: scaffoldKey,
-      backgroundColor: Colors.white,
+        key: scaffoldKey,
+        backgroundColor: Colors.white,
 //      body: UpdatePage(),
       body: Container(
         color: const Color(0xffF4F7FA),
@@ -287,6 +283,32 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
             );
           }
       ),
+//        bottomNavigationBar: CurvedNavigationBarQ(
+//          key: _bottomNavigationKey,
+//          index: 0,
+//          height: 50.0,
+//          items: <Widget>[
+//            Icon(Icons.home, size: 30,color:Colors.white),
+//            Icon(Icons.shopping_basket, size: 30,color:Colors.white),
+//            Icon(Icons.account_balance, size: 30,color:Colors.white),
+//            Icon(Icons.videocam, size: 30,color:Colors.white),
+//            Icon(Icons.account_circle, size: 30,color:Colors.white),
+//          ],
+//          color: Color(0xFF30cc23),
+//          buttonBackgroundColor: Color(0xFF30cc23),
+//          backgroundColor: Colors.white,
+//          animationCurve: Curves.easeInOut,
+//          animationDuration: Duration(milliseconds: 600),
+//          onTap: (index) {
+//            setState(() {
+//              _page = index;
+//            });
+//          },
+//        ),
+//        body: WillPopScope(
+//            child: moves(_page),
+//            onWillPop: onWillPop
+//        )
     );
   }
 }
@@ -548,4 +570,6 @@ class FancyBottomNavigationItem {
     assert(title != null);
   }
 }
+
+
 
