@@ -105,7 +105,7 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
           ),
           elevation: 1.0,
           automaticallyImplyLeading: true,
-          title: new Text("Upgrade Platinum tes", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+          title: new Text("Upgrade Platinum", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
         ),
         body: isLoading?Container(child: Center(child: CircularProgressIndicator())):Stack(
           children: <Widget>[
@@ -114,7 +114,7 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
                 wrapOnboarding,
                 onTapDoneButton: (){
                   Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => ProdukMlmUI()),
+                    new CupertinoPageRoute(builder: (context) => DashboardThreePage(param: 'produk')),
                   );
                 },
                 showSkipButton: true,

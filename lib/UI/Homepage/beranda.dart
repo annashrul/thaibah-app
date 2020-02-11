@@ -720,7 +720,8 @@ class BerandaState extends State<Beranda>{
 //                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Platinum : ${_levelPlatinum}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
 //                        ),
                       ],
-                    )
+                    ),
+
 
                   ],
                 ),
@@ -881,14 +882,14 @@ class BerandaState extends State<Beranda>{
             childAspectRatio: 1.1,
             crossAxisCount: 4,
             children: <Widget>[
-              wrapperIcon(context,ApiService().iconUrl+'revisi/topup.svg', 'Topup','topup'),
-              wrapperIcon(context,ApiService().iconUrl+'revisi/history.svg','Riwayat','riwayat'),
-              wrapperIcon(context,ApiService().iconUrl+'revisi/transfer.svg','Transfer','transfer'),
-              wrapperIcon(context,ApiService().iconUrl+'penarikan.svg','Penarikan','penarikan'),
-              wrapperIcon(context,ApiService().iconUrl+'revisi/jadwal_solat.svg','Prayer','prayer'),
-              wrapperIcon(context,ApiService().iconUrl+'revisi/asmaul_husna.svg','99 Nama','asma'),
-              wrapperIcon(context,ApiService().iconUrl+'revisi/alquran.svg','Al-Quran','alquran'),
-              wrapperIcon(context,ApiService().iconUrl+'revisi/more.svg','Lainnya','lainnya'),
+              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_TopUp.svg', 'Topup','topup'),
+              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_History.svg','Riwayat','riwayat'),
+              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Transfer.svg','Transfer','transfer'),
+              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Penarikan.svg','Penarikan','penarikan'),
+              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Waktu_Shalat.svg','Prayer','prayer'),
+              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Asmaul_Husna.svg','99 Nama','asma'),
+              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Baca_Al-Quran.svg','Al-Quran','alquran'),
+              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Lainnya.svg','Lainnya','lainnya'),
             ],
           )
       ),
@@ -905,7 +906,6 @@ class BerandaState extends State<Beranda>{
           onTap: () {
             if(type == 'topup'){
               print('topup');
-
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),
               ).whenComplete(loadData);
@@ -956,7 +956,7 @@ class BerandaState extends State<Beranda>{
               _lainnyaModalBottomSheet(context,'ppob');
             }
           },
-          child: SvgPicture.network(
+          child: SvgPicture.asset(
             isLoading?"http://lequytong.com/Content/Images/no-image-02.png":'$imgUrl',
             placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtil.getInstance().setWidth(60),height: ScreenUtil.getInstance().setHeight(60)),
             height: ScreenUtil.getInstance().setHeight(60),
@@ -1020,10 +1020,10 @@ class BerandaState extends State<Beranda>{
                       shrinkWrap: true,
                       crossAxisCount: 4,
                       children: <Widget>[
-                        moreStructure("mesjid2.svg", "masjid", "Masjid Terdekat"),
-                        moreStructure("hadis2.svg", "hadis", "Hadits"),
-                        moreStructure("doa.svg", "doa", "Doa Harian"),
-                        moreStructure("kalender_hijriah.svg", "kalender", "Kalender Hijriah"),
+                        moreStructure("Icon_Utama_Masjid_Terdekat.svg", "masjid", "Masjid Terdekat"),
+                        moreStructure("Icon_Utama_Hadits.svg", "hadis", "Hadits"),
+                        moreStructure("Icon_Utama_Doa_Harian.svg", "doa", "Doa Harian"),
+                        moreStructure("Icon_Utama_Kalender_Hijriah.svg", "kalender", "Kalender Hijriah"),
                         moreStructure("revisi/pulsa.svg", "pulsa", "Pulsa"),
                         moreStructure("revisi/Icon_PPOB_LISTRIK.svg", "listrik", "Listrik"),
                         moreStructure("revisi/Icon_PPOB_TELEPON_PASCA_BAYAR.svg", "telepon", "Telepon/Internet"),

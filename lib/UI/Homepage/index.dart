@@ -5,12 +5,13 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:location/location.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/Homepage/beranda.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
 import 'package:thaibah/UI/component/about.dart';
 import 'package:thaibah/UI/component/testimoni/testi.dart';
@@ -29,6 +30,8 @@ import 'package:http/http.dart' as http;
 
 
 class DashboardThreePage extends StatefulWidget {
+  final String param;
+  DashboardThreePage({this.param});
   @override
   _DashboardThreePageState createState() => _DashboardThreePageState();
 }
@@ -87,8 +90,81 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
 
 
+
+
+
+  Future updateApk() async{
+    String url = 'https://play.google.com/store/apps/details?id=com.thaibah';
+    if (await canLaunch(url)) {
+      await launch(url);
+    }else{
+      print(url);
+    }
+  }
+
+  Future play() async{
+    AudioPlayer audioPlayer = AudioPlayer();
+    await audioPlayer.play('https://thaibah.com/assets/adzan_.mp3');
+
+  }
+
+  @override
+  void dispose() {
+    indexcontroller.close();
+    super.dispose();
+
+  }
+  PageController pageController = PageController(initialPage: 0);
+  StreamController<int> indexcontroller = StreamController<int>.broadcast();
+  int index = 0;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  static const snackBarDuration = Duration(seconds: 3);
+
+  final snackBar = SnackBar(
+    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+    duration: snackBarDuration,
+  );
+
+  DateTime backButtonPressTime;
+
+  Future<bool> onWillPop() async {
+    DateTime currentTime = DateTime.now();
+    bool backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
+        backButtonPressTime == null || currentTime.difference(backButtonPressTime) > snackBarDuration;
+    if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
+      backButtonPressTime = currentTime;
+      scaffoldKey.currentState.showSnackBar(snackBar);
+      return false;
+    }
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isPin', true);
+//    var cek = prefs.setBool('isPin', true);
+    print("################################# KALUAR APLIKASI ${prefs.getBool('isPin')} ##############################");
+    return true;
+  }
+  int currentTab = 0; // to keep track of active tab index
+  final List<Widget> screens = [
+    Beranda(),
+    ProdukMlmUI(),
+//    About(),
+    Testimoni(),
+    ProfileUI(),
+  ]; // to store nested tabs
+  final PageStorageBucket bucket = PageStorageBucket();
+  Widget currentScreen = Beranda();
+
+  void activePage(){
+    if(widget.param == 'produk'){
+      setState(() {
+        currentTab = 1;
+        currentScreen = ProdukMlmUI();
+      });
+    }
+  }
+  // Our first view
   @override
   void initState(){
+    activePage();
     cekVersion();
     location.onLocationChanged().listen((value) {
       if(mounted){
@@ -162,74 +238,10 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
   }
 
-
-  Future updateApk() async{
-    String url = 'https://play.google.com/store/apps/details?id=com.thaibah';
-    if (await canLaunch(url)) {
-      await launch(url);
-    }else{
-      print(url);
-    }
-  }
-
-  Future play() async{
-    AudioPlayer audioPlayer = AudioPlayer();
-    await audioPlayer.play('https://thaibah.com/assets/adzan_.mp3');
-
-  }
-
-  @override
-  void dispose() {
-    indexcontroller.close();
-    super.dispose();
-
-  }
-  PageController pageController = PageController(initialPage: 0);
-  StreamController<int> indexcontroller = StreamController<int>.broadcast();
-  int index = 0;
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  static const snackBarDuration = Duration(seconds: 3);
-
-  final snackBar = SnackBar(
-    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-    duration: snackBarDuration,
-  );
-
-  DateTime backButtonPressTime;
-
-  Future<bool> onWillPop() async {
-    DateTime currentTime = DateTime.now();
-    bool backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
-        backButtonPressTime == null || currentTime.difference(backButtonPressTime) > snackBarDuration;
-    if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
-      backButtonPressTime = currentTime;
-      scaffoldKey.currentState.showSnackBar(snackBar);
-      return false;
-    }
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isPin', true);
-//    var cek = prefs.setBool('isPin', true);
-    print("################################# KALUAR APLIKASI ${prefs.getBool('isPin')} ##############################");
-    return true;
-  }
-//  int _page = 0;
-//
-//  GlobalKey _bottomNavigationKey = GlobalKey();
-//  moves(page){
-//    if(page == 0){
-//      return Beranda(lat:latitude,lng:longitude);
-//    }else if(page == 1){
-//      return ProdukMlmUI();
-//    }else if(page == 2){
-//      return About();
-//    }else if(page == 3){
-//      return Testimoni();
-//    }else if(page == 4){
-//      return ProfileUI();
-//    }
-//  }
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
+    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -237,52 +249,188 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
     return latitude == null || longitude == null ? CircularProgressIndicator() :Scaffold(
         key: scaffoldKey,
         backgroundColor: Colors.white,
-//      body: UpdatePage(),
-      body: Container(
-        color: const Color(0xffF4F7FA),
-        child: WillPopScope(
-          onWillPop: onWillPop,
-          child: PageView(
-            physics: NeverScrollableScrollPhysics(),
-            onPageChanged: (index) {
-              indexcontroller.add(index);
-            },
-            controller: pageController,
+      body: PageStorage(
+        child: currentScreen,
+        bucket: bucket,
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        child: SvgPicture.asset(
+          ApiService().assetsLocal+"t.svg",
+          height: ScreenUtil.getInstance().setHeight(50),
+          width: ScreenUtil.getInstance().setWidth(50),
+        ),
+        onPressed: () {
+          Navigator.of(context, rootNavigator: true).push(
+            new CupertinoPageRoute(builder: (context) => About()),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 10,
+        child: Container(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Beranda(lat:latitude,lng:longitude),
-              ProdukMlmUI(),
-              About(),
-              Testimoni(),
-              ProfileUI(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  MaterialButton(
+                    minWidth: 40,
+                    onPressed: () {
+                      setState(() {
+                        currentScreen = Beranda(lat: latitude,lng: longitude); // if user taps on this dashboard tab will be active
+                        currentTab = 0;
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        currentTab == 0 ? SvgPicture.asset(
+                          ApiService().assetsLocal+"Icon_Utama_Home_Warna.svg",
+                          height: ScreenUtil.getInstance().setHeight(50),
+                          width: ScreenUtil.getInstance().setWidth(50),
+                        ) : SvgPicture.asset(
+                          ApiService().assetsLocal+"Icon_Utama_Home_Abu.svg",
+                          height: ScreenUtil.getInstance().setHeight(50),
+                          width: ScreenUtil.getInstance().setWidth(50),
+                        )
+                      ],
+                    ),
+                  ),
+                  MaterialButton(
+                    minWidth: 40,
+                    onPressed: () {
+                      setState(() {
+                        currentScreen = ProdukMlmUI(); // if user taps on this dashboard tab will be active
+                        currentTab = 1;
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        currentTab == 1 ? SvgPicture.asset(
+                          ApiService().assetsLocal+"Icon_Utama_Produk_Warna.svg",
+                          height: ScreenUtil.getInstance().setHeight(50),
+                          width: ScreenUtil.getInstance().setWidth(50),
+                        ) : SvgPicture.asset(
+                          ApiService().assetsLocal+"Icon_Utama_Produk_abu.svg",
+                          height: ScreenUtil.getInstance().setHeight(50),
+                          width: ScreenUtil.getInstance().setWidth(50),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+
+              // Right Tab bar icons
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  MaterialButton(
+                    minWidth: 40,
+                    onPressed: () {
+                      setState(() {
+                        currentScreen = Testimoni(); // if user taps on this dashboard tab will be active
+                        currentTab = 2;
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        currentTab == 2 ? SvgPicture.asset(
+                          ApiService().assetsLocal+"Icon_Utama_Testimoni_Warna.svg",
+                          height: ScreenUtil.getInstance().setHeight(50),
+                          width: ScreenUtil.getInstance().setWidth(50),
+                        ) : SvgPicture.asset(
+                          ApiService().assetsLocal+"Icon_Utama_Testimoni_Abu.svg",
+                          height: ScreenUtil.getInstance().setHeight(50),
+                          width: ScreenUtil.getInstance().setWidth(50),
+                        )
+                      ],
+                    ),
+                  ),
+                  MaterialButton(
+                    minWidth: 40,
+                    onPressed: () {
+                      setState(() {
+                        currentScreen = ProfileUI(); // if user taps on this dashboard tab will be active
+                        currentTab = 3;
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        currentTab == 3 ? SvgPicture.asset(
+                          ApiService().assetsLocal+"Icon_Utama_Profile_Warna.svg",
+                          height: ScreenUtil.getInstance().setHeight(50),
+                          width: ScreenUtil.getInstance().setWidth(50),
+                        ) : SvgPicture.asset(
+                          ApiService().assetsLocal+"Icon_Utama_Profile_abu.svg",
+                          height: ScreenUtil.getInstance().setHeight(50),
+                          width: ScreenUtil.getInstance().setWidth(50),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              )
+
             ],
           ),
         ),
       ),
-
-      bottomNavigationBar: StreamBuilder<Object>(
-          initialData: 0,
-          stream: indexcontroller.stream,
-          builder: (context, snapshot) {
-            int cIndex = snapshot.data;
-            return FancyBottomNavigation(
-              currentIndex: cIndex,
-              items: <FancyBottomNavigationItem>[
-                FancyBottomNavigationItem(icon: Icon(Icons.home), title: Text('Home',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),),
-                FancyBottomNavigationItem(icon: Icon(Icons.shopping_basket), title: Text('Produk',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'))),
-                FancyBottomNavigationItem(icon: Icon(Icons.account_balance), title: Text('Tentang',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'))),
-                FancyBottomNavigationItem(icon: Icon(Icons.videocam), title: Text('Testimoni',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),),
-                FancyBottomNavigationItem(icon: Icon(Icons.account_circle), title: Text('Profile',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'))),
-              ],
-              onItemSelected: (int value) {
-                indexcontroller.add(value);
-                Future.delayed(Duration(milliseconds: 100), () {
-                  pageController.jumpToPage(value);
-                });
-//              pageController.jumpToPage(value);
-              },
-            );
-          }
-      ),
+//      body: UpdatePage(),
+//      body: Container(
+//        color: const Color(0xffF4F7FA),
+//        child: WillPopScope(
+//          onWillPop: onWillPop,
+//          child: PageView(
+//            physics: NeverScrollableScrollPhysics(),
+//            onPageChanged: (index) {
+//              indexcontroller.add(index);
+//            },
+//            controller: pageController,
+//            children: <Widget>[
+//              Beranda(lat:latitude,lng:longitude),
+//              ProdukMlmUI(),
+//              About(),
+//              Testimoni(),
+//              ProfileUI(),
+//            ],
+//          ),
+//        ),
+//      ),
+//
+//      bottomNavigationBar: StreamBuilder<Object>(
+//          initialData: 0,
+//          stream: indexcontroller.stream,
+//          builder: (context, snapshot) {
+//            int cIndex = snapshot.data;
+//            return FancyBottomNavigation(
+//              currentIndex: cIndex,
+//              items: <FancyBottomNavigationItem>[
+//                FancyBottomNavigationItem(icon: Icon(Icons.home), title: Text('Home',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),),
+//                FancyBottomNavigationItem(icon: Icon(Icons.shopping_basket), title: Text('Produk',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'))),
+//                FancyBottomNavigationItem(icon: Icon(Icons.account_balance), title: Text('Tentang',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'))),
+//                FancyBottomNavigationItem(icon: Icon(Icons.videocam), title: Text('Testimoni',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),),
+//                FancyBottomNavigationItem(icon: Icon(Icons.account_circle), title: Text('Profile',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'))),
+//              ],
+//              onItemSelected: (int value) {
+//                indexcontroller.add(value);
+//                Future.delayed(Duration(milliseconds: 100), () {
+//                  pageController.jumpToPage(value);
+//                });
+////              pageController.jumpToPage(value);
+//              },
+//            );
+//          }
+//      ),
 //        bottomNavigationBar: CurvedNavigationBarQ(
 //          key: _bottomNavigationKey,
 //          index: 0,
@@ -427,149 +575,149 @@ class _UpdatePageState extends State<UpdatePage> {
   }
 }
 
-
-class FancyBottomNavigation extends StatefulWidget {
-  final int currentIndex;
-  final double iconSize;
-  final Color activeColor;
-  final Color inactiveColor;
-  final Color backgroundColor;
-  final List<FancyBottomNavigationItem> items;
-  final ValueChanged<int> onItemSelected;
-
-  FancyBottomNavigation(
-      {Key key,
-        this.currentIndex = 0,
-        this.iconSize = 24,
-        this.activeColor,
-        this.inactiveColor,
-        this.backgroundColor,
-        @required this.items,
-        @required this.onItemSelected}) {
-    assert(items != null);
-    assert(onItemSelected != null);
-  }
-
-  @override
-  _FancyBottomNavigationState createState() {
-    return _FancyBottomNavigationState(
-        items: items,
-        backgroundColor: backgroundColor,
-        currentIndex: currentIndex,
-        iconSize: iconSize,
-        activeColor: activeColor,
-        inactiveColor: inactiveColor,
-        onItemSelected: onItemSelected);
-  }
-}
-
-class _FancyBottomNavigationState extends State<FancyBottomNavigation> {
-  final int currentIndex;
-  final double iconSize;
-  Color activeColor;
-  Color inactiveColor;
-  Color backgroundColor;
-  List<FancyBottomNavigationItem> items;
-  int _selectedIndex;
-  ValueChanged<int> onItemSelected;
-
-  _FancyBottomNavigationState(
-      {@required this.items,
-        this.currentIndex,
-        this.activeColor,
-        this.inactiveColor = Colors.black,
-        this.backgroundColor,
-        this.iconSize,
-        @required this.onItemSelected}) {
-    _selectedIndex = currentIndex;
-  }
-
-  Widget _buildItem(FancyBottomNavigationItem item, bool isSelected) {
-    return AnimatedContainer(
-      width: isSelected ? 100 : 50,
-      height: double.maxFinite,
-      duration: Duration(milliseconds: 250),
-      padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-      decoration: !isSelected
-          ? null
-          : BoxDecoration(
-        color: activeColor,
-        borderRadius: BorderRadius.all(Radius.circular(50)),
-      ),
-      child: ListView(
-        shrinkWrap: true,
-        padding: EdgeInsets.all(0),
-        physics: NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: IconTheme(
-                  data: IconThemeData(
-                      size: iconSize,
-                      color: isSelected ? backgroundColor : inactiveColor),
-                  child: item.icon,
-                ),
-              ),
-              isSelected
-                  ? DefaultTextStyle.merge(
-                style: TextStyle(color: backgroundColor),
-                child: item.title,
-              )
-                  : SizedBox.shrink()
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    activeColor = (activeColor == null) ? Theme.of(context).accentColor : activeColor;
-    backgroundColor = (backgroundColor == null) ? Theme.of(context).bottomAppBarColor : backgroundColor;
-    return Container(
-      width: MediaQuery.of(context).size.width/2,
-      height: 56,
-      padding: EdgeInsets.only(left: 6, right: 6, top: 6, bottom: 6),
-      decoration: BoxDecoration(
-          color: backgroundColor,
-          boxShadow: [BoxShadow(color: Colors.green, blurRadius: 2)]),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: items.map((item) {
-          var index = items.indexOf(item);
-          return GestureDetector(
-            onTap: () {
-              onItemSelected(index);
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            child: _buildItem(item, _selectedIndex == index),
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
-
-class FancyBottomNavigationItem {
-  final Widget icon;
-  final Text title;
-
-  FancyBottomNavigationItem({
-    @required this.icon,
-    @required this.title,
-  }) {
-    assert(icon != null);
-    assert(title != null);
-  }
-}
+//
+//class FancyBottomNavigation extends StatefulWidget {
+//  final int currentIndex;
+//  final double iconSize;
+//  final Color activeColor;
+//  final Color inactiveColor;
+//  final Color backgroundColor;
+//  final List<FancyBottomNavigationItem> items;
+//  final ValueChanged<int> onItemSelected;
+//
+//  FancyBottomNavigation(
+//      {Key key,
+//        this.currentIndex = 0,
+//        this.iconSize = 24,
+//        this.activeColor,
+//        this.inactiveColor,
+//        this.backgroundColor,
+//        @required this.items,
+//        @required this.onItemSelected}) {
+//    assert(items != null);
+//    assert(onItemSelected != null);
+//  }
+//
+//  @override
+//  _FancyBottomNavigationState createState() {
+//    return _FancyBottomNavigationState(
+//        items: items,
+//        backgroundColor: backgroundColor,
+//        currentIndex: currentIndex,
+//        iconSize: iconSize,
+//        activeColor: activeColor,
+//        inactiveColor: inactiveColor,
+//        onItemSelected: onItemSelected);
+//  }
+//}
+//
+//class _FancyBottomNavigationState extends State<FancyBottomNavigation> {
+//  final int currentIndex;
+//  final double iconSize;
+//  Color activeColor;
+//  Color inactiveColor;
+//  Color backgroundColor;
+//  List<FancyBottomNavigationItem> items;
+//  int _selectedIndex;
+//  ValueChanged<int> onItemSelected;
+//
+//  _FancyBottomNavigationState(
+//      {@required this.items,
+//        this.currentIndex,
+//        this.activeColor,
+//        this.inactiveColor = Colors.black,
+//        this.backgroundColor,
+//        this.iconSize,
+//        @required this.onItemSelected}) {
+//    _selectedIndex = currentIndex;
+//  }
+//
+//  Widget _buildItem(FancyBottomNavigationItem item, bool isSelected) {
+//    return AnimatedContainer(
+//      width: isSelected ? 100 : 50,
+//      height: double.maxFinite,
+//      duration: Duration(milliseconds: 250),
+//      padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+//      decoration: !isSelected
+//          ? null
+//          : BoxDecoration(
+//        color: activeColor,
+//        borderRadius: BorderRadius.all(Radius.circular(50)),
+//      ),
+//      child: ListView(
+//        shrinkWrap: true,
+//        padding: EdgeInsets.all(0),
+//        physics: NeverScrollableScrollPhysics(),
+//        scrollDirection: Axis.horizontal,
+//        children: <Widget>[
+//          Row(
+//            mainAxisAlignment: MainAxisAlignment.start,
+//            crossAxisAlignment: CrossAxisAlignment.center,
+//            children: <Widget>[
+//              Padding(
+//                padding: const EdgeInsets.only(right: 8),
+//                child: IconTheme(
+//                  data: IconThemeData(
+//                      size: iconSize,
+//                      color: isSelected ? backgroundColor : inactiveColor),
+//                  child: item.icon,
+//                ),
+//              ),
+//              isSelected
+//                  ? DefaultTextStyle.merge(
+//                style: TextStyle(color: backgroundColor),
+//                child: item.title,
+//              )
+//                  : SizedBox.shrink()
+//            ],
+//          )
+//        ],
+//      ),
+//    );
+//  }
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    activeColor = (activeColor == null) ? Theme.of(context).accentColor : activeColor;
+//    backgroundColor = (backgroundColor == null) ? Theme.of(context).bottomAppBarColor : backgroundColor;
+//    return Container(
+//      width: MediaQuery.of(context).size.width/2,
+//      height: 56,
+//      padding: EdgeInsets.only(left: 6, right: 6, top: 6, bottom: 6),
+//      decoration: BoxDecoration(
+//          color: backgroundColor,
+//          boxShadow: [BoxShadow(color: Colors.green, blurRadius: 2)]),
+//      child: Row(
+//        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//        children: items.map((item) {
+//          var index = items.indexOf(item);
+//          return GestureDetector(
+//            onTap: () {
+//              onItemSelected(index);
+//              setState(() {
+//                _selectedIndex = index;
+//              });
+//            },
+//            child: _buildItem(item, _selectedIndex == index),
+//          );
+//        }).toList(),
+//      ),
+//    );
+//  }
+//}
+//
+//class FancyBottomNavigationItem {
+//  final Widget icon;
+//  final Text title;
+//
+//  FancyBottomNavigationItem({
+//    @required this.icon,
+//    @required this.title,
+//  }) {
+//    assert(icon != null);
+//    assert(title != null);
+//  }
+//}
 
 
 
