@@ -22,23 +22,31 @@ class _NewsCategoryHomePageState extends State<NewsCategoryHomePage> {
     AppTheme.Colors.primaryColor,
   ];
   Random random = new Random();
-
+  final _bloc = CategoryBloc();
   @override
   void initState() {
+    _bloc.fetchCategoryList();
     super.initState();
-    categoryBloc.fetchCategoryList();
+//    categoryBloc.fetchCategoryList();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-
-  }
+//  @override
+//  void didChangeDependencies() {
+//    // TODO: implement didChangeDependencies
+//    super.didChangeDependencies();
+//    _bloc.fetchCategoryList();
+//  }
+//
+//  @override
+//  void dispose() {
+//    _bloc.dispose();
+//    super.dispose();
+//  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: categoryBloc.allCategory,
+      stream: _bloc.getResult,
       builder: (context, AsyncSnapshot<CategoryModel> snapshot) {
         if (snapshot.hasData) {
           return buildContent(snapshot, context);

@@ -59,28 +59,30 @@ class _ProfileUIState extends State<ProfileUI> {
   final userRepository = UserRepository();
   String versionCode = '';
   bool versi = false;
+  final _bloc=ProfileBloc();
   Future cekVersion() async {
-    String id = await userRepository.getID();
-    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
-    if (jsonString.statusCode == 200) {
-      final jsonResponse = json.decode(jsonString.body);
-      Info response = new Info.fromJson(jsonResponse);
-      versionCode = (response.result.versionCode);
-      if(versionCode != ApiService().versionCode){
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
-      }
-      setState(() {
-        isLoading = false;
-      });
-      print("###########################################################LOAD DATA HOME###############################################################");
-      print(jsonResponse);
-    } else {
-      throw Exception('Failed to load info');
-    }
+//    String id = await userRepository.getID();
+//    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
+//    if (jsonString.statusCode == 200) {
+//      final jsonResponse = json.decode(jsonString.body);
+//      Info response = new Info.fromJson(jsonResponse);
+//      versionCode = (response.result.versionCode);
+//      if(versionCode != ApiService().versionCode){
+//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+//      }
+//      setState(() {
+//        isLoading = false;
+//      });
+//      print("###########################################################LOAD DATA HOME###############################################################");
+//      print(jsonResponse);
+//    } else {
+//      throw Exception('########################################################### FALIED LOAD DATA HOME###############################################################');
+//    }
   }
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    profileBloc.fetchProfileList();
+//    profileBloc.fetchProfileList();
+    _bloc.fetchProfileList();
   }
   Future getProfile() async{
     final prefs = await SharedPreferences.getInstance();
@@ -152,21 +154,18 @@ class _ProfileUIState extends State<ProfileUI> {
   }
 
 
-  @override
-  void deactivate() {
-    // TODO: implement deactivate
-    super.deactivate();
-    print('########################## DEACTIVE #########################');
-  }
+
   @override
   void initState() {
     super.initState();
-    profileBloc.fetchProfileList();
+    _bloc.fetchProfileList();
+//    profileBloc.fetchProfileList();
     cekVersion();
   }
   @override
   void dispose() {
     super.dispose();
+    _bloc.dispose();
   }
 
 
@@ -186,7 +185,7 @@ class _ProfileUIState extends State<ProfileUI> {
               child: Column(
                 children: <Widget>[
                   StreamBuilder(
-                      stream: profileBloc.getResult,
+                      stream: _bloc.subject,
                       builder: (context,AsyncSnapshot<ProfileModel> snapshot){
                         if (snapshot.hasData) {
                           return Column(

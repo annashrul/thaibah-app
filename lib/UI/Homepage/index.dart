@@ -249,9 +249,12 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
     return latitude == null || longitude == null ? CircularProgressIndicator() :Scaffold(
         key: scaffoldKey,
         backgroundColor: Colors.white,
-      body: PageStorage(
-        child: currentScreen,
-        bucket: bucket,
+      body: WillPopScope(
+        onWillPop: onWillPop,
+        child: PageStorage(
+          child: currentScreen,
+          bucket: bucket,
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,

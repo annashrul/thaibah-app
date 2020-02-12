@@ -5,6 +5,7 @@ import 'package:thaibah/Model/productMlmModel.dart';
 import 'package:thaibah/Model/productMlmSuplemenModel.dart';
 import 'package:thaibah/bloc/base.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
 
 class ProductMlmBloc extends BaseBloc<ProductMlmModel>{
   Observable<ProductMlmModel> get allProductMlm => fetcher.stream;
@@ -15,21 +16,19 @@ class ProductMlmBloc extends BaseBloc<ProductMlmModel>{
 }
 
 class ProductMlmSuplemenBloc extends BaseBloc{
-  bool _isDisposed = false;
-  final PublishSubject<ProductMlmSuplemenModel> _serviceController = new PublishSubject<ProductMlmSuplemenModel>();
-  Observable<ProductMlmSuplemenModel> get allProductMlmSuplemen => _serviceController.stream;
+  final ProductMlmSuplemenProvider _repository = ProductMlmSuplemenProvider();
+  final BehaviorSubject<ProductMlmSuplemenModel> getResult =
+  BehaviorSubject<ProductMlmSuplemenModel>();
   fetchProductMlmSuplemenList(var page, var limit) async {
-    if(_isDisposed) {
-      print('false');
-    }else{
-      ProductMlmSuplemenModel productMlmSuplemen =  await repository.fetchAllProductMlmSuplemen(page,limit);
-      _serviceController.sink.add(productMlmSuplemen);
-    }
+    ProductMlmSuplemenModel response = await _repository.fetchProductMlmSuplemen(page, limit);
+    getResult.sink.add(response);
   }
-  void dispose() {
-    _serviceController.close();
-    _isDisposed = true;
+  dispose() {
+    getResult.close();
   }
+  BehaviorSubject<ProductMlmSuplemenModel> get subject => getResult;
+
+
 }
 class ProductMlmDetailSuplemenBloc extends BaseBloc<ProductMlmDetailModel>{
   Observable<ProductMlmDetailModel> get getDetailProduct => fetcher.stream;

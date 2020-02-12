@@ -27,26 +27,7 @@ class _TestimoniState extends State<Testimoni> with SingleTickerProviderStateMix
   final userRepository = UserRepository();
   String versionCode = '';
   bool versi = false;
-  Future cekVersion() async {
-    String id = await userRepository.getID();
-    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
-    if (jsonString.statusCode == 200) {
-      final jsonResponse = json.decode(jsonString.body);
-      Info response = new Info.fromJson(jsonResponse);
-      versionCode = (response.result.versionCode);
-      if(versionCode != ApiService().versionCode){
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
-      }
-      setState(() {
-        isLoading = false;
-      });
-      print("###########################################################LOAD DATA HOME###############################################################");
-      print(jsonResponse);
-    } else {
-      throw Exception('Failed to load info');
-    }
 
-  }
 
 
 
@@ -56,7 +37,7 @@ class _TestimoniState extends State<Testimoni> with SingleTickerProviderStateMix
     currentPos = 0;
     stateText = "Video not started";
     super.initState();
-    cekVersion();
+
   }
   @override
   Widget build(BuildContext context) {

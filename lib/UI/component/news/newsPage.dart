@@ -47,60 +47,14 @@ class _NewsPageState extends State<NewsPage> {
     return true;
   }
 
-  Timer _timer;
-  _callBackPins(BuildContext context,bool isTrue) async{
-    if(isTrue){
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-    }
-    else{
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text("Pin Salah!"),
-            content: new Text("Masukan pin yang sesuai."),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-  Future<void> _initializeTimer() async{
-    _timer = Timer.periodic(Duration(seconds:ApiService().timerActivity), (Timer t) => _logOutUser());
-    print(_timer);
-  }
-  void _logOutUser()  {
-    print('logout');
-    _timer.cancel();
-//    ApiService().isActivity == true ? Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-//        builder: (BuildContext context) => PinScreen(callback: _callBackPins)
-//    ), (Route<dynamic> route) => false) : print('false');
-    print("############################ HALAMAN NEWS PAGE  ########################");
-    print("############################ EWEH AKTIFITAS KUDU NGABUSKEUN PIN  ########################");
-  }
-  void _handleUserInteraction([_]) {
-    if (!_timer.isActive) {
-      print('_handleUserInteraction');
-      return;
-    }
-    print(_timer.isActive);
-    _timer.cancel();
-    _initializeTimer();
-  }
+
 
 
   @override
   void initState() {
     super.initState();
     newsBloc.fetchNewsList(1,perpage);
-    _initializeTimer();
+
   }
   @override
   void dispose() {
@@ -110,133 +64,127 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _handleUserInteraction,
-      onPanDown: _handleUserInteraction,
-      onScaleStart: _handleUserInteraction,
-      child: Scaffold(
-          body: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                new SliverAppBar(
-                  floating: true,
-                  elevation: 0,
-                  snap: true,
-                  backgroundColor: AppTheme.Colors.white,
-                  brightness: Brightness.light,
-                  actions: <Widget>[
-                    Expanded(
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                            width: 40,
-                            child: IconButton(
-                              icon: Icon(Icons.keyboard_backspace,color: Colors.black),
-                              onPressed: (){
-                                _timer.cancel();
-                                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-                              },
-                            ),
+    return Scaffold(
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              new SliverAppBar(
+                floating: true,
+                elevation: 0,
+                snap: true,
+                backgroundColor: AppTheme.Colors.white,
+                brightness: Brightness.light,
+                actions: <Widget>[
+                  Expanded(
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: 40,
+                          child: IconButton(
+                            icon: Icon(Icons.keyboard_backspace,color: Colors.black),
+                            onPressed: (){
+                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                            },
                           ),
-                          Expanded(
-                            child: ToggleButton(),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ];
-            },
-            body: new Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
-                    child: new Text(
-                      'Berita Terkini',
-                      style: new TextStyle(fontSize: 20.0,color: mainColor,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  new Expanded(
-                    child: StreamBuilder(
-                      stream: newsBloc.allNews,
-                      builder: (context, AsyncSnapshot<NewsModel> snapshot) {
-                        if (snapshot.hasData) {
-                          return buildContent(snapshot, context);
-                        } else if (snapshot.hasError) {
-                          return Text(snapshot.error.toString());
-                        }
-                        return new ListView.builder(
-                            itemCount: 10,
-                            itemBuilder: (context, i) {
-                              return new FlatButton(
-                                child: Column(
-                                  children: <Widget>[
-                                    new Row(
-                                      children: <Widget>[
-                                        new Padding(
-                                          padding: const EdgeInsets.all(0.0),
-                                          child: new Container(
-                                            margin: const EdgeInsets.all(16.0),
-                                            child: new Container(width: 70.0,height: 70.0),
-                                            decoration: new BoxDecoration(
-                                              borderRadius: new BorderRadius.circular(10.0),
-                                              color: Colors.grey,
-                                              image: new DecorationImage(
-                                                  image: new NetworkImage("http://lequytong.com/Content/Images/no-image-02.png"),
-                                                  fit: BoxFit.cover
-                                              ),
-                                              boxShadow: [
-                                                new BoxShadow(
-                                                    color: mainColor,
-                                                    blurRadius: 5.0,
-                                                    offset: new Offset(2.0, 5.0)
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        new Expanded(
-                                            child: new Container(
-                                              margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                                              child: new Column(children: [
-                                                SkeletonFrame(width: 300,height: 15),
-                                                new Padding(padding: const EdgeInsets.all(2.0)),
-                                                SkeletonFrame(width: 300,height: 50),
-                                                new Padding(padding: const EdgeInsets.all(2.0)),
-                                                SkeletonFrame(width: 300,height: 15),
-                                              ],
-                                                crossAxisAlignment: CrossAxisAlignment.start,),
-                                            )
-                                        ),
-                                      ],
-                                    ),
-                                    new Container(
-                                      width: 300.0,
-                                      height: 0.5,
-                                      color: const Color(0xD2D2E1ff),
-                                      margin: const EdgeInsets.all(16.0),
-                                    )
-                                  ],
-                                ),
-                                padding: const EdgeInsets.all(0.0),
-                                color: Colors.white,
-                              );
-                            }
-                        );
-                      },
+                        ),
+                        Expanded(
+                          child: ToggleButton(),
+                        ),
+                      ],
                     ),
                   )
                 ],
               ),
+            ];
+          },
+          body: new Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
+                  child: new Text(
+                    'Berita Terkini',
+                    style: new TextStyle(fontSize: 20.0,color: mainColor,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                new Expanded(
+                  child: StreamBuilder(
+                    stream: newsBloc.allNews,
+                    builder: (context, AsyncSnapshot<NewsModel> snapshot) {
+                      if (snapshot.hasData) {
+                        return buildContent(snapshot, context);
+                      } else if (snapshot.hasError) {
+                        return Text(snapshot.error.toString());
+                      }
+                      return new ListView.builder(
+                          itemCount: 10,
+                          itemBuilder: (context, i) {
+                            return new FlatButton(
+                              child: Column(
+                                children: <Widget>[
+                                  new Row(
+                                    children: <Widget>[
+                                      new Padding(
+                                        padding: const EdgeInsets.all(0.0),
+                                        child: new Container(
+                                          margin: const EdgeInsets.all(16.0),
+                                          child: new Container(width: 70.0,height: 70.0),
+                                          decoration: new BoxDecoration(
+                                            borderRadius: new BorderRadius.circular(10.0),
+                                            color: Colors.grey,
+                                            image: new DecorationImage(
+                                                image: new NetworkImage("http://lequytong.com/Content/Images/no-image-02.png"),
+                                                fit: BoxFit.cover
+                                            ),
+                                            boxShadow: [
+                                              new BoxShadow(
+                                                  color: mainColor,
+                                                  blurRadius: 5.0,
+                                                  offset: new Offset(2.0, 5.0)
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      new Expanded(
+                                          child: new Container(
+                                            margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                                            child: new Column(children: [
+                                              SkeletonFrame(width: 300,height: 15),
+                                              new Padding(padding: const EdgeInsets.all(2.0)),
+                                              SkeletonFrame(width: 300,height: 50),
+                                              new Padding(padding: const EdgeInsets.all(2.0)),
+                                              SkeletonFrame(width: 300,height: 15),
+                                            ],
+                                              crossAxisAlignment: CrossAxisAlignment.start,),
+                                          )
+                                      ),
+                                    ],
+                                  ),
+                                  new Container(
+                                    width: 300.0,
+                                    height: 0.5,
+                                    color: const Color(0xD2D2E1ff),
+                                    margin: const EdgeInsets.all(16.0),
+                                  )
+                                ],
+                              ),
+                              padding: const EdgeInsets.all(0.0),
+                              color: Colors.white,
+                            );
+                          }
+                      );
+                    },
+                  ),
+                )
+              ],
             ),
-          )
+          ),
+        )
 
-      ),
     );
   }
 
@@ -329,13 +277,12 @@ class _NewsPageState extends State<NewsPage> {
                   ),
                   padding: const EdgeInsets.all(0.0),
                   onPressed: () {
-                    _timer.cancel();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => DetailBeritaUI(id: snapshot.data.result.data[i].id, category: snapshot.data.result.data[i].category)
                       ),
-                    ).whenComplete(_initializeTimer);
+                    );
                   },
 //              color: Colors.white,
                 );
@@ -356,7 +303,283 @@ class _NewsPageState extends State<NewsPage> {
         ),
       );
     }
-
-
   }
 }
+
+class BeritaTerkini extends StatefulWidget {
+  @override
+  _BeritaTerkiniState createState() => _BeritaTerkiniState();
+}
+
+class _BeritaTerkiniState extends State<BeritaTerkini> {
+  Color mainColor = const Color(0xff3C3261);
+
+  int perpage = 10;
+  final _bloc = NewsBloc();
+  void load() {
+    print("load $perpage");
+    setState(() {
+      perpage = perpage += perpage;
+    });
+    _bloc.fetchNewsList(1, perpage);
+//    newsBloc.fetchNewsList(1, perpage);
+    print(perpage);
+  }
+  Future<void> _refresh() async {
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+    load();
+  }
+  Future<bool> _loadMore() async {
+    print("onLoadMore");
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+    load();
+    return true;
+  }
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+//    newsBloc.fetchNewsList(1,perpage);
+    _bloc.fetchNewsList(1, perpage);
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    _bloc.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: _bloc.allNews,
+      builder: (context, AsyncSnapshot<NewsModel> snapshot) {
+        if (snapshot.hasData) {
+          return buildContent(snapshot, context);
+        } else if (snapshot.hasError) {
+          return Text(snapshot.error.toString());
+        }
+        return Container(child:Center(child:CircularProgressIndicator()));
+      },
+    );
+  }
+
+  Widget buildContent(AsyncSnapshot<NewsModel> snapshot, BuildContext context){
+    return Container(
+      height: MediaQuery.of(context).size.height/2.6,
+      child: LoadMore(
+        child: ListView.builder(
+            primary: true,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            itemCount: snapshot.data.result.data.length,
+            itemBuilder: (context,index){
+              var caption = "";
+              var title = "";
+              if(snapshot.data.result.data[index].caption.length > 50){
+                caption = snapshot.data.result.data[index].caption.substring(0,50)+' ...';
+              }else{
+                caption = snapshot.data.result.data[index].caption;
+              }
+              if(snapshot.data.result.data[index].title.length > 50){
+                title = snapshot.data.result.data[index].title.substring(0,50)+' ...';
+              }else{
+                title = snapshot.data.result.data[index].title;
+              }
+              return Container(
+                padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                          child: Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    child: Html(
+                                      data:title, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    child: Html(
+                                      data:caption, defaultTextStyle:TextStyle(fontSize:10.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 0.0),
+                          child: Stack(
+                            children: <Widget>[
+                              Container(
+                                margin: EdgeInsets.only(top: 3.0),
+                                height: 70.0,
+                                width: 70.0,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                child: CachedNetworkImage(
+                                  imageUrl: snapshot.data.result.data[index].picture,
+                                  placeholder: (context, url) => Center(
+                                    child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+                                  ),
+                                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                                  imageBuilder: (context, imageProvider) => Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: new BorderRadius.circular(10.0),
+                                      color: Colors.grey,
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.fill,
+                                      ),
+                                      boxShadow: [new BoxShadow(color:mainColor,blurRadius: 5.0,offset: new Offset(2.0, 5.0))],
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                            ],
+                          ),
+                        ),
+
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                              child: Row(
+                                children: <Widget>[
+                                  Icon(Icons.person_pin_circle,color: Colors.grey,size: 17.0),
+                                  Text(snapshot.data.result.data[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+                                ],
+                              )
+                          ),
+                        ),
+                        SizedBox(width: 10.0),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                              child: Row(
+                                children: <Widget>[
+                                  Icon(Icons.favorite_border,color: Colors.grey,size: 17.0),
+                                  Text("20",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+                                ],
+                              )
+                          ),
+                        ),
+                        SizedBox(width: 10.0),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                              child: Row(
+                                children: <Widget>[
+                                  Icon(Icons.access_time,color: Colors.grey,size: 17.0),
+                                  Text(snapshot.data.result.data[index].createdAt,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+                                ],
+                              )
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider()
+                  ],
+                ),
+              );
+            }
+        ),
+        isFinish: snapshot.data.result.data.length < perpage,
+        onLoadMore: _loadMore,
+        whenEmptyLoad: true,
+        delegate: DefaultLoadMoreDelegate(),
+        textBuilder: DefaultLoadMoreTextBuilder.english,
+      ),
+    );
+  }
+  Widget _loading(){
+    return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        scrollDirection: Axis.vertical,
+        itemCount: 2,
+        itemBuilder: (context,index){
+          return Container(
+            padding: EdgeInsets.only(bottom: 28.0,left:15.0,right:15.0),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Container(
+                      child: Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                child: SkeletonFrame(width: 50,height:15),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 0.0),
+                      child: Stack(
+                        children: <Widget>[
+
+                          Container(
+                            margin: EdgeInsets.only(top: 3.0),
+                            height: 70.0,
+                            width: 70.0,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(ApiService().assetsLocal+'bg.jpg'),
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        child: SkeletonFrame(width: 50,height:15),
+                      ),
+                    ),
+
+                  ],
+                )
+              ],
+            ),
+          );
+        }
+    );
+  }
+
+}
+

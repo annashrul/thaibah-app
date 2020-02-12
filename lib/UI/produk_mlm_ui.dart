@@ -3,9 +3,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/MLM/listCartModel.dart';
@@ -48,26 +50,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   final userRepository = UserRepository();
   String versionCode = '';
   bool versi = false;
-  Future cekVersion() async {
-    String id = await userRepository.getID();
-    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
-    if (jsonString.statusCode == 200) {
-      final jsonResponse = json.decode(jsonString.body);
-      Info response = new Info.fromJson(jsonResponse);
-      versionCode = (response.result.versionCode);
-      setState(() {
-        isLoading = false;
-      });
-      if(versionCode != ApiService().versionCode){
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
-      }
-      print("###########################################################LOAD DATA HOME###############################################################");
-      print(jsonResponse);
-    } else {
-      throw Exception('Failed to load info');
-    }
-
-  }
+  final _bloc = ProductMlmSuplemenBloc();
 
   Future addCart(var id, var harga, var qty, var weight) async{
     setState(() {});
@@ -122,13 +105,15 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     setState(() {
       perpage = perpage += 10;
     });
-    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
+    _bloc.fetchProductMlmSuplemenList(1,perpage);
+//    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
     print(perpage);
   }
 
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
+//    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
+    _bloc.fetchProductMlmSuplemenList(1,perpage);
   }
 
   Future<bool> _loadMore() async {
@@ -138,7 +123,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     setState(() {
       perpage = perpage += 10;
     });
-    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
+//    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
+    _bloc.fetchProductMlmSuplemenList(1,perpage);
     print(perpage);
     return true;
   }
@@ -150,8 +136,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-    countCart();
-    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
+//    countCart();
+//    productMlmBloc.
     print('####################### te aktif ############################');
   }
 
@@ -160,10 +146,10 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     super.initState();
     countCart();
     print('####################### aktif ############################');
-    cekVersion();
     versi = true;
     if(mounted){
-      productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
+      _bloc.fetchProductMlmSuplemenList(1,perpage);
+//      productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
     }
 
     print("###################### $mounted ###########################");
@@ -172,7 +158,11 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   @override
   void dispose() {
     super.dispose();
+//    productMlmSuplemenBloc.dispose();
+    _bloc.dispose();
   }
+
+
 
 
   @override
@@ -224,7 +214,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         title: new Text("Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
       ),
       body: StreamBuilder(
-        stream: productMlmSuplemenBloc.allProductMlmSuplemen,
+        stream: _bloc.getResult,
         builder: (context, AsyncSnapshot<ProductMlmSuplemenModel> snapshot) {
           // print(snapshot.hasData);
           if (snapshot.hasData) {
@@ -232,86 +222,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return Padding(
-              padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
-              child: ListView.builder(
-                primary: false,
-                physics: ScrollPhysics(),
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return new GestureDetector(
-                      onTap: (){
-                      },
-                      child: Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
-                        child: new Column(
-                          children: <Widget>[
-                            new Stack(
-                              children: <Widget>[
-                                //new Center(child: new CircularProgressIndicator()),
-                                new Center(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10.0),
-                                        topRight: Radius.circular( 10.0)
-                                    ),
-                                    child: SkeletonFrame(width: double.infinity,height: MediaQuery.of(context).size.height/2),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            new Padding(
-                              padding: const EdgeInsets.all(0.0),
-                              child: new Column(
-                                children: <Widget>[
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Row(
-                                        children: <Widget>[
-                                          Expanded(
-                                            flex: 7,
-                                            child: Container(
-                                              padding: EdgeInsets.only(top:5.0),
-                                              // decoration: BoxDecoration(color: Styles.primaryColor),
-                                              child: SkeletonFrame(width:MediaQuery.of(context).size.height/2,height: 16.0),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            flex: 3,
-                                            child: Container(
-                                                padding: EdgeInsets.only(top:5.0),
-                                                // decoration: BoxDecoration(color: Styles.primaryColor),
-                                                child: Align(
-                                                  alignment: Alignment.topRight,
-                                                  child: SkeletonFrame(width:MediaQuery.of(context).size.height/2,height: 16.0),
-                                                )
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.only(top:5.0),
-                                        child: SkeletonFrame(width:MediaQuery.of(context).size.height/2,height: 16.0),
-                                      ),
-
-                                      Container(
-                                        padding: EdgeInsets.only(top:5.0),
-                                        child: SkeletonFrame(width:MediaQuery.of(context).size.height/1,height: 100.0),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                  );
-                },
-              )
-          );
+          return _loading();
         },
       ),
     );
@@ -319,6 +230,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
 
   Widget buildContent(AsyncSnapshot<ProductMlmSuplemenModel> snapshot, BuildContext context) {
     if(snapshot.data.result.data.length > 0){
+      ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
+      ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
       return RefreshIndicator(
         child: Padding(
           padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
@@ -345,12 +258,41 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                             children: <Widget>[
                               //new Center(child: new CircularProgressIndicator()),
                               new Center(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(10.0),
-                                      topRight: Radius.circular( 10.0)
+                                child: Container(
+                                  width:MediaQuery.of(context).size.width/1,
+//
+//                                  borderRadius: BorderRadius.only(
+//                                      topLeft: Radius.circular(10.0),
+//                                      topRight: Radius.circular( 10.0)
+//                                  ),
+                                  height:MediaQuery.of(context).size.height/2,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10.0),
+                                        topRight: Radius.circular( 10.0)
+                                    ),
                                   ),
-                                  child: Image.network(snapshot.data.result.data[index].picture),
+                                  child: CachedNetworkImage(
+                                    imageUrl: snapshot.data.result.data[index].picture,
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+                                    ),
+                                    errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: new BorderRadius.only(
+                                            topLeft: Radius.circular(10.0),
+                                            topRight: Radius.circular( 10.0)
+                                        ),
+                                        color: Colors.grey,
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+//                                  child: Image.network(snapshot.data.result.data[index].picture),
                                 ),
                               ),
                             ],
@@ -490,5 +432,89 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         ),
       );
     }
+  }
+
+
+  Widget _loading(){
+    return Padding(
+        padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
+        child: ListView.builder(
+          primary: false,
+          physics: ScrollPhysics(),
+          itemCount: 3,
+          itemBuilder: (context, index) {
+            return new GestureDetector(
+                onTap: (){
+                },
+                child: Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
+                  child: new Column(
+                    children: <Widget>[
+                      new Stack(
+                        children: <Widget>[
+                          //new Center(child: new CircularProgressIndicator()),
+                          new Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10.0),
+                                  topRight: Radius.circular( 10.0)
+                              ),
+                              child: SkeletonFrame(width: double.infinity,height: MediaQuery.of(context).size.height/2),
+                            ),
+                          ),
+                        ],
+                      ),
+                      new Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: new Column(
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 7,
+                                      child: Container(
+                                        padding: EdgeInsets.only(top:5.0),
+                                        // decoration: BoxDecoration(color: Styles.primaryColor),
+                                        child: SkeletonFrame(width:MediaQuery.of(context).size.height/2,height: 16.0),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Container(
+                                          padding: EdgeInsets.only(top:5.0),
+                                          // decoration: BoxDecoration(color: Styles.primaryColor),
+                                          child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: SkeletonFrame(width:MediaQuery.of(context).size.height/2,height: 16.0),
+                                          )
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(top:5.0),
+                                  child: SkeletonFrame(width:MediaQuery.of(context).size.height/2,height: 16.0),
+                                ),
+
+                                Container(
+                                  padding: EdgeInsets.only(top:5.0),
+                                  child: SkeletonFrame(width:MediaQuery.of(context).size.height/1,height: 100.0),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )
+            );
+          },
+        )
+    );
   }
 }

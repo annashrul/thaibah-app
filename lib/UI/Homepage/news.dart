@@ -15,16 +15,19 @@ class NewsHomePage extends StatefulWidget {
 }
 
 class _NewsHomePageState extends State<NewsHomePage> {
+  final _bloc = NewsBloc();
   @override
   void initState() {
     super.initState();
-    newsBloc.fetchNewsList(1,4);
+    _bloc.fetchNewsList(1, 4);
+//    newsBloc.fetchNewsList(1,4);
   }
 
   @override
   void dispose() {
 //    newsBloc.dispose();
     super.dispose();
+    _bloc.dispose();
   }
   @override
   BoxDecoration myBoxDecoration() {
@@ -34,64 +37,43 @@ class _NewsHomePageState extends State<NewsHomePage> {
   }
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: newsBloc.allNews,
+      stream: _bloc.allNews,
       builder: (context, AsyncSnapshot<NewsModel> snapshot) {
         if (snapshot.hasData) {
           return buildContent(snapshot, context);
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         }
-        return SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Container(
-                height: 310,
-                color: Colors.transparent,
-                padding: EdgeInsets.all(16.0),
-                child: Swiper(
-                  autoplay: true,
-                  fade: 0.0,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            height: 200,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-                              image: DecorationImage(
-                                image: CachedNetworkImageProvider("http://lequytong.com/Content/Images/no-image-02.png"),
-                                fit: BoxFit.cover
-                              )
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
-                              border: Border.all(
-                                color:  Colors.black.withOpacity(.10),
-                                width: 0.0,
-                              ),
-
-                            ),
-                            child: ListTile(
-                              subtitle: SkeletonFrame(width: 70,height: 16),
-                              title: SkeletonFrame(width: 70,height: 16),
-                            )
+        return Container(
+          height: MediaQuery.of(context).size.height/5,
+          color: Colors.transparent,
+          padding: EdgeInsets.all(16.0),
+          child: Swiper(
+            autoplay: true,
+            fade: 0.0,
+            itemBuilder: (BuildContext context, int index) {
+              return GestureDetector(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: MediaQuery.of(context).size.height/5,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+                          image: DecorationImage(
+                              image: CachedNetworkImageProvider("http://lequytong.com/Content/Images/no-image-02.png"),
+                              fit: BoxFit.fill
                           )
-                        ],
                       ),
-                    );
-                  },
-                  itemCount: 6,
-                  viewportFraction: 0.8,
-                  scale: 0.9,
-//              pagination: SwiperPagination(),
+                    ),
+                  ],
                 ),
-              ),
-
-            ],
+              );
+            },
+            itemCount: 6,
+            viewportFraction: 0.8,
+            scale: 0.9,
+//              pagination: SwiperPagination(),
           ),
         );
       },
@@ -100,10 +82,11 @@ class _NewsHomePageState extends State<NewsHomePage> {
 
   Widget buildContent(AsyncSnapshot<NewsModel> snapshot, BuildContext context){
     return Container(
-      height: MediaQuery.of(context).size.height/2.6,
+      height: MediaQuery.of(context).size.height/5,
       color: Colors.transparent,
-      padding: EdgeInsets.all(16.0),
+      padding: EdgeInsets.only(left:16.0,right:16.0),
       child: Swiper(
+        physics: const NeverScrollableScrollPhysics(),
         autoplay: true,
         fade: 0.0,
         itemBuilder: (BuildContext context, int index) {
@@ -131,10 +114,10 @@ class _NewsHomePageState extends State<NewsHomePage> {
             child: Column(
               children: <Widget>[
                 Container(
-                  height:  MediaQuery.of(context).size.height/4.0,
+                  height:  MediaQuery.of(context).size.height/5,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0),bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
                       image: DecorationImage(
                           image: CachedNetworkImageProvider(snapshot.data.result.data[index].picture==''||snapshot.data.result.data[index].picture==null?IconImgs.noImage:snapshot.data.result.data[index].picture),
 //                                image: CachedNetworkImageProvider(IconImgs.noImage),
@@ -142,30 +125,18 @@ class _NewsHomePageState extends State<NewsHomePage> {
                       )
                   ),
                 ),
-                Flexible(
-                  child: Container(
-                      height:  MediaQuery.of(context).size.height/4.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
-                        border: Border.all(
-                          color:  Colors.black.withOpacity(.10),
-                          width: 0.0,
-                        ),
 
-                      ),
-                      child: ListTile(
-                          subtitle: Html(data: cap,defaultTextStyle: TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontStyle: FontStyle.normal),),
-                          title: Text(tit,style: new TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black))
-                      )
-                  )
-                )
               ],
             ),
           );
         },
         itemCount: snapshot.data.result.data.length,
-        viewportFraction: 0.8,
-        scale: 0.9,
+        viewportFraction: 1,
+        scale: 1,
+        itemWidth: double.infinity,
+        itemHeight: MediaQuery.of(context).size.height/5,
+        layout: SwiperLayout.TINDER,
+//        control: new SwiperControl(color: Colors.black),
 //              pagination: SwiperPagination(),
       ),
     );

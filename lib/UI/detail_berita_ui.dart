@@ -266,18 +266,25 @@ class _ToggleButtonState extends State<ToggleButton> {
   ];
   Random random = new Random();
 
-
+  final _bloc = CategoryBloc();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    categoryBloc.fetchCategoryList();
+    _bloc.fetchCategoryList();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _bloc.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: categoryBloc.allCategory,
+      stream: _bloc.getResult,
       builder: (context, AsyncSnapshot<CategoryModel> snapshot) {
         if (snapshot.hasData) {
           return buildCategory(snapshot, context);
