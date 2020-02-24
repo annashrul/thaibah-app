@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/MLM/listCartModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -129,18 +130,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     return true;
   }
 
-
-
-
-  @override
-  void deactivate() {
-    // TODO: implement deactivate
-    super.deactivate();
-//    countCart();
-//    productMlmBloc.
-    print('####################### te aktif ############################');
-  }
-
   @override
   void initState() {
     super.initState();
@@ -186,12 +175,32 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         actions: <Widget>[
           new Stack(
             children: <Widget>[
-              new IconButton(icon: Icon(Icons.shopping_cart), onPressed: () {
+              GestureDetector(
+                onTap: (){
+                  if(total!=0){
+                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => Keranjang())).whenComplete(countCart);
+                  }
 
-                if(total!=0){
-                  Navigator.of(context).push(new MaterialPageRoute(builder: (_) => Keranjang())).whenComplete(countCart);
-                }
-              }),
+                },
+                child: Container(
+                  margin:EdgeInsets.only(top:10.0),
+                  child: SvgPicture.asset(
+                    ApiService().assetsLocal+"Icon_Utama_Produk_abu.svg",
+                    height: ScreenUtil.getInstance().setHeight(50),
+                    width: ScreenUtil.getInstance().setWidth(50),
+                    color: Colors.white,
+                  ),
+                ),
+
+              ),
+//              new IconButton(
+//                icon: Icon(Icons.shopping_cart),
+//                onPressed: () {
+//                  if(total!=0){
+//                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => Keranjang())).whenComplete(countCart);
+//                  }
+//                }
+//              ),
               total != 0 ?new Positioned(
                 right: 11,
                 top: 11,
@@ -353,7 +362,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                         Container(
                                           padding: EdgeInsets.all(5),
                                           child: Html(
-                                            data: "- "+snapshot.data.result.data[index].detail,
+                                            data: snapshot.data.result.data[index].detail,
                                             defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
                                           ),
                                         )

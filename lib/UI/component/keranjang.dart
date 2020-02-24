@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,7 @@ import 'package:thaibah/UI/component/MLM/checkoutSuplemen.dart';
 import 'package:thaibah/UI/component/address/addAddress.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/resources/MLM/getDetailChekoutSuplemenProvider.dart';
 import 'package:thaibah/resources/addressProvider.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
 
@@ -36,11 +38,13 @@ class _KeranjangState extends State<Keranjang> {
     print(total);
     print(newBerat);
     print(jumlahQty);
-//    var cek = await DetailCheckoutSuplemenProvider().fetchDetailCheckoutSuplemen();
+    var test = await DetailCheckoutSuplemenProvider().fetchDetailCheckoutSuplemen();
+
 //    cek.result.address;
-    var test = await AddressProvider().cekAlamat();
+//    var test = await AddressProvider().cekAlamat();
     if(test is GetDetailChekoutSuplemenModel){
       GetDetailChekoutSuplemenModel results = test;
+
       setState(() {
         isLoading = false;
       });
@@ -48,7 +52,17 @@ class _KeranjangState extends State<Keranjang> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CheckOutSuplemen(total:total,berat: newBerat,totQty:jumlahQty),
+            builder: (context) => CheckOutSuplemen(
+              total:total,
+              berat: newBerat,
+              totQty:jumlahQty,
+              saldoVoucher:results.result.saldoVoucher,
+              saldoMain: results.result.saldoMain,
+              address: results.result.address,
+              kdKec: results.result.kdKec,
+              kecPengirim: results.result.kecPengirim,
+              masaVoucher: results.result.masaVoucher,
+            ),
           ),
         );
       }else{
@@ -360,10 +374,29 @@ class SingleCartProductState extends State<SingleCartProduct> {
             Container(
                 height: 80.0,
                 width: 100,
-                child: Image.network(
-                  widget.CartProdPicture,
-                  height: 80.0,
-                )
+                child: CachedNetworkImage(
+                  imageUrl: widget.CartProdPicture,
+                  placeholder: (context, url) => Center(
+                    child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+                  ),
+                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                  imageBuilder: (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      borderRadius: new BorderRadius.circular(10.0),
+                      color: Colors.transparent,
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.fill,
+                      ),
+                      boxShadow: [new BoxShadow(color:Colors.transparent,blurRadius: 5.0,offset: new Offset(2.0, 5.0))],
+                    ),
+                  ),
+                ),
+//
+//                child: Image.network(
+//                  widget.CartProdPicture,
+//                  height: 80.0,
+//                )
             ),
             const SizedBox(width: 10.0),
             Expanded(

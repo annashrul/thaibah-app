@@ -36,8 +36,8 @@ import 'package:thaibah/resources/productMlmProvider.dart';
 
 
 class CheckOutSuplemen extends StatefulWidget {
-  final total; final berat; final totQty;
-  CheckOutSuplemen({this.total,this.berat,this.totQty});
+  final total; final berat; final totQty; final saldoVoucher;final saldoMain;final address;final kdKec;final kecPengirim;final masaVoucher;
+  CheckOutSuplemen({this.total,this.berat,this.totQty,this.saldoVoucher,this.saldoMain,this.address,this.kdKec,this.kecPengirim,this.masaVoucher});
   @override
   _CheckOutSuplemenState createState() => _CheckOutSuplemenState();
 }
@@ -88,39 +88,36 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   int totBayar = 0;
   String saldoMain = "0";
   String saldoVoucher = "0";
-//  bool expiredVoucher = false;
   var expiredVoucher;
+
+
   Future pilih() async{
-    var res = await DetailCheckoutSuplemenProvider().fetchDetailCheckoutSuplemen();
-    expiredVoucher = res.result.masaVoucher;
+    expiredVoucher = widget.masaVoucher;
     setState(() {
-
-      saldoVoucher = res.result.saldoVoucher;
-      saldoMain = res.result.saldoMain;
+      saldoVoucher = widget.saldoVoucher;
+      saldoMain = widget.saldoMain;
     });
-    print("##################### EXPIRED VOUCHER LUHUR $expiredVoucher ###############################");
 
-//    var res =  detailChekoutSuplemenBloc.fetchDetailChekoutSuplemenList();
     if(dropdownValue == 'Saya'){
       setState(() {
         isTrue = false;
-        mainAddress = res.result.address;
-        kdKec = res.result.kdKec;
-        kec_pengirim = res.result.kecPengirim;
+        mainAddress = widget.address;
+        kdKec = widget.kdKec;
+        kec_pengirim = widget.kecPengirim;
         otherAddress.text = '';
         addressType = 0;
       });
       detailChekoutSuplemenBloc.fetchDetailChekoutSuplemenList();
+
     }else{
       setState(() {
         isTrue = true;
         mainAddress = otherAddress.text;
-        kec_pengirim = res.result.kecPengirim;
+        kec_pengirim = widget.kecPengirim;
         addressType = 1;
       });
       provinsiBloc.fetchProvinsiist();
     }
-    print(mainAddress);
   }
 
   getKota(id) async{
@@ -169,14 +166,12 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     _radioValue2 = value;
     switch (_radioValue2) {
       case 'saldo':
-        print(_radioValue2);
         setState(() {
           cekColor = false;
 //            _image = null;
         });
         break;
       case 'voucher':
-        print(_radioValue2);
         setState(() {
           cekColor = false;
 //            _image = null;
@@ -223,23 +218,17 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   void initState() {
     super.initState();
     pilih();
-    print("############################ EXPIRED VOUCHER = $expiredVoucher ############################");
-    print(cekColor);
     _handleRadioValueChange2(_radioValue2);
-    provinsiBloc.fetchProvinsiist();
-    detailChekoutSuplemenBloc.fetchDetailChekoutSuplemenList();
+//    provinsiBloc.fetchProvinsiist();
+//    detailChekoutSuplemenBloc.fetchDetailChekoutSuplemenList();
     totQty   = widget.totQty;
     totBayar = widget.total;
-
-//    PluginGooglePlacePicker.initialize(
-//      androidApiKey: "AIzaSyA1uxab8JTufkfuXgCX8ULSIhhSPJs-WC0",
-//    );
+    dropdownValue = 'Saya';
   }
 
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -286,25 +275,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text("Alamat Pengiriman:", style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Rubik'),),
-          StreamBuilder(
-              stream: detailChekoutSuplemenBloc.getResult,
-              builder: (context,AsyncSnapshot<GetDetailChekoutSuplemenModel> snapshot){
-                if(snapshot.hasError) print(snapshot.error);
-                return snapshot.hasData? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(snapshot.data.result.address, style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 12,color:Colors.grey)),
-                  ],
-                ): Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 16.0),
-                    Divider(),
-                    SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 16.0),
-                  ],
-                );
-              }
-          ),
+          Text(widget.address, style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 12,color:Colors.grey)),
+
         ],
       ),
     );
@@ -349,7 +321,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                     });
                   },
                   items: snapshot.data.result.map((prefix0.Result items) {
-                    print("############################### ${items.name} ###################");
                     String cek = "${items.id.toString()}|${items.name}";
                     return new DropdownMenuItem<String>(
                       value: "${cek}",
@@ -463,7 +434,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   isDense: true,
                   onChanged: (String newValue) {
                     setState(() {
-                      print("############################ ${newValue} #########################");
                       _onDropDownItemSelectedKurir(newValue);
                       newValue !='COD' ? getOngkir():null;
                       if(newValue=='COD'){
@@ -511,13 +481,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   isDense: true,
                   onChanged: (String newValue) {
                     setState(() {
-                      print(newValue);
                       _onDropDownItemSelectedJasa(newValue);
                       paket = newValue.split("|");
-                      print(int.parse(paket[1]));
                       total=widget.total+int.parse(paket[1]);
                       totOngkir = int.parse(paket[1]);
-                      print(total);
                     });
                   },
                   items: snapshot.data.result.ongkir.map((prefix3.Ongkir items) {
@@ -622,7 +589,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   _callBackPin(BuildContext context,bool isTrue) async{
-    print('chekout');
     if(isTrue){
       setState(() {
         showDialog(
@@ -653,7 +619,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         sendKurir = "${_currentItemSelectedKurir} | ${paket[0]}";
         sendOngkir = "${paket[1]}";
       }
-      print("#################################### $sendVoucher ##################################");
 
       var res = await ProductMlmProvider().fetchCheckoutCart(widget.total,sendKurir,sendOngkir,sendAddress,addressType,sendVoucher,_radioValue2);
       setState(() {Navigator.of(context).pop();});
@@ -673,7 +638,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
 //                      setState(() {
 //                        Navigator.pop(context);
 //                      });
-                      print(res.result);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -768,20 +732,15 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         child: ListView(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(top:20.0),
+              margin: EdgeInsets.only(top:20.0,bottom:10.0),
               color: Colors.white,
-              padding:EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0, right: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text('Daftar Produk', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                ],
-              ),
+              padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
+              child:Text('Daftar Produk', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
             ),
             ProdukCheckoutSuplemen(),
             Container(
               color: Colors.white,
-              padding:EdgeInsets.only(top: 10.0, bottom: 0.0, left: 10.0, right: 10.0),
+              padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[

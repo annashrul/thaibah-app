@@ -33,7 +33,6 @@ class _PulsaUIState extends State<PulsaUI> with SingleTickerProviderStateMixin{
   Widget dataV;
   var nohp = "";
   String _currentItemSelectedLayanan = 'Pulsa';
-  Timer _timer;
 
   Future cek() async{
     String layanan = '';
@@ -48,7 +47,6 @@ class _PulsaUIState extends State<PulsaUI> with SingleTickerProviderStateMixin{
       }else{
         layanan = 'pulsa';
       }
-      _timer.cancel();
       Navigator.of(context, rootNavigator: true).push(
         new CupertinoPageRoute(builder: (context) => ProdukPpobPra(param: layanan.toUpperCase(),layanan: '',nohp: nohpController.text)),
       );

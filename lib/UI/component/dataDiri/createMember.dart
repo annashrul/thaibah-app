@@ -194,7 +194,6 @@ class _CreateMemberState extends State<CreateMember> {
   }
 
   getImageFile() async {
-//    print('image 1');
     var image = await ImagePicker.pickImage(source: _radioValue1 == 'camera' ? ImageSource.camera : ImageSource.gallery);
     File croppedFile = await ImageCropper.cropImage(
       sourcePath: image.path,

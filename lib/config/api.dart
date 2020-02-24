@@ -1,6 +1,6 @@
 class ApiService {
- final String baseUrl     = "http://thaibah.com:3000/api/v1/";
-// final String baseUrl   = "http://thaibah.com:3010/api/v1/";
+// final String baseUrl     = "http://thaibah.com:3000/api/v1/";
+ final String baseUrl   = "http://thaibah.com:3010/api/v1/";
 // final String baseUrl   = "http://192.168.1.9:3010/api/v1/";
   final String assetsLocal = "assets/images/";
  final String baseAssets  = "http://thaibah.com:3000/assets/";
@@ -9,7 +9,7 @@ class ApiService {
  final String versionCode = '1.1.3';
  final String username    = 'netindo';
  final String password    = 'admin1234!@';
- final bool showCode      = false;
+ final bool showCode      = true;
  final int timerActivity  = 10;
  final bool isActivity    = false;
 }

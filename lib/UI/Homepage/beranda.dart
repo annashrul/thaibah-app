@@ -6,12 +6,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:loadmore/loadmore.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
@@ -29,6 +32,7 @@ import 'package:thaibah/UI/component/pin/indexPin.dart';
 import 'package:thaibah/UI/component/prayerList.dart';
 import 'package:thaibah/UI/component/royalti/infoRoyaltiLevel.dart';
 import 'package:thaibah/UI/component/royalti/level.dart';
+import 'package:thaibah/UI/component/sosmed/listSosmed.dart';
 import 'package:thaibah/UI/component/suratHome.dart';
 import 'package:thaibah/UI/history_ui.dart';
 import 'package:thaibah/UI/lainnya/doaHarian.dart';
@@ -49,6 +53,7 @@ import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:thaibah/resources/configProvider.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
@@ -59,12 +64,13 @@ class Beranda extends StatefulWidget {
   final String lng;
   Beranda({this.lat,this.lng});
   @override
-  BerandaState createState() => BerandaState();
+  BerandaState createState()=>BerandaState();
 }
 
-class BerandaState extends State<Beranda>{
+class BerandaState extends State<Beranda>with WidgetsBindingObserver{
   final TextStyle whiteText = TextStyle(color: Colors.white);
   final userRepository = UserRepository();
+  final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
 
   String _idSurat='', _surat='',_suratAyat='',_terjemahan='',_ayat='',_suratNama='';
   String _hijri='',_masehi='',_name='',_saldo="Rp 0",_saldoBonus="0",_inspiration='',_saldoMain="0", _saldoVoucher="0";
@@ -85,78 +91,56 @@ class BerandaState extends State<Beranda>{
   bool versi = false;
 
   Info info;
-  Future cekStatusLogin()async{
-    final prefs = await SharedPreferences.getInstance();
-    if(prefs.getString('id') == null || prefs.getString('id') == ''){
+
+  String versionCode = '';int statusMember;
+  Future<void> chekcer() async {
+    final checkVersion = await userRepository.cekVersion();
+    final checkStatusMember = await userRepository.cekStatusMember();
+    final checkLoginStatus = await userRepository.cekStatusLogin();
+
+    if(checkVersion == true){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+    }else if(checkStatusMember == true){
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+    }else if(checkLoginStatus == true){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+    }else{
+      loadData();
     }
   }
   Future<void> loadData() async {
-
     final prefs = await SharedPreferences.getInstance();
-    print(prefs.getBool('isPin'));
     final isPinZero  = await userRepository.getPin();
-    cekStatusLogin();
+    final token = await userRepository.getToken();
     String id = await userRepository.getID();
-    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
+    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id,headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password});
     if (jsonString.statusCode == 200) {
       final jsonResponse = json.decode(jsonString.body);
       info = new Info.fromJson(jsonResponse);
-      _level = (info.result.level);
-      _name         = (info.result.name);
-      _nohp         = (info.result.noHp);
-      _kdRefferal   = (info.result.kdReferral);
-      _picture      = (info.result.picture);
-      _qr           = (info.result.qr);
-      _saldo        = (info.result.saldo);
-      _saldoMain    = (info.result.saldoMain);
-      _saldoBonus   = (info.result.saldoBonus);
-      _saldoVoucher   = (info.result.saldoVoucher);
-      _masehi       = (info.result.masehi.toString());
-      _hijri        = (info.result.hijri.toString());
-      _idSurat      = (info.result.ayat.id);
-      _surat        = (info.result.ayat.surat.toString());
-      _suratNama    = (info.result.ayat.surahNama.toString());
-      _ayat         = (info.result.ayat.ayat.toString());
-      _suratAyat    = (info.result.ayat.surahAyat);
-      _terjemahan   = (info.result.ayat.terjemahan);
-      _inspiration  = (info.result.inspiration);
-      _thumbnail  = (info.result.thumbnail);
-      _versionCode = (info.result.versionCode);
-      _levelPlatinum = (info.result.levelPlatinum);
-      levelPlatinumRaw = (info.result.levelPlatinumRaw);
+      _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
+      _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
+     _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);
 
-      if(_versionCode != ApiService().versionCode){
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+      if(isPinZero == 0){
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
       }else{
-        if(isPinZero == 0){
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
-          print("############################ CAN BOGA PIN ########################");
-        }else{
-          setState(() {
-            isPin = prefs.getBool('isPin');
-          });
-          if(isPin == false){
-            prefs.setBool('isPin', true);
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-                builder: (BuildContext context) => PinScreen(callback: _callBackPin)
-            ), (Route<dynamic> route) => false);
-            print("############################ KUDU NGABUSKEUN PIN ########################");
-          }else{
-            print("############################ TEU KUDU NGABUSKEUN PIN $isPinZero ########################");
-          }
+        setState(() {
+          isPin = prefs.getBool('isPin');
+        });
+        if(isPin == false){
+          prefs.setBool('isPin', true);
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+              builder: (BuildContext context) => PinScreen(callback: _callBackPin)
+          ), (Route<dynamic> route) => false);
         }
       }
       setState(() {
         isLoading = false;
       });
-      print("###########################################################LOAD DATA HOME###############################################################");
-      print(jsonResponse);
     } else {
       throw Exception('Failed to load info');
     }
   }
-
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
@@ -181,64 +165,53 @@ class BerandaState extends State<Beranda>{
       );
     }
   }
-
   DateTime dt = DateTime.now();
 
-
-  var shubuh; var sunrise; var dzuhur; var ashar; var maghrib; var isya;
-  var menitShubuh;var menitSunrise;var menitDzuhur;var menitAshar; var menitMaghrib; var menitIsya;
-  String _timeString='', _timeStringClone='';
-  String detikDzuhur = '0';
   PrayerModel prayerModel;
-
   int isActive = 0;
+  int perpage = 2;
 
-
-
-
-  Future<void> _refresh() async {
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+  void load() {
+    print("load $perpage");
     loadData();
-
+//    info.result.section.length+perpage;
   }
+
+  Future<bool> _loadMore() async {
+    print("onLoadMore");
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+    load();
+    return true;
+  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('state = $state');
+  }
+
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    cekStatusLogin();
-    loadData();
+//    cekStatusLogin();
+//    cekStatusLogin();
+//    loadData();
+    chekcer();
+    isLoading = true;
     versi = true;
-    isLoading=true;
-    print(isActive);
     latitude  = widget.lat;
     longitude = widget.lng;
   }
-
-
-
-
   @override
   void dispose(){
-    print('########################## DISPOSE #########################');
     super.dispose();
   }
-
-
-
-
-
   @override
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
   }
-
-
-
-
-
-
 
 
   @override
@@ -248,425 +221,500 @@ class BerandaState extends State<Beranda>{
 
   Widget buildContent(BuildContext context){
     return RefreshIndicator(
-        child: Column(
-//          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Flexible(
-              flex: 4,
-              child: Container(
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      bottom: 50,
-                      top: 0,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        padding: const EdgeInsets.fromLTRB(0, 50.0, 0, 0.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20.0),
-                            bottomRight: Radius.circular(20.0),
-                          ),
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomRight,
-                            end: Alignment.topLeft,
-                            colors: isLoading?<Color>[Color(0xFFfafafa),Color(0xFFfafafa)]:<Color>[Color(0xFF116240),Color(0xFF30cc23)],
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            ListTile(
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      isLoading?SkeletonFrame(width: 100.0,height: 100.0,):CircleAvatar(
-                                        radius: 35.0,
-                                        child: CachedNetworkImage(
-                                          imageUrl: _picture==null?IconImgs.noImage:_picture,
-                                          imageBuilder: (context, imageProvider) => Container(
-                                            width: 100.0,
-                                            height: 100.0,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                            ),
-                                          ),
-                                          placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
-                                          errorWidget: (context, url, error) => Icon(Icons.error),
-                                        ),
-                                      ),
-                                      SizedBox(width: 7.0),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              Padding(
-                                                padding: const EdgeInsets.only(left: 0.0),
-                                                child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                              ),
-                                              SizedBox(width: 7.0),
-                                              levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
-                                                onTap: (){
-                                                  Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
-                                                },
-                                                child: Container(
-                                                    padding: EdgeInsets.all(5),
-                                                    decoration: new BoxDecoration(
-                                                      color: Colors.red,
-                                                      borderRadius: BorderRadius.circular(6),
-                                                    ),
-                                                    constraints: BoxConstraints(
-                                                      minWidth: 14,
-                                                      minHeight: 14,
-                                                    ),
-                                                    child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
-                                                ),
-                                              ):Container(child:Image.asset("assets/images/platinum.png",height:20.0,width:20.0))
-                                            ],
-                                          ),
-                                          levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 0.0),
-                                            child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                          ),
-                                          SizedBox(height: 7.0),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 0.0),
-                                            child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : ${_level}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-
-                            ),
-                            Container(
-                              padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                              child: SizedBox(
-                                child: Container(height: 1.0,color: Colors.white),
-                              ),
-                            ),
-                            Container(
-                                padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Utama',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,)),
-                                        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
-                                        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoMain,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                      ],
-                                    ),
-                                    SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Bonus',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
-                                        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoBonus,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                      ],
-                                    ),
-                                    SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Voucher',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
-                                        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoVoucher,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                      ],
-                                    ),
-
-                                  ],
-                                )
-                            ),
-
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 15,
-                      right: 15,
-
-                      child: buildCardSaldo(),
-                    )
-                  ],
-                ),
-              ),
-            ),
-//            buildCardHeader(),
-//            const SizedBox(height: 10.0),
-            Flexible(
-              flex: 6,
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                primary: true,
-                children: <Widget>[
-                  NewsHomePage(),
-//                    buildCardSecond(context),
-//                    titleQ("Rincian Saldo Anda",Colors.black,false,''),
-//                    buildCardSaldo(),
-                  buildCardIcon(),
-//                    SizedBox(height: 5.0,child: Container(color: Color(0xFFf5f5f5))),
-//                    const SizedBox(height: 16.0),
-//                    isLoading?SuratHomeLoading():SuratHome(idSurat: _idSurat,surat: _surat,suratAyat: _suratAyat,terjemahan: _terjemahan, kdReferral: _kdRefferal,suratNama:_suratNama),
-//                    SizedBox(height: 16.0),
-//                    SizedBox(height: 5.0,child: Container(color: Color(0xFFf5f5f5))),
-//                    const SizedBox(height: 15.0),
-//                    titleQ("Kategori Berita",Colors.black,false,'category'),
-//                    NewsCategoryHomePage(),
-//                    SizedBox(height: 5.0,child: Container(color: Color(0xFFf5f5f5))),
-//                    const SizedBox(height: 15.0),
-//                    titleQ("Berita Terkini",Colors.black,true,'news'),
-//                    NewsHomePage(),
-//                    SizedBox(height: 5.0,child: Container(color: Colors.transparent)),
-                  const SizedBox(height: 15.0),
-                  titleQ("Jenjang Karir",Colors.black,true,'level'),
-                  const SizedBox(height: 15.0),
-                  WrapperLevel(),
-                  const SizedBox(height: 15.0),
-                  titleQ("Informasi & Inspirasi",Colors.black,true,'inspirasi'),
-                  const SizedBox(height: 15.0),
-                  BeritaTerkini(),
-//                    isLoading?SuratHomeLoading():InspirasiHome(imgInspiration: _inspiration, kdReferral:_kdRefferal,thumbnail:_thumbnail),
-                  const SizedBox(height: 15.0),
-                ],
-//                child: Column(
-//                  children: <Widget>[
-//
-//                  ],
-//                ),
-              ),
-            )
-          ],
-        ),
-        onRefresh: _refresh
-    );
-  }
-
-  Widget buildCardSecond(BuildContext context){
-    return Padding(
-      padding: EdgeInsets.all(15.0),
-      child:Container(
-        padding: EdgeInsets.all(20.0),
-        width: MediaQuery.of(context).size.width/1,
-        color: isLoading?Colors.transparent:Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Container(
-              child: Column(
-                children: <Widget>[
-                  InkWell(
-                    onTap: (){
-                      _lainnyaModalBottomSheet(context,'barcode');
-                    },
-                    child: Container(
-                      child: isLoading?SkeletonFrame(width: 50.0,height: MediaQuery.of(context).size.height/15):Image.network(
-                        _qr,
-                        height: MediaQuery.of(context).size.height/15,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 7.0),
-                  isLoading? SkeletonFrame(width: 60.0,height: 12.0):Text('QR Code',style: TextStyle(fontSize:16.0,color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                  SizedBox(height: 5.0),
-                  isLoading? SkeletonFrame(width: 70.0,height: 12.0):Text('Untuk Transfer',style: TextStyle(color:Colors.grey,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                  SizedBox(height: 2.0),
-                  isLoading? SkeletonFrame(width: 80.0,height: 12.0):Text('Ke Sesama Member',style: TextStyle(color:Colors.grey,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                ],
-              ),
-            ),
-            Container(
-              width:1.0,
-              color: Colors.grey,
-              height: 110.0,
-            ),
-            Container(
-              child: Column(
-                children: <Widget>[
-                  InkWell(
-                    onTap: () async {
-                      await WcFlutterShare.share(
-                        sharePopupTitle: 'Thaibah Share Link',
-                        subject: 'Thaibah Share Link',
-                        text: "https://thaibah.com/signup/$_kdRefferal\n\n\nAyo Buruan daftar",
-                        mimeType: 'text/plain'
-                      );
-                    },
-                    child: Container(
-                      child: isLoading?SkeletonFrame(width: 50.0,height: MediaQuery.of(context).size.height/15):Image.asset(
-                        'assets/images/shareIcon.png',
-                        height: MediaQuery.of(context).size.height/15,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 7.0),
-                  isLoading? SkeletonFrame(width: 60.0,height: 12.0):Text('Share',style: TextStyle(fontSize:16.0,color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                  SizedBox(height: 5.0),
-                  isLoading? SkeletonFrame(width: 70.0,height: 12.0):Text('Share Link',style: TextStyle(color:Colors.grey,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                  SizedBox(height: 2.0),
-                  isLoading? SkeletonFrame(width: 80.0,height: 12.0):Text('Ke Kerabat Anda',style: TextStyle(color:Colors.grey,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildCardHeader(){
-    return Container(
-      padding: const EdgeInsets.fromLTRB(0, 50.0, 0, 32.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20.0),
-          bottomRight: Radius.circular(20.0),
-        ),
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: isLoading?<Color>[Color(0xFFfafafa),Color(0xFFfafafa)]:<Color>[Color(0xFF30cc23),Color(0xFF116240)],
-        ),
-      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          ListTile(
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    isLoading?SkeletonFrame(width: 100.0,height: 100.0,):CircleAvatar(
-                      radius: 35.0,
-                      child: CachedNetworkImage(
-                        imageUrl: _picture==null?IconImgs.noImage:_picture,
-                        imageBuilder: (context, imageProvider) => Container(
-                          width: 100.0,
-                          height: 100.0,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                          ),
+          Flexible(
+            flex: 4,
+            child: Container(
+              child: Stack(
+                children: <Widget>[
+                  Positioned(
+                    bottom: 50,
+                    top: 0,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.fromLTRB(0, 50.0, 0, 0.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20.0),
+                          bottomRight: Radius.circular(20.0),
                         ),
-                        placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomRight,
+                          end: Alignment.topLeft,
+                          colors: isLoading?<Color>[Color(0xFFfafafa),Color(0xFFfafafa)]:<Color>[Color(0xFF116240),Color(0xFF30cc23)],
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          ListTile(
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    isLoading?SkeletonFrame(width: 100.0,height: 100.0,):CircleAvatar(
+                                      radius: 35.0,
+                                      child: CachedNetworkImage(
+                                        imageUrl: _picture==null?IconImgs.noImage:_picture,
+                                        imageBuilder: (context, imageProvider) => Container(
+                                          width: 100.0,
+                                          height: 100.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                          ),
+                                        ),
+                                        placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
+                                        errorWidget: (context, url, error) => Icon(Icons.error),
+                                      ),
+                                    ),
+                                    SizedBox(width: 7.0),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 0.0),
+                                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                            ),
+                                            SizedBox(width: 7.0),
+                                            levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
+                                              onTap: (){
+                                                Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
+                                              },
+                                              child: Container(
+                                                  padding: EdgeInsets.all(5),
+                                                  decoration: new BoxDecoration(
+                                                    color: Colors.red,
+                                                    borderRadius: BorderRadius.circular(6),
+                                                  ),
+                                                  constraints: BoxConstraints(
+                                                    minWidth: 14,
+                                                    minHeight: 14,
+                                                  ),
+                                                  child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
+                                              ),
+                                            ):Container(child:Image.asset("assets/images/platinum.png",height:20.0,width:20.0))
+                                          ],
+                                        ),
+                                        levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 0.0),
+                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                        ),
+                                        SizedBox(height: 7.0),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 0.0),
+                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : ${_level}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                          ),
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                            child: SizedBox(
+                              child: Container(height: 1.0,color: Colors.white),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Utama',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,)),
+                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
+                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoMain,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                                  ],
+                                ),
+                                SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Bonus',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
+                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoBonus,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                                  ],
+                                ),
+                                SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Voucher',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
+                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoVoucher,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                                  ],
+                                ),
+
+                              ],
+                            )
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(width: 7.0),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                            ),
-                            SizedBox(width: 7.0),
-                            levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
-                              onTap: (){
-                                Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
-                              },
-                              child: Container(
-                                  padding: EdgeInsets.all(5),
-                                  decoration: new BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  constraints: BoxConstraints(
-                                    minWidth: 14,
-                                    minHeight: 14,
-                                  ),
-                                  child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
-                              ),
-                            ):Container(child:Image.asset("assets/images/platinum.png",height:20.0,width:20.0))
-                          ],
-                        ),
-                        levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0),
-                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                        ),
-                        SizedBox(height: 7.0),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0),
-                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : ${_level}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-          ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-            child: SizedBox(
-              child: Container(height: 1.0,color: Colors.white),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 15,
+                    right: 15,
+                    child: buildCardSaldo(),
+                  )
+                ],
+              ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Flexible(
+            flex: 6,
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              primary: true,
               children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Utama',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,)),
-                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
-                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoMain,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                  ],
-                ),
-                SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Bonus',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
-                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoBonus,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                  ],
-                ),
-                SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Voucher',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
-                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoVoucher,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                  ],
-                ),
+                NewsHomePage(),
+                buildCardIcon(),
+                const SizedBox(height: 15.0),
+                titleQ("Jenjang Karir",Colors.black,true,'level'),
+                const SizedBox(height: 15.0),
+                WrapperLevel(),
+                const SizedBox(height: 15.0),
+                titleQ("Informasi & Inspirasi",Colors.black,true,'inspirasi'),
+                const SizedBox(height: 15.0),
 
+                ListSosmed(),
+//                  SectionHomeNews(context),
+//                  SectionHomeFeed(context),
+                const SizedBox(height: 15.0),
               ],
-            )
-          ),
-
+            ),
+          )
         ],
       ),
+      onRefresh: chekcer,
+      key: _refresh,
     );
   }
 
+
+//  Widget SectionHomeNews(BuildContext context){
+//    return isLoading?CircularProgressIndicator():Container(
+//      child: LoadMore(
+//        child: ListView.builder(
+//            primary: true,
+//            shrinkWrap: true,
+//            physics: const NeverScrollableScrollPhysics(),
+//            scrollDirection: Axis.vertical,
+//            itemCount: info.result.section.length,
+//            itemBuilder: (context,index){
+//              var berita = info.result.section[index].berita;
+//              var feed = info.result.section[index].feed;
+//              return Column(
+//                children: <Widget>[
+//                  ListView.builder(
+//                      primary: true,
+//                      shrinkWrap: true,
+//                      physics: const NeverScrollableScrollPhysics(),
+//                      scrollDirection: Axis.vertical,
+//                      itemCount: info.result.section[index].berita.length,
+//                      itemBuilder: (context,index){
+//                        var caption = "";
+//                        var title = "";
+//                        if(berita[index].caption.length > 50){
+//                          caption = berita[index].caption.substring(0,50)+' ...';
+//                        }else{
+//                          caption = berita[index].caption;
+//                        }
+//                        if(berita[index].title.length > 50){
+//                          title = berita[index].title.substring(0,50)+' ...';
+//                        }else{
+//                          title = berita[index].title;
+//                        }
+//                        return Container(
+//                          padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
+//                          child: Column(
+//                            children: <Widget>[
+//                              Row(
+//                                mainAxisAlignment: MainAxisAlignment.end,
+//                                children: <Widget>[
+//                                  Container(
+//                                    child: Flexible(
+//                                      child: Column(
+//                                        crossAxisAlignment: CrossAxisAlignment.start,
+//                                        children: <Widget>[
+//                                          Align(
+//                                            alignment: Alignment.centerLeft,
+//                                            child: Container(
+//                                              child: Html(
+//                                                data:title, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+//                                              ),
+//                                            ),
+//                                          ),
+//                                          Align(
+//                                            alignment: Alignment.centerLeft,
+//                                            child: Container(
+//                                              child: Html(
+//                                                data:caption, defaultTextStyle:TextStyle(fontSize:10.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+//                                              ),
+//                                            ),
+//                                          ),
+//                                        ],
+//                                      ),
+//                                    ),
+//                                  ),
+//                                  Container(
+//                                    margin: EdgeInsets.only(left: 0.0),
+//                                    child: Stack(
+//                                      children: <Widget>[
+//                                        Container(
+//                                          margin: EdgeInsets.only(top: 3.0),
+//                                          height: 80.0,
+//                                          width: 100.0,
+//                                          decoration: BoxDecoration(
+//                                            borderRadius: BorderRadius.circular(12.0),
+//                                          ),
+//                                          child: CachedNetworkImage(
+//                                            imageUrl: berita[index].picture,
+//                                            placeholder: (context, url) => Center(
+//                                              child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+//                                            ),
+//                                            errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+//                                            imageBuilder: (context, imageProvider) => Container(
+//                                              decoration: BoxDecoration(
+//                                                borderRadius: new BorderRadius.circular(10.0),
+//                                                color: Colors.grey,
+//                                                image: DecorationImage(
+//                                                  image: imageProvider,
+//                                                  fit: BoxFit.fill,
+//                                                ),
+//                                              ),
+//                                            ),
+//                                          ),
+//                                        ),
+//
+//                                      ],
+//                                    ),
+//                                  ),
+//
+//                                ],
+//                              ),
+//                              Row(
+//                                children: <Widget>[
+//                                  Align(
+//                                    alignment: Alignment.centerLeft,
+//                                    child: Container(
+//                                        child: Row(
+//                                          children: <Widget>[
+//                                            Icon(Icons.person_pin_circle,color: Colors.grey,size: 17.0),
+//                                            Text(berita[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+//                                          ],
+//                                        )
+//                                    ),
+//                                  ),
+//                                  SizedBox(width: 10.0),
+//                                  Align(
+//                                    alignment: Alignment.centerLeft,
+//                                    child: Container(
+//                                        child: Row(
+//                                          children: <Widget>[
+//                                            Icon(Icons.favorite_border,color: Colors.grey,size: 17.0),
+//                                            Text("20",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+//                                          ],
+//                                        )
+//                                    ),
+//                                  ),
+//                                  SizedBox(width: 10.0),
+//                                  Align(
+//                                    alignment: Alignment.centerRight,
+//                                    child: Container(
+//                                        child: Row(
+//                                          children: <Widget>[
+//                                            Icon(Icons.access_time,color: Colors.grey,size: 17.0),
+//                                            Text("${berita[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+//                                          ],
+//                                        )
+//                                    ),
+//                                  ),
+//                                ],
+//                              ),
+//                              Divider()
+//                            ],
+//                          ),
+//                        );
+//                      }
+//                  ),
+//                ],
+//              );
+//            }
+//        ),
+//        isFinish: info.result.section.length < perpage,
+//        onLoadMore: _loadMore,
+//        whenEmptyLoad: true,
+//        delegate: DefaultLoadMoreDelegate(),
+//        textBuilder: DefaultLoadMoreTextBuilder.english,
+//      ),
+//    );
+//  }
+//  Widget SectionHomeFeed(BuildContext context){
+//    return isLoading?CircularProgressIndicator():Container(
+////      height: MediaQuery.of(context).size.height/2.6,
+//      child: LoadMore(
+//        child: ListView.builder(
+//            primary: true,
+//            shrinkWrap: true,
+//            physics: const NeverScrollableScrollPhysics(),
+//            scrollDirection: Axis.vertical,
+//            itemCount: info.result.section.length,
+//            itemBuilder: (context,index){
+//              var feed = info.result.section[index].feed;
+//              return Column(
+//                children: <Widget>[
+//                  ListView.builder(
+//                      primary: true,
+//                      shrinkWrap: true,
+//                      physics: const NeverScrollableScrollPhysics(),
+//                      scrollDirection: Axis.vertical,
+//                      itemCount: info.result.section[index].feed.length,
+//                      itemBuilder: (context,index){
+//                        var caption = "caption";
+//                        var title = "title";
+//
+//                        return Container(
+//                          padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
+//                          child: Column(
+//                            children: <Widget>[
+//                              Row(
+//                                mainAxisAlignment: MainAxisAlignment.end,
+//                                children: <Widget>[
+//                                  Container(
+//                                    child: Flexible(
+//                                      child: Column(
+//                                        crossAxisAlignment: CrossAxisAlignment.start,
+//                                        children: <Widget>[
+//                                          Align(
+//                                            alignment: Alignment.centerLeft,
+//                                            child: Container(
+//                                              child: Html(
+//                                                data:title, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+//                                              ),
+//                                            ),
+//                                          ),
+//                                          Align(
+//                                            alignment: Alignment.centerLeft,
+//                                            child: Container(
+//                                              child: Html(
+//                                                data:caption, defaultTextStyle:TextStyle(fontSize:10.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+//                                              ),
+//                                            ),
+//                                          ),
+//                                        ],
+//                                      ),
+//                                    ),
+//                                  ),
+//                                  Container(
+//                                    margin: EdgeInsets.only(left: 0.0),
+//                                    child: Stack(
+//                                      children: <Widget>[
+//                                        Container(
+//                                          margin: EdgeInsets.only(top: 3.0),
+//                                          height: 80.0,
+//                                          width: 100.0,
+//                                          decoration: BoxDecoration(
+//                                            borderRadius: BorderRadius.circular(12.0),
+//                                          ),
+//                                          child: CachedNetworkImage(
+//                                            imageUrl: feed[index].picture,
+//                                            placeholder: (context, url) => Center(
+//                                              child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+//                                            ),
+//                                            errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+//                                            imageBuilder: (context, imageProvider) => Container(
+//                                              decoration: BoxDecoration(
+//                                                borderRadius: new BorderRadius.circular(10.0),
+//                                                color: Colors.grey,
+//                                                image: DecorationImage(
+//                                                  image: imageProvider,
+//                                                  fit: BoxFit.fill,
+//                                                ),
+//                                              ),
+//                                            ),
+//                                          ),
+//                                        ),
+//
+//                                      ],
+//                                    ),
+//                                  ),
+//
+//                                ],
+//                              ),
+//                              Row(
+//                                children: <Widget>[
+//                                  Align(
+//                                    alignment: Alignment.centerLeft,
+//                                    child: Container(
+//                                        child: Row(
+//                                          children: <Widget>[
+//                                            Icon(Icons.person_pin_circle,color: Colors.grey,size: 17.0),
+//                                            Text(feed[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+//                                          ],
+//                                        )
+//                                    ),
+//                                  ),
+//                                  SizedBox(width: 10.0),
+//                                  Align(
+//                                    alignment: Alignment.centerLeft,
+//                                    child: Container(
+//                                        child: Row(
+//                                          children: <Widget>[
+//                                            Icon(Icons.favorite_border,color: Colors.grey,size: 17.0),
+//                                            Text("20",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+//                                          ],
+//                                        )
+//                                    ),
+//                                  ),
+//                                  SizedBox(width: 10.0),
+//                                  Align(
+//                                    alignment: Alignment.centerRight,
+//                                    child: Container(
+//                                        child: Row(
+//                                          children: <Widget>[
+//                                            Icon(Icons.access_time,color: Colors.grey,size: 17.0),
+//                                            Text("${feed[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+//                                          ],
+//                                        )
+//                                    ),
+//                                  ),
+//                                ],
+//                              ),
+//                              Divider()
+//                            ],
+//                          ),
+//                        );
+//                      }
+//                  ),
+//                ],
+//              );
+//            }
+//        ),
+//        isFinish: info.result.section.length < perpage,
+//        onLoadMore: _loadMore,
+//        whenEmptyLoad: true,
+//        delegate: DefaultLoadMoreDelegate(),
+//        textBuilder: DefaultLoadMoreTextBuilder.english,
+//      ),
+//    );
+//  }
   Widget buildCardSaldo(){
     return Card(
       elevation: isLoading?0.0:4.0,
@@ -794,14 +842,14 @@ class BerandaState extends State<Beranda>{
             childAspectRatio: 1.1,
             crossAxisCount: 4,
             children: <Widget>[
-              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Baca_Al-Quran.svg','Al-Quran','alquran'),
-              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Waktu_Shalat.svg','Waktu Sholat','prayer'),
-              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Masjid_Terdekat.svg', 'Masjid Terdekat','masjid'),
-              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Doa_Harian.svg', 'Doa Harian','doa'),
-              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Hadits.svg', 'hadits','Hadits'),
-              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Asmaul_Husna.svg','Asmaul Husna','asmaulhusna'),
-              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Kalender_Hijriah.svg','Kalender Hijriah','kalender'),
-              wrapperIcon(context,ApiService().assetsLocal+'Icon_Utama_Lainnya.svg','Lainnya','lainnya'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Baca_Alquran.svg','Al-Quran','alquran'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Waktu_Shalat.svg','Waktu Sholat','prayer'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Masjid_Terdekat.svg', 'Masjid Terdekat','masjid'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Doa_Harian.svg', 'Doa Harian','doa'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Hadits.svg', 'hadits','Hadits'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Asmaul_Husna.svg','Asmaul Husna','asmaulhusna'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Kalender_Hijriah.svg','Kalender Hijriah','kalender'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Lainnya.svg','Lainnya','lainnya'),
             ],
           )
       ),
@@ -825,7 +873,7 @@ class BerandaState extends State<Beranda>{
             if(type == 'kalender'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));}
             if(type == 'lainnya'){_lainnyaModalBottomSheet(context,'ppob');}
           },
-          child: SvgPicture.asset(
+          child: SvgPicture.network(
             isLoading?"http://lequytong.com/Content/Images/no-image-02.png":'$imgUrl',
             placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtil.getInstance().setWidth(60),height: ScreenUtil.getInstance().setHeight(60)),
             height: ScreenUtil.getInstance().setHeight(60),

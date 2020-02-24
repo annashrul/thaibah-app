@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 //import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -36,7 +37,9 @@ import 'package:thaibah/resources/memberProvider.dart';
 import 'package:http/http.dart' as http;
 
 import 'Widgets/pin_screen.dart';
+import 'component/sosmed/myFeed.dart';
 import 'loginPhone.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 
 class ProfileUI extends StatefulWidget {
@@ -138,7 +141,8 @@ class _ProfileUIState extends State<ProfileUI> {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             var res = await MemberProvider().logout();
             if(res.status == 'success'){
-//              prefs.clear();
+              prefs.clear();
+              prefs.commit();
               prefs.setBool('cek', true);
               prefs.setString('id', null);
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
@@ -167,8 +171,24 @@ class _ProfileUIState extends State<ProfileUI> {
     super.dispose();
     _bloc.dispose();
   }
+  bool isLoadingShare = false;
+  Future share(param) async{
+    setState(() {
+      isLoadingShare = true;
+    });
+    Timer(Duration(seconds: 1), () async {
+      setState(() {
+        isLoadingShare = false;
+      });
+      await WcFlutterShare.share(
+          sharePopupTitle: 'Thaibah Share Link',
+          subject: 'Thaibah Share Link',
+          text: "https://thaibah.com/signup/$param\n\n\nAyo Buruan daftar",
+          mimeType: 'text/plain'
+      );
+    });
 
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +239,7 @@ class _ProfileUIState extends State<ProfileUI> {
 
           },
           child: Container(
-            height: 200,
+            height: MediaQuery.of(context).size.height/2.5,
             decoration: new BoxDecoration(
               color: Colors.black.withOpacity(0.5),
               image: new DecorationImage(
@@ -230,53 +250,8 @@ class _ProfileUIState extends State<ProfileUI> {
                 ),
               ),
             ),
-//            child: CachedNetworkImage(
-//              imageUrl: cover,
-//              placeholder: (context, url) => Center(
-//                child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-//              ),
-//              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-//              imageBuilder: (context, imageProvider) => Container(
-//                decoration: BoxDecoration(
-//                  borderRadius: new BorderRadius.circular(0.0),
-//                  color:Colors.black.withOpacity(0.5),
-//                  image: DecorationImage(
-//                    image: imageProvider,
-//                    fit: BoxFit.cover,
-//                  ),
-//                ),
-//              ),
-//            ),
           ),
         ),
-
-
-//              Image.network(snapshot.data.result.cover, fit: BoxFit.cover, height: 300,),
-//        Positioned(
-//          top: 0.0,
-//          right: 0,
-//          child: Align(
-//            alignment: Alignment.topRight,
-//            child: Padding(
-//              padding: EdgeInsets.only(left: 10, right: 10, top: _width/10),
-//              child: FlatButton(
-//                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
-//                color: Styles.primaryColor,
-//                onPressed: (){
-//
-//                },
-//                child: Row(
-//                  children: <Widget>[
-//                    Container(
-//                      child: Image.asset("assets/images/ic_wallet_100.png", width: 20, height: 20, color: Colors.white,),
-//                    ),
-//                    SizedBox(width: 5,),
-//                    Text(saldoMain, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),)
-//                  ],
-//                ),
-//              ),),
-//          ),
-//        ),
         Positioned(
           // bottom: _height/6,
             child: Column(
@@ -288,6 +263,7 @@ class _ProfileUIState extends State<ProfileUI> {
                   width: 80.0,
                   height: 80.0,
 //                  color:Colors.black.withOpacity(0.5),
+                  margin: EdgeInsets.only(top:20.0),
                   padding: EdgeInsets.all(10),
                   child: CircleAvatar(
                     minRadius: 90,
@@ -342,6 +318,79 @@ class _ProfileUIState extends State<ProfileUI> {
                   },
                 ),
                 SizedBox(height: 20,),
+                Padding(
+                  padding: EdgeInsets.only(left:10.0,right:10.0),
+                  child:Container(
+                    decoration: new BoxDecoration(
+                      color: Colors.white.withOpacity(0.5),
+                    ),
+                    padding: EdgeInsets.all(0.0),
+                    width: MediaQuery.of(context).size.width/1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Container(
+                          child: Column(
+                            children: <Widget>[
+                              InkWell(
+                                onTap: (){
+                                  _lainnyaModalBottomSheet(context,'barcode','https://pngimg.com/uploads/qr_code/qr_code_PNG2.png');
+                                },
+                                child: Container(
+                                  child: isLoading?SkeletonFrame(width: 50.0,height: MediaQuery.of(context).size.height/15):Image.network(
+                                    'https://pngimg.com/uploads/qr_code/qr_code_PNG2.png',
+                                    height: MediaQuery.of(context).size.height/20,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 7.0),
+                              isLoading? SkeletonFrame(width: 60.0,height: 12.0):Text('QR Code',style: TextStyle(fontSize:16.0,color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                              SizedBox(height: 5.0),
+                              isLoading? SkeletonFrame(width: 70.0,height: 12.0):Text('Untuk Transfer',style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                              SizedBox(height: 2.0),
+                              isLoading? SkeletonFrame(width: 80.0,height: 12.0):Text('Ke Sesama Member',style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width:2.0,
+                          decoration: new BoxDecoration(
+                            color: Colors.white.withOpacity(0.5),
+                          ),
+                          height: 110.0,
+                        ),
+                        Container(
+                          child: Column(
+
+                            children: <Widget>[
+                              InkWell(
+                                onTap: () async {
+                                  setState(() {
+                                    isLoadingShare=true;
+                                  });
+                                  share(kdRefferal);
+
+                                },
+                                child: isLoadingShare?CircularProgressIndicator(): Container(
+                                  child: isLoading?SkeletonFrame(width: 50.0,height: MediaQuery.of(context).size.height/15):SvgPicture.asset(
+                                    ApiService().assetsLocal+'Icon_Share.svg',
+                                    height: MediaQuery.of(context).size.height/20,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 7.0),
+                              isLoading? SkeletonFrame(width: 60.0,height: 12.0):Text('Share',style: TextStyle(fontSize:16.0,color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                              SizedBox(height: 5.0),
+                              isLoading? SkeletonFrame(width: 70.0,height: 12.0):Text('Share Link',style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                              SizedBox(height: 2.0),
+                              isLoading? SkeletonFrame(width: 80.0,height: 12.0):Text('Ke Kerabat Anda',style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               ],
             )
         ),
@@ -691,6 +740,26 @@ class _ProfileUIState extends State<ProfileUI> {
           FlatButton(
               onPressed: (){
                 Navigator.of(context, rootNavigator: true).push(
+                  new CupertinoPageRoute(builder: (context) => MyFeed(id: id)),
+                );
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text("Sosial Media", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                      Text("Riwayat Postingan Sosial Media Saya", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12,fontFamily: 'Rubik')),
+                    ],),
+                  Icon(Icons.arrow_right)
+                ],
+              )
+          ),
+          Divider(),
+          FlatButton(
+              onPressed: (){
+                Navigator.of(context, rootNavigator: true).push(
                   new CupertinoPageRoute(builder: (context) => IndexMember(id: id)),
                 );
               },
@@ -787,50 +856,10 @@ class _ProfileUIState extends State<ProfileUI> {
               },
               child: Container(
                 height: 300,
-                child: CachedNetworkImage(
-                  imageUrl: "http://lequytong.com/Content/Images/no-image-02.png",
-                  placeholder: (context, url) => Center(
-                    child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-                  ),
-                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                  imageBuilder: (context, imageProvider) => Container(
-                    decoration: BoxDecoration(
-                      borderRadius: new BorderRadius.circular(0.0),
-                      color: Colors.grey,
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
+                child: SkeletonFrame(height: 300,width: MediaQuery.of(context).size.width/1,),
               ),
             ),
-            Positioned(
-              top: 0.0,
-              right: 0,
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 10, right: 10, top: _width/10),
-                  child: FlatButton(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
-                    color: Styles.primaryColor,
-                    onPressed: (){
 
-                    },
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          child: SkeletonFrame(width: 80.0, height: 16.0),
-                        ),
-                        SizedBox(width: 5,),
-                        SkeletonFrame(width: 80.0, height: 16.0),
-                      ],
-                    ),
-                  ),),
-              ),
-            ),
             Positioned(
               // bottom: _height/6,
                 child: Column(
@@ -1012,6 +1041,37 @@ class _ProfileUIState extends State<ProfileUI> {
     );
   }
 
-
+  void _lainnyaModalBottomSheet(context, String param,String _qr){
+    showModalBottomSheet(
+        isScrollControlled: param == 'barcode' ? false : true,
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext bc){
+          return Wrap(
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width/1,
+                child: Material(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
+                    elevation: 5.0,
+                    color:Colors.grey[50],
+                    child: Column(
+                        children: <Widget>[
+                          SizedBox(height: 20,),
+                          Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                          SizedBox(height: 10.0,),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: Image.network(_qr,fit: BoxFit.contain,),
+                          )
+                        ]
+                    )
+                ),
+              )
+            ],
+          );
+        }
+    );
+  }
 
 }

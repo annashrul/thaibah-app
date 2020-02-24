@@ -10,8 +10,7 @@ import 'package:thaibah/config/user_repo.dart';
 class DetailCheckoutSuplemenProvider {
   Client client = Client();
   final userRepository = UserRepository();
-  Future<GetDetailChekoutSuplemenModel> fetchDetailCheckoutSuplemen() async{
-
+  Future fetchDetailCheckoutSuplemen() async{
     final token = await userRepository.getToken();
     final response = await client.post(
         ApiService().baseUrl+'transaction/checkout/detail',

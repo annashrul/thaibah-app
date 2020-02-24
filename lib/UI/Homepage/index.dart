@@ -10,6 +10,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:location/location.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/Homepage/beranda.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
@@ -47,14 +48,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
   bool isLoading = false;
   bool isLoading2 = false;
 
-  String versionCode = '';
-  Future cekVersion() async {
-    var res = await ConfigProvider().cekVersion();
-    if(res is Info){
-      Info results = res;
-      versionCode = results.result.versionCode;
-    }
-  }
+
 
 
 
@@ -146,7 +140,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
   final List<Widget> screens = [
     Beranda(),
     ProdukMlmUI(),
-//    About(),
+    About(),
     Testimoni(),
     ProfileUI(),
   ]; // to store nested tabs
@@ -165,7 +159,6 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
   @override
   void initState(){
     activePage();
-    cekVersion();
     location.onLocationChanged().listen((value) {
       if(mounted){
         setState(() {
@@ -240,12 +233,14 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
   @override
   Widget build(BuildContext context) {
+
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     return latitude == null || longitude == null ? CircularProgressIndicator() :Scaffold(
         key: scaffoldKey,
         backgroundColor: Colors.white,
@@ -257,16 +252,21 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
+        backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
         child: SvgPicture.asset(
           ApiService().assetsLocal+"t.svg",
           height: ScreenUtil.getInstance().setHeight(50),
           width: ScreenUtil.getInstance().setWidth(50),
+          color: currentTab == 2 ? Colors.white : Colors.green,
         ),
         onPressed: () {
-          Navigator.of(context, rootNavigator: true).push(
-            new CupertinoPageRoute(builder: (context) => About()),
-          );
+          setState(() {
+            currentScreen = About();// if user taps on this dashboard tab will be active
+            currentTab = 2;
+          });
+//          Navigator.of(context, rootNavigator: true).push(
+//            new CupertinoPageRoute(builder: (context) => About()),
+//          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -340,13 +340,13 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
                     onPressed: () {
                       setState(() {
                         currentScreen = Testimoni(); // if user taps on this dashboard tab will be active
-                        currentTab = 2;
+                        currentTab = 3;
                       });
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        currentTab == 2 ? SvgPicture.asset(
+                        currentTab == 3 ? SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Testimoni_Warna.svg",
                           height: ScreenUtil.getInstance().setHeight(50),
                           width: ScreenUtil.getInstance().setWidth(50),
@@ -363,13 +363,13 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
                     onPressed: () {
                       setState(() {
                         currentScreen = ProfileUI(); // if user taps on this dashboard tab will be active
-                        currentTab = 3;
+                        currentTab = 4;
                       });
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        currentTab == 3 ? SvgPicture.asset(
+                        currentTab == 4 ? SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Profile_Warna.svg",
                           height: ScreenUtil.getInstance().setHeight(50),
                           width: ScreenUtil.getInstance().setWidth(50),

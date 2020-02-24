@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/newsModel.dart';
@@ -14,28 +13,30 @@ class NewsHomePage extends StatefulWidget {
   _NewsHomePageState createState() => _NewsHomePageState();
 }
 
-class _NewsHomePageState extends State<NewsHomePage> {
+class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClientMixin   {
   final _bloc = NewsBloc();
+  SwiperController controller;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
+    controller = new SwiperController();
     _bloc.fetchNewsList(1, 4);
-//    newsBloc.fetchNewsList(1,4);
+//    WidgetsBinding.instance.addPostFrameCallback((_){
+//      _bloc.fetchNewsList(1, 4);
+//    });
+
   }
 
   @override
   void dispose() {
-//    newsBloc.dispose();
     super.dispose();
     _bloc.dispose();
   }
   @override
-  BoxDecoration myBoxDecoration() {
-    return BoxDecoration(
-      border: Border.all(),
-    );
-  }
   Widget build(BuildContext context) {
+    super.build(context);
     return StreamBuilder(
       stream: _bloc.allNews,
       builder: (context, AsyncSnapshot<NewsModel> snapshot) {
@@ -44,64 +45,25 @@ class _NewsHomePageState extends State<NewsHomePage> {
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         }
-        return Container(
-          height: MediaQuery.of(context).size.height/5,
-          color: Colors.transparent,
-          padding: EdgeInsets.all(16.0),
-          child: Swiper(
-            autoplay: true,
-            fade: 0.0,
-            itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      height: MediaQuery.of(context).size.height/5,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-                          image: DecorationImage(
-                              image: CachedNetworkImageProvider("http://lequytong.com/Content/Images/no-image-02.png"),
-                              fit: BoxFit.fill
-                          )
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-            itemCount: 6,
-            viewportFraction: 0.8,
-            scale: 0.9,
-//              pagination: SwiperPagination(),
-          ),
-        );
+        return _loading();
       },
     );
   }
 
   Widget buildContent(AsyncSnapshot<NewsModel> snapshot, BuildContext context){
+//    final scrollController = ScrollController(initialScrollOffset: 0);
+
     return Container(
       height: MediaQuery.of(context).size.height/5,
       color: Colors.transparent,
       padding: EdgeInsets.only(left:16.0,right:16.0),
       child: Swiper(
-        physics: const NeverScrollableScrollPhysics(),
+        key: _scaffoldKey,
+        controller: controller,
+//        physics: const NeverScrollableScrollPhysics(),
         autoplay: true,
         fade: 0.0,
         itemBuilder: (BuildContext context, int index) {
-          var cap = ""; var tit = "";
-          if(snapshot.data.result.data[index].title.length > 40){
-            tit = snapshot.data.result.data[index].title.substring(0,40)+" ...";
-          }else{
-            tit = snapshot.data.result.data[index].title;
-          }
-          if(snapshot.data.result.data[index].caption.length > 40){
-            cap = snapshot.data.result.data[index].caption.substring(0,40)+" ...";
-          }else{
-            cap = snapshot.data.result.data[index].caption;
-          }
-
           return GestureDetector(
             onTap: (){
               Navigator.push(
@@ -133,12 +95,33 @@ class _NewsHomePageState extends State<NewsHomePage> {
         itemCount: snapshot.data.result.data.length,
         viewportFraction: 1,
         scale: 1,
-        itemWidth: double.infinity,
-        itemHeight: MediaQuery.of(context).size.height/5,
-        layout: SwiperLayout.TINDER,
-//        control: new SwiperControl(color: Colors.black),
-//              pagination: SwiperPagination(),
+        pagination: new SwiperPagination(
+            builder: new DotSwiperPaginationBuilder(
+                color: Colors.grey, activeColor: Colors.green
+            )
+        ),
       ),
     );
   }
+
+  Widget _loading(){
+    return Container(
+      height: MediaQuery.of(context).size.height/5,
+//      color: Colors.transparent,
+      padding: EdgeInsets.only(left:16.0,right:16.0),
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: SkeletonFrame(height: MediaQuery.of(context).size.height/5,width: double.infinity),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0),bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

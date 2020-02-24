@@ -21,7 +21,10 @@ import 'package:thaibah/resources/location_service.dart';
 import 'package:connectivity/connectivity.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-main() => runApp(MyApp());
+main(){
+
+  runApp(MyApp());
+}
 
 
 class MyApp extends StatefulWidget {
@@ -34,20 +37,22 @@ class _MyAppState extends State<MyApp>  {
   bool isLoading = false;
   SharedPreferences preferences;
   String id="";
-   Future<Null> checkLoginStatus() async {
+   Future checkLoginStatus() async {
     preferences = await SharedPreferences.getInstance();
     setState(() {
       isLoading = false;
       id = preferences.getString("id");
     });
-    print("#################################################$id##################################");
   }
   String _connectionStatus = 'Unknown';
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  final userRepository = UserRepository();
+
+
+
   @override
   void initState() {
-    print("######################################################$id##############################################");
     super.initState();
     checkLoginStatus();
     isLoading = true;
@@ -174,11 +179,7 @@ class Splash extends StatefulWidget {
 class SplashState extends State<Splash> {
   Future checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print("ISLOGIN");
-    print(prefs.getBool('seen'));
     bool _seen = (prefs.getBool('seen') ?? false);
-    print("##############################IEU SEEN $_seen #################################");
-    print("##############################IEU CEK ${prefs.getBool('cek')} #################################");
     if (_seen) {
       Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
       prefs.setBool('isPin', false);
@@ -296,7 +297,6 @@ class _IntroScreenState extends State<IntroScreen> {
           isLoading = false;
         });
       }
-      print(wrapOnboarding);
     }else {
       throw Exception('Failed to load info');
     }

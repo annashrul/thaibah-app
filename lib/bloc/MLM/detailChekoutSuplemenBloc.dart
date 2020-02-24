@@ -17,7 +17,6 @@ class DetailChekoutSuplemenBloc extends BaseBloc{
   void dispose() {
     _serviceController.close();
     _isDisposed = true;
-
   }
 }
 

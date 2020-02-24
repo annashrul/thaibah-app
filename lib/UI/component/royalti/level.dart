@@ -15,14 +15,14 @@ class WrapperLevel extends StatefulWidget {
   _WrapperLevelState createState() => _WrapperLevelState();
 }
 
-class _WrapperLevelState extends State<WrapperLevel> {
-
+class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClientMixin  {
+  @override
+  bool get wantKeepAlive => true;
   bool isLoading = false;
 
   Future searchMember(param) async{
 
     if(mounted){
-
       Timer(Duration(seconds: 1), () {
         setState(() {
           isLoading = false;
@@ -70,6 +70,7 @@ class _WrapperLevelState extends State<WrapperLevel> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return wrapperBuildContent(context);
   }
 
@@ -88,7 +89,7 @@ class _WrapperLevelState extends State<WrapperLevel> {
           gradient: LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: <Color>[Color(0xFF116240),Color(0xFF30cc23)],
+            colors: <Color>[Color(0xFF30cc23),Color(0xFF116240)],
           ),
         ),
 //        elevation: 0.0,

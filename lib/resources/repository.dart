@@ -47,6 +47,8 @@ import 'package:thaibah/Model/provinsiModel.dart';
 import 'package:thaibah/Model/royalti/levelModel.dart';
 import 'package:thaibah/Model/royalti/royaltiMemberModel.dart';
 import 'package:thaibah/Model/saldoUIModel.dart';
+import 'package:thaibah/Model/sosmed/listCommentSosmedModel.dart';
+import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/Model/suratModel.dart';
 import 'package:thaibah/Model/tertimoniModel.dart';
 import 'package:thaibah/Model/transferDetailModel.dart';
@@ -80,6 +82,7 @@ import 'package:thaibah/resources/profileProvider.dart';
 import 'package:thaibah/resources/promosiProvider.dart';
 import 'package:thaibah/resources/royalti/royalti.dart';
 import 'package:thaibah/resources/saldoProvider.dart';
+import 'package:thaibah/resources/sosmed/sosmed.dart';
 import 'package:thaibah/resources/testimoniProvider.dart';
 import 'package:thaibah/resources/transaction/historyProvider.dart';
 import 'package:thaibah/resources/transferProvider.dart';
@@ -124,6 +127,7 @@ class Repository{
   final nearbyMosqueProvider = NearbyMosqueProvider();
   final ppobPascaProvider = PpobPascaProvider();
   final ppobPraProvider = PpobPraProvider();
+  final sosmedProvider = SosmedProvider();
 
   Future<NearbyMosqueModel> fetchAllNearbyMosque(var lat, var lng) => nearbyMosqueProvider.fetchNearbyMosque(lat, lng);
   Future fetchConfig() => configProvider.fetchConfig();
@@ -227,5 +231,11 @@ class Repository{
   //######################################### PPOB PRA #################################################//
   Future<PpobPraModel> fetchPpobPra(var type,var nohp) => ppobPraProvider.fetchPpobPra(type,nohp);
   Future fetchCheckoutPpobPra(var no, var code, var price, var charge,var idpelanggan) => ppobPraProvider.fetchChekoutPPOBPra(no, code, price, charge,idpelanggan);
+
+  //######################################### SOSIAL MEDIA #################################################//
+  Future<ListSosmedModel> fetchListSosmed(var page, var limit) => sosmedProvider.fetchListSosmed(page,limit);
+  Future<ListCommentSosmedModel> fetchListCommentSosmed(var id) => sosmedProvider.fetchListCommentSosmed(id);
+
+
 }
 
