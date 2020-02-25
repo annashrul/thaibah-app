@@ -1,31 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
-import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Homepage/news.dart';
-import 'package:thaibah/UI/Homepage/newsCategory.dart';
 import 'package:thaibah/UI/Widgets/mainCompass.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/asma_ui.dart';
 import 'package:thaibah/UI/component/inspirasi.dart';
-import 'package:thaibah/UI/component/inspirasiHome.dart';
 import 'package:thaibah/UI/component/news/newsPage.dart';
 import 'package:thaibah/UI/component/penarikan.dart';
 import 'package:thaibah/UI/component/pin/indexPin.dart';
@@ -33,7 +25,6 @@ import 'package:thaibah/UI/component/prayerList.dart';
 import 'package:thaibah/UI/component/royalti/infoRoyaltiLevel.dart';
 import 'package:thaibah/UI/component/royalti/level.dart';
 import 'package:thaibah/UI/component/sosmed/listSosmed.dart';
-import 'package:thaibah/UI/component/suratHome.dart';
 import 'package:thaibah/UI/history_ui.dart';
 import 'package:thaibah/UI/lainnya/doaHarian.dart';
 import 'package:thaibah/UI/lainnya/kalender.dart';
@@ -53,8 +44,6 @@ import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thaibah/resources/configProvider.dart';
-import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 
@@ -72,15 +61,13 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
   final userRepository = UserRepository();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
 
-  String _idSurat='', _surat='',_suratAyat='',_terjemahan='',_ayat='',_suratNama='';
-  String _hijri='',_masehi='',_name='',_saldo="Rp 0",_saldoBonus="0",_inspiration='',_saldoMain="0", _saldoVoucher="0";
+
+  String _name='',_saldoBonus="0",_saldoMain="0", _saldoVoucher="0",_saldo='0',_levelPlatinum='';
   String pinku = "", id="", _nohp='', _level='';
-  String _picture='',_kdRefferal='',_qr='', _thumbnail='', _versionCode='',_levelPlatinum='';
+  String _picture='',_kdRefferal='',_qr='';
   int levelPlatinumRaw=0;
   bool showAlignmentCards = false;
   bool isLoading = false;
-  double _height;
-  double _width;
   var isPin;
 
   int jam    = 0;
@@ -97,17 +84,24 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
     final checkVersion = await userRepository.cekVersion();
     final checkStatusMember = await userRepository.cekStatusMember();
     final checkLoginStatus = await userRepository.cekStatusLogin();
-
+    Timer(Duration(seconds: 1), () {
+      setState(() {isLoading = true;});
+    });
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     if(checkVersion == true){
+      setState(() {isLoading = false;});
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
     }else if(checkStatusMember == true){
+      setState(() {isLoading = false;});
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
     }else if(checkLoginStatus == true){
+      setState(() {isLoading = false;});
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
     }else{
       loadData();
     }
   }
+
   Future<void> loadData() async {
     final prefs = await SharedPreferences.getInstance();
     final isPinZero  = await userRepository.getPin();
@@ -115,6 +109,7 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
     String id = await userRepository.getID();
     var jsonString = await http.get(ApiService().baseUrl+'info?id='+id,headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password});
     if (jsonString.statusCode == 200) {
+      setState(() {isLoading = false;});
       final jsonResponse = json.decode(jsonString.body);
       info = new Info.fromJson(jsonResponse);
       _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
@@ -169,20 +164,7 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
 
   PrayerModel prayerModel;
   int isActive = 0;
-  int perpage = 2;
 
-  void load() {
-    print("load $perpage");
-    loadData();
-//    info.result.section.length+perpage;
-  }
-
-  Future<bool> _loadMore() async {
-    print("onLoadMore");
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    load();
-    return true;
-  }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('state = $state');
@@ -194,9 +176,6 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
   void initState() {
     // TODO: implement initState
     super.initState();
-//    cekStatusLogin();
-//    cekStatusLogin();
-//    loadData();
     chekcer();
     isLoading = true;
     versi = true;
@@ -220,112 +199,111 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
   }
 
   Widget buildContent(BuildContext context){
-    return RefreshIndicator(
-      child: Column(
-        children: <Widget>[
-          Flexible(
-            flex: 4,
-            child: Container(
-              child: Stack(
-                children: <Widget>[
-                  Positioned(
-                    bottom: 50,
-                    top: 0,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.fromLTRB(0, 50.0, 0, 0.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0),
-                        ),
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomRight,
-                          end: Alignment.topLeft,
-                          colors: isLoading?<Color>[Color(0xFFfafafa),Color(0xFFfafafa)]:<Color>[Color(0xFF116240),Color(0xFF30cc23)],
-                        ),
+    return isLoading ? _loading() : Column(
+      children: <Widget>[
+        Flexible(
+          flex: 4,
+          child: Container(
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  bottom: 50,
+                  top: 0,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: const EdgeInsets.fromLTRB(0, 50.0, 0, 0.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20.0),
+                        bottomRight: Radius.circular(20.0),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          ListTile(
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    isLoading?SkeletonFrame(width: 100.0,height: 100.0,):CircleAvatar(
-                                      radius: 35.0,
-                                      child: CachedNetworkImage(
-                                        imageUrl: _picture==null?IconImgs.noImage:_picture,
-                                        imageBuilder: (context, imageProvider) => Container(
-                                          width: 100.0,
-                                          height: 100.0,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                          ),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomRight,
+                        end: Alignment.topLeft,
+                        colors: isLoading?<Color>[Color(0xFFfafafa),Color(0xFFfafafa)]:<Color>[Color(0xFF116240),Color(0xFF30cc23)],
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        ListTile(
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  isLoading?SkeletonFrame(width: 100.0,height: 100.0,):CircleAvatar(
+                                    radius: 35.0,
+                                    child: CachedNetworkImage(
+                                      imageUrl: _picture==null?IconImgs.noImage:_picture,
+                                      imageBuilder: (context, imageProvider) => Container(
+                                        width: 100.0,
+                                        height: 100.0,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                                         ),
-                                        placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
-                                        errorWidget: (context, url, error) => Icon(Icons.error),
                                       ),
+                                      placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
+                                      errorWidget: (context, url, error) => Icon(Icons.error),
                                     ),
-                                    SizedBox(width: 7.0),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 0.0),
-                                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                  ),
+                                  SizedBox(width: 7.0),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 0.0),
+                                            child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                          ),
+                                          SizedBox(width: 7.0),
+                                          levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
+                                            onTap: (){
+                                              Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
+                                            },
+                                            child: Container(
+                                                padding: EdgeInsets.all(5),
+                                                decoration: new BoxDecoration(
+                                                  color: Colors.red,
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                constraints: BoxConstraints(
+                                                  minWidth: 14,
+                                                  minHeight: 14,
+                                                ),
+                                                child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
                                             ),
-                                            SizedBox(width: 7.0),
-                                            levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
-                                              onTap: (){
-                                                Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
-                                              },
-                                              child: Container(
-                                                  padding: EdgeInsets.all(5),
-                                                  decoration: new BoxDecoration(
-                                                    color: Colors.red,
-                                                    borderRadius: BorderRadius.circular(6),
-                                                  ),
-                                                  constraints: BoxConstraints(
-                                                    minWidth: 14,
-                                                    minHeight: 14,
-                                                  ),
-                                                  child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
-                                              ),
-                                            ):Container(child:Image.asset("assets/images/platinum.png",height:20.0,width:20.0))
-                                          ],
-                                        ),
-                                        levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 0.0),
-                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                        ),
-                                        SizedBox(height: 7.0),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 0.0),
-                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : ${_level}',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                          ):Container(child:Image.asset("assets/images/platinum.png",height:20.0,width:20.0))
+                                        ],
+                                      ),
+                                      levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 0.0),
+                                        child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                      ),
+                                      SizedBox(height: 7.0),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 0.0),
+                                        child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
 
+                        ),
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                          child: SizedBox(
+                            child: Container(height: 1.0,color: Colors.white),
                           ),
-                          Container(
-                            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                            child: SizedBox(
-                              child: Container(height: 1.0,color: Colors.white),
-                            ),
-                          ),
-                          Container(
+                        ),
+                        Container(
                             padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -362,23 +340,24 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
 
                               ],
                             )
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  Positioned(
-                    bottom: 0,
-                    left: 15,
-                    right: 15,
-                    child: buildCardSaldo(),
-                  )
-                ],
-              ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 15,
+                  right: 15,
+                  child: buildCardSaldo(),
+                )
+              ],
             ),
           ),
-          Flexible(
-            flex: 6,
+        ),
+        Flexible(
+          flex: 6,
+          child: RefreshIndicator(
             child: ListView(
               scrollDirection: Axis.vertical,
               primary: true,
@@ -399,325 +378,18 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
                 const SizedBox(height: 15.0),
               ],
             ),
-          )
-        ],
-      ),
-      onRefresh: chekcer,
-      key: _refresh,
+            key: _refresh,
+            onRefresh: chekcer
+          ),
+        )
+      ],
     );
   }
 
-
-//  Widget SectionHomeNews(BuildContext context){
-//    return isLoading?CircularProgressIndicator():Container(
-//      child: LoadMore(
-//        child: ListView.builder(
-//            primary: true,
-//            shrinkWrap: true,
-//            physics: const NeverScrollableScrollPhysics(),
-//            scrollDirection: Axis.vertical,
-//            itemCount: info.result.section.length,
-//            itemBuilder: (context,index){
-//              var berita = info.result.section[index].berita;
-//              var feed = info.result.section[index].feed;
-//              return Column(
-//                children: <Widget>[
-//                  ListView.builder(
-//                      primary: true,
-//                      shrinkWrap: true,
-//                      physics: const NeverScrollableScrollPhysics(),
-//                      scrollDirection: Axis.vertical,
-//                      itemCount: info.result.section[index].berita.length,
-//                      itemBuilder: (context,index){
-//                        var caption = "";
-//                        var title = "";
-//                        if(berita[index].caption.length > 50){
-//                          caption = berita[index].caption.substring(0,50)+' ...';
-//                        }else{
-//                          caption = berita[index].caption;
-//                        }
-//                        if(berita[index].title.length > 50){
-//                          title = berita[index].title.substring(0,50)+' ...';
-//                        }else{
-//                          title = berita[index].title;
-//                        }
-//                        return Container(
-//                          padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
-//                          child: Column(
-//                            children: <Widget>[
-//                              Row(
-//                                mainAxisAlignment: MainAxisAlignment.end,
-//                                children: <Widget>[
-//                                  Container(
-//                                    child: Flexible(
-//                                      child: Column(
-//                                        crossAxisAlignment: CrossAxisAlignment.start,
-//                                        children: <Widget>[
-//                                          Align(
-//                                            alignment: Alignment.centerLeft,
-//                                            child: Container(
-//                                              child: Html(
-//                                                data:title, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
-//                                              ),
-//                                            ),
-//                                          ),
-//                                          Align(
-//                                            alignment: Alignment.centerLeft,
-//                                            child: Container(
-//                                              child: Html(
-//                                                data:caption, defaultTextStyle:TextStyle(fontSize:10.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
-//                                              ),
-//                                            ),
-//                                          ),
-//                                        ],
-//                                      ),
-//                                    ),
-//                                  ),
-//                                  Container(
-//                                    margin: EdgeInsets.only(left: 0.0),
-//                                    child: Stack(
-//                                      children: <Widget>[
-//                                        Container(
-//                                          margin: EdgeInsets.only(top: 3.0),
-//                                          height: 80.0,
-//                                          width: 100.0,
-//                                          decoration: BoxDecoration(
-//                                            borderRadius: BorderRadius.circular(12.0),
-//                                          ),
-//                                          child: CachedNetworkImage(
-//                                            imageUrl: berita[index].picture,
-//                                            placeholder: (context, url) => Center(
-//                                              child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-//                                            ),
-//                                            errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-//                                            imageBuilder: (context, imageProvider) => Container(
-//                                              decoration: BoxDecoration(
-//                                                borderRadius: new BorderRadius.circular(10.0),
-//                                                color: Colors.grey,
-//                                                image: DecorationImage(
-//                                                  image: imageProvider,
-//                                                  fit: BoxFit.fill,
-//                                                ),
-//                                              ),
-//                                            ),
-//                                          ),
-//                                        ),
-//
-//                                      ],
-//                                    ),
-//                                  ),
-//
-//                                ],
-//                              ),
-//                              Row(
-//                                children: <Widget>[
-//                                  Align(
-//                                    alignment: Alignment.centerLeft,
-//                                    child: Container(
-//                                        child: Row(
-//                                          children: <Widget>[
-//                                            Icon(Icons.person_pin_circle,color: Colors.grey,size: 17.0),
-//                                            Text(berita[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
-//                                          ],
-//                                        )
-//                                    ),
-//                                  ),
-//                                  SizedBox(width: 10.0),
-//                                  Align(
-//                                    alignment: Alignment.centerLeft,
-//                                    child: Container(
-//                                        child: Row(
-//                                          children: <Widget>[
-//                                            Icon(Icons.favorite_border,color: Colors.grey,size: 17.0),
-//                                            Text("20",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
-//                                          ],
-//                                        )
-//                                    ),
-//                                  ),
-//                                  SizedBox(width: 10.0),
-//                                  Align(
-//                                    alignment: Alignment.centerRight,
-//                                    child: Container(
-//                                        child: Row(
-//                                          children: <Widget>[
-//                                            Icon(Icons.access_time,color: Colors.grey,size: 17.0),
-//                                            Text("${berita[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
-//                                          ],
-//                                        )
-//                                    ),
-//                                  ),
-//                                ],
-//                              ),
-//                              Divider()
-//                            ],
-//                          ),
-//                        );
-//                      }
-//                  ),
-//                ],
-//              );
-//            }
-//        ),
-//        isFinish: info.result.section.length < perpage,
-//        onLoadMore: _loadMore,
-//        whenEmptyLoad: true,
-//        delegate: DefaultLoadMoreDelegate(),
-//        textBuilder: DefaultLoadMoreTextBuilder.english,
-//      ),
-//    );
-//  }
-//  Widget SectionHomeFeed(BuildContext context){
-//    return isLoading?CircularProgressIndicator():Container(
-////      height: MediaQuery.of(context).size.height/2.6,
-//      child: LoadMore(
-//        child: ListView.builder(
-//            primary: true,
-//            shrinkWrap: true,
-//            physics: const NeverScrollableScrollPhysics(),
-//            scrollDirection: Axis.vertical,
-//            itemCount: info.result.section.length,
-//            itemBuilder: (context,index){
-//              var feed = info.result.section[index].feed;
-//              return Column(
-//                children: <Widget>[
-//                  ListView.builder(
-//                      primary: true,
-//                      shrinkWrap: true,
-//                      physics: const NeverScrollableScrollPhysics(),
-//                      scrollDirection: Axis.vertical,
-//                      itemCount: info.result.section[index].feed.length,
-//                      itemBuilder: (context,index){
-//                        var caption = "caption";
-//                        var title = "title";
-//
-//                        return Container(
-//                          padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
-//                          child: Column(
-//                            children: <Widget>[
-//                              Row(
-//                                mainAxisAlignment: MainAxisAlignment.end,
-//                                children: <Widget>[
-//                                  Container(
-//                                    child: Flexible(
-//                                      child: Column(
-//                                        crossAxisAlignment: CrossAxisAlignment.start,
-//                                        children: <Widget>[
-//                                          Align(
-//                                            alignment: Alignment.centerLeft,
-//                                            child: Container(
-//                                              child: Html(
-//                                                data:title, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
-//                                              ),
-//                                            ),
-//                                          ),
-//                                          Align(
-//                                            alignment: Alignment.centerLeft,
-//                                            child: Container(
-//                                              child: Html(
-//                                                data:caption, defaultTextStyle:TextStyle(fontSize:10.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
-//                                              ),
-//                                            ),
-//                                          ),
-//                                        ],
-//                                      ),
-//                                    ),
-//                                  ),
-//                                  Container(
-//                                    margin: EdgeInsets.only(left: 0.0),
-//                                    child: Stack(
-//                                      children: <Widget>[
-//                                        Container(
-//                                          margin: EdgeInsets.only(top: 3.0),
-//                                          height: 80.0,
-//                                          width: 100.0,
-//                                          decoration: BoxDecoration(
-//                                            borderRadius: BorderRadius.circular(12.0),
-//                                          ),
-//                                          child: CachedNetworkImage(
-//                                            imageUrl: feed[index].picture,
-//                                            placeholder: (context, url) => Center(
-//                                              child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-//                                            ),
-//                                            errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-//                                            imageBuilder: (context, imageProvider) => Container(
-//                                              decoration: BoxDecoration(
-//                                                borderRadius: new BorderRadius.circular(10.0),
-//                                                color: Colors.grey,
-//                                                image: DecorationImage(
-//                                                  image: imageProvider,
-//                                                  fit: BoxFit.fill,
-//                                                ),
-//                                              ),
-//                                            ),
-//                                          ),
-//                                        ),
-//
-//                                      ],
-//                                    ),
-//                                  ),
-//
-//                                ],
-//                              ),
-//                              Row(
-//                                children: <Widget>[
-//                                  Align(
-//                                    alignment: Alignment.centerLeft,
-//                                    child: Container(
-//                                        child: Row(
-//                                          children: <Widget>[
-//                                            Icon(Icons.person_pin_circle,color: Colors.grey,size: 17.0),
-//                                            Text(feed[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
-//                                          ],
-//                                        )
-//                                    ),
-//                                  ),
-//                                  SizedBox(width: 10.0),
-//                                  Align(
-//                                    alignment: Alignment.centerLeft,
-//                                    child: Container(
-//                                        child: Row(
-//                                          children: <Widget>[
-//                                            Icon(Icons.favorite_border,color: Colors.grey,size: 17.0),
-//                                            Text("20",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
-//                                          ],
-//                                        )
-//                                    ),
-//                                  ),
-//                                  SizedBox(width: 10.0),
-//                                  Align(
-//                                    alignment: Alignment.centerRight,
-//                                    child: Container(
-//                                        child: Row(
-//                                          children: <Widget>[
-//                                            Icon(Icons.access_time,color: Colors.grey,size: 17.0),
-//                                            Text("${feed[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
-//                                          ],
-//                                        )
-//                                    ),
-//                                  ),
-//                                ],
-//                              ),
-//                              Divider()
-//                            ],
-//                          ),
-//                        );
-//                      }
-//                  ),
-//                ],
-//              );
-//            }
-//        ),
-//        isFinish: info.result.section.length < perpage,
-//        onLoadMore: _loadMore,
-//        whenEmptyLoad: true,
-//        delegate: DefaultLoadMoreDelegate(),
-//        textBuilder: DefaultLoadMoreTextBuilder.english,
-//      ),
-//    );
-//  }
+  /* STRUKTUR WIDGET CARD E-WALLET */
   Widget buildCardSaldo(){
     return Card(
-      elevation: isLoading?0.0:4.0,
+      elevation: isLoading?0.0:1.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       color: isLoading?Colors.transparent:Colors.white,
       margin: const EdgeInsets.only(left:0.0,right:0.0,top:0.0,bottom:0.0),
@@ -827,10 +499,10 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
       ),
     );
   }
-
+  /* STRUKTUR WIDGET CARD ISLAMIC */
   Widget buildCardIcon(){
     return Card(
-      elevation: isLoading?0.0:4.0,
+      elevation: isLoading?0.0:1.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       color: isLoading?Colors.transparent:Colors.white,
       margin: const EdgeInsets.only(left:15.0,right: 15.0,top: 15.0,bottom: 15.0),
@@ -855,116 +527,6 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
       ),
     );
   }
-
-  Widget wrapperIcon(BuildContext context,String imgUrl, String title, String type){
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
-    return Column(
-      mainAxisSize:MainAxisSize.min ,
-      children: <Widget>[
-        GestureDetector(
-          onTap: () {
-            if(type == 'alquran'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()),);}
-            if(type == 'prayer'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)),);}
-            if(type == 'masjid'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())),);}
-            if(type == 'doa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')),);}
-            if(type == 'Hadits'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));}
-            if(type == 'asmaulhusna'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));}
-            if(type == 'kalender'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));}
-            if(type == 'lainnya'){_lainnyaModalBottomSheet(context,'ppob');}
-          },
-          child: SvgPicture.network(
-            isLoading?"http://lequytong.com/Content/Images/no-image-02.png":'$imgUrl',
-            placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtil.getInstance().setWidth(60),height: ScreenUtil.getInstance().setHeight(60)),
-            height: ScreenUtil.getInstance().setHeight(60),
-            width: ScreenUtil.getInstance().setWidth(60),
-          ),
-        ),
-        SizedBox(height: 5,),
-        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:16.0):Text("$title", style: TextStyle(fontWeight:FontWeight.bold, color:Colors.black,fontSize: 12,fontFamily: 'Rubik')),
-      ],
-    );
-  }
-
-  void _lainnyaModalBottomSheet(context, String param){
-    showModalBottomSheet(
-      isScrollControlled: param == 'barcode' ? false : true,
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext bc){
-        if(param == 'barcode'){
-          return Wrap(
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width/1,
-                child: Material(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
-                    elevation: 5.0,
-                    color:Colors.grey[50],
-                    child: Column(
-                        children: <Widget>[
-                          SizedBox(height: 20,),
-                          Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                          SizedBox(height: 10.0,),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: Image.network(_qr,fit: BoxFit.contain,),
-                          )
-                        ]
-                    )
-                ),
-              )
-            ],
-          );
-        }
-        else if(param == 'compass'){
-          return MainCompass();
-        }
-        else{
-          return Wrap(
-            children: <Widget>[
-              Container(
-                color: Colors.white,
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 20),
-                    Text("FITUR LAINNYA", style: TextStyle(color: Colors.black,fontSize: 16,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                    SizedBox(height: 15),
-                    Divider(),
-                    SizedBox(height: 30),
-                    GridView.count(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      crossAxisCount: 4,
-                      children: <Widget>[
-//                        moreStructure("Icon_Utama_Masjid_Terdekat.svg", "masjid", "Masjid Terdekat"),
-//                        moreStructure("Icon_Utama_Hadits.svg", "hadis", "Hadits"),
-//                        moreStructure("Icon_Utama_Doa_Harian.svg", "doa", "Doa Harian"),
-//                        moreStructure("Icon_Utama_Kalender_Hijriah.svg", "kalender", "Kalender Hijriah"),
-                        moreStructure("revisi/pulsa.svg", "pulsa", "Pulsa"),
-                        moreStructure("revisi/Icon_PPOB_LISTRIK.svg", "listrik", "Listrik"),
-                        moreStructure("revisi/Icon_PPOB_TELEPON_PASCA_BAYAR.svg", "telepon", "Telepon/Internet"),
-                        moreStructure("revisi/Icon_PPOB_ZAKAT.svg", "zakat", "Zakat"),
-                        moreStructure("revisi/Icon_PPOB_E _ MONEY.svg", "emoney", "E-Money"),
-                        moreStructure("revisi/Icon_PPOB_BPJS.svg", "bpjs", "BPJS"),
-                        moreStructure("revisi/Icon_PPOB_Asuransi.svg", "asuransi", "Asuransi"),
-//                        moreStructure("revisi/more.svg", "telpPasca", "Telp.Pascabayar"),
-                        moreStructure("revisi/Icon_PPOB_PDAM.svg", "pdam", "PDAM"),
-                        moreStructure("revisi/Icon_PPOB_MultiFinance.svg", "multiFinance", "Multi Finance"),
-                        moreStructure("revisi/Icon_PPOB_VOUCHER_WIFI_ID.svg", "wifiId", "Wifi ID"),
-                        moreStructure("revisi/Icon_PPOB_TV_KABEL.svg", "tvKabel", "Tv Kabel"),
-                      ],
-                    )
-                  ]
-                ),
-              )
-            ],
-          );
-        }
-      }
-    );
-  }
-
   /* STRUKTUR WIDGET TITLE */
   Widget titleQ(String title,Color warna,bool param,type){
     return Padding(
@@ -999,7 +561,6 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
       ),
     );
   }
-
   /* STRUKTUR WIDGET FITUR LAINNYA */
   Widget moreStructure(var iconUrl,var page,String title){
     return Column(
@@ -1033,6 +594,395 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
         SizedBox(height: 10),
         Text(title.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontSize: 10,fontFamily: 'Rubik'),)
       ],
+    );
+  }
+  /* STRUKTUR WIDGET LOADING */
+  Widget _loading(){
+    return Column(
+      children: <Widget>[
+        Flexible(
+          flex: 4,
+          child: Container(
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  bottom: 50,
+                  top: 0,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: const EdgeInsets.fromLTRB(0, 50.0, 0, 0.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20.0),
+                        bottomRight: Radius.circular(20.0),
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomRight,
+                        end: Alignment.topLeft,
+                        colors: <Color>[Color(0xFFfafafa),Color(0xFFfafafa)],
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        ListTile(
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  CircleAvatar(
+                                    radius: 40,
+                                    backgroundColor: Colors.white,
+                                    child: ClipOval(child: SkeletonFrame(width: 50,height: 50),
+                                    ),
+                                  ),
+                                  SizedBox(width: 7.0),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 0.0),
+                                        child: SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0),
+                                      ),
+                                      SizedBox(height: 7.0),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 0.0),
+                                        child: SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0),
+                                      ),
+                                      SizedBox(height: 7.0),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 0.0),
+                                        child: SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                        ),
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                          child: SizedBox(
+                            child: Container(height: 1.0,color: Colors.white),
+                          ),
+                        ),
+                        Container(
+                            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0),
+                                    SizedBox(height: 10.0),
+                                    SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0),
+                                  ],
+                                ),
+                                SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0),
+                                    SizedBox(height: 10.0),
+                                    SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0),
+                                  ],
+                                ),
+                                SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0),
+                                    SizedBox(height: 10.0),
+                                    SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0),
+                                  ],
+                                ),
+
+                              ],
+                            )
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 15,
+                  right: 15,
+                  child: Card(
+                    elevation: 0.0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                    color: Colors.transparent,
+                    margin: const EdgeInsets.only(left:0.0,right:0.0,top:0.0,bottom:0.0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: (){},
+                            child:ListTile(
+                              contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                              title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                              subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: (){},
+                            child:ListTile(
+                              contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                              title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                              subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: (){},
+                            child:ListTile(
+                              contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                              title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                              subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: (){},
+                            child:ListTile(
+                              contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                              title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                              subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 6,
+          child: ListView(
+            scrollDirection: Axis.vertical,
+            primary: true,
+            children: <Widget>[
+              Container(
+                  padding:EdgeInsets.only(left:15.0,right:15.0),
+                  child:SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 200.0)
+              ),
+              Card(
+                elevation:0.0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.transparent,
+                margin: const EdgeInsets.only(left:15.0,right: 15.0,top: 15.0,bottom: 15.0),
+                child: Padding(
+                    padding: EdgeInsets.only(left:15.0,right:15.0,top:20.0,bottom: 0.0),
+                    child: GridView.count(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      childAspectRatio: 1.1,
+                      crossAxisCount: 4,
+                      children: <Widget>[
+                        ListTile(
+                          contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                          title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                          subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                          title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                          subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                          title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                          subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                          title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                          subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                          title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                          subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                          title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                          subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                          title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                          subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.only(left:10.0,right:10,bottom: 10.0),
+                          title:CircleAvatar(radius: 20,backgroundColor: Colors.white,child: ClipOval(child: SkeletonFrame(width: 40,height: 40))),
+                          subtitle: SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0),
+                        ),
+                      ],
+                    )
+                ),
+              ),
+              const SizedBox(height: 15.0),
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0,right: 15.0),
+                child: GestureDetector(
+                  onTap: (){},
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16),
+                      SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15.0),
+              WrapperLevel(),
+              const SizedBox(height: 15.0),
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0,right: 15.0),
+                child: GestureDetector(
+                  onTap: (){},
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16),
+                      SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15.0),
+              ListSosmed(),
+              const SizedBox(height: 15.0),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+  Widget wrapperIcon(BuildContext context,String imgUrl, String title, String type){
+    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
+    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    return Column(
+      mainAxisSize:MainAxisSize.min ,
+      children: <Widget>[
+        GestureDetector(
+          onTap: () {
+            if(type == 'alquran'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()),);}
+            if(type == 'prayer'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)),);}
+            if(type == 'masjid'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())),);}
+            if(type == 'doa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')),);}
+            if(type == 'Hadits'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));}
+            if(type == 'asmaulhusna'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));}
+            if(type == 'kalender'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));}
+            if(type == 'lainnya'){_lainnyaModalBottomSheet(context,'ppob');}
+          },
+          child: SvgPicture.network(
+            isLoading?"http://lequytong.com/Content/Images/no-image-02.png":'$imgUrl',
+            placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtil.getInstance().setWidth(60),height: ScreenUtil.getInstance().setHeight(60)),
+            height: ScreenUtil.getInstance().setHeight(60),
+            width: ScreenUtil.getInstance().setWidth(60),
+          ),
+        ),
+        SizedBox(height: 5,),
+        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:16.0):Text("$title", style: TextStyle(fontWeight:FontWeight.bold, color:Colors.black,fontSize: 12,fontFamily: 'Rubik')),
+      ],
+    );
+  }
+  void _lainnyaModalBottomSheet(context, String param){
+    showModalBottomSheet(
+        isScrollControlled: param == 'barcode' ? false : true,
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext bc){
+          if(param == 'barcode'){
+            return Wrap(
+              children: <Widget>[
+                Container(
+                  width: MediaQuery.of(context).size.width/1,
+                  child: Material(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
+                      elevation: 5.0,
+                      color:Colors.grey[50],
+                      child: Column(
+                          children: <Widget>[
+                            SizedBox(height: 20,),
+                            Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                            SizedBox(height: 10.0,),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              child: Image.network(_qr,fit: BoxFit.contain,),
+                            )
+                          ]
+                      )
+                  ),
+                )
+              ],
+            );
+          }
+          else if(param == 'compass'){
+            return MainCompass();
+          }
+          else{
+            return Wrap(
+              children: <Widget>[
+                Container(
+                  color: Colors.white,
+                  child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 20),
+                        Text("FITUR LAINNYA", style: TextStyle(color: Colors.black,fontSize: 16,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                        SizedBox(height: 15),
+                        Divider(),
+                        SizedBox(height: 30),
+                        GridView.count(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          crossAxisCount: 4,
+                          children: <Widget>[
+//                        moreStructure("Icon_Utama_Masjid_Terdekat.svg", "masjid", "Masjid Terdekat"),
+//                        moreStructure("Icon_Utama_Hadits.svg", "hadis", "Hadits"),
+//                        moreStructure("Icon_Utama_Doa_Harian.svg", "doa", "Doa Harian"),
+//                        moreStructure("Icon_Utama_Kalender_Hijriah.svg", "kalender", "Kalender Hijriah"),
+                            moreStructure("revisi/pulsa.svg", "pulsa", "Pulsa"),
+                            moreStructure("revisi/Icon_PPOB_LISTRIK.svg", "listrik", "Listrik"),
+                            moreStructure("revisi/Icon_PPOB_TELEPON_PASCA_BAYAR.svg", "telepon", "Telepon/Internet"),
+                            moreStructure("revisi/Icon_PPOB_ZAKAT.svg", "zakat", "Zakat"),
+                            moreStructure("revisi/Icon_PPOB_E _ MONEY.svg", "emoney", "E-Money"),
+                            moreStructure("revisi/Icon_PPOB_BPJS.svg", "bpjs", "BPJS"),
+                            moreStructure("revisi/Icon_PPOB_Asuransi.svg", "asuransi", "Asuransi"),
+//                        moreStructure("revisi/more.svg", "telpPasca", "Telp.Pascabayar"),
+                            moreStructure("revisi/Icon_PPOB_PDAM.svg", "pdam", "PDAM"),
+                            moreStructure("revisi/Icon_PPOB_MultiFinance.svg", "multiFinance", "Multi Finance"),
+                            moreStructure("revisi/Icon_PPOB_VOUCHER_WIFI_ID.svg", "wifiId", "Wifi ID"),
+                            moreStructure("revisi/Icon_PPOB_TV_KABEL.svg", "tvKabel", "Tv Kabel"),
+                          ],
+                        )
+                      ]
+                  ),
+                )
+              ],
+            );
+          }
+        }
     );
   }
 

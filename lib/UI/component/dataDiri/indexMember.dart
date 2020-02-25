@@ -1,20 +1,14 @@
-import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-//import 'package:pinput/pin_put/pin_put.dart';
 import 'package:thaibah/Model/memberModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'package:thaibah/UI/component/History/deposit.dart';
 import 'package:thaibah/UI/component/address/indexAddress.dart';
 import 'package:thaibah/UI/component/bank/indexBank.dart';
 import 'package:thaibah/UI/component/dataDiri/updateDataDiri.dart';
 import 'package:thaibah/UI/component/pin/indexPin.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
-import 'package:thaibah/config/api.dart';
 
 class IndexMember extends StatefulWidget {
   final String id;

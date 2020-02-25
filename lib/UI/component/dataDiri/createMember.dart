@@ -11,14 +11,10 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:rich_alert/rich_alert.dart';
-import 'package:thaibah/Model/createMemberModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/registUIModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/responsive_ui.dart';
-import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
@@ -690,13 +686,11 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageStatefulState extends State<OtpPage> {
-  final _txtOtp = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool alreadyLogin = false;
   var currentText;
-  bool _apiCall = false;
 
   String _response = '';
   bool _isLoading = false;

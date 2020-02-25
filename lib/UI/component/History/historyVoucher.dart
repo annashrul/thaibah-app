@@ -2,14 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/historyModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/transaction/historyBloc.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 
 class HistoryVoucher extends StatefulWidget {
@@ -18,12 +15,16 @@ class HistoryVoucher extends StatefulWidget {
 }
 
 class _HistoryVoucherState extends State<HistoryVoucher> {
+  final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
+  var scaffoldKey = GlobalKey<ScaffoldState>();
+
   final userRepository = UserRepository();
   bool isLoading = false;
   bool loadingLoadMore = false;
   String label  = 'Periode';
   String from   = '';
   String to     = '';
+  String param = 'voucher';
   int perpage=20;
   var total=0;
   var fromHari = DateFormat.d().format( DateTime.now());
@@ -33,7 +34,7 @@ class _HistoryVoucherState extends State<HistoryVoucher> {
   var tahun = DateFormat.y().format( DateTime.now());
   final searchController = TextEditingController();
   final dateController = TextEditingController();
-  final FocusNode searchFocus       = FocusNode();
+  final FocusNode searchFocus = FocusNode();
   Future<Null> _selectDate(BuildContext context) async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
         context: context,
@@ -58,34 +59,72 @@ class _HistoryVoucherState extends State<HistoryVoucher> {
     }
   }
   Future _search() async{
+    DateTime today = new DateTime.now();
+    DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
     if(dateController.text != '' && searchController.text != ''){
-      historyBloc.fetchHistoryList('voucher', 1, perpage, '$from','$to',searchController.text);
+      Timer(Duration(seconds: 1), () {
+        setState(() {
+          isLoading = false;
+        });
+      });
+      historyBloc.fetchHistoryList(param, 1, perpage, '$from','$to',searchController.text);
     }
     if(dateController.text != '' && searchController.text == ''){
-      historyBloc.fetchHistoryList('voucher', 1, perpage, '$from','$to','');
+      Timer(Duration(seconds: 1), () {
+        setState(() {
+          isLoading = false;
+        });
+      });
+      historyBloc.fetchHistoryList(param, 1, perpage, '$from','$to','');
     }
     if(dateController.text == '' && searchController.text != ''){
-      historyBloc.fetchHistoryList('voucher', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}',searchController.text);
+      Timer(Duration(seconds: 1), () {
+        setState(() {
+          isLoading = false;
+        });
+      });
+      historyBloc.fetchHistoryList(param, 1, perpage, fiftyDaysAgo,'$tahun-$toBulan-$toHari',searchController.text);
     }
     if(dateController.text == '' && searchController.text == ''){
-      historyBloc.fetchHistoryList('voucher', 1, perpage, '$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
+      Timer(Duration(seconds: 1), () {
+        setState(() {
+          isLoading = false;
+        });
+      });
+      historyBloc.fetchHistoryList(param, 1, perpage, fiftyDaysAgo,'$tahun-$toBulan-$toHari','');
     }
-    return;
   }
   void load() {
     print("load $perpage");
     setState(() {
       perpage = perpage += 20;
+      isLoading = false;
     });
     DateTime today = new DateTime.now();
     DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
-    historyBloc.fetchHistoryList('voucher',1, perpage,'$fiftyDaysAgo','${tahun}-${toBulan}-${toHari}','');
+    if(dateController.text != '' && searchController.text != ''){
+      historyBloc.fetchHistoryList(param, 1, perpage, '$from','$to',searchController.text);
+    }
+    if(dateController.text != '' && searchController.text == ''){
+      historyBloc.fetchHistoryList(param, 1, perpage, '$from','$to','');
+    }
+    if(dateController.text == '' && searchController.text != ''){
+      historyBloc.fetchHistoryList(param, 1, perpage, fiftyDaysAgo,'$tahun-$toBulan-$toHari',searchController.text);
+    }
+    if(dateController.text == '' && searchController.text == ''){
+      historyBloc.fetchHistoryList(param, 1, perpage, fiftyDaysAgo,'$tahun-$toBulan-$toHari','');
+    }
+//    historyBloc.fetchHistoryList('mainTrx', 1, perpage, fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}','');
     print(perpage);
   }
-  Future<void> _refresh() async {
+  Future<void> refresh() async {
+    Timer(Duration(seconds: 1), () {
+      setState(() {
+        isLoading = true;
+      });
+    });
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     load();
-//    historyBloc.fetchHistoryList('bonus',1, perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}','');
   }
   Future<bool> _loadMore() async {
     print("onLoadMore");
@@ -93,23 +132,18 @@ class _HistoryVoucherState extends State<HistoryVoucher> {
     load();
     return true;
   }
-
-
-
   @override
   void initState() {
     super.initState();
-//    DateTime pastMonth = DateTime.now().subtract(Duration(days: 30));
     DateTime today = new DateTime.now();
     DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
-    historyBloc.fetchHistoryList('voucher', 1, perpage, '${fiftyDaysAgo}','${tahun}-${toBulan}-${toHari}','');
+    historyBloc.fetchHistoryList(param, 1, perpage, fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}','');
   }
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -163,6 +197,9 @@ class _HistoryVoucherState extends State<HistoryVoucher> {
                         controller: searchController,
                         focusNode: searchFocus,
                         onFieldSubmitted: (term){
+                          setState(() {
+                            isLoading = true;
+                          });
                           _search();
                         }
                     )
@@ -176,6 +213,9 @@ class _HistoryVoucherState extends State<HistoryVoucher> {
                 icon: isLoading?CircularProgressIndicator():Icon(Icons.search),
                 tooltip: 'Increase volume by 10',
                 onPressed: () async{
+                  setState(() {
+                    isLoading = true;
+                  });
                   _search();
                 },
               ),
@@ -201,120 +241,97 @@ class _HistoryVoucherState extends State<HistoryVoucher> {
       ],
     );
   }
-
-
-
   Widget buildContent(AsyncSnapshot<HistoryModel> snapshot, BuildContext context){
-//    final Widget readMore = FlatButton(
-//      child: loadingLoadMore?CircularProgressIndicator():Text('Load More',style: Theme.of(context).textTheme.button.copyWith(fontSize: 18.0)),
-//      onPressed: () {
-//        _moreContent();
-//      },
-//    );
-
-    if(snapshot.data.result.data.length > 0){
-      return RefreshIndicator(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                    color: Colors.white,
-                    child:LoadMore(
-                      whenEmptyLoad: true,
-                      delegate: DefaultLoadMoreDelegate(),
-                      textBuilder: DefaultLoadMoreTextBuilder.english,
-                      isFinish: snapshot.data.result.data.length < perpage,
-                      child: ListView.builder(
-                        itemCount: snapshot.data.result.data.length,
-                        itemBuilder: (context, index) {
-                          total = snapshot.data.result.data[index].id.length;
-                          var hm = DateFormat.Hm().format(snapshot.data.result.data[index].createdAt.toLocal());
-                          var ymd = DateFormat.yMd().format(snapshot.data.result.data[index].createdAt.toLocal());
-                          return Padding(
-                            padding: EdgeInsets.only(left:0, right: 0),
-                            child: Card(
-                                elevation: 0,
-                                child: Container(
-                                    decoration: BoxDecoration(color: (index % 2 == 0) ? Colors.white : Color(0xFFF7F7F9)),
-                                    padding: EdgeInsets.all(5),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          flex: 1,
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+    return snapshot.data.result.data.length > 0 ? isLoading ? _loading() : RefreshIndicator(
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: Container(
+                color: Colors.white,
+                child:LoadMoreQ(
+                  whenEmptyLoad: true,
+                  delegate: DefaultLoadMoreDelegate(),
+                  textBuilder: DefaultLoadMoreTextBuilder.english,
+                  isFinish: snapshot.data.result.data.length < perpage,
+                  child: ListView.builder(
+                    itemCount: snapshot.data.result.data.length,
+                    itemBuilder: (context, index) {
+                      total = snapshot.data.result.data[index].id.length;
+                      var hm = DateFormat.Hm().format(snapshot.data.result.data[index].createdAt.toLocal());
+                      var ymd = DateFormat.yMd().format(snapshot.data.result.data[index].createdAt.toLocal());
+                      return Padding(
+                        padding: EdgeInsets.only(left:0, right: 0),
+                        child: Card(
+                            elevation: 0,
+                            child: Container(
+                                decoration: BoxDecoration(color: (index % 2 == 0) ? Colors.white : Color(0xFFF7F7F9)),
+                                padding: EdgeInsets.all(5),
+                                child: Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 1,
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(hm, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold )),
+                                            Text(ymd, style: TextStyle(fontSize: 10),)
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Container(height: 40, width: 1, color: Colors.grey, margin: EdgeInsets.only(left: 5, right: 5),),
+                                    Expanded(
+                                      flex: 4,
+                                      child: Column(
+                                        // mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Container(child: Text(snapshot.data.result.data[index].note, style: TextStyle(fontSize: 10)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                        flex: 2,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Row(
                                               children: <Widget>[
-                                                Text(hm, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold )),
-                                                Text(ymd, style: TextStyle(fontSize: 10),)
+                                                Icon(Icons.add,size: 12,),
+                                                Text(snapshot.data.result.data[index].trxIn, style: TextStyle(color:Colors.green,fontSize: 10, fontWeight: FontWeight.bold)),
                                               ],
                                             ),
-                                          ),
-                                        ),
-                                        Container(height: 40, width: 1, color: Colors.grey, margin: EdgeInsets.only(left: 5, right: 5),),
-                                        Expanded(
-                                          flex: 4,
-                                          child: Column(
-                                            // mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Container(child: Text(snapshot.data.result.data[index].note, style: TextStyle(fontSize: 10)),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                            flex: 2,
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                            Row(
                                               children: <Widget>[
-                                                Row(
-                                                  children: <Widget>[
-                                                    Icon(Icons.add,size: 12,),
-                                                    Text(snapshot.data.result.data[index].trxIn, style: TextStyle(color:Colors.green,fontSize: 10, fontWeight: FontWeight.bold)),
-                                                  ],
+                                                Icon(const IconData(0xe15b, fontFamily: 'MaterialIcons'),
+                                                  color: Colors.black,size: 12,
                                                 ),
-                                                Row(
-                                                  children: <Widget>[
-                                                    Icon(const IconData(0xe15b, fontFamily: 'MaterialIcons'),
-                                                      color: Colors.black,size: 12,
-                                                    ),
-                                                    Text(snapshot.data.result.data[index].trxOut, style: TextStyle(color:Colors.red,fontSize: 10, fontWeight: FontWeight.bold)),
-                                                  ],
-                                                ),
+                                                Text(snapshot.data.result.data[index].trxOut, style: TextStyle(color:Colors.red,fontSize: 10, fontWeight: FontWeight.bold)),
                                               ],
-                                            )
+                                            ),
+                                          ],
                                         )
-                                      ],
                                     )
+                                  ],
                                 )
-                            ),
-                          );
-                        },
-                      ),
-                      onLoadMore: _loadMore,
-                    )
-                ),
-              ),
-//            (perpage-snapshot.data.result.data.length==10 && snapshot.data.status=='success') ? Stack(
-//                children: <Widget>[
-//                  CircularProgressIndicator()
-//                ]):Container(),
-//            readMore,
-            ],
+                            )
+                        ),
+                      );
+                    },
+                  ),
+                  onLoadMore: _loadMore,
+                )
+            ),
           ),
-          onRefresh: _refresh
-      );
-    }else{
-      return Container(
-        child: Center(
-          child: Text("Data Tidak Tersedia",style: TextStyle(fontWeight: FontWeight.bold)),
-        ),
-      );
-    }
+        ],
+      ),
+      onRefresh: refresh,
+      key: _refresh,
+    ) : Container(child: Center(child: Text("Data Tidak Tersedia",style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold))));
   }
-
   Widget buildTotal(){
     return new Align(alignment: Alignment.centerLeft,
       child:ClipRRect(
@@ -329,7 +346,6 @@ class _HistoryVoucherState extends State<HistoryVoucher> {
       ),
     );
   }
-
   Widget _loading() {
     return ListView.builder(
       itemCount: 10,

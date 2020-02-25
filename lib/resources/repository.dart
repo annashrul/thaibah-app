@@ -47,7 +47,7 @@ import 'package:thaibah/Model/provinsiModel.dart';
 import 'package:thaibah/Model/royalti/levelModel.dart';
 import 'package:thaibah/Model/royalti/royaltiMemberModel.dart';
 import 'package:thaibah/Model/saldoUIModel.dart';
-import 'package:thaibah/Model/sosmed/listCommentSosmedModel.dart';
+import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/Model/suratModel.dart';
 import 'package:thaibah/Model/tertimoniModel.dart';
@@ -234,7 +234,8 @@ class Repository{
 
   //######################################### SOSIAL MEDIA #################################################//
   Future<ListSosmedModel> fetchListSosmed(var page, var limit) => sosmedProvider.fetchListSosmed(page,limit);
-  Future<ListCommentSosmedModel> fetchListCommentSosmed(var id) => sosmedProvider.fetchListCommentSosmed(id);
+  Future<ListSosmedModel> fetchListInboxSosmed(var page, var limit) => sosmedProvider.fetchListInboxSosmed(page,limit);
+  Future<ListDetailSosmedModel> fetchListDetailSosmed(var id) => sosmedProvider.fetchListDetailSosmed(id);
 
 
 }

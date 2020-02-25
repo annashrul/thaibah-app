@@ -1,16 +1,11 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:loadmore/loadmore.dart';
-import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/historyPenarikanModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/withdrawBloc.dart';
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 
@@ -251,7 +246,7 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
             child: RefreshIndicator(
                 child: Container(
                   margin: EdgeInsets.all(15.0),
-                  child: LoadMore(
+                  child: LoadMoreQ(
                     isFinish: snapshot.data.result.data.length < perpage,
                     child: ListView.builder(
                         itemCount:  snapshot.data.result.data.length,

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/historyPPOBModel.dart';
-import 'package:thaibah/Model/historyPembelianTanahModel.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
-import 'package:thaibah/UI/component/History/detailHistoryTanah.dart';
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 
@@ -85,7 +83,11 @@ class _HistoryPPOBState extends State<HistoryPPOB> {
     });
     DateTime today = new DateTime.now();
     DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
-    historyPPPOBBloc.fetchHistoryPPOBList(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
+    if(dateController.text == ''){
+      historyPPPOBBloc.fetchHistoryPPOBList(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
+    }else{
+      historyPPPOBBloc.fetchHistoryPPOBList(1,perpage,'$from','$to');
+    }
     print(perpage);
   }
   Future<void> _refresh() async {
@@ -175,13 +177,13 @@ class _HistoryPPOBState extends State<HistoryPPOB> {
   }
 
   Widget buildContent(AsyncSnapshot<HistoryPpobModel> snapshot, BuildContext context) {
-    return Column(
+    return snapshot.data.result.data.length > 0 ? Column(
       children: <Widget>[
         Expanded(
             child: RefreshIndicator(
                 child: Container(
                   margin: EdgeInsets.all(15.0),
-                  child: LoadMore(
+                  child: LoadMoreQ(
                     child: ListView.builder(
                         itemCount:  snapshot.data.result.data.length,
                         shrinkWrap: true,
@@ -237,7 +239,7 @@ class _HistoryPPOBState extends State<HistoryPPOB> {
         ),
 
       ],
-    );
+    ) : Container(child:Center(child:Text("Data Tidak Tersedia",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),)));
   }
 
 

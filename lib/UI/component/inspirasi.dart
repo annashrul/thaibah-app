@@ -1,21 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/inspirationModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/detailInspirasi.dart';
 import 'package:thaibah/bloc/inspirationBloc.dart';
 
 import 'package:http/http.dart' show Client,Response;
-import 'package:thaibah/config/api.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 
@@ -135,7 +131,7 @@ class _InspirasiState extends State<Inspirasi> {
         children: <Widget>[
           Expanded(
             child: RefreshIndicator(
-                child: LoadMore(
+                child: LoadMoreQ(
                   child: ListView.builder(
                     itemCount: snapshot.data.result.data.length,
                     itemBuilder: (BuildContext context, int index) {

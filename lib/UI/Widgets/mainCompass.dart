@@ -1,11 +1,4 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'dart:math' as Math;
-
-//import 'package:flutter_compass/flutter_compass.dart';
-import 'package:flutter_svg/svg.dart';
-
 class MainCompass extends StatefulWidget {
   @override
   _MainCompassState createState() => _MainCompassState();

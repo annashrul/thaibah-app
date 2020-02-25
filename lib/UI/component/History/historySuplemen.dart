@@ -1,16 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:loadmore/loadmore.dart';
-import 'package:thaibah/Model/depositManual/historyDepositModel.dart';
 import 'package:thaibah/Model/historyPembelianSuplemen.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'package:thaibah/UI/component/History/detailDeposit.dart';
 import 'package:thaibah/UI/component/History/detailHistorySuplemen.dart';
-import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
-import 'package:thaibah/config/user_repo.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 
 class HistorySuplemen extends StatefulWidget {
@@ -60,10 +57,22 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
 
   Future _search() async{
     if(dateController.text != '' ){
+      Timer(Duration(seconds: 1), () {
+        setState(() {
+          isLoading = false;
+        });
+      });
         historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1,perpage,'$from','$to');
     }
     if(dateController.text == ''){
-      historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1,perpage,'$tahun-${fromBulan}-${fromHari}','${tahun}-${toBulan}-${toHari}');
+      Timer(Duration(seconds: 1), () {
+        setState(() {
+          isLoading = false;
+        });
+      });
+      DateTime today = new DateTime.now();
+      DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
+      historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
     }
     return;
   }
@@ -74,7 +83,13 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
     });
     DateTime today = new DateTime.now();
     DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
-    historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
+    String cek = fiftyDaysAgo.toString();
+    print(cek.substring(0,10));
+    if(dateController.text == ''){
+      historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
+    }else{
+      historyPembelianSuplemenBloc.fetchHistoryPemblianSuplemenList(1,perpage,'$from','$to');
+    }
     print(perpage);
   }
 
@@ -139,10 +154,14 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
             Padding(
               padding: EdgeInsets.all(8.0),
               child: IconButton(
-                icon: Icon(Icons.search),
+                icon: isLoading?CircularProgressIndicator():Icon(Icons.search),
                 tooltip: 'Cari',
                 onPressed: () async{
+                  setState(() {
+                    isLoading = true;
+                  });
                   _search();
+
                 },
               ),
             )
@@ -168,13 +187,13 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
   }
 
   Widget buildContent(AsyncSnapshot<HistoryPembelianSuplemenModel> snapshot, BuildContext context) {
-    return Column(
+    return snapshot.data.result.data.length > 0 ? isLoading ? _loading() : Column(
       children: <Widget>[
         Expanded(
             child: RefreshIndicator(
                 child: Container(
                   margin: EdgeInsets.all(15.0),
-                  child: LoadMore(
+                  child: LoadMoreQ(
                     child: ListView.builder(
                         itemCount:  snapshot.data.result.data.length,
                         shrinkWrap: true,
@@ -235,7 +254,7 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
         ),
 
       ],
-    );
+    ) : Container(child:Center(child:Text("Data Tidak Tersedia",style:TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold))));
   }
 
   Widget _loading(){

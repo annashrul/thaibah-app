@@ -1,21 +1,14 @@
 
-import 'dart:convert';
 import 'dart:core';
-import 'dart:core';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/component/detailInspirasi.dart';
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'package:http/http.dart' show Client,Response;
-import 'package:http/http.dart' as http;
 
 
 class InspirasiHome extends StatefulWidget {

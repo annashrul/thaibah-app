@@ -1,13 +1,8 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/detailHistoryPPOBModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
-import 'package:thaibah/config/api.dart';
-import 'package:thaibah/resources/historyPembelianProvider.dart';
 
 class DetailHistoryPPOB extends StatefulWidget {
   final String kdTrx;
@@ -19,10 +14,6 @@ class DetailHistoryPPOB extends StatefulWidget {
 class _DetailHistoryPPOBState extends State<DetailHistoryPPOB> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Future cek() async{
-    var res = await HistoryPembelianProvider().fetchDetailHistoryPPOB(widget.kdTrx);
-
-  }
 
 
 

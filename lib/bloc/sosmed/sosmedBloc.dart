@@ -1,4 +1,4 @@
-import 'package:thaibah/Model/sosmed/listCommentSosmedModel.dart';
+import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/bloc/base.dart';
 import 'package:rxdart/rxdart.dart';
@@ -20,16 +20,17 @@ class SosmedBloc extends BaseBloc{
     _isDisposed = true;
   }
 }
-class CommentSosmedBloc extends BaseBloc{
+
+class InboxSosmedBloc extends BaseBloc{
   bool _isDisposed = false;
-  final PublishSubject<ListCommentSosmedModel> _serviceController = new PublishSubject<ListCommentSosmedModel>();
-  Observable<ListCommentSosmedModel> get getResult => _serviceController.stream;
-  fetchListCommentSosmed(var id) async {
+  final PublishSubject<ListSosmedModel> _serviceController = new PublishSubject<ListSosmedModel>();
+  Observable<ListSosmedModel> get getResult => _serviceController.stream;
+  fetchListInboxSosmed(var page, var limit) async {
     if(_isDisposed) {
       print('false');
     }else{
-      ListCommentSosmedModel listCommentSosmedModel =  await repository.fetchListCommentSosmed(id);
-      _serviceController.sink.add(listCommentSosmedModel);
+      ListSosmedModel listSosmedModel =  await repository.fetchListInboxSosmed(page,limit);
+      _serviceController.sink.add(listSosmedModel);
     }
   }
   void dispose() {
@@ -40,5 +41,25 @@ class CommentSosmedBloc extends BaseBloc{
 
 
 
+class DetailSosmedBloc extends BaseBloc{
+  bool _isDisposed = false;
+  final PublishSubject<ListDetailSosmedModel> _serviceController = new PublishSubject<ListDetailSosmedModel>();
+  Observable<ListDetailSosmedModel> get getResult => _serviceController.stream;
+  fetchListDetailSosmed(var id) async {
+    if(_isDisposed) {
+      print('false');
+    }else{
+      ListDetailSosmedModel listDetailSosmedModel =  await repository.fetchListDetailSosmed(id);
+      _serviceController.sink.add(listDetailSosmedModel);
+    }
+  }
+  void dispose() {
+    _serviceController.close();
+    _isDisposed = true;
+  }
+}
+
+
 final sosmedBloc  = SosmedBloc();
-final commentSosmedBloc  = CommentSosmedBloc();
+final detailSosmedBloc  = DetailSosmedBloc();
+final inboxSosmedBloc  = InboxSosmedBloc();

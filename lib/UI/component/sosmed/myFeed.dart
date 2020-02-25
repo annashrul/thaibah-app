@@ -9,12 +9,13 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
+import 'package:thaibah/UI/component/sosmed/inboxSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 
@@ -26,91 +27,51 @@ class MyFeed extends StatefulWidget {
 }
 
 class _MyFeedState extends State<MyFeed> {
-  PersistentBottomSheetController _controller;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
   final _bloc = SosmedBloc();
   int perpage = 10;
   bool isLoading = false;
-  bool isLoading1 = false;
-  bool _addNewCard = false;
-  var captionController = TextEditingController();
   Future<File> file;
   String base64Image;
   File tmpFile;
-  File _image;
   String fileName;
 
-  getImageFile() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    File croppedFile = await ImageCropper.cropImage(
-      sourcePath: image.path,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.square,
-      ],
-      androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Cropper',
-          toolbarColor: Colors.green,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false
-      ),
-      iosUiSettings: IOSUiSettings(
-        minimumAspectRatio: 1.0,
-      ),
-      maxWidth: 512,
-      maxHeight: 512,
-    );
-    var result = await FlutterImageCompress.compressAndGetFile(
-      croppedFile.path,
-      '/data/user/0/com.thaibah/cache/${image.path.substring(51,image.path.length)}',
-      quality: 50,
-    );
 
-    setState(() {
-      _image = result;
-      print(_image.lengthSync());
-      print("############################## $_image #################################");
-    });
-  }
 
-  Future sendFeed() async{
-    if(captionController.text == ''){
-      print('isi caption');
-      setState(() {isLoading1 = false;});
-      return showInSnackBar("silahkan isi caption","gagal");
-    }else{
-      if(_image != null){
-        fileName = _image.path.split("/").last;
-        var type = fileName.split('.');
-        base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(_image.readAsBytesSync());
+  Future sendFeed(caption,img) async{
+    if(img != null){
+      fileName = img.path.split("/").last;
+      var type = fileName.split('.');
+      base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(img.readAsBytesSync());
+    }
+    else{
+      base64Image = "";
+    }
+    var res = await SosmedProvider().sendFeed(caption, base64Image);
+    if(res is GeneralInsertId){
+
+      GeneralInsertId results = res;
+      if(results.status == 'success'){
+        _bloc.fetchListSosmed(1, perpage);
+        setState(() {
+          isLoading = false;
+        });
+
+        return showInSnackBar(results.msg,'sukses');
       }else{
-        base64Image = "";
-      }
-      print("############################ IMAGE AKU = ${_image.path.substring(31,_image.path.length)} ##################################");
-      var res = await SosmedProvider().sendFeed(captionController.text, base64Image);
-      if(res is GeneralInsertId){
-        GeneralInsertId results = res;
-        if(results.status == 'success'){
-          _bloc.fetchListSosmed(1, perpage);
-          setState(() {
-            isLoading1 = false;
-            _addNewCard = false;
-            captionController.text = '';
-            _image = null;
-          });
-          return showInSnackBar(results.msg,'sukses');
-        }else{
-          setState(() {isLoading1 = false;});
-          print(results.msg);
-          return showInSnackBar(results.msg,'gagal');
-        }
-      }else{
-        General results = res;
+        setState(() {isLoading = false;});
         print(results.msg);
-        setState(() {isLoading1 = false;});
+
         return showInSnackBar(results.msg,'gagal');
       }
+    }
+    else{
+      General results = res;
+      print(results.msg);
+      setState(() {isLoading = false;});
+
+      return showInSnackBar(results.msg,'gagal');
     }
   }
   Future deleteFeed(var id) async{
@@ -190,14 +151,64 @@ class _MyFeedState extends State<MyFeed> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _buildAppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_backspace,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        title: Text('Riwayat Postingan ', style: TextStyle(fontFamily:'Rubik',color:Colors.white,fontWeight: FontWeight.bold)),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: <Color>[
+                Color(0xFF116240),
+                Color(0xFF30cc23)
+              ],
+            ),
+          ),
+        ),
+        actions: <Widget>[
+          new Stack(
+            children: <Widget>[
+              new IconButton(
+                icon: Icon(Icons.notifications_none),
+                onPressed: () {
+                  print('tap');
+                  Navigator.of(context, rootNavigator: true).push(
+                    new CupertinoPageRoute(builder: (context) => InboxSosmed()),
+                  );
+                }
+              ),
+              new Positioned(
+                right: 11,
+                top: 11,
+                child: new Container(
+                  padding: EdgeInsets.all(2),
+                  decoration: new BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
+                  child: Text('1', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
       body: StreamBuilder(
           stream: _bloc.getResult,
           builder: (context, AsyncSnapshot<ListSosmedModel> snapshot){
             if (snapshot.hasData) {
               return Column(
                 children: <Widget>[
-                  (!_addNewCard) ? Text('') : _buildNewCard(),
                   Expanded(child: buildContent(snapshot, context))
                 ],
               );
@@ -207,16 +218,22 @@ class _MyFeedState extends State<MyFeed> {
             return _loading();
           }
       ),
+      floatingActionButton: new FloatingActionButton(
+          elevation: 0.0,
+          child: new Icon(FontAwesomeIcons.penAlt),
+          backgroundColor: new Color(0xFF30cc23),
+          onPressed: (){_lainnyaModalBottomSheet(context);}
+      )
 
     );
   }
 
   Widget buildContent(AsyncSnapshot<ListSosmedModel> snapshot, BuildContext context){
-    return snapshot.data.result.data.length > 0 ?isLoading?_loading():Container(
+    return snapshot.data.result.data.length > 0 ? isLoading ?_loading():Container(
       child:  RefreshIndicator(
         key: _refresh,
         onRefresh:refresh,
-        child: LoadMore(
+        child: LoadMoreQ(
           child: ListView.builder(
               primary: true,
               shrinkWrap: true,
@@ -230,13 +247,6 @@ class _MyFeedState extends State<MyFeed> {
                         Navigator.of(context, rootNavigator: true).push(
                           new CupertinoPageRoute(builder: (context) => DetailSosmed(
                             id: snapshot.data.result.data[index].id,
-                            image: snapshot.data.result.data[index].picture,
-                            caption: snapshot.data.result.data[index].caption,
-                            createdAt: snapshot.data.result.data[index].createdAt,
-                            creator: snapshot.data.result.data[index].penulis,
-                            isLikes: snapshot.data.result.data[index].isLike,
-                            like: snapshot.data.result.data[index].likes,
-                            comment: snapshot.data.result.data[index].comments,
                           )),
                         ).whenComplete(_bloc.fetchListSosmed(1, perpage));
                       },
@@ -494,33 +504,102 @@ class _MyFeedState extends State<MyFeed> {
     );
   }
 
-  Widget _buildNewCard() {
-    return Container(
-      padding: const EdgeInsets.only(
-          left: 22.0, right: 22.0, top: 18.0, bottom: 18.0),
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        color: Colors.white,
-        border: Border.all(color: Colors.blue[100]),
-      ),
-      child: _newCardForm(),
+  void _lainnyaModalBottomSheet(context){
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+        backgroundColor: Colors.black,
+        context: context,
+        isScrollControlled: true,
+        builder: (context){
+          return StatefulBuilder(
+            builder: (context, state){
+              return BottomWidget(sendFeed: (String caption, File img){
+                setState(() {
+                  isLoading = true;
+                });
+                sendFeed(caption,img);
+              });
+            }
+          );
+        }
     );
   }
 
-  Widget _newCardForm() {
-    final height = 22.0;
-    return Container(
-      height: MediaQuery.of(context).size.height/2,
+}
+
+
+class BottomWidget extends StatefulWidget {
+  final Function(String caption, File _image) sendFeed;
+  BottomWidget({this.sendFeed});
+  @override
+  _BottomWidgetState createState() => _BottomWidgetState();
+}
+
+class _BottomWidgetState extends State<BottomWidget> {
+  var captionController = TextEditingController();
+  Future<File> file;
+  String base64Image;
+  File tmpFile;
+  File _image;
+  String fileName;
+  final FocusNode captionFocus = FocusNode();
+  Future<Directory> getTemporaryDirectory() async {
+    return Directory.systemTemp;
+  }
+  getImageFile() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    File croppedFile = await ImageCropper.cropImage(
+      sourcePath: image.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+      ],
+      androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Cropper',
+          toolbarColor: Colors.green,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false
+      ),
+      iosUiSettings: IOSUiSettings(
+        minimumAspectRatio: 1.0,
+      ),
+      maxWidth: 512,
+      maxHeight: 512,
+    );
+    final quality = 90;
+    final tmpDir = (await getTemporaryDirectory()).path;
+    final target ="$tmpDir/${DateTime.now().millisecondsSinceEpoch}-$quality.png";
+
+    var result = await FlutterImageCompress.compressAndGetFile(
+      croppedFile.path,
+      target,
+      format: CompressFormat.png,
+      quality: 90,
+    );
+
+    setState(() {
+      _image = result;
+      print(_image.lengthSync());
+      print("############################## $_image #################################");
+    });
+  }
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal:18,vertical: 18 ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           InkWell(
             onTap: (){
               getImageFile();
             },
             child: Container(
-
               padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
               decoration: BoxDecoration(
                 border: Border.all(
@@ -536,25 +615,11 @@ class _MyFeedState extends State<MyFeed> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      _image != null ? Container(
+                      Container(
                         height: 40.0,
                         width: 40.0,
-                        decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                        child: Image.file(_image),
-                      ) : Container(
-                        height: 40.0,
-                        width: 40.0,
-                        decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: new DecorationImage(
-                              fit: BoxFit.fill,
-                              image: NetworkImage("https://vignette.wikia.nocookie.net/solo-leveling/images/5/5a/WK_No_Image.png/revision/latest?cb=20190324133049")
-                          ),
-                        ),
+                        child:_image != null ? Image.file(_image) :Image.network("https://vignette.wikia.nocookie.net/solo-leveling/images/5/5a/WK_No_Image.png/revision/latest?cb=20190324133049"),
                       ),
-
                       new SizedBox(width: 10.0),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -563,9 +628,9 @@ class _MyFeedState extends State<MyFeed> {
                           Container(
                             child: Row(
                               children: <Widget>[
-                                Text("Upload Gambar",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                Text("Upload Gambar",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                                 SizedBox(width: 10.0),
-                                Icon(Icons.backup)
+                                Icon(Icons.backup,color: Colors.white,)
                               ],
                             ),
                           )
@@ -573,231 +638,40 @@ class _MyFeedState extends State<MyFeed> {
                       )
                     ],
                   ),
-
                 ],
               ),
             ),
           ),
-          TextFormField(
-            decoration: new InputDecoration(
-              border: InputBorder.none,
-              hintText: "Tulis Caption Disini ...",
-            ),
-            controller: captionController,
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            onFieldSubmitted: (value){
-              setState(() {
-                isLoading1 = true;
-              });
-              sendFeed();
-            },
-          ),
-          SizedBox(height: 220.0),
-          Divider(),
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  setState(() {
-                    _addNewCard = false;
-                    _image = null;
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('BATAL', style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
-                ),
-                color: Colors.white,
+          Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: TextFormField(
+              style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+              controller: captionController,
+              textInputAction: TextInputAction.done,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              focusNode: FocusNode(),
+              autofocus: true,
+              onFieldSubmitted: (value){
+                if(captionController.text == ''){
+                  FocusScope.of(context).requestFocus(FocusNode());
+                }else{
+                  Navigator.of(context).pop();
+                  captionFocus.unfocus();
+                  widget.sendFeed(captionController.text,_image);
+                  captionController.text = '';
+                  _image = null;
+                }
+              },
+              decoration: new InputDecoration(
+                hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                border: InputBorder.none,
+                hintText: "Buat Caption Status ...",
               ),
-              MaterialButton(
-                onPressed: () {
-                  setState(() {
-                    isLoading1 = true;
-                  });
-                  sendFeed();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: isLoading1?Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Center(
-                    child: Text("Simpan",style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-                  ),
-                ),
-                color: Colors.green,
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-
-
-  Widget _buildAddCardButton() {
-    return IconButton(
-      icon: Icon(Icons.add, color: Colors.white),
-      onPressed: () {
-        _lainnyaModalBottomSheet(context);
-//        setState(() {
-//          _addNewCard = true;
-//        });
-      },
-    );
-
-  }
-  Widget _buildAppBar() {
-
-    return AppBar(
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_backspace,
-          color: Colors.white,
-        ),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-      backgroundColor: Colors.white,
-      elevation: 0.0,
-      title: Text('Riwayat Postingan ', style: TextStyle(fontFamily:'Rubik',color:Colors.white,fontWeight: FontWeight.bold)),
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: <Color>[
-              Color(0xFF116240),
-              Color(0xFF30cc23)
-            ],
-          ),
-        ),
-      ),
-      actions: <Widget>[
-        _buildAddCardButton()
-      ],
-    );
-  }
-  bool isImage = false;
-  var imageQ;
-  Future<Null> updated() async {
-
-  }
-  void _lainnyaModalBottomSheet(context){
-    showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-        backgroundColor: Colors.black,
-        context: context,
-        isScrollControlled: true,
-        builder: (context){
-          return StatefulBuilder(
-            builder: (context, state){
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal:18,vertical: 18 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    BottomWidget(getImageFile: (){
-                      updated();
-                    }),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: TextFormField(
-                        style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
-                        controller: captionController,
-                        textInputAction: TextInputAction.done,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        autofocus: true,
-                        onFieldSubmitted: (value){
-                          if(captionController.text != ''){
-                            setState(() {isLoading = true;});
-                            Navigator.of(context).pop();
-                            sendFeed();
-                          }
-                        },
-                        decoration: new InputDecoration(
-                          hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
-                          border: InputBorder.none,
-                          hintText: "Buat Caption Status ...",
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                  ],
-                ),
-              );
-            }
-          );
-        }
-    );
-  }
-
-}
-
-
-class BottomWidget extends StatefulWidget {
-  final Function() getImageFile;
-  final bool switchValue;
-  var cek;
-  BottomWidget({this.getImageFile,this.switchValue,this.cek});
-  @override
-  _BottomWidgetState createState() => _BottomWidgetState();
-}
-
-class _BottomWidgetState extends State<BottomWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: (){
-        widget.getImageFile();
-        print('abus');
-      },
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.green,
-            width: 1.0,
-          ),
-          borderRadius: BorderRadius.all(
-              Radius.circular(5.0)
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Container(
-                  height: 40.0,
-                  width: 40.0,
-                  child:Image.network("https://vignette.wikia.nocookie.net/solo-leveling/images/5/5a/WK_No_Image.png/revision/latest?cb=20190324133049"),
-                ),
-                new SizedBox(width: 10.0),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      child: Row(
-                        children: <Widget>[
-                          Text("Upload Gambar",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                          SizedBox(width: 10.0),
-                          Icon(Icons.backup,color: Colors.white,)
-                        ],
-                      ),
-                    )
-                  ],
-                )
-              ],
             ),
-
-          ],
-        ),
+          ),
+          SizedBox(height: 10),
+        ],
       ),
     );
   }

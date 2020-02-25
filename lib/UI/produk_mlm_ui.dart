@@ -1,34 +1,22 @@
 
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/MLM/listCartModel.dart';
-import 'package:thaibah/Model/generalModel.dart';
-import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/Model/productMlmSuplemenModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
-import 'package:thaibah/UI/Widgets/tab_kavling_ui.dart';
-import 'package:thaibah/UI/Widgets/tab_suplemen_ui.dart';
 import 'package:thaibah/UI/component/keranjang.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
 import 'package:thaibah/config/api.dart';
-import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
-import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
 
+import 'Widgets/loadMoreQ.dart';
 import 'Widgets/skeletonFrame.dart';
-import 'package:http/http.dart' as http;
 
 class ProdukMlmUI extends StatefulWidget {
 
@@ -38,7 +26,7 @@ class ProdukMlmUI extends StatefulWidget {
 }
 
 class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStateMixin  {
-
+  final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   double _height;
@@ -99,22 +87,23 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     ));
   }
 
-  int perpage = 10;
+  int perpage = 2;
 
   void load() {
     print("load $perpage");
-    setState(() {
-      perpage = perpage += 10;
-    });
+    setState(() {isLoading = false;});
     _bloc.fetchProductMlmSuplemenList(1,perpage);
-//    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
     print(perpage);
   }
 
-  Future<void> _refresh() async {
+  Future<void> refresh() async {
+    Timer(Duration(seconds: 1), () {
+      setState(() {
+        isLoading = true;
+      });
+    });
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-//    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
-    _bloc.fetchProductMlmSuplemenList(1,perpage);
+    load();
   }
 
   Future<bool> _loadMore() async {
@@ -122,9 +111,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     print("load $perpage");
     setState(() {
-      perpage = perpage += 10;
+      perpage = perpage += 2;
     });
-//    productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
     _bloc.fetchProductMlmSuplemenList(1,perpage);
     print(perpage);
     return true;
@@ -138,7 +126,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     versi = true;
     if(mounted){
       _bloc.fetchProductMlmSuplemenList(1,perpage);
-//      productMlmSuplemenBloc.fetchProductMlmSuplemenList(1,perpage);
     }
 
     print("###################### $mounted ###########################");
@@ -147,7 +134,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   @override
   void dispose() {
     super.dispose();
-//    productMlmSuplemenBloc.dispose();
     _bloc.dispose();
   }
 
@@ -238,13 +224,12 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   }
 
   Widget buildContent(AsyncSnapshot<ProductMlmSuplemenModel> snapshot, BuildContext context) {
-    if(snapshot.data.result.data.length > 0){
-      ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-      ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
-      return RefreshIndicator(
-        child: Padding(
+    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
+    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    return snapshot.data.result.data.length > 0 ? isLoading ? _loading() : RefreshIndicator(
+      child: Padding(
           padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
-          child: LoadMore(
+          child: LoadMoreQ(
             child: ListView.builder(
               primary: false,
               physics: ScrollPhysics(),
@@ -368,7 +353,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                         )
                                       ],
                                     )
-                                     : Container(),
+                                        : Container(),
                                     Container(
                                       padding: EdgeInsets.all(5),
                                       child: Html(
@@ -394,21 +379,21 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                             flex: 2,
                                             child: Container(
                                               // padding: EdgeInsets.all(5),
-                                              decoration: BoxDecoration(color:Colors.green),
-                                              child: Align(
-                                                alignment: Alignment.center,
-                                                child: FlatButton(
-                                                  child: Icon(Icons.add_shopping_cart, color: Colors.white),
-                                                  onPressed: () {
-                                                    if(snapshot.data.result.data[index].qty != 0){
-                                                      addCart(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
+                                                decoration: BoxDecoration(color:Colors.green),
+                                                child: Align(
+                                                    alignment: Alignment.center,
+                                                    child: FlatButton(
+                                                      child: Icon(Icons.add_shopping_cart, color: Colors.white),
+                                                      onPressed: () {
+                                                        if(snapshot.data.result.data[index].qty != 0){
+                                                          addCart(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
 //                                                        widget.onItemInteraction(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
-                                                    }else{
+                                                        }else{
 
-                                                    }
-                                                  },
+                                                        }
+                                                      },
+                                                    )
                                                 )
-                                              )
                                             ),
                                           ),
                                         ],
@@ -431,16 +416,11 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
             textBuilder: DefaultLoadMoreTextBuilder.english,
             isFinish: snapshot.data.result.data.length < perpage,
           )
-        ),
-        onRefresh: _refresh
-      );
-    }else{
-      return Container(
-        child: Center(
-          child:Text('Tida Ada Data')
-        ),
-      );
-    }
+      ),
+      onRefresh: refresh,
+      key: _refresh,
+    ) : Container(child: Center(child:Text('Tida Ada Data')));
+
   }
 
 

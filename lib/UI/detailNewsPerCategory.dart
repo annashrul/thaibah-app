@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_icons/simple_line_icons.dart';
 import 'package:flutter_villains/villains/villains.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/detailNewsPerCategoryModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
@@ -15,6 +14,7 @@ import 'package:thaibah/bloc/newsBloc.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
 import 'package:thaibah/config/api.dart';
 
+import 'Widgets/loadMoreQ.dart';
 import 'Widgets/pin_screen.dart';
 
 class DetailNewsPerCategory extends StatefulWidget {
@@ -203,7 +203,7 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
   Widget itemContent(AsyncSnapshot<DetailNewsPerCategoryModel> snapshot, BuildContext context){
     if(snapshot.data.result.data.length > 0){
       return RefreshIndicator(
-        child: LoadMore(
+        child: LoadMoreQ(
           isFinish: snapshot.data.result.data.length < perpage,
           child: ListView.builder(
               itemCount: snapshot.data.result.data.length,

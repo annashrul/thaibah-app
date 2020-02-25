@@ -117,7 +117,14 @@ class _ProfileUIState extends State<ProfileUI> {
       duration: Duration(seconds: 3),
     ));
   }
-
+  Future<Directory> getTemporaryDirectory() async {
+    return Directory.systemTemp;
+  }
+  Future clearData() async{
+    var appDir = (await getTemporaryDirectory()).path;
+    new Directory(appDir).delete(recursive: true);
+    print('############################# HAPUS DATA ##################################');
+  }
   Future logout() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return Alert(
@@ -141,6 +148,7 @@ class _ProfileUIState extends State<ProfileUI> {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             var res = await MemberProvider().logout();
             if(res.status == 'success'){
+              clearData();
               prefs.clear();
               prefs.commit();
               prefs.setBool('cek', true);
@@ -159,12 +167,14 @@ class _ProfileUIState extends State<ProfileUI> {
 
 
 
+
   @override
   void initState() {
     super.initState();
     _bloc.fetchProfileList();
 //    profileBloc.fetchProfileList();
     cekVersion();
+
   }
   @override
   void dispose() {

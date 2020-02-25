@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/tertimoniModel.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/detailInspirasi.dart';
 import 'package:thaibah/bloc/testiBloc.dart';
@@ -111,7 +111,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> {
         children: <Widget>[
           Expanded(
             child: RefreshIndicator(
-              child: LoadMore(
+              child: LoadMoreQ(
                 child: ListView.builder(
                   itemCount: snapshot.data.result.data.length,
                   itemBuilder: (BuildContext context, int index) {

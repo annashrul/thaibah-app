@@ -6,12 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Model/depositManual/listAvailableBank.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/History/detailDeposit.dart';
 import 'package:thaibah/UI/component/detail/detailTopUp.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/virtualAccount/virtualAccountProvider.dart';
 
 class GetAvailableBank extends StatefulWidget {

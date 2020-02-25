@@ -1,16 +1,9 @@
-import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:thaibah/Model/MLM/resiModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
-import 'dart:math' as math;
-
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
-import 'package:thaibah/config/api.dart';
 
 class Resi extends StatefulWidget {
   final String resi, kurir;
@@ -29,57 +22,13 @@ class _ResiState extends State<Resi> {
   String resiLocal = '';
   String kurirLocal = '';
 
-  Timer _timer;
-  _callBackPins(BuildContext context,bool isTrue) async{
-    if(isTrue){
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-    }
-    else{
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text("Pin Salah!"),
-            content: new Text("Masukan pin yang sesuai."),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-  void _initializeTimer() {
-    _timer = Timer.periodic(Duration(seconds:ApiService().timerActivity), (Timer t) => _logOutUser());
-    print(_timer);
-  }
-  void _logOutUser()  {
-    print('logout');
-    _timer.cancel();
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-        builder: (BuildContext context) => PinScreen(callback: _callBackPins)
-    ), (Route<dynamic> route) => false);
-    print("############################ EWEH AKTIFITAS KUDU NGABUSKEUN PIN  ########################");
-  }
-  void _handleUserInteraction([_]) {
-    if (!_timer.isActive) {
-      print('_handleUserInteraction');
-      return;
-    }
-    print(_timer.isActive);
-    _timer.cancel();
-    _initializeTimer();
-  }
+
+
 
   @override
   void initState() {
     super.initState();
-    _initializeTimer();
+
     resiLocal = widget.resi;
     kurirLocal = widget.kurir;
     resiBloc.fetchResi(resiLocal, kurirLocal);
@@ -95,40 +44,35 @@ class _ResiState extends State<Resi> {
   @override
   Widget build(BuildContext context) {
 
-    return GestureDetector(
-      onTap: _handleUserInteraction,
-      onPanDown: _handleUserInteraction,
-      onScaleStart: _handleUserInteraction,
-      child: Scaffold(
-        key: scaffoldKey,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          centerTitle: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF116240),
-                  Color(0xFF30cc23)
-                ],
-              ),
+    return Scaffold(
+      key: scaffoldKey,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        centerTitle: false,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: <Color>[
+                Color(0xFF116240),
+                Color(0xFF30cc23)
+              ],
             ),
           ),
-          elevation: 1.0,
-          automaticallyImplyLeading: true,
-          title: new Text("Lacak Resi", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
         ),
-        body: Stack(
-          children: <Widget>[
-            _buildTimeline(),
-            buildContent(context),
-          ],
-        ),
+        elevation: 1.0,
+        automaticallyImplyLeading: true,
+        title: new Text("Lacak Resi", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+      ),
+      body: Stack(
+        children: <Widget>[
+          _buildTimeline(),
+          buildContent(context),
+        ],
       ),
     );
   }

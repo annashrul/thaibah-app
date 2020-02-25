@@ -1,25 +1,18 @@
 import 'dart:async';
 import 'dart:core';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:rich_alert/rich_alert.dart';
-import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/dataDiri/updateKtp.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 
 

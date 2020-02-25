@@ -7,15 +7,11 @@ import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/kotaModel.dart';
 import 'package:thaibah/Model/provinsiModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/address/indexAddress.dart';
-import 'package:thaibah/bloc/addressBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
 import 'package:thaibah/Model/kotaModel.dart' as prefix1;
 import 'package:thaibah/Model/kecamatanModel.dart' as prefix2;
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/addressProvider.dart';
 class AddAddress extends StatefulWidget {
   @override

@@ -5,14 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:intl/intl.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/depositManual/historyDepositModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/detailDeposit.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
-import 'package:thaibah/config/api.dart';
 
 class HistoryDeposit extends StatefulWidget {
   @override
@@ -231,7 +228,7 @@ class _HistoryDepositState extends State<HistoryDeposit> {
           child: RefreshIndicator(
               child: Container(
                 margin: EdgeInsets.all(15.0),
-                child: LoadMore(
+                child: LoadMoreQ(
                   isFinish: snapshot.data.result.data.length < perpage,
                   child: ListView.builder(
                       itemCount:  snapshot.data.result.data.length,

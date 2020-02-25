@@ -52,6 +52,8 @@ class HistoryPembelianProvider {
       ApiService().baseUrl+'pembelian/ppob?page=$page&limit=$limit&datefrom=$from&dateto=$to',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
+    print("####################################### HISTORY PEMBELIAN PPOB #######################################");
+    print(response.body);
     if (response.statusCode == 200) {
       return compute(historyPpobModelFromJson,response.body);
     } else {

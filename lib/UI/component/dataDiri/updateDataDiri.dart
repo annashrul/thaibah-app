@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,11 +14,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 
 class UpdateDataDiri extends StatefulWidget {
@@ -167,6 +164,11 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
 
 
   }
+
+  Future<Directory> getTemporaryDirectory() async {
+    return Directory.systemTemp;
+  }
+
   getImageFile(ImageSource source) async {
     print('image 1');
     var image = await ImagePicker.pickImage(source: source);
@@ -187,10 +189,16 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
       maxWidth: 512,
       maxHeight: 512,
     );
+
+    final quality = 90;
+    final tmpDir = (await getTemporaryDirectory()).path;
+    final target ="$tmpDir/${DateTime.now().millisecondsSinceEpoch}-$quality.png";
+
     var result = await FlutterImageCompress.compressAndGetFile(
       croppedFile.path,
-      '/data/user/0/com.thaibah/cache/${image.path.substring(51,image.path.length)}',
-      quality: 50,
+      target,
+      format: CompressFormat.png,
+      quality: 90,
     );
 
     setState(() {
@@ -223,10 +231,15 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
       maxWidth: 512,
       maxHeight: 512,
     );
+    final quality = 90;
+    final tmpDir = (await getTemporaryDirectory()).path;
+    final target ="$tmpDir/${DateTime.now().millisecondsSinceEpoch}-$quality.png";
+
     var result = await FlutterImageCompress.compressAndGetFile(
       croppedFile.path,
-      '/data/user/0/com.thaibah/cache/${image.path.substring(51,image.path.length)}',
-      quality: 50,
+      target,
+      format: CompressFormat.png,
+      quality: 90,
     );
 
     setState(() {

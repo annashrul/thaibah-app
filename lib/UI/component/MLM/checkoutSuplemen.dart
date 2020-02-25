@@ -1,19 +1,12 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-//import 'package:google_places_picker/google_places_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rich_alert/rich_alert.dart';
-import 'package:thaibah/Model/MLM/checkoutToDetailModel.dart';
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart' as prefix4;
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart';
-import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/kecamatanModel.dart' as prefix2;
 import 'package:thaibah/Model/kotaModel.dart';
 import 'package:thaibah/Model/kotaModel.dart' as prefix1;
@@ -22,16 +15,11 @@ import 'package:thaibah/Model/provinsiModel.dart';
 import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
-import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/detailHistorySuplemen.dart';
 import 'package:thaibah/UI/component/MLM/produkCheckoutSuplemen.dart';
-import 'package:thaibah/UI/component/address/indexAddress.dart';
 import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart' as prefix4;
-import 'package:thaibah/bloc/productMlmBloc.dart';
-import 'package:thaibah/config/api.dart';
-import 'package:thaibah/resources/MLM/getDetailChekoutSuplemenProvider.dart';
 import 'package:thaibah/resources/productMlmProvider.dart';
 
 
@@ -158,7 +146,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       duration: Duration(seconds: 3),
     ));
   }
-  String _placeName = '';
   String alamat = '';
   String _radioValue2 = 'saldo';
   bool cekColor = true;

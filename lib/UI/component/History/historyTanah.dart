@@ -163,7 +163,6 @@ class _HistoryTanahState extends State<HistoryTanah> {
                     physics: ScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     itemBuilder: (context, index) {
-                      var kdTrx = "";
                       var status = '';
                       Color statColor;
 

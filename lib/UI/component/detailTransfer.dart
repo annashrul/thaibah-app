@@ -8,7 +8,6 @@ import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
 

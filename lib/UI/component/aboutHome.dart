@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:thaibah/Model/promosiModel.dart';
 import 'package:thaibah/UI/detail_promosi_ui.dart';
 import 'package:thaibah/bloc/promosiBloc.dart';

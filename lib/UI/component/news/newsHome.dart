@@ -1,14 +1,11 @@
-import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:http/http.dart' as http;
 import 'package:thaibah/Model/newsModel.dart';
 import 'package:thaibah/UI/detail_berita_ui.dart';
-import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
 
 

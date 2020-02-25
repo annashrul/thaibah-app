@@ -7,14 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/kotaModel.dart';
 import 'package:thaibah/Model/provinsiModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/addressBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
 import 'package:thaibah/Model/kotaModel.dart' as prefix1;
 import 'package:thaibah/Model/kecamatanModel.dart' as prefix2;
-import 'package:thaibah/config/api.dart';
 class UpdateAddress extends StatefulWidget {
   final String main_address,kd_prov,kd_kota,kd_kec,id;
   UpdateAddress({this.main_address,this.kd_prov,this.kd_kota,this.kd_kec,this.id});

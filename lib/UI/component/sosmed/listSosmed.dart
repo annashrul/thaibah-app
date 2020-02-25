@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
@@ -23,19 +22,17 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
   bool isLoading1 = false;
 
   final _bloc = SosmedBloc();
-  int perpage = 5;
+  int perpage = 10;
 
   void load() {
-    perpage = perpage += 5;
+    perpage = perpage += 10;
     print("PERPAGE ${perpage}");
     Timer(Duration(seconds: 1), () {
       setState(() {
         isLoading1 = false;
       });
     });
-
     _bloc.fetchListSosmed(1,perpage);
-
   }
 
   @override
@@ -43,7 +40,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
     // TODO: implement initState
     super.initState();
     if(mounted){
-      _bloc.fetchListSosmed(1,5);
+      _bloc.fetchListSosmed(1,10);
     }
   }
 
@@ -81,24 +78,12 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
               scrollDirection: Axis.vertical,
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
-                String komen = '';
-                if(int.parse(snapshot.data.result.data[index].comments) == 0){
-                  komen = "belum ada komentar";
-                }else{
-                  komen = "ada ${snapshot.data.result.data[index].comments} komentar";
-                }
+
                 return InkWell(
                   onTap: (){
                     Navigator.of(context, rootNavigator: true).push(
                       new CupertinoPageRoute(builder: (context) => DetailSosmed(
                         id: snapshot.data.result.data[index].id,
-                        image: snapshot.data.result.data[index].picture,
-                        caption: snapshot.data.result.data[index].caption,
-                        createdAt: snapshot.data.result.data[index].createdAt,
-                        creator: snapshot.data.result.data[index].penulis,
-                        isLikes: snapshot.data.result.data[index].isLike,
-                        like: snapshot.data.result.data[index].likes,
-                        comment: snapshot.data.result.data[index].comments,
                       )),
                     ).whenComplete(_bloc.fetchListSosmed(1, perpage));
                   },
@@ -213,7 +198,6 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
               }
           ),
           snapshot.data.result.count == int.parse(snapshot.data.result.perpage) ? Container(
-
             padding: EdgeInsets.only(left:15.0,right:15.0),
             child: InkWell(
               onTap: (){
@@ -235,5 +219,4 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
       ),
     );
   }
-
 }

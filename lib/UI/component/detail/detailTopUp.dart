@@ -6,17 +6,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rich_alert/rich_alert.dart';
-import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
-import 'package:thaibah/config/api.dart';
-import 'package:thaibah/config/style.dart';
 
 class DetailTopUp extends StatefulWidget {
   final String amount,raw_amount,unique,bank_name,atas_nama,no_rekening,picture,id_deposit,bank_code;

@@ -12,10 +12,8 @@ import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/bank/indexBank.dart';
-import 'package:thaibah/bloc/bankBloc.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
 import 'package:thaibah/bloc/withdrawBloc.dart';
-import 'package:thaibah/config/api.dart';
 
 import '../saldo_ui.dart';
 

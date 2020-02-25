@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,8 +9,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:location/location.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thaibah/Model/checkerModel.dart';
-import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/Homepage/beranda.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
 import 'package:thaibah/UI/component/about.dart';
@@ -24,9 +21,7 @@ import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
-import 'package:thaibah/resources/configProvider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
 
 
 
@@ -38,7 +33,6 @@ class DashboardThreePage extends StatefulWidget {
 }
 
 class _DashboardThreePageState extends State<DashboardThreePage> {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   final TextStyle whiteText = TextStyle(color: Colors.white);
   final userRepository = UserRepository();

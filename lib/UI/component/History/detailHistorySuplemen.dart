@@ -12,13 +12,9 @@ import 'package:thaibah/Model/MLM/detailHistoryPembelianSuplemen.dart';
 import 'package:thaibah/Model/MLM/resiModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'package:thaibah/UI/component/History/indexHistory.dart';
 import 'package:thaibah/UI/component/MLM/resi.dart';
-import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/historyPembelianProvider.dart';
 
 class DetailHistorySuplemen extends StatefulWidget {
@@ -126,8 +122,6 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size;
-    print(widget.id);
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
