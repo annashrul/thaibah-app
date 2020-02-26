@@ -26,6 +26,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
 
   final _blocDetail = DetailSosmedBloc();
+  final _bloc = SosmedBloc();
 
   var captionController = TextEditingController();
   bool isLoading = false;
@@ -39,6 +40,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
       if(results.status == 'success'){
         captionController.clear();
         _blocDetail.fetchListDetailSosmed(widget.id);
+        _bloc.fetchListSosmed(1,10,'kosong');
         setState(() {isLoading = false;});
       }else{
         setState(() {isLoading = false;});
@@ -380,7 +382,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                     shape: BoxShape.circle,
                     image: new DecorationImage(
                         fit: BoxFit.fill,
-                        image: new NetworkImage("https://pbs.twimg.com/profile_images/916384996092448768/PF1TSFOE_400x400.jpg")),
+                        image: new NetworkImage(snapshot.data.result.comment[index].profilePicture)),
                   ),
                 ),
                 new SizedBox(width: 10.0),

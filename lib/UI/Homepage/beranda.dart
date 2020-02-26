@@ -25,6 +25,7 @@ import 'package:thaibah/UI/component/prayerList.dart';
 import 'package:thaibah/UI/component/royalti/infoRoyaltiLevel.dart';
 import 'package:thaibah/UI/component/royalti/level.dart';
 import 'package:thaibah/UI/component/sosmed/listSosmed.dart';
+import 'package:thaibah/UI/component/sosmed/myFeed.dart';
 import 'package:thaibah/UI/history_ui.dart';
 import 'package:thaibah/UI/lainnya/doaHarian.dart';
 import 'package:thaibah/UI/lainnya/kalender.dart';
@@ -56,7 +57,8 @@ class Beranda extends StatefulWidget {
   BerandaState createState()=>BerandaState();
 }
 
-class BerandaState extends State<Beranda>with WidgetsBindingObserver{
+class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
+
   final TextStyle whiteText = TextStyle(color: Colors.white);
   final userRepository = UserRepository();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
@@ -165,10 +167,7 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
   PrayerModel prayerModel;
   int isActive = 0;
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('state = $state');
-  }
+
 
 
 
@@ -186,15 +185,12 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
   void dispose(){
     super.dispose();
   }
-  @override
-  void deactivate() {
-    // TODO: implement deactivate
-    super.deactivate();
-  }
+
 
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return buildContent(context);
   }
 
@@ -546,7 +542,7 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
           }
           if(type == 'inspirasi'){
             Navigator.of(context, rootNavigator: true).push(
-              new CupertinoPageRoute(builder: (context) => Inspirasi(kdReferral:_kdRefferal)),
+              new CupertinoPageRoute(builder: (context) => MyFeed()),
             );
           }
         },
@@ -985,7 +981,8 @@ class BerandaState extends State<Beranda>with WidgetsBindingObserver{
         }
     );
   }
-
+  @override
+  bool get wantKeepAlive => true;
 }
 
 

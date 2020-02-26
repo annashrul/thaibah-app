@@ -21,6 +21,7 @@ import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:unicorndial/unicorndial.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -224,6 +225,18 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
 
   }
+  String _lastSelected = 'TAB: 0';
+
+  void _selectedTab(int index) {
+    setState(() {
+      _lastSelected = 'TAB: $index';
+    });
+  }
+  void _selectedFab(int index) {
+    setState(() {
+      _lastSelected = 'FAB: $index';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -235,6 +248,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
       DeviceOrientation.portraitDown,
     ]);
 
+
     return latitude == null || longitude == null ? CircularProgressIndicator() :Scaffold(
         key: scaffoldKey,
         backgroundColor: Colors.white,
@@ -245,6 +259,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
           bucket: bucket,
         ),
       ),
+//      floatingActionButton: _buildFab(context),
       floatingActionButton: FloatingActionButton(
         backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
         child: SvgPicture.asset(
@@ -258,9 +273,6 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
             currentScreen = About();// if user taps on this dashboard tab will be active
             currentTab = 2;
           });
-//          Navigator.of(context, rootNavigator: true).push(
-//            new CupertinoPageRoute(builder: (context) => About()),
-//          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -454,6 +466,37 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 //            child: moves(_page),
 //            onWillPop: onWillPop
 //        )
+    );
+  }
+
+  Widget _buildFab(BuildContext context) {
+    final icons = [ Icons.sms, Icons.mail, Icons.phone ];
+    return AnchoredOverlay(
+      showOverlay: true,
+      overlayBuilder: (context, offset) {
+        return CenterAbout(
+          position: Offset(offset.dx, offset.dy - icons.length * 35.0),
+          child: FabWithIcons(
+            icons: icons,
+            onIconTapped: _selectedFab,
+          ),
+        );
+      },
+      child: FloatingActionButton(
+        backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
+        child: SvgPicture.asset(
+          ApiService().assetsLocal+"t.svg",
+          height: ScreenUtil.getInstance().setHeight(50),
+          width: ScreenUtil.getInstance().setWidth(50),
+          color: currentTab == 2 ? Colors.white : Colors.green,
+        ),
+        onPressed: () {
+          setState(() {
+//            currentScreen = About();// if user taps on this dashboard tab will be active
+            currentTab = 2;
+          });
+        },
+      ),
     );
   }
 }
@@ -718,3 +761,229 @@ class _UpdatePageState extends State<UpdatePage> {
 
 
 
+class FabWithIcons extends StatefulWidget {
+  FabWithIcons({this.icons, this.onIconTapped});
+  final List<IconData> icons;
+  ValueChanged<int> onIconTapped;
+  @override
+  State createState() => FabWithIconsState();
+}
+
+class FabWithIconsState extends State<FabWithIcons> with TickerProviderStateMixin {
+  AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(widget.icons.length, (int index) {
+        return _buildChild(index);
+      }).toList()..add(
+        _buildFab(),
+      ),
+    );
+  }
+
+  Widget _buildChild(int index) {
+    Color backgroundColor = Colors.white;
+    Color foregroundColor = Theme.of(context).accentColor;
+    return Container(
+      height: 70.0,
+      width: 56.0,
+      alignment: FractionalOffset.topCenter,
+      child: ScaleTransition(
+        scale: CurvedAnimation(
+          parent: _controller,
+          curve: Interval(
+              0.0,
+              1.0 - index / widget.icons.length / 2.0,
+              curve: Curves.easeOut
+          ),
+        ),
+        child: FloatingActionButton(
+          backgroundColor: backgroundColor,
+          child:SvgPicture.asset(
+            ApiService().assetsLocal+"t.svg",
+            height: ScreenUtil.getInstance().setHeight(50),
+            width: ScreenUtil.getInstance().setWidth(50),
+            color: Colors.green,
+          ),
+//          child: Icon(widget.icons[index], color: foregroundColor),
+          onPressed: () => _onTapped(index),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFab() {
+    return FloatingActionButton(
+      backgroundColor: Colors.white,
+      onPressed: () {
+        if (_controller.isDismissed) {
+          _controller.forward();
+        } else {
+          _controller.reverse();
+        }
+      },
+      tooltip: 'Thaibah',
+      child: SvgPicture.asset(
+        ApiService().assetsLocal+"t.svg",
+        height: ScreenUtil.getInstance().setHeight(50),
+        width: ScreenUtil.getInstance().setWidth(50),
+        color: Colors.green,
+      ),
+      elevation: 2.0,
+    );
+  }
+
+  void _onTapped(int index) {
+    _controller.reverse();
+    widget.onIconTapped(index);
+  }
+}
+
+
+
+class AnchoredOverlay extends StatelessWidget {
+  final bool showOverlay;
+  final Widget Function(BuildContext, Offset anchor) overlayBuilder;
+  final Widget child;
+
+  AnchoredOverlay({
+    this.showOverlay,
+    this.overlayBuilder,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      child: new LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+        return new OverlayBuilder(
+          showOverlay: showOverlay,
+          overlayBuilder: (BuildContext overlayContext) {
+            RenderBox box = context.findRenderObject() as RenderBox;
+            final center = box.size.center(box.localToGlobal(const Offset(0.0, 0.0)));
+
+            return overlayBuilder(overlayContext, center);
+          },
+          child: child,
+        );
+      }),
+    );
+  }
+}
+
+class OverlayBuilder extends StatefulWidget {
+  final bool showOverlay;
+  final Function(BuildContext) overlayBuilder;
+  final Widget child;
+
+  OverlayBuilder({
+    this.showOverlay = false,
+    this.overlayBuilder,
+    this.child,
+  });
+
+  @override
+  _OverlayBuilderState createState() => new _OverlayBuilderState();
+}
+
+class _OverlayBuilderState extends State<OverlayBuilder> {
+  OverlayEntry overlayEntry;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.showOverlay) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => showOverlay());
+    }
+  }
+
+  @override
+  void didUpdateWidget(OverlayBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((_) => syncWidgetAndOverlay());
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    WidgetsBinding.instance.addPostFrameCallback((_) => syncWidgetAndOverlay());
+  }
+
+  @override
+  void dispose() {
+    if (isShowingOverlay()) {
+      hideOverlay();
+    }
+
+    super.dispose();
+  }
+
+  bool isShowingOverlay() => overlayEntry != null;
+
+  void showOverlay() {
+    overlayEntry = new OverlayEntry(
+      builder: widget.overlayBuilder,
+    );
+    addToOverlay(overlayEntry);
+  }
+
+  void addToOverlay(OverlayEntry entry) async {
+    print('addToOverlay');
+    Overlay.of(context).insert(entry);
+  }
+
+  void hideOverlay() {
+    print('hideOverlay');
+    overlayEntry.remove();
+    overlayEntry = null;
+  }
+
+  void syncWidgetAndOverlay() {
+    if (isShowingOverlay() && !widget.showOverlay) {
+      hideOverlay();
+    } else if (!isShowingOverlay() && widget.showOverlay) {
+      showOverlay();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
+class CenterAbout extends StatelessWidget {
+  final Offset position;
+  final Widget child;
+
+  CenterAbout({
+    this.position,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return new Positioned(
+      top: position.dy,
+      left: position.dx,
+      child: new FractionalTranslation(
+        translation: const Offset(-0.5, -0.5),
+        child: child,
+      ),
+    );
+  }
+}

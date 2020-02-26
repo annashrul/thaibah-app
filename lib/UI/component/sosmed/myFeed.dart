@@ -20,8 +20,7 @@ import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 
 class MyFeed extends StatefulWidget {
-  final String id;
-  MyFeed({this.id});
+
   @override
   _MyFeedState createState() => _MyFeedState();
 }
@@ -53,7 +52,7 @@ class _MyFeedState extends State<MyFeed> {
 
       GeneralInsertId results = res;
       if(results.status == 'success'){
-        _bloc.fetchListSosmed(1, perpage);
+        _bloc.fetchListSosmed(1, perpage,'ada');
         setState(() {
           isLoading = false;
         });
@@ -82,7 +81,7 @@ class _MyFeedState extends State<MyFeed> {
         setState(() {
           isLoading = false;
         });
-        _bloc.fetchListSosmed(1, perpage);
+        _bloc.fetchListSosmed(1, perpage,'ada');
         return showInSnackBar(results.msg,'sukses');
       }else{
         setState(() {isLoading = false;});
@@ -101,7 +100,7 @@ class _MyFeedState extends State<MyFeed> {
     perpage = perpage += 10;
     print("PERPAGE ${perpage}");
     setState(() {});
-    _bloc.fetchListSosmed(1,perpage);
+    _bloc.fetchListSosmed(1,perpage,'ada');
 
   }
   Future<void> refresh() async {
@@ -137,7 +136,7 @@ class _MyFeedState extends State<MyFeed> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _bloc.fetchListSosmed(1, perpage);
+    _bloc.fetchListSosmed(1, perpage,'ada');
   }
 
   @override
@@ -149,82 +148,78 @@ class _MyFeedState extends State<MyFeed> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0.0,
-        title: Text('Riwayat Postingan ', style: TextStyle(fontFamily:'Rubik',color:Colors.white,fontWeight: FontWeight.bold)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        actions: <Widget>[
-          new Stack(
-            children: <Widget>[
-              new IconButton(
-                icon: Icon(Icons.notifications_none),
-                onPressed: () {
-                  print('tap');
-                  Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => InboxSosmed()),
-                  );
-                }
-              ),
-              new Positioned(
-                right: 11,
-                top: 11,
-                child: new Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: new BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(6),
+    return StreamBuilder(
+        stream: _bloc.getResult,
+        builder: (context, AsyncSnapshot<ListSosmedModel> snapshot){
+          if (snapshot.hasData) {
+            return Scaffold(
+                key: _scaffoldKey,
+                appBar: AppBar(
+                  leading: IconButton(
+                    icon: Icon(
+                      Icons.keyboard_backspace,
+                      color: Colors.white,
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
-                  constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
-                  child: Text('1', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+                  backgroundColor: Colors.white,
+                  elevation: 0.0,
+                  title: Text('Riwayat Postingan ', style: TextStyle(fontFamily:'Rubik',color:Colors.white,fontWeight: FontWeight.bold)),
+                  flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: <Color>[
+                          Color(0xFF116240),
+                          Color(0xFF30cc23)
+                        ],
+                      ),
+                    ),
+                  ),
+                  actions: <Widget>[
+                    new Stack(
+                      children: <Widget>[
+                        new IconButton(
+                            icon: Icon(Icons.notifications_none),
+                            onPressed: () {
+                              print('tap');
+                              Navigator.of(context, rootNavigator: true).push(
+                                new CupertinoPageRoute(builder: (context) => InboxSosmed()),
+                              );
+                            }
+                        ),
+                        new Positioned(
+                          right: 11,
+                          top: 11,
+                          child: new Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: new BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
+                            child: Text('${snapshot.data.result.notif}', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
-              )
-            ],
-          ),
-        ],
-      ),
-      body: StreamBuilder(
-          stream: _bloc.getResult,
-          builder: (context, AsyncSnapshot<ListSosmedModel> snapshot){
-            if (snapshot.hasData) {
-              return Column(
-                children: <Widget>[
-                  Expanded(child: buildContent(snapshot, context))
-                ],
-              );
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-            return _loading();
-          }
-      ),
-      floatingActionButton: new FloatingActionButton(
-          elevation: 0.0,
-          child: new Icon(FontAwesomeIcons.penAlt),
-          backgroundColor: new Color(0xFF30cc23),
-          onPressed: (){_lainnyaModalBottomSheet(context);}
-      )
+                body: buildContent(snapshot, context),
+                floatingActionButton: new FloatingActionButton(
+                    elevation: 0.0,
+                    child: new Icon(FontAwesomeIcons.penAlt),
+                    backgroundColor: new Color(0xFF30cc23),
+                    onPressed: (){_lainnyaModalBottomSheet(context);}
+                )
 
+            );
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          return _loading();
+        }
     );
   }
 
@@ -240,6 +235,12 @@ class _MyFeedState extends State<MyFeed> {
               scrollDirection: Axis.vertical,
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
+                String caption = '';
+                if(snapshot.data.result.data[index].caption.length > 100){
+                  caption = snapshot.data.result.data[index].caption.substring(0,100)+ " ....";
+                }else{
+                  caption = snapshot.data.result.data[index].caption;
+                }
                 return Dismissible(
                     key: Key(index.toString()),
                     child: InkWell(
@@ -248,7 +249,7 @@ class _MyFeedState extends State<MyFeed> {
                           new CupertinoPageRoute(builder: (context) => DetailSosmed(
                             id: snapshot.data.result.data[index].id,
                           )),
-                        ).whenComplete(_bloc.fetchListSosmed(1, perpage));
+                        ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
                       },
                       child: Container(
                         padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
@@ -262,12 +263,11 @@ class _MyFeedState extends State<MyFeed> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
-
                                         Align(
                                           alignment: Alignment.centerLeft,
                                           child: Container(
                                             child: Html(
-                                              data:snapshot.data.result.data[index].caption, defaultTextStyle:TextStyle(fontSize:10.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+                                              data:caption, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
                                             ),
                                           ),
                                         ),
@@ -428,79 +428,128 @@ class _MyFeedState extends State<MyFeed> {
     );
   }
   Widget _loading(){
-    return ListView.builder(
-        primary: true,
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        itemCount: 5,
-        itemBuilder: (context,index){
-          return InkWell(
-            onTap: (){
-            },
-            child: Container(
-              padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Container(
-                        child: Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_backspace,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        title: Text('Riwayat Postingan ', style: TextStyle(fontFamily:'Rubik',color:Colors.white,fontWeight: FontWeight.bold)),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: <Color>[
+                Color(0xFF116240),
+                Color(0xFF30cc23)
+              ],
+            ),
+          ),
+        ),
+        actions: <Widget>[
+          new Stack(
+            children: <Widget>[
+              new IconButton(
+                  icon: Icon(Icons.notifications_none),
+                  onPressed: () {}
+              ),
+              new Positioned(
+                right: 11,
+                top: 11,
+                child: new Container(
+                  padding: EdgeInsets.all(2),
+                  decoration: new BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
+                  child: Text(' ', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+      body: ListView.builder(
+          primary: true,
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: 5,
+          itemBuilder: (context,index){
+            return InkWell(
+              onTap: (){
+              },
+              child: Container(
+                padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                          child: Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
 
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Container(
-                                  child: SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 30),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    child: SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 30),
+                                  ),
                                 ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 0.0),
+                          child: Stack(
+                            children: <Widget>[
+                              Container(
+                                margin: EdgeInsets.only(top: 3.0),
+                                height: 80.0,
+                                width: 100.0,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                child: SkeletonFrame(width: 100,height: 80),
                               ),
+
                             ],
                           ),
                         ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 0.0),
-                        child: Stack(
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.only(top: 3.0),
-                              height: 80.0,
-                              width: 100.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                              child: SkeletonFrame(width: 100,height: 80),
-                            ),
 
-                          ],
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                              child: Row(
+                                children: <Widget>[
+                                  SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 15),
+                                ],
+                              )
+                          ),
                         ),
-                      ),
 
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                            child: Row(
-                              children: <Widget>[
-                                SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 15),
-                              ],
-                            )
-                        ),
-                      ),
-
-                    ],
-                  ),
-                  SizedBox(height: 10.0)
-                ],
+                      ],
+                    ),
+                    SizedBox(height: 10.0)
+                  ],
+                ),
               ),
-            ),
-          );
-        }
+            );
+          }
+      ),
     );
   }
 

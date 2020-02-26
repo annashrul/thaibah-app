@@ -95,7 +95,6 @@ class AsmaUIState extends State<AsmaUI> {
           },
         ):
         asma.result.length > 0 ? RefreshIndicator(
-
           child: ListView.builder(
             itemCount: asma.result.length,
             itemBuilder: (context, index) {

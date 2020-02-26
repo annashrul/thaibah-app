@@ -1,10 +1,17 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:thaibah/Model/generalModel.dart';
+import 'package:thaibah/Model/sosmed/listInboxSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
+import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
+import 'package:thaibah/resources/sosmed/sosmed.dart';
 
 class InboxSosmed extends StatefulWidget {
   @override
@@ -18,7 +25,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
   final _bloc = InboxSosmedBloc();
   int perpage = 10;
   bool isLoading = false;
-
+  bool isLoading1 = false;
   void load() {
     perpage = perpage += 10;
     print("PERPAGE ${perpage}");
@@ -41,7 +48,44 @@ class _InboxSosmedState extends State<InboxSosmed> {
     load();
     return true;
   }
-
+  int cek = 0;
+  Future deleteInbox(id,index) async{
+    var res = await SosmedProvider().deleteInbox(id);
+    if(res is General){
+      General results = res;
+      if(results.status == 'success'){
+        setState(() {
+          isLoading1 = false;
+          cek = index;
+        });
+        _bloc.fetchListInboxSosmed(1, perpage);
+        return showInSnackBar('pesan berhasil di hapus','success');
+      }else{
+        setState(() {
+          isLoading1 = false;
+          cek = index;
+        });
+        return showInSnackBar(results.msg,'success');
+      }
+    }
+  }
+  void showInSnackBar(String value,String param) {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    scaffoldKey.currentState?.removeCurrentSnackBar();
+    scaffoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text(
+        value,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Rubik"),
+      ),
+      backgroundColor: param == 'success' ? Colors.green : Colors.redAccent,
+      duration: Duration(seconds: 3),
+    ));
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -89,7 +133,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
         margin: EdgeInsets.only(top:5.0),
         child: StreamBuilder(
             stream: _bloc.getResult,
-            builder: (context, AsyncSnapshot<ListSosmedModel> snapshot){
+            builder: (context, AsyncSnapshot<ListInboxSosmedModel> snapshot){
               if (snapshot.hasData) {
                 return Column(
                   children: <Widget>[
@@ -106,7 +150,9 @@ class _InboxSosmedState extends State<InboxSosmed> {
     );
   }
 
-  Widget buildContent(AsyncSnapshot<ListSosmedModel> snapshot, BuildContext context){
+  Widget buildContent(AsyncSnapshot<ListInboxSosmedModel> snapshot, BuildContext context){
+    List colors = [Color(0xFF116240), Color(0xFF30cc23)];
+    Random random = new Random();
     return snapshot.data.result.data.length > 0 ? isLoading ? Container(child:Center(child:CircularProgressIndicator())) : RefreshIndicator(
       child: LoadMoreQ(
         child: ListView.builder(
@@ -115,16 +161,19 @@ class _InboxSosmedState extends State<InboxSosmed> {
           physics: ClampingScrollPhysics(),
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
+            var hm = DateFormat.Hm().format(snapshot.data.result.data[index].createdAt.toLocal());
+            var ymd = DateFormat.yMd().format(snapshot.data.result.data[index].createdAt.toLocal());
             return Material(
               child: InkWell(
                 onTap: () {
-
+                  Navigator.of(context, rootNavigator: true).push(
+                    new CupertinoPageRoute(builder: (context) => DetailSosmed(id: snapshot.data.result.data[index].data.data.id)),
+                  );
                 },
                 child: Container(
                   margin: EdgeInsets.fromLTRB(15, 5, 15, 5),
                   padding: EdgeInsets.all(15),
                   decoration: BoxDecoration(
-
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withAlpha(50),
@@ -147,10 +196,17 @@ class _InboxSosmedState extends State<InboxSosmed> {
                             padding: const EdgeInsets.all(5.0),
                             decoration: new BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.green,
+                              color: colors[random.nextInt(2)],
                             ),
                             child: Center(
-                              child: new Text("$index:00 AM", style: new TextStyle(color: Colors.white, fontSize: 8.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  new Text("$hm", style: new TextStyle(color: Colors.white, fontSize: 9.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                  new Text("$ymd", style: new TextStyle(color: Colors.white, fontSize: 9.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                ],
+                              ),
                             ),
                           )
                         ],
@@ -163,7 +219,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Annashrul Yusuf Mengomentari Status Anda',
+                              '${snapshot.data.result.data[index].title}',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -175,7 +231,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
                               padding: EdgeInsets.only(top: 5),
                             ),
                             Text(
-                              '$pesan',
+                              '${snapshot.data.result.data[index].caption}',
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 10,
@@ -192,10 +248,17 @@ class _InboxSosmedState extends State<InboxSosmed> {
                         children: <Widget>[
                           Padding(
                             padding: EdgeInsets.only(right: 15),
-                            child: new IconButton(
+                            child: index == cek ? isLoading1?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))): new IconButton(
                                 icon: Icon(FontAwesomeIcons.trash,color: Colors.grey,size: 12.0,),
                                 onPressed: () {
-
+                                  setState(() {isLoading1 = true;});
+                                  deleteInbox(snapshot.data.result.data[index].id,index);
+                                }
+                            ): new IconButton(
+                                icon: Icon(FontAwesomeIcons.trash,color: Colors.grey,size: 12.0,),
+                                onPressed: () {
+                                  setState(() {isLoading1 = true;});
+                                  deleteInbox(snapshot.data.result.data[index].id,index);
                                 }
                             ),
                           )

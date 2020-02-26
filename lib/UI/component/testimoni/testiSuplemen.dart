@@ -64,7 +64,6 @@ class _TestiSuplemenState extends State<TestiSuplemen> {
     setState(() {
       isLoadingShare = true;
       cek = index;
-
     });
 
     Timer(Duration(seconds: 1), () async {

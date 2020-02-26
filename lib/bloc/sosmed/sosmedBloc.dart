@@ -1,4 +1,5 @@
 import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
+import 'package:thaibah/Model/sosmed/listInboxSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/bloc/base.dart';
 import 'package:rxdart/rxdart.dart';
@@ -7,11 +8,11 @@ class SosmedBloc extends BaseBloc{
   bool _isDisposed = false;
   final PublishSubject<ListSosmedModel> _serviceController = new PublishSubject<ListSosmedModel>();
   Observable<ListSosmedModel> get getResult => _serviceController.stream;
-  fetchListSosmed(var page, var limit) async {
+  fetchListSosmed(var page, var limit,var param) async {
     if(_isDisposed) {
       print('false');
     }else{
-      ListSosmedModel listSosmedModel =  await repository.fetchListSosmed(page,limit);
+      ListSosmedModel listSosmedModel =  await repository.fetchListSosmed(page,limit,param);
       _serviceController.sink.add(listSosmedModel);
     }
   }
@@ -23,14 +24,14 @@ class SosmedBloc extends BaseBloc{
 
 class InboxSosmedBloc extends BaseBloc{
   bool _isDisposed = false;
-  final PublishSubject<ListSosmedModel> _serviceController = new PublishSubject<ListSosmedModel>();
-  Observable<ListSosmedModel> get getResult => _serviceController.stream;
+  final PublishSubject<ListInboxSosmedModel> _serviceController = new PublishSubject<ListInboxSosmedModel>();
+  Observable<ListInboxSosmedModel> get getResult => _serviceController.stream;
   fetchListInboxSosmed(var page, var limit) async {
     if(_isDisposed) {
       print('false');
     }else{
-      ListSosmedModel listSosmedModel =  await repository.fetchListInboxSosmed(page,limit);
-      _serviceController.sink.add(listSosmedModel);
+      ListInboxSosmedModel listInboxSosmedModel =  await repository.fetchListInboxSosmed(page,limit);
+      _serviceController.sink.add(listInboxSosmedModel);
     }
   }
   void dispose() {

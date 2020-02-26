@@ -26,13 +26,13 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
 
   void load() {
     perpage = perpage += 10;
-    print("PERPAGE ${perpage}");
+    print("PERPAGE $perpage");
     Timer(Duration(seconds: 1), () {
       setState(() {
         isLoading1 = false;
       });
     });
-    _bloc.fetchListSosmed(1,perpage);
+    _bloc.fetchListSosmed(1,perpage,'kosong');
   }
 
   @override
@@ -40,7 +40,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
     // TODO: implement initState
     super.initState();
     if(mounted){
-      _bloc.fetchListSosmed(1,10);
+      _bloc.fetchListSosmed(1,10,'kosong');
     }
   }
 
@@ -79,13 +79,20 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
 
+                String caption = '';
+                if(snapshot.data.result.data[index].caption.length > 100){
+                  caption = snapshot.data.result.data[index].caption.substring(0,100)+ " ....";
+                }else{
+                  caption = snapshot.data.result.data[index].caption;
+                }
+
                 return InkWell(
                   onTap: (){
                     Navigator.of(context, rootNavigator: true).push(
                       new CupertinoPageRoute(builder: (context) => DetailSosmed(
                         id: snapshot.data.result.data[index].id,
                       )),
-                    ).whenComplete(_bloc.fetchListSosmed(1, perpage));
+                    ).whenComplete(_bloc.fetchListSosmed(1, perpage,'kosong'));
                   },
                   child: Container(
                     padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
@@ -99,12 +106,11 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-
                                     Align(
                                       alignment: Alignment.centerLeft,
                                       child: Container(
                                         child: Html(
-                                          data:snapshot.data.result.data[index].caption, defaultTextStyle:TextStyle(fontSize:10.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+                                          data:caption, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
                                         ),
                                       ),
                                     ),

@@ -36,6 +36,7 @@ class ListSosmedModel extends BaseModel {
 
 class Result {
   List<Datum> data;
+  int notif;
   int count;
   int currentPage;
   String perpage;
@@ -43,6 +44,7 @@ class Result {
 
   Result({
     this.data,
+    this.notif,
     this.count,
     this.currentPage,
     this.perpage,
@@ -51,6 +53,7 @@ class Result {
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+    notif: json["notif"],
     count: json["count"],
     currentPage: json["current_page"],
     perpage: json["perpage"],
@@ -59,6 +62,7 @@ class Result {
 
   Map<String, dynamic> toJson() => {
     "data": List<dynamic>.from(data.map((x) => x.toJson())),
+    "notif": notif,
     "count": count,
     "current_page": currentPage,
     "perpage": perpage,

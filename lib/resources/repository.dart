@@ -48,6 +48,7 @@ import 'package:thaibah/Model/royalti/levelModel.dart';
 import 'package:thaibah/Model/royalti/royaltiMemberModel.dart';
 import 'package:thaibah/Model/saldoUIModel.dart';
 import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
+import 'package:thaibah/Model/sosmed/listInboxSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/Model/suratModel.dart';
 import 'package:thaibah/Model/tertimoniModel.dart';
@@ -233,8 +234,8 @@ class Repository{
   Future fetchCheckoutPpobPra(var no, var code, var price, var charge,var idpelanggan) => ppobPraProvider.fetchChekoutPPOBPra(no, code, price, charge,idpelanggan);
 
   //######################################### SOSIAL MEDIA #################################################//
-  Future<ListSosmedModel> fetchListSosmed(var page, var limit) => sosmedProvider.fetchListSosmed(page,limit);
-  Future<ListSosmedModel> fetchListInboxSosmed(var page, var limit) => sosmedProvider.fetchListInboxSosmed(page,limit);
+  Future<ListSosmedModel> fetchListSosmed(var page, var limit,var param) => sosmedProvider.fetchListSosmed(page,limit,param);
+  Future<ListInboxSosmedModel> fetchListInboxSosmed(var page, var limit) => sosmedProvider.fetchListInboxSosmed(page,limit);
   Future<ListDetailSosmedModel> fetchListDetailSosmed(var id) => sosmedProvider.fetchListDetailSosmed(id);
 
 

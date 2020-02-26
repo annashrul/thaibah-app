@@ -750,7 +750,7 @@ class _ProfileUIState extends State<ProfileUI> {
           FlatButton(
               onPressed: (){
                 Navigator.of(context, rootNavigator: true).push(
-                  new CupertinoPageRoute(builder: (context) => MyFeed(id: id)),
+                  new CupertinoPageRoute(builder: (context) => MyFeed()),
                 );
               },
               child: Row(

@@ -5,6 +5,7 @@ import 'package:http/http.dart' show Client, Response;
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
+import 'package:thaibah/Model/sosmed/listInboxSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -12,10 +13,17 @@ import 'package:thaibah/config/user_repo.dart';
 class SosmedProvider {
   Client client = Client();
   final userRepository = UserRepository();
-  Future<ListSosmedModel> fetchListSosmed(var page,var limit) async{
+  Future<ListSosmedModel> fetchListSosmed(var page,var limit, var param) async{
     final token = await userRepository.getToken();
+    final id = await userRepository.getID();
+    var url;
+    if(param == 'kosong'){
+      url = 'socmed?page=$page&limit=$limit';
+    }else{
+      url = 'socmed?page=$page&limit=$limit&id_member=$id';
+    }
     final response = await client.get(
-        ApiService().baseUrl+'socmed?page=$page&limit=$limit',
+        ApiService().baseUrl+url,
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print("###########################################################Sosial Media###############################################################");
@@ -28,17 +36,17 @@ class SosmedProvider {
     }
   }
 
-  Future<ListSosmedModel> fetchListInboxSosmed(var page,var limit) async{
+  Future<ListInboxSosmedModel> fetchListInboxSosmed(var page,var limit) async{
     final token = await userRepository.getToken();
     final response = await client.get(
-        ApiService().baseUrl+'socmed?page=$page&limit=$limit',
+        ApiService().baseUrl+'notif?page=$page&limit=$limit',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
-    print("###########################################################Sosial Media###############################################################");
+    print("###########################################################Inbox Sosial Media###############################################################");
     print('socmed?page=$page&limit=$limit');
     print(response.body);
     if (response.statusCode == 200) {
-      return compute(listSosmedModelFromJson,response.body);
+      return compute(listInboxSosmedModelFromJson,response.body);
     } else {
       throw Exception('Failed to load list sosmed');
     }
@@ -143,6 +151,26 @@ class SosmedProvider {
     final token = await userRepository.getToken();
     return await client.post(
         ApiService().baseUrl+"socmed/delete",
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+        body: {
+          "id":"$id",
+        }).then((Response response) {
+      var results;
+      print(response.statusCode);
+      if(response.statusCode == 200){
+        results = General.fromJson(json.decode(response.body));
+      }else if(response.statusCode == 400){
+        results =  General.fromJson(json.decode(response.body));
+      }
+      print(results.status);
+      return results;
+    });
+  }
+
+  Future deleteInbox(var id) async {
+    final token = await userRepository.getToken();
+    return await client.post(
+        ApiService().baseUrl+"notif/delete",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "id":"$id",
