@@ -52,11 +52,10 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
 
   Widget buildContent(AsyncSnapshot<NewsModel> snapshot, BuildContext context){
 //    final scrollController = ScrollController(initialScrollOffset: 0);
-
     return Container(
       height: MediaQuery.of(context).size.height/5,
       color: Colors.transparent,
-      padding: EdgeInsets.only(left:16.0,right:16.0),
+      padding: EdgeInsets.only(left:15.0,right:15.0),
       child: Swiper(
         key: _scaffoldKey,
         controller: controller,

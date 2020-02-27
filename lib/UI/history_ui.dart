@@ -20,7 +20,7 @@ class HistoryUI extends StatefulWidget {
   _HistoryUIState createState() => _HistoryUIState();
 }
 
-class _HistoryUIState extends State<HistoryUI> with SingleTickerProviderStateMixin {
+class _HistoryUIState extends State<HistoryUI> with AutomaticKeepAliveClientMixin {
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   double _height;
@@ -35,6 +35,7 @@ class _HistoryUIState extends State<HistoryUI> with SingleTickerProviderStateMix
   }
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
     return  MaterialApp(
@@ -94,7 +95,8 @@ class _HistoryUIState extends State<HistoryUI> with SingleTickerProviderStateMix
       ),
     );
   }
-
+  @override
+  bool get wantKeepAlive => true;
 }
 
 

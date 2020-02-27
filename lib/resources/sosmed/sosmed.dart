@@ -187,6 +187,24 @@ class SosmedProvider {
     });
   }
 
+  Future deleteCountInbox() async {
+    final token = await userRepository.getToken();
+    return await client.post(
+        ApiService().baseUrl+"notif/read_notif",
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+        body: {}).then((Response response) {
+      var results;
+      print(response.statusCode);
+      if(response.statusCode == 200){
+        results = General.fromJson(json.decode(response.body));
+      }else if(response.statusCode == 400){
+        results =  General.fromJson(json.decode(response.body));
+      }
+      print(results.status);
+      return results;
+    });
+  }
+
 }
 
 

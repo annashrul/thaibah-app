@@ -14,7 +14,7 @@ class HistoryVoucher extends StatefulWidget {
   _HistoryVoucherState createState() => _HistoryVoucherState();
 }
 
-class _HistoryVoucherState extends State<HistoryVoucher> {
+class _HistoryVoucherState extends State<HistoryVoucher>{
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -412,4 +412,5 @@ class _HistoryVoucherState extends State<HistoryVoucher> {
       },
     );
   }
+
 }

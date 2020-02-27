@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pinput/pin_put/pin_put.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/config/style.dart';
 
@@ -165,12 +164,12 @@ class _DetailTagihanState extends State<DetailTagihan> {
       builder: (context) => Padding(
         padding: const EdgeInsets.all(5.0),
         child: Center(
-          child: PinPut(
-            fieldsCount: 6,
-            isTextObscure: true,
-            onSubmit: (String txtPin) => _check(txtPin, context),
-            actionButtonsEnabled: false,
-          ),
+//          child: PinPut(
+//            fieldsCount: 6,
+//            isTextObscure: true,
+//            onSubmit: (String txtPin) => _check(txtPin, context),
+//            actionButtonsEnabled: false,
+//          ),
         ),
       ),
     );

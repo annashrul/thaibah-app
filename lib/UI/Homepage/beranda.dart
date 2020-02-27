@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pinput/pin_put/pin_put.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
@@ -343,8 +342,8 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                 ),
                 Positioned(
                   bottom: 0,
-                  left: 15,
-                  right: 15,
+                  left: 10,
+                  right: 10,
                   child: buildCardSaldo(),
                 )
               ],
@@ -355,8 +354,6 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
           flex: 6,
           child: RefreshIndicator(
             child: ListView(
-              scrollDirection: Axis.vertical,
-              primary: true,
               children: <Widget>[
                 NewsHomePage(),
                 buildCardIcon(),
@@ -367,19 +364,15 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                 const SizedBox(height: 15.0),
                 titleQ("Informasi & Inspirasi",Colors.black,true,'inspirasi'),
                 const SizedBox(height: 15.0),
-
                 ListSosmed(),
-//                  SectionHomeNews(context),
-//                  SectionHomeFeed(context),
                 const SizedBox(height: 15.0),
               ],
             ),
-            key: _refresh,
-            onRefresh: chekcer
-          ),
+          key: _refresh,
+          onRefresh: chekcer
         )
-      ],
-    );
+      )
+    ]);
   }
 
   /* STRUKTUR WIDGET CARD E-WALLET */
@@ -388,7 +381,6 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
       elevation: isLoading?0.0:1.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       color: isLoading?Colors.transparent:Colors.white,
-      margin: const EdgeInsets.only(left:0.0,right:0.0,top:0.0,bottom:0.0),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -501,9 +493,9 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
       elevation: isLoading?0.0:1.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       color: isLoading?Colors.transparent:Colors.white,
-      margin: const EdgeInsets.only(left:15.0,right: 15.0,top: 15.0,bottom: 15.0),
+      margin: const EdgeInsets.only(left:15.0,right: 15.0,top: 10.0,bottom: 0.0),
       child: Padding(
-          padding: EdgeInsets.only(left:15.0,right:15.0,top:20.0,bottom: 0.0),
+          padding: EdgeInsets.only(left:0.0,right:0.0,top:10.0,bottom: 0.0),
           child: GridView.count(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
@@ -512,11 +504,11 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
             children: <Widget>[
               wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Baca_Alquran.svg','Al-Quran','alquran'),
               wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Waktu_Shalat.svg','Waktu Sholat','prayer'),
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Masjid_Terdekat.svg', 'Masjid Terdekat','masjid'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Masjid_Terdekat.svg', 'Masjid','masjid'),
               wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Doa_Harian.svg', 'Doa Harian','doa'),
               wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Hadits.svg', 'hadits','Hadits'),
               wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Asmaul_Husna.svg','Asmaul Husna','asmaulhusna'),
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Kalender_Hijriah.svg','Kalender Hijriah','kalender'),
+              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Kalender_Hijriah.svg','Kalender','kalender'),
               wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Lainnya.svg','Lainnya','lainnya'),
             ],
           )
@@ -878,6 +870,8 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize:MainAxisSize.min ,
       children: <Widget>[
         GestureDetector(
@@ -898,8 +892,8 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
             width: ScreenUtil.getInstance().setWidth(60),
           ),
         ),
-        SizedBox(height: 5,),
-        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:16.0):Text("$title", style: TextStyle(fontWeight:FontWeight.bold, color:Colors.black,fontSize: 12,fontFamily: 'Rubik')),
+        SizedBox(height: 5.0),
+        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:16.0):Text("$title", style: TextStyle(fontWeight:FontWeight.bold,color:Colors.black,fontSize: 10,fontFamily: 'Rubik')),
       ],
     );
   }
@@ -1034,143 +1028,143 @@ class _CompasPageState extends State<CompasPage> {
   }
 }
 
-
-class IsPIN extends StatefulWidget {
-  @override
-  _IsPINState createState() => _IsPINState();
-}
-
-class _IsPINState extends State<IsPIN> {
-  @override
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  var onTapRecognizer;
-  bool hasError = false;
-  String currentText = "";
-  final userRepository = UserRepository();
-  var pin;
-  @override
-  void initState() {
-    onTapRecognizer = TapGestureRecognizer()
-      ..onTap = () {
-        Navigator.pop(context);
-      };
-
-    super.initState();
-    _check();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-  bool _isLoading = false;
-  Future _check() async {
-    pin = await userRepository.getPin();
-  }
-  void showInSnackBar(String value,background) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: background,
-      duration: Duration(seconds: 3),
-    ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
-      key: _scaffoldKey,
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: ListView(
-            children: <Widget>[
-              SizedBox(height: 30),
-              Image.asset(
-                'assets/images/verify.png',
-                height: MediaQuery.of(context).size.height / 3,
-                fit: BoxFit.fitHeight,
-              ),
-              SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Masukan Pin',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
-                  child: Builder(
-                    builder: (context) => Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Center(
-                        child: PinPut(
-                          fieldsCount: 6,
-                          isTextObscure: true,
-                          onSubmit: (String txtPin){
-                            setState(() {
-                              _isLoading=true;
-                            });
-                            if(int.parse(txtPin) == pin){
-                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-                            }else{
-                              print('salaha');
-                            }
-                          },
-                          actionButtonsEnabled: false,
-                          clearInput: true,
-                        ),
-                      ),
-                    ),
-                  )
-              ),
-
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
+//
+//class IsPIN extends StatefulWidget {
+//  @override
+//  _IsPINState createState() => _IsPINState();
+//}
+//
+//class _IsPINState extends State<IsPIN> {
+//  @override
+//  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+//  var onTapRecognizer;
+//  bool hasError = false;
+//  String currentText = "";
+//  final userRepository = UserRepository();
+//  var pin;
+//  @override
+//  void initState() {
+//    onTapRecognizer = TapGestureRecognizer()
+//      ..onTap = () {
+//        Navigator.pop(context);
+//      };
+//
+//    super.initState();
+//    _check();
+//  }
+//
+//  @override
+//  void dispose() {
+//    super.dispose();
+//  }
+//  bool _isLoading = false;
+//  Future _check() async {
+//    pin = await userRepository.getPin();
+//  }
+//  void showInSnackBar(String value,background) {
+//    FocusScope.of(context).requestFocus(new FocusNode());
+//    _scaffoldKey.currentState?.removeCurrentSnackBar();
+//    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+//      content: new Text(
+//        value,
+//        textAlign: TextAlign.center,
+//        style: TextStyle(
+//            color: Colors.white,
+//            fontSize: 16.0,
+//            fontWeight: FontWeight.bold,
+//            fontFamily: "Rubik"),
+//      ),
+//      backgroundColor: background,
+//      duration: Duration(seconds: 3),
+//    ));
+//  }
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    return Scaffold(
+//      appBar: AppBar(
+//        leading: IconButton(
+//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+//          onPressed: () => Navigator.of(context).pop(),
+//        ),
+//        centerTitle: false,
+//        flexibleSpace: Container(
+//          decoration: BoxDecoration(
+//            gradient: LinearGradient(
+//              begin: Alignment.centerLeft,
+//              end: Alignment.centerRight,
+//              colors: <Color>[
+//                Color(0xFF116240),
+//                Color(0xFF30cc23)
+//              ],
+//            ),
+//          ),
+//        ),
+//        elevation: 1.0,
+//        automaticallyImplyLeading: true,
+//        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//      ),
+//      key: _scaffoldKey,
+//      body: GestureDetector(
+//        onTap: () {
+//          FocusScope.of(context).requestFocus(new FocusNode());
+//        },
+//        child: Container(
+//          height: MediaQuery.of(context).size.height,
+//          width: MediaQuery.of(context).size.width,
+//          child: ListView(
+//            children: <Widget>[
+//              SizedBox(height: 30),
+//              Image.asset(
+//                'assets/images/verify.png',
+//                height: MediaQuery.of(context).size.height / 3,
+//                fit: BoxFit.fitHeight,
+//              ),
+//              SizedBox(height: 8),
+//              Padding(
+//                padding: const EdgeInsets.symmetric(vertical: 8.0),
+//                child: Text(
+//                  'Masukan Pin',
+//                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+//                  textAlign: TextAlign.center,
+//                ),
+//              ),
+//              SizedBox(
+//                height: 20,
+//              ),
+//              Padding(
+//                  padding:
+//                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
+//                  child: Builder(
+//                    builder: (context) => Padding(
+//                      padding: const EdgeInsets.all(5.0),
+//                      child: Center(
+//                        child: PinPut(
+//                          fieldsCount: 6,
+//                          isTextObscure: true,
+//                          onSubmit: (String txtPin){
+//                            setState(() {
+//                              _isLoading=true;
+//                            });
+//                            if(int.parse(txtPin) == pin){
+//                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+//                            }else{
+//                              print('salaha');
+//                            }
+//                          },
+//                          actionButtonsEnabled: false,
+//                          clearInput: true,
+//                        ),
+//                      ),
+//                    ),
+//                  )
+//              ),
+//
+//            ],
+//          ),
+//        ),
+//      ),
+//    );
+//  }
+//}
+//

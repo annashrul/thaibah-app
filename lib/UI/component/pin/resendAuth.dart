@@ -2,12 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lock_screen/flutter_lock_screen.dart';
-import 'package:thaibah/Model/generalModel.dart';
-import 'package:thaibah/Model/resendOtpModel.dart';
+import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
-import 'package:thaibah/resources/memberProvider.dart';
 
 import 'indexPin.dart';
 
@@ -75,7 +72,7 @@ class _ResendAuthState extends State<ResendAuth> {
     return Scaffold(
         key: _scaffoldKey,
         body: Container(
-          child: LockScreen(
+          child: LockScreenQ(
               title: "Keamanan",
               passLength: 4,
               bgImage: "assets/images/bg.jpg",

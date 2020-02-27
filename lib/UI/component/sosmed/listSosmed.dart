@@ -95,7 +95,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                     ).whenComplete(_bloc.fetchListSosmed(1, perpage,'kosong'));
                   },
                   child: Container(
-                    padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
+                    padding: EdgeInsets.only(bottom: 0.0,left:15.0,right:15.0),
                     child: Column(
                       children: <Widget>[
                         Row(
@@ -154,6 +154,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
 
                           ],
                         ),
+                        SizedBox(height: 5.0),
                         Row(
                           children: <Widget>[
                             Align(

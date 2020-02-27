@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/checkerModel.dart';
-import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
 
 class UserRepository {
-
-
   Future<bool> cekVersion() async {
     var res = await ConfigProvider().cekVersion();
     if(res is Checker){
@@ -18,9 +13,7 @@ class UserRepository {
       var versionCode = results.result.versionCode;
       if(versionCode != ApiService().versionCode){
         return true;
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
       }
-
     }
     return false;
   }

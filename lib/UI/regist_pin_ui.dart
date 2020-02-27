@@ -1,17 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_lock_screen/flutter_lock_screen.dart';
 import 'package:http/http.dart' as http;
-//import 'package:onesignal/onesignal.dart';
-// import 'package:http/http.dart';
-import 'package:pinput/pin_put/pin_put.dart';
 import 'package:rich_alert/rich_alert.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thaibah/Constants/constants.dart';
-import 'package:thaibah/Model/createMemberModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/registPinUIModel.dart';
+import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
@@ -228,7 +222,7 @@ class _SecondScreenStatefulState extends State<SecondScreen> {
     return Scaffold(
         key: _scaffoldKey,
         body: Container(
-          child: LockScreen(
+          child: LockScreenQ(
               title: "Keamanan",
               passLength: 4,
               bgImage: "assets/images/bg.jpg",
@@ -267,29 +261,29 @@ class _SecondScreenStatefulState extends State<SecondScreen> {
   // receive data from the FirstScreen as a parameter
 
 
-  Widget otpInput() {
-    return Builder(
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(40.0),
-        child: Center(
-          child: PinPut(
-            fieldsCount: 4,
-            onSubmit: (String txtOtp) => _check(txtOtp, context),
-            actionButtonsEnabled: false,
-          ),
-        ),
-      ),
-    );
-  }
+//  Widget otpInput() {
+//    return Builder(
+//      builder: (context) => Padding(
+//        padding: const EdgeInsets.all(40.0),
+//        child: Center(
+//          child: PinPut(
+//            fieldsCount: 4,
+//            onSubmit: (String txtOtp) => _check(txtOtp, context),
+//            actionButtonsEnabled: false,
+//          ),
+//        ),
+//      ),
+//    );
+//  }
 
-  Future _check(String txtOtp,  BuildContext context) {
-    if (widget.otp == txtOtp) {
-      print(widget.otp);
-      create();
-    } else {
-      setState(() {_isLoading = false;});
-      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('kode otp tidak sesuai')));
-      print(widget.otp);
-    }
-  }
+//  Future _check(String txtOtp,  BuildContext context) {
+//    if (widget.otp == txtOtp) {
+//      print(widget.otp);
+//      create();
+//    } else {
+//      setState(() {_isLoading = false;});
+//      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('kode otp tidak sesuai')));
+//      print(widget.otp);
+//    }
+//  }
 }

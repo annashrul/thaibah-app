@@ -32,7 +32,6 @@ class ConfigProvider {
     print(response.statusCode);
     if (response.statusCode == 200) {
       return compute(checkerFromJson,response.body);
-//      return compute(infoFromJson,response.body);
     } else {
       throw Exception('Failed to load info');
     }

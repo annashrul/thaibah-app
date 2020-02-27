@@ -50,20 +50,23 @@ class _InboxSosmedState extends State<InboxSosmed> {
   }
   int cek = 0;
   Future deleteInbox(id,index) async{
+    print(index);
+    setState(() {
+      cek = index;
+    });
+    print(cek);
     var res = await SosmedProvider().deleteInbox(id);
     if(res is General){
       General results = res;
       if(results.status == 'success'){
         setState(() {
           isLoading1 = false;
-          cek = index;
         });
         _bloc.fetchListInboxSosmed(1, perpage);
         return showInSnackBar('pesan berhasil di hapus','success');
       }else{
         setState(() {
           isLoading1 = false;
-          cek = index;
         });
         return showInSnackBar(results.msg,'success');
       }
@@ -248,7 +251,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
                         children: <Widget>[
                           Padding(
                             padding: EdgeInsets.only(right: 15),
-                            child: index == cek ? isLoading1?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))): new IconButton(
+                            child: index == cek ? isLoading1 ? CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))): new IconButton(
                                 icon: Icon(FontAwesomeIcons.trash,color: Colors.grey,size: 12.0,),
                                 onPressed: () {
                                   setState(() {isLoading1 = true;});

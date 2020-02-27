@@ -9,14 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pinput/pin_put/pin_put.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 
 class UpdateDataDiri extends StatefulWidget {
@@ -648,6 +649,8 @@ class _OtpUpdateState extends State<OtpUpdate> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool alreadyLogin = false;
   bool isLoading = false;
+  var currentText;
+
   void showInSnackBar(String value) {
     FocusScope.of(context).requestFocus(new FocusNode());
     _scaffoldKey.currentState?.removeCurrentSnackBar();
@@ -691,103 +694,92 @@ class _OtpUpdateState extends State<OtpUpdate> {
         title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
       ),
       key: _scaffoldKey,
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: ListView(
-            children: <Widget>[
-              SizedBox(height: 30),
-              Image.asset(
-                'assets/images/verify.png',
-                height: MediaQuery.of(context).size.height / 4,
-                fit: BoxFit.fitHeight,
-              ),
-              SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Masukan Kode OTP',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0.0,horizontal: 10.0),
-                child: Text(
-                  'Masukan kode OTP yang telah kami kirim melalui pesan ke no whatsApp anda',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-                ),
-              ),
-              Padding(
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30),
-                  child: Builder(
-                    builder: (context) => Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Center(
-                        child: otpInput(),
-                      ),
-                    ),
-                  )
-              ),
-            ],
-          ),
-        ),
+      body: LockScreenQ(
+          title: "Keamanan",
+          passLength: 4,
+          bgImage: "assets/images/bg.jpg",
+          borderColor: Colors.black,
+          showWrongPassDialog: true,
+          wrongPassContent: "Kode OTP Tidak Sesuai",
+          wrongPassTitle: "Opps!",
+          wrongPassCancelButtonText: "Batal",
+          deskripsi: 'Masukan Kode OTP Yang Telah Kami Kirim Melalui Pesan WhatsApp ${ApiService().showCode == true ? widget.otp : ""}',
+          passCodeVerify: (passcode) async {
+            var concatenate = StringBuffer();
+            passcode.forEach((item){
+              concatenate.write(item);
+            });
+            setState(() {
+              currentText = concatenate.toString();
+            });
+            if(currentText != widget.otp){
+              return false;
+            }
+            return true;
+          },
+          onSuccess: () {
+            print(currentText);
+            setState(() {
+              isLoading = true;
+            });
+
+            update();
+//                _check(currentText.toString(),context);
+          }
       ),
 //      bottomNavigationBar: _bottomNavBarBeli(context),
     );
   }
 
-  Widget build_(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-          child:Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  // SizedBox(height: 50,),
-                  Text("Masukan Kode OTP"),
-                  Text(widget.otp),
-                  otpInput(),
-
-                  // buttonOtp()
-                ],
-              )
-          ),
-        )
-    );
-  }
-
-  Widget otpInput() {
-    return Builder(
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(40.0),
-        child: Center(
-          child: PinPut(
-            clearButtonIcon: new Icon(Icons.backspace, size: 21, color: Color(0xFF535c68)),
-            pasteButtonIcon: new Icon(Icons.content_paste, size: 20),
-            isTextObscure: true,
-            keyboardType: TextInputType.number,
-            fieldsCount: 4,
-            onSubmit: (String txtOtp){
-              setState(() {
-                isLoading = true;
-              });
-              _check(txtOtp, context);
-            },
-            actionButtonsEnabled: false,
-
-//            clearButtonIcon: Icon(Icons.backspace, size: 30),
-            clearInput: true,
-            onClear: (value){
-              print(value);
-            },
-          ),
-        ),
-      ),
-    );
-  }
+//  Widget build_(BuildContext context) {
+//    return Scaffold(
+//        body: SafeArea(
+//          child:Center(
+//              child: Column(
+//                mainAxisSize: MainAxisSize.min,
+//                children: <Widget>[
+//                  // SizedBox(height: 50,),
+//                  Text("Masukan Kode OTP"),
+//                  Text(widget.otp),
+//                  otpInput(),
+//
+//                  // buttonOtp()
+//                ],
+//              )
+//          ),
+//        )
+//    );
+//  }
+//
+//  Widget otpInput() {
+//    return Builder(
+//      builder: (context) => Padding(
+//        padding: const EdgeInsets.all(40.0),
+//        child: Center(
+//          child: PinPut(
+//            clearButtonIcon: new Icon(Icons.backspace, size: 21, color: Color(0xFF535c68)),
+//            pasteButtonIcon: new Icon(Icons.content_paste, size: 20),
+//            isTextObscure: true,
+//            keyboardType: TextInputType.number,
+//            fieldsCount: 4,
+//            onSubmit: (String txtOtp){
+//              setState(() {
+//                isLoading = true;
+//              });
+//              _check(txtOtp, context);
+//            },
+//            actionButtonsEnabled: false,
+//
+////            clearButtonIcon: Icon(Icons.backspace, size: 30),
+//            clearInput: true,
+//            onClear: (value){
+//              print(value);
+//            },
+//          ),
+//        ),
+//      ),
+//    );
+//  }
 
   Future update() async{
     var res = await updateMemberBloc.fetchUpdateMember(widget.name, widget.nohp, widget.gender,widget.profile, widget.cover,'');
@@ -804,47 +796,47 @@ class _OtpUpdateState extends State<OtpUpdate> {
     }
   }
 
-  Future _check(String txtOtp, BuildContext context) async {
-    isLoading ? showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: LinearProgressIndicator(),
-        );
-      },
-    ):Container();
-    if (widget.otp == txtOtp) {
-      final prefs = await SharedPreferences.getInstance();
-      setState(() {
-        isLoading = false;
-        prefs.setString('nohp', widget.nohp);
-
-      });
-      update();
-      CircularProgressIndicator();
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-    } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text("Terjadi Kesalahan!"),
-            content: new Text("Kode OTP Tidak Sesuai"),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  setState(() {
-                    isLoading = false;
-                  });
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
+//  Future _check(String txtOtp, BuildContext context) async {
+//    isLoading ? showDialog(
+//      barrierDismissible: false,
+//      context: context,
+//      builder: (BuildContext context) {
+//        return AlertDialog(
+//          content: LinearProgressIndicator(),
+//        );
+//      },
+//    ):Container();
+//    if (widget.otp == txtOtp) {
+//      final prefs = await SharedPreferences.getInstance();
+//      setState(() {
+//        isLoading = false;
+//        prefs.setString('nohp', widget.nohp);
+//
+//      });
+//      update();
+//      CircularProgressIndicator();
+//      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+//    } else {
+//      showDialog(
+//        context: context,
+//        builder: (BuildContext context) {
+//          return AlertDialog(
+//            title: new Text("Terjadi Kesalahan!"),
+//            content: new Text("Kode OTP Tidak Sesuai"),
+//            actions: <Widget>[
+//              new FlatButton(
+//                child: new Text("Close"),
+//                onPressed: () {
+//                  setState(() {
+//                    isLoading = false;
+//                  });
+//                  Navigator.of(context).pop();
+//                },
+//              ),
+//            ],
+//          );
+//        },
+//      );
+//    }
+//  }
 }

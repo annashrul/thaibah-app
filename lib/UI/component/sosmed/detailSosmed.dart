@@ -149,7 +149,9 @@ class _DetailSosmedState extends State<DetailSosmed> {
             color: Colors.white,
           ),
           onPressed: (){
-            Navigator.of(context).pop();
+            Navigator.pop(context, () {
+              setState(() {});
+            });
           },
         ),
         automaticallyImplyLeading: true,
@@ -359,7 +361,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
               SizedBox(height: 10),
             ],
           ),
-        ));
+        )
+    );
   }
 
   Widget buildContent(AsyncSnapshot<ListDetailSosmedModel> snapshot, BuildContext context){
@@ -370,37 +373,45 @@ class _DetailSosmedState extends State<DetailSosmed> {
         scrollDirection: Axis.vertical,
         itemCount: snapshot.data.result.comment.length,
         itemBuilder: (context,index){
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                new Container(
-                  height: 40.0,
-                  width: 40.0,
-                  decoration: new BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: new DecorationImage(
-                        fit: BoxFit.fill,
-                        image: new NetworkImage(snapshot.data.result.comment[index].profilePicture)),
-                  ),
+          return Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    new Container(
+                      height: 40.0,
+                      width: 40.0,
+                      decoration: new BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: new DecorationImage(
+                            fit: BoxFit.fill,
+                            image: new NetworkImage(snapshot.data.result.comment[index].profilePicture)),
+                      ),
+                    ),
+                    new SizedBox(width: 10.0),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Html(data: snapshot.data.result.comment[index].name,defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                          Html(data: snapshot.data.result.comment[index].caption,defaultTextStyle: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                        ],
+                      ),
+                    ),
+                    new SizedBox(width: 10.0),
+                    Text("${snapshot.data.result.comment[index].createdAt}",style: TextStyle(fontFamily: 'Rubik',color: Colors.grey,fontSize: 8.0)),
+                  ],
                 ),
-                new SizedBox(width: 10.0),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Html(data: snapshot.data.result.comment[index].name,defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                      Html(data: snapshot.data.result.comment[index].caption,defaultTextStyle: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                    ],
-                  ),
-                ),
-                new SizedBox(width: 10.0),
-                Text("${snapshot.data.result.comment[index].createdAt}",style: TextStyle(fontFamily: 'Rubik',color: Colors.grey,fontSize: 8.0)),
-              ],
-            ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                child: Divider(),
+              )
+            ],
           );
         }
     ) : Container();

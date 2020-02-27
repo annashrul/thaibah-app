@@ -5,15 +5,14 @@ import 'dart:io';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_lock_screen/flutter_lock_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:pinput/pin_put/pin_put.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/registUIModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
+import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/Widgets/responsive_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
@@ -766,7 +765,7 @@ class _OtpPageStatefulState extends State<OtpPage> {
     return Scaffold(
         key: _scaffoldKey,
         body: Container(
-          child: LockScreen(
+          child: LockScreenQ(
               title: "Keamanan",
               passLength: 4,
               bgImage: "assets/images/bg.jpg",
@@ -876,38 +875,38 @@ class _OtpPageStatefulState extends State<OtpPage> {
   // receive data from the FirstScreen as a parameter
 
 
-  Widget otpInput() {
-    return Builder(
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(40.0),
-        child: Center(
-          child: PinPut(
-            fieldsCount: 4,
-            onSubmit: (String txtOtp) => _check(txtOtp, context),
-            actionButtonsEnabled: false,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future _check(String txtOtp,  BuildContext context) {
-    if (widget.otp == txtOtp) {
-      print("object1");
-      print(widget.otp);
-      print(txtOtp);
-      setState((){
-        _isLoading = true;
-//        _apiCall=true; // Set state like this
-      });
-      create();
-    } else {
-      setState(() {_isLoading = false;});
-      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('kode otp tidak sesuai')));
-      txtOtp.replaceRange(0, 3, '');
-      print("object2");
-      print(widget.otp);
-      print(txtOtp);
-    }
-  }
+//  Widget otpInput() {
+//    return Builder(
+//      builder: (context) => Padding(
+//        padding: const EdgeInsets.all(40.0),
+//        child: Center(
+//          child: PinPut(
+//            fieldsCount: 4,
+//            onSubmit: (String txtOtp) => _check(txtOtp, context),
+//            actionButtonsEnabled: false,
+//          ),
+//        ),
+//      ),
+//    );
+//  }
+//
+//  Future _check(String txtOtp,  BuildContext context) {
+//    if (widget.otp == txtOtp) {
+//      print("object1");
+//      print(widget.otp);
+//      print(txtOtp);
+//      setState((){
+//        _isLoading = true;
+////        _apiCall=true; // Set state like this
+//      });
+//      create();
+//    } else {
+//      setState(() {_isLoading = false;});
+//      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('kode otp tidak sesuai')));
+//      txtOtp.replaceRange(0, 3, '');
+//      print("object2");
+//      print(widget.otp);
+//      print(txtOtp);
+//    }
+//  }
 }

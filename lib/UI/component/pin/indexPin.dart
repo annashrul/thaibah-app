@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lock_screen/flutter_lock_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -128,7 +128,7 @@ class _PinState extends State<Pin> {
       key: _scaffoldKey,
       body: Container(
 
-        child: LockScreen(
+        child: LockScreenQ(
 //            showFingerPass: true,
 //            forgotPin: 'Lupa Pin ? Klik Disini',
 //            fingerFunction: biometrics,

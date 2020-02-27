@@ -1,11 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_lock_screen/flutter_lock_screen.dart';
-import 'package:pinput/pin_put/pin_put.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
-import 'package:thaibah/UI/component/pin/indexPin.dart';
+import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/component/pin/resendAuth.dart';
 //import 'package:thaibah/config/helperPin.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -111,7 +109,7 @@ class PinScreenState extends State<PinScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: isLoading? Container(child: Center(child: CircularProgressIndicator()),):LockScreen(
+      body: isLoading? Container(child: Center(child: CircularProgressIndicator()),):LockScreenQ(
         showFingerPass: true,
         forgotPin: 'Lupa Pin ? Klik Disini',
         fingerFunction: biometrics,

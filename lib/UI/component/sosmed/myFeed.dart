@@ -96,6 +96,26 @@ class _MyFeedState extends State<MyFeed> {
 
     }
   }
+
+  Future deleteCountInbox() async{
+    var res = await SosmedProvider().deleteCountInbox();
+    if(res is General){
+      General results = res;
+      if(results.status == 'success'){
+      }else{
+        setState(() {isLoading = false;});
+        return showInSnackBar(results.msg,'gagal');
+      }
+    }
+    else{
+      General results = res;
+      print(results.msg);
+      setState(() {isLoading = false;});
+      return showInSnackBar(results.msg,'gagal');
+
+    }
+  }
+
   void load() {
     perpage = perpage += 10;
     print("PERPAGE ${perpage}");
@@ -183,10 +203,11 @@ class _MyFeedState extends State<MyFeed> {
                         new IconButton(
                             icon: Icon(Icons.notifications_none),
                             onPressed: () {
+                              deleteCountInbox();
                               print('tap');
                               Navigator.of(context, rootNavigator: true).push(
                                 new CupertinoPageRoute(builder: (context) => InboxSosmed()),
-                              );
+                              ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
                             }
                         ),
                         new Positioned(

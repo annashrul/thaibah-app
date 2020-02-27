@@ -1,23 +1,17 @@
-import 'dart:io';
 
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lock_screen/flutter_lock_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
-//import 'package:onesignal/onesignal.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/authModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/regist_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:thaibah/bloc/authBloc.dart';
 import 'package:thaibah/UI/Widgets/responsive_ui.dart';
-import 'package:pinput/pin_put/pin_put.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:country_code_picker/country_code_picker.dart';
@@ -526,7 +520,7 @@ class _SecondScreenState extends State<SecondScreen> {
     return Scaffold(
         key: _scaffoldKey,
         body: Container(
-          child: LockScreen(
+          child: LockScreenQ(
               title: "Keamanan",
               passLength: 4,
               bgImage: "assets/images/bg.jpg",
@@ -563,55 +557,55 @@ class _SecondScreenState extends State<SecondScreen> {
     );
   }
 
-  Widget build_(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child:Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              // SizedBox(height: 50,),
-              Text("Masukan Kode OTP"),
-              Text(widget.otp),
-              otpInput(),
-
-              // buttonOtp()
-            ],
-          )
-        ),
-      )
-    );
-  }
-
-  Widget otpInput() {
-    return Builder(
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(40.0),
-        child: Center(
-          child: PinPut(
-            clearButtonIcon: new Icon(Icons.backspace, size: 21, color: Color(0xFF535c68)),
-            pasteButtonIcon: new Icon(Icons.content_paste, size: 20),
-            isTextObscure: true,
-            keyboardType: TextInputType.number,
-            fieldsCount: 4,
-            onSubmit: (String txtOtp){
-              setState(() {
-                isLoading = true;
-              });
-              _check(txtOtp, context);
-            },
-            actionButtonsEnabled: false,
-
-//            clearButtonIcon: Icon(Icons.backspace, size: 30),
-            clearInput: true,
-            onClear: (value){
-
-            },
-          ),
-        ),
-      ),
-    );
-  }
+//  Widget build_(BuildContext context) {
+//    return Scaffold(
+//      body: SafeArea(
+//        child:Center(
+//          child: Column(
+//            mainAxisSize: MainAxisSize.min,
+//            children: <Widget>[
+//              // SizedBox(height: 50,),
+//              Text("Masukan Kode OTP"),
+//              Text(widget.otp),
+//              otpInput(),
+//
+//              // buttonOtp()
+//            ],
+//          )
+//        ),
+//      )
+//    );
+//  }
+//
+//  Widget otpInput() {
+//    return Builder(
+//      builder: (context) => Padding(
+//        padding: const EdgeInsets.all(40.0),
+//        child: Center(
+//          child: PinPut(
+//            clearButtonIcon: new Icon(Icons.backspace, size: 21, color: Color(0xFF535c68)),
+//            pasteButtonIcon: new Icon(Icons.content_paste, size: 20),
+//            isTextObscure: true,
+//            keyboardType: TextInputType.number,
+//            fieldsCount: 4,
+//            onSubmit: (String txtOtp){
+//              setState(() {
+//                isLoading = true;
+//              });
+//              _check(txtOtp, context);
+//            },
+//            actionButtonsEnabled: false,
+//
+////            clearButtonIcon: Icon(Icons.backspace, size: 30),
+//            clearInput: true,
+//            onClear: (value){
+//
+//            },
+//          ),
+//        ),
+//      ),
+//    );
+//  }
 
   Future _check(String txtOtp, BuildContext context) async {
     isLoading ? showDialog(

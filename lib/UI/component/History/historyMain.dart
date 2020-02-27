@@ -15,7 +15,7 @@ class HistoryMain extends StatefulWidget {
   _HistoryMainState createState() => _HistoryMainState();
 }
 
-class _HistoryMainState extends State<HistoryMain> {
+class _HistoryMainState extends State<HistoryMain>{
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -430,7 +430,6 @@ class _HistoryMainState extends State<HistoryMain> {
       },
     );
   }
-
 
 //  void _moreContent({int step:10}) {
 //    setState(() {

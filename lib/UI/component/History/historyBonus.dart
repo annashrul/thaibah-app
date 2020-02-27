@@ -14,7 +14,7 @@ class HistoryBonus extends StatefulWidget {
   _HistoryBonusState createState() => _HistoryBonusState();
 }
 
-class _HistoryBonusState extends State<HistoryBonus> {
+class _HistoryBonusState extends State<HistoryBonus>{
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -146,6 +146,7 @@ class _HistoryBonusState extends State<HistoryBonus> {
   }
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: <Widget>[
         Row(
@@ -412,4 +413,5 @@ class _HistoryBonusState extends State<HistoryBonus> {
       },
     );
   }
+
 }
