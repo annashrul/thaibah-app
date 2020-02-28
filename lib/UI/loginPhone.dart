@@ -127,7 +127,7 @@ class _LoginPhoneState extends State<LoginPhone> {
       OSiOSSettings.autoPrompt: false,
       OSiOSSettings.promptBeforeOpeningPushUrl: true
     };
-    OneSignal.shared.init("6a4c55fd-d96d-427f-8634-d2c4b9d96d69", iOSSettings: settings);
+    OneSignal.shared.init(ApiService().deviceId, iOSSettings: settings);
   }
 
   @override

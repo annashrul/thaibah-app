@@ -21,7 +21,7 @@ import 'package:thaibah/resources/location_service.dart';
 import 'package:connectivity/connectivity.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-main(){
+void main(){
   runApp(MyApp());
 }
 
@@ -56,6 +56,9 @@ class _MyAppState extends State<MyApp>  {
     checkLoginStatus();
     isLoading = true;
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+//    Timer.periodic(Duration(seconds:ApiService().timerActivity), (Timer t){
+//      chekcer();
+//    });
   }
 
   @override
@@ -89,8 +92,7 @@ class _MyAppState extends State<MyApp>  {
             LocationAuthorizationStatus status =
             await _connectivity.getLocationServiceAuthorization();
             if (status == LocationAuthorizationStatus.notDetermined) {
-              status =
-              await _connectivity.requestLocationServiceAuthorization();
+              status = await _connectivity.requestLocationServiceAuthorization();
             }
             if (status == LocationAuthorizationStatus.authorizedAlways ||
                 status == LocationAuthorizationStatus.authorizedWhenInUse) {

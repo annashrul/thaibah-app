@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/UI/Homepage/beranda.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
 import 'package:thaibah/UI/component/about.dart';
+import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/UI/component/testimoni/testi.dart';
 import 'package:thaibah/UI/detail_berita_ui.dart';
 import 'package:thaibah/UI/history_ui.dart';
@@ -47,17 +48,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
 
 
-  Future<Null> checkLoginStatus() async {
-    preferences = await SharedPreferences.getInstance();
-    setState(() {
-      id    = preferences.getString("id");
-      kdReferral = preferences.getString('kd_referral');
-    });
-    if(id == null) {
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-    }
 
-  }
 
 
   Future<Null> blockedMember() async{
@@ -142,18 +133,10 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
   final PageStorageBucket bucket = PageStorageBucket();
   Widget currentScreen = Beranda();
 
-  void activePage(){
-    if(widget.param == 'produk'){
-      setState(() {
-        currentTab = 1;
-        currentScreen = ProdukMlmUI();
-      });
-    }
-  }
+
   // Our first view
   @override
-  void initState(){
-    activePage();
+  void initState() {
     location.onLocationChanged().listen((value) {
       if(mounted){
         setState(() {
@@ -168,8 +151,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
     ));
-//    cek();
-    checkLoginStatus();
+
     isLoading = true;
     isLoading2 = true;
 
@@ -179,7 +161,6 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
       OSiOSSettings.promptBeforeOpeningPushUrl: true
     };
     OneSignal.shared.init("6a4c55fd-d96d-427f-8634-d2c4b9d96d69", iOSSettings: settings);
-//    OneSignal.shared.init("1077af68-aaa7-45e8-8f03-ec720d1a97e2", iOSSettings: settings);
     OneSignal.shared.setNotificationOpenedHandler((notification) {
       var notify = notification.notification.payload.additionalData;
       print("################################################################################");
@@ -202,6 +183,14 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
           context,
           MaterialPageRoute(
             builder: (context) => DetailHistoryPPOB(kdTrx: notify['id']),
+          ),
+        );
+      }
+      if (notify["type"] == "feed_komentar") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailSosmed(id: notify['id']),
           ),
         );
       }

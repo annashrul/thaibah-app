@@ -104,6 +104,10 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
   }
 
   Future<void> loadData() async {
+    Timer(Duration(seconds: 1), () {
+      setState(() {isLoading = true;});
+    });
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     final prefs = await SharedPreferences.getInstance();
     final isPinZero  = await userRepository.getPin();
     final token = await userRepository.getToken();
@@ -116,20 +120,32 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
       _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
       _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
      _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);
-
-      if(isPinZero == 0){
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
+      final checkVersion = await userRepository.cekVersion();
+      final checkStatusMember = await userRepository.cekStatusMember();
+      final checkLoginStatus = await userRepository.cekStatusLogin();
+      if(checkVersion == true){
+        setState(() {isLoading = false;});
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+      }else if(checkStatusMember == true){
+        setState(() {isLoading = false;});
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+      }else if(checkLoginStatus == true){
+        setState(() {isLoading = false;});
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
       }else{
-        setState(() {
-          isPin = prefs.getBool('isPin');
-        });
-        if(isPin == false){
-          prefs.setBool('isPin', true);
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-              builder: (BuildContext context) => PinScreen(callback: _callBackPin)
-          ), (Route<dynamic> route) => false);
+        if(isPinZero == 0){
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
+        }else{
+          setState(() {
+            isPin = prefs.getBool('isPin');
+          });
+          if(isPin == false){
+            prefs.setBool('isPin', true);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
+          }
         }
       }
+
       setState(() {
         isLoading = false;
       });
@@ -174,7 +190,7 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-    chekcer();
+    loadData();
     isLoading = true;
     versi = true;
     latitude  = widget.lat;
@@ -368,11 +384,12 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                 const SizedBox(height: 15.0),
               ],
             ),
-          key: _refresh,
-          onRefresh: chekcer
+            key: _refresh,
+            onRefresh: loadData
+          )
         )
-      )
-    ]);
+      ]
+    );
   }
 
   /* STRUKTUR WIDGET CARD E-WALLET */

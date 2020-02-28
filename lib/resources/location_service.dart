@@ -1,16 +1,12 @@
 
 import 'dart:async';
-//import 'dart:html';
 import 'package:flutter/cupertino.dart';
 import 'package:location/location.dart';
 import 'package:thaibah/Model/user_location.dart';
 
 class LocationService  with ChangeNotifier  {
-  // Keep track of current Location
   UserLocation _currentLocation;
   Location location = Location();
-  // Continuously emit location updates
-//  StreamController<UserLocation> _location
 
   StreamController<UserLocation> _locationController = StreamController<UserLocation>.broadcast();
 

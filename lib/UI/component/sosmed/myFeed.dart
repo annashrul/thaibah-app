@@ -9,6 +9,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
@@ -17,6 +18,8 @@ import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/UI/component/sosmed/inboxSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
+import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 
 class MyFeed extends StatefulWidget {
@@ -35,7 +38,7 @@ class _MyFeedState extends State<MyFeed> {
   String base64Image;
   File tmpFile;
   String fileName;
-
+  final user_repository = UserRepository();
 
 
   Future sendFeed(caption,img) async{
@@ -157,6 +160,7 @@ class _MyFeedState extends State<MyFeed> {
     // TODO: implement initState
     super.initState();
     _bloc.fetchListSosmed(1, perpage,'ada');
+
   }
 
   @override
@@ -245,7 +249,7 @@ class _MyFeedState extends State<MyFeed> {
   }
 
   Widget buildContent(AsyncSnapshot<ListSosmedModel> snapshot, BuildContext context){
-    return snapshot.data.result.data.length > 0 ? isLoading ?_loading():Container(
+    return snapshot.data.result.data.length > 0 ? isLoading ?_loading():  Container(
       child:  RefreshIndicator(
         key: _refresh,
         onRefresh:refresh,

@@ -49,6 +49,7 @@ import 'package:thaibah/Model/royalti/royaltiMemberModel.dart';
 import 'package:thaibah/Model/saldoUIModel.dart';
 import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listInboxSosmedModel.dart';
+import 'package:thaibah/Model/sosmed/listLikeSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/Model/suratModel.dart';
 import 'package:thaibah/Model/tertimoniModel.dart';
@@ -237,6 +238,7 @@ class Repository{
   Future<ListSosmedModel> fetchListSosmed(var page, var limit,var param) => sosmedProvider.fetchListSosmed(page,limit,param);
   Future<ListInboxSosmedModel> fetchListInboxSosmed(var page, var limit) => sosmedProvider.fetchListInboxSosmed(page,limit);
   Future<ListDetailSosmedModel> fetchListDetailSosmed(var id) => sosmedProvider.fetchListDetailSosmed(id);
+  Future<ListLikeSosmedModel> fetchListLikeSosmed(var id) => sosmedProvider.fetchListLikeSosmed(id);
 
 
 }

@@ -1,5 +1,6 @@
 import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listInboxSosmedModel.dart';
+import 'package:thaibah/Model/sosmed/listLikeSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/bloc/base.dart';
 import 'package:rxdart/rxdart.dart';
@@ -60,7 +61,26 @@ class DetailSosmedBloc extends BaseBloc{
   }
 }
 
+class LikeSosmedBloc extends BaseBloc{
+  bool _isDisposed = false;
+  final PublishSubject<ListLikeSosmedModel> _serviceController = new PublishSubject<ListLikeSosmedModel>();
+  Observable<ListLikeSosmedModel> get getResult => _serviceController.stream;
+  fetchListLikeSosmed(var id) async {
+    if(_isDisposed) {
+      print('false');
+    }else{
+      ListLikeSosmedModel listLikeSosmedModel =  await repository.fetchListLikeSosmed(id);
+      _serviceController.sink.add(listLikeSosmedModel);
+    }
+  }
+  void dispose() {
+    _serviceController.close();
+    _isDisposed = true;
+  }
+}
+
 
 final sosmedBloc  = SosmedBloc();
 final detailSosmedBloc  = DetailSosmedBloc();
 final inboxSosmedBloc  = InboxSosmedBloc();
+final likeSosmedBloc  = LikeSosmedBloc();

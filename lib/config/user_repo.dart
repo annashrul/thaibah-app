@@ -1,11 +1,25 @@
 import 'dart:async';
 import 'package:connectivity/connectivity.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
 
 class UserRepository {
+
+  Future getDeviceId() async{
+    OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
+    var settings = {
+      OSiOSSettings.autoPrompt: false,
+      OSiOSSettings.promptBeforeOpeningPushUrl: true
+    };
+    OneSignal.shared.init(ApiService().deviceId, iOSSettings: settings);
+    var status = await OneSignal.shared.getPermissionSubscriptionState();
+    String onesignalUserId = status.subscriptionStatus.userId;
+    return onesignalUserId;
+  }
+
   Future<bool> cekVersion() async {
     var res = await ConfigProvider().cekVersion();
     if(res is Checker){
@@ -25,7 +39,6 @@ class UserRepository {
       var statusMember = results.result.statusMember;
       if(statusMember == 0){
         return true;
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
       }
     }
     return false;

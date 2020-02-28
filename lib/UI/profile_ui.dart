@@ -148,7 +148,7 @@ class _ProfileUIState extends State<ProfileUI> {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             var res = await MemberProvider().logout();
             if(res.status == 'success'){
-              clearData();
+//              clearData();
               prefs.clear();
               prefs.commit();
               prefs.setBool('cek', true);

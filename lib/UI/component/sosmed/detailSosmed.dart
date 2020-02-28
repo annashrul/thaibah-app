@@ -13,6 +13,8 @@ import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 
+import 'listLikeSosmed.dart';
+
 class DetailSosmed extends StatefulWidget {
   final String id;
 
@@ -30,6 +32,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
 
   var captionController = TextEditingController();
   bool isLoading = false;
+  bool isLoadingLikeOrUnLike = false;
   int jmlKomen = 0;
   int jmlLike = 0;
   bool isLikes = false;
@@ -53,40 +56,30 @@ class _DetailSosmedState extends State<DetailSosmed> {
     }
   }
 
-  Future sendUnLike() async{
-    print('unlike');
-    var res = await SosmedProvider().sendUnLike(widget.id);
+
+  Future sendLikeOrUnLike(bool param) async{
+
+
+    var res = await SosmedProvider().sendLikeOrUnLike(widget.id);
     if(res is General){
       General results = res;
       if(results.status == 'success'){
-        setState(() { isLikes = false;jmlLike = jmlLike-=1;});
+        setState(() {
+          isLoadingLikeOrUnLike = false;
+        });
         _blocDetail.fetchListDetailSosmed(widget.id);
       }else{
-        setState(() {isLoading = false;});
+        setState(() {
+          isLoadingLikeOrUnLike = false;
+        });
         return showInSnackBar(results.msg);
       }
-    }else{
-      General results = res;
-      setState(() {isLoading = false;});
-      return showInSnackBar(results.msg);
     }
-  }
-
-  Future sendLike() async{
-    print('like');
-    var res = await SosmedProvider().sendLike(widget.id);
-    if(res is GeneralInsertId){
-      GeneralInsertId results = res;
-      if(results.status == 'success'){
-        setState(() {isLikes = true;jmlLike = jmlLike+=1;});
-        _blocDetail.fetchListDetailSosmed(widget.id);
-      }else{
-        setState(() {isLoading = false;});
-        return showInSnackBar(results.msg);
-      }
-    }else{
+    else{
       General results = res;
-      setState(() {isLoading = false;});
+      setState(() {
+        isLoadingLikeOrUnLike = false;
+      });
       return showInSnackBar(results.msg);
     }
 
@@ -122,6 +115,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
   void load(){
     setState(() {isLoading = false;});
     _blocDetail.fetchListDetailSosmed(widget.id);
+
   }
 
   @override
@@ -171,125 +165,152 @@ class _DetailSosmedState extends State<DetailSosmed> {
         ),
         elevation: 0.0,
       ),
-      body: RefreshIndicator(
-        child: StreamBuilder(
-          stream: _blocDetail.getResult,
-          builder: (context, AsyncSnapshot<ListDetailSosmedModel> snapshot){
-            if (snapshot.hasData) {
-              return isLoading ? _loading() : ListView(
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 8.0, 16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Scrollbar(
+          child: RefreshIndicator(
+            child: StreamBuilder(
+                stream: _blocDetail.getResult,
+                builder: (context, AsyncSnapshot<ListDetailSosmedModel> snapshot){
+                  if (snapshot.hasData) {
+                    String sukai='';
+                    if(snapshot.data.result.isLike == true){
+                      sukai = 'disukai oleh anda dan ${int.parse(snapshot.data.result.likes)-1} orang lainnya ';
+                    }else{
+                      sukai = 'disukai oleh ${int.parse(snapshot.data.result.likes)} orang ';
+                    }
+                    return isLoading ? _loading() : ListView(
+                      children: <Widget>[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                new Container(
-                                  height: 40.0,
-                                  width: 40.0,
-                                  decoration: new BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: new DecorationImage(
-                                        fit: BoxFit.fitWidth,
-                                        image: new NetworkImage("${snapshot.data.result.penulisPicture}")
-                                    ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 8.0, 16.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      new Container(
+                                        height: 40.0,
+                                        width: 40.0,
+                                        decoration: new BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: new DecorationImage(
+                                              fit: BoxFit.fitWidth,
+                                              image: new NetworkImage("${snapshot.data.result.penulisPicture}")
+                                          ),
+                                        ),
+                                      ),
+                                      new SizedBox(width: 10.0),
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          new Text("${snapshot.data.result.penulis}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                          new Text("${snapshot.data.result.createdAt}",style: TextStyle(fontSize:10.0,color:Colors.grey,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                        ],
+                                      )
+                                    ],
                                   ),
-                                ),
-                                new SizedBox(width: 10.0),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    new Text("${snapshot.data.result.penulis}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                    new Text("${snapshot.data.result.createdAt}",style: TextStyle(fontSize:10.0,color:Colors.grey,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                  ],
-                                )
-                              ],
+
+                                ],
+                              ),
+                            ),
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: Container(
+                                  padding:EdgeInsets.only(left:15.0,right:15.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Html(data: snapshot.data.result.caption,defaultTextStyle: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                      SizedBox(height: 10.0),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10.0),
+                                              topRight: Radius.circular( 10.0)
+                                          ),
+                                        ),
+                                        child: Center(
+                                            child:Image.network(
+                                              snapshot.data.result.picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
+                                            )
+                                        ),
+                                      )
+                                    ],
+                                  )
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  new Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      isLoadingLikeOrUnLike ? CircularProgressIndicator():
+                                      InkWell(
+                                          onTap:(){
+                                            setState(() {
+                                              isLoadingLikeOrUnLike=true;
+                                            });
+                                            sendLikeOrUnLike(snapshot.data.result.isLike);
+
+                                            print(snapshot.data.result.isLike);
+                                          },
+                                          child:new Icon(FontAwesomeIcons.heart,color: snapshot.data.result.isLike==true?Colors.red:Colors.black)
+                                      ),
+                                      new SizedBox(width: 10.0),
+                                      GestureDetector(
+                                        onTap: ()async{
+                                          await Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) => ListLikeSosmed(
+                                                id: widget.id,
+                                              ),
+                                            ),
+                                          ).then((val){
+                                            _blocDetail.fetchListDetailSosmed(widget.id); //you get details from screen2 here
+                                          });
+                                        },
+                                        child:int.parse(snapshot.data.result.likes) != 0 ? Text("$sukai",style: TextStyle(decoration: TextDecoration.underline,fontFamily: 'Rubik',fontWeight: FontWeight.bold)) : Text("$sukai",style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                                      ),
+                                      new SizedBox(width: 16.0),
+                                      new Icon(FontAwesomeIcons.comment),
+                                      new SizedBox(width: 10.0),
+                                      Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
 
+                            Container(padding:EdgeInsets.only(left:15.0,right:15.0),child: Divider(),),
+                            buildContent(snapshot, context)
                           ],
-                        ),
-                      ),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: Container(
-                            padding:EdgeInsets.only(left:15.0,right:15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Html(data: snapshot.data.result.caption,defaultTextStyle: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                SizedBox(height: 10.0),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10.0),
-                                        topRight: Radius.circular( 10.0)
-                                    ),
-                                  ),
-                                  child: Center(
-                                      child:Image.network(
-                                        snapshot.data.result.picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
-                                      )
-                                  ),
-                                )
-                              ],
-                            )
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            new Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                InkWell(
-                                    onTap:(){
-                                      print(isLikes);
-                                      if(snapshot.data.result.isLike == true){
-                                        sendUnLike();
-                                      }else{
-                                        sendLike();
-                                      }
-                                    },
-                                    child:new Icon(FontAwesomeIcons.heart,color: snapshot.data.result.isLike==true?Colors.red:Colors.black)
-                                ),
-                                new SizedBox(width: 10.0),
-                                Text("${int.parse(snapshot.data.result.likes)}  menyukai",style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                                new SizedBox(width: 16.0),
-                                new Icon(FontAwesomeIcons.comment),
-                                new SizedBox(width: 10.0),
-                                Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(padding:EdgeInsets.only(left:15.0,right:15.0),child: Divider(),),
-                      buildContent(snapshot, context)
-                    ],
-                  )
-                ],
-              );
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-            return _loading();
-          }
-        ),
-        onRefresh: refresh,
-        key: _refresh,
+                        )
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  return _loading();
+                }
+            ),
+            onRefresh: refresh,
+            key: _refresh,
+          )
       ),
       floatingActionButton: new FloatingActionButton(
         elevation: 0.0,

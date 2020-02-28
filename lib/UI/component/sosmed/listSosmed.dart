@@ -78,7 +78,6 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
               scrollDirection: Axis.vertical,
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
-
                 String caption = '';
                 if(snapshot.data.result.data[index].caption.length > 100){
                   caption = snapshot.data.result.data[index].caption.substring(0,100)+ " ....";
@@ -87,12 +86,22 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                 }
 
                 return InkWell(
-                  onTap: (){
-                    Navigator.of(context, rootNavigator: true).push(
-                      new CupertinoPageRoute(builder: (context) => DetailSosmed(
-                        id: snapshot.data.result.data[index].id,
-                      )),
-                    ).whenComplete(_bloc.fetchListSosmed(1, perpage,'kosong'));
+                  onTap: ()async {
+                    await Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => DetailSosmed(
+                          id: snapshot.data.result.data[index].id,
+                        ),
+                      ),
+                    ).then((val){
+                      _bloc.fetchListSosmed(1, perpage,'kosong'); //you get details from screen2 here
+                    });
+//                    Navigator.of(context, rootNavigator: true).push(
+//                      new CupertinoPageRoute(builder: (context) => DetailSosmed(
+//                        id: snapshot.data.result.data[index].id,
+//                      )),
+//                    ).whenComplete(_bloc.fetchListSosmed(1, perpage,'kosong'));
                   },
                   child: Container(
                     padding: EdgeInsets.only(bottom: 0.0,left:15.0,right:15.0),
