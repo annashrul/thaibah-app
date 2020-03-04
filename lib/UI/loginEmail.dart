@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/UI/regist_ui.dart';
 import 'package:thaibah/bloc/authBloc.dart';
+
+import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 
 class LoginEmail extends StatefulWidget {
   @override
@@ -84,8 +85,8 @@ class _LoginEmailState extends State<LoginEmail> {
   }
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
@@ -115,15 +116,15 @@ class _LoginEmailState extends State<LoginEmail> {
                     children: <Widget>[
                       Image.asset(
                         "assets/images/logoOnBoardTI.png",
-                        width: ScreenUtil.getInstance().setWidth(150),
-                        height: ScreenUtil.getInstance().setHeight(150),
+                        width: ScreenUtilQ.getInstance().setWidth(150),
+                        height: ScreenUtilQ.getInstance().setHeight(150),
                       ),
                     ],
                   ),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(180)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
                   Container(
                     width: double.infinity,
-                    height: ScreenUtil.getInstance().setHeight(470),
+                    height: ScreenUtilQ.getInstance().setHeight(470),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(0.0),
@@ -137,17 +138,17 @@ class _LoginEmailState extends State<LoginEmail> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text("Masuk",style: TextStyle(fontSize: ScreenUtil.getInstance().setSp(45),fontFamily: "Rubik",letterSpacing: .6,fontWeight: FontWeight.bold)),
-                          SizedBox(height: ScreenUtil.getInstance().setHeight(30)),
-                          Text("Email",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+                          Text("Masuk",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(45),fontFamily: "Rubik",letterSpacing: .6,fontWeight: FontWeight.bold)),
+                          SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
+                          Text("Email",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
                           TextField(
                             textInputAction: TextInputAction.next,
                             controller: emailController,
                             decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
                             keyboardType: TextInputType.emailAddress,
                           ),
-                          SizedBox(height: ScreenUtil.getInstance().setHeight(30)),
-                          Text("Password",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+                          SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
+                          Text("Password",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
                           TextField(
                             textInputAction: TextInputAction.done,
                             obscureText: _secureText,
@@ -159,7 +160,7 @@ class _LoginEmailState extends State<LoginEmail> {
 //                            suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
                             keyboardType: TextInputType.visiblePassword,
                           ),
-                          SizedBox(height: ScreenUtil.getInstance().setHeight(35)),
+                          SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
@@ -172,7 +173,7 @@ class _LoginEmailState extends State<LoginEmail> {
                                       ),
                                     );
                                   },
-                                  child: Text("Masuk Menggunakan No Handphone ?",style: TextStyle(fontWeight:FontWeight.bold,color: const Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(20)),)
+                                  child: Text("Masuk Menggunakan No Handphone ?",style: TextStyle(fontWeight:FontWeight.bold,color: const Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(20)),)
 
                               )
                             ],
@@ -181,14 +182,14 @@ class _LoginEmailState extends State<LoginEmail> {
                       ),
                     ),
                   ),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       InkWell(
                         child: Container(
-                          width: ScreenUtil.getInstance().setWidth(330),
-                          height: ScreenUtil.getInstance().setHeight(100),
+                          width: ScreenUtilQ.getInstance().setWidth(330),
+                          height: ScreenUtilQ.getInstance().setHeight(100),
                           decoration: BoxDecoration(
                               gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
                               borderRadius: BorderRadius.circular(6.0),
@@ -207,7 +208,7 @@ class _LoginEmailState extends State<LoginEmail> {
                                   return showInSnackBar("Password Harus Disi");
                                 }  else {
                                   if(!regex.hasMatch(emailController.text)){
-                                    return showInSnackBar("Email Tidak Valid Disi");
+                                    return showInSnackBar("Email Tidak Valid");
                                   }else{
                                     setState(() {
                                       _isLoading = true;
@@ -226,7 +227,7 @@ class _LoginEmailState extends State<LoginEmail> {
                       )
                     ],
                   ),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -235,7 +236,7 @@ class _LoginEmailState extends State<LoginEmail> {
                       horizontalLine()
                     ],
                   ),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(30)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -269,7 +270,7 @@ class _LoginEmailState extends State<LoginEmail> {
   Widget horizontalLine() => Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.0),
     child: Container(
-      width: ScreenUtil.getInstance().setWidth(120),
+      width: ScreenUtilQ.getInstance().setWidth(120),
       height: 1.0,
       color: Colors.black26.withOpacity(.2),
     ),

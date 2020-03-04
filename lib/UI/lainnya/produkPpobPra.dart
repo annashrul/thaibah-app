@@ -1,17 +1,11 @@
-import 'dart:async';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:thaibah/Model/PPOB/PPOBPraModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/tabData.dart';
 import 'package:thaibah/UI/ppob/pulsa_detail_ui.dart';
 import 'package:thaibah/bloc/PPOB/PPOBPraBloc.dart';
-import 'package:thaibah/config/api.dart';
 
 class ProdukPpobPra extends StatefulWidget{
   final String param,layanan,nohp;
@@ -123,8 +117,8 @@ class _ProdukPpobPraState extends State<ProdukPpobPra> {
 
   Widget vwPulsa(AsyncSnapshot<PpobPraModel> snapshot, BuildContext context){
     var width = MediaQuery.of(context).size.width;
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     if(snapshot.data.result.data.length > 0){
       return Container(
         child: ListView.builder(

@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:thaibah/Model/inspirationModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/detailInspirasi.dart';
@@ -148,7 +148,7 @@ class _InspirasiState extends State<Inspirasi> {
                                   padding: EdgeInsets.all(0),
                                   margin: EdgeInsets.only(top:0.0,bottom:0.0),
                                   alignment: Alignment.bottomLeft,
-                                  height: ScreenUtil.getInstance().setHeight(350),
+                                  height: ScreenUtilQ.getInstance().setHeight(350),
                                   child: CachedNetworkImage(
                                     imageUrl: snapshot.data.result.data[index].thumbnail,
                                     placeholder: (context, url) => Center(
@@ -179,7 +179,7 @@ class _InspirasiState extends State<Inspirasi> {
                                     child: InkWell(
                                       child: Container(
                                         width: MediaQuery.of(context).size.width/2,
-                                        height: ScreenUtil.getInstance().setHeight(100),
+                                        height: ScreenUtilQ.getInstance().setHeight(100),
                                         color:Color(0xFF116240),
                                         child: InkWell(
                                           onTap: () async {
@@ -201,7 +201,7 @@ class _InspirasiState extends State<Inspirasi> {
                                     child: InkWell(
                                       child: Container(
                                         width: MediaQuery.of(context).size.width/2,
-                                        height: ScreenUtil.getInstance().setHeight(100),
+                                        height: ScreenUtilQ.getInstance().setHeight(100),
                                         color:Color(0xFF116240),
                                         child: InkWell(
                                           onTap: () async {
@@ -249,8 +249,8 @@ class _InspirasiState extends State<Inspirasi> {
 
 
   Widget _loading(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Container(
       child: Padding(
           padding: const EdgeInsets.all(5.0),
@@ -274,7 +274,7 @@ class _InspirasiState extends State<Inspirasi> {
                             //new Center(child: new CircularProgressIndicator()),
                             new Center(
                               child: Container(
-                                height: ScreenUtil.getInstance().setHeight(400),
+                                height: ScreenUtilQ.getInstance().setHeight(400),
                                 child: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 400.0),
                               ),
                             ),

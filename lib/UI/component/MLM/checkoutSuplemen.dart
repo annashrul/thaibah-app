@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart' as prefix4;
@@ -14,6 +13,7 @@ import 'package:thaibah/Model/ongkirModel.dart' as prefix3;
 import 'package:thaibah/Model/provinsiModel.dart';
 import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/History/detailHistorySuplemen.dart';
 import 'package:thaibah/UI/component/MLM/produkCheckoutSuplemen.dart';
@@ -494,8 +494,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   Widget _bottomNavBarBeli(BuildContext context){
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
       child: Row(
@@ -992,7 +992,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
           }
           return Container(
             padding: EdgeInsets.all(20.0),
-            width: ScreenUtil.getInstance().setWidth(100),
+            width: ScreenUtilQ.getInstance().setWidth(100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[

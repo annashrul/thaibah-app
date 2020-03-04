@@ -2,13 +2,14 @@ import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
+
+import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 
 class CheckoutMlmUI extends StatefulWidget {
   String id, harga, qty;
@@ -124,8 +125,8 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
               ),
             ),
           ),
-          SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
-          Text("Nama",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+          Text("Nama",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
           TextField(
             controller: namaController,
             keyboardType: TextInputType.text,
@@ -133,8 +134,8 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
             autofocus: false,
             decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
           ),
-          SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
-          Text("Pekerjaan",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+          Text("Pekerjaan",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
           TextField(
             controller: pekerjaanController,
             keyboardType: TextInputType.text,
@@ -142,8 +143,8 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
             autofocus: false,
             decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
           ),
-          SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
-          Text("No KTP",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+          Text("No KTP",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
           TextField(
             controller: ktpController,
             keyboardType: TextInputType.number,
@@ -151,8 +152,8 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
             autofocus: false,
             decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
           ),
-          SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
-          Text("No KK",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+          Text("No KK",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
           TextField(
             controller: kkController,
             keyboardType: TextInputType.number,
@@ -160,8 +161,8 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
             autofocus: false,
             decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
           ),
-          SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
-          Text("No Telepon",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+          Text("No Telepon",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
           TextField(
             controller: telpController,
             keyboardType: TextInputType.number,
@@ -169,8 +170,8 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
             autofocus: false,
             decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
           ),
-          SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
-          Text("No NPWP",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+          Text("No NPWP",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
           TextField(
             controller: npwpController,
             keyboardType: TextInputType.number,
@@ -178,8 +179,8 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
             autofocus: false,
             decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
           ),
-          SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
-          Text("Alamat",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+          Text("Alamat",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
           TextField(
             controller: alamatController,
             keyboardType: TextInputType.text,
@@ -188,14 +189,14 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
             autofocus: false,
             decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
           ),
-          SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               InkWell(
                 child: Container(
-                  width: ScreenUtil.getInstance().setWidth(330),
-                  height: ScreenUtil.getInstance().setHeight(100),
+                  width: ScreenUtilQ.getInstance().setWidth(330),
+                  height: ScreenUtilQ.getInstance().setHeight(100),
                   decoration: BoxDecoration(
                       gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
                       borderRadius: BorderRadius.circular(6.0),

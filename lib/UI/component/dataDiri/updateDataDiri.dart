@@ -7,12 +7,11 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -277,8 +276,8 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -434,13 +433,13 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                   children: <Widget>[
                     SizedBox(
                       width: double.infinity,
-                      height: ScreenUtil.getInstance().setHeight(130),
+                      height: ScreenUtilQ.getInstance().setHeight(130),
                       child: new OutlineButton(
                         borderSide: BorderSide(color: Colors.grey,width: 1.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(30),),
+                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(30),),
                             Icon(Icons.cloud_upload),
                             _image == null || _image == "" ? Text('pilih photo profile',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.red)) : Text('photo profile sudah dipilih',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.green))
                           ],
@@ -459,13 +458,13 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                   children: <Widget>[
                     SizedBox(
                       width: double.infinity,
-                      height: ScreenUtil.getInstance().setHeight(130),
+                      height: ScreenUtilQ.getInstance().setHeight(130),
                       child: new OutlineButton(
                         borderSide: BorderSide(color: Colors.grey,width: 1.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(30),),
+                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(30),),
                             Icon(Icons.cloud_upload),
                             _image2 == null || _image2 == "" ? Text('pilih photo cover',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.red)) : Text('photo cover sudah dipilih',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.green))
                           ],
@@ -532,7 +531,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
   Widget horizontalLine() => Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.0),
     child: Container(
-      width: ScreenUtil.getInstance().setWidth(120),
+      width: ScreenUtilQ.getInstance().setWidth(120),
       height: 1.0,
       color: Colors.black26.withOpacity(.2),
     ),

@@ -3,11 +3,11 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/onboardingModel.dart';
 import 'package:thaibah/Model/pageViewModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/UI/splash/introViews.dart';
 import 'package:thaibah/config/api.dart';
@@ -80,8 +80,8 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(

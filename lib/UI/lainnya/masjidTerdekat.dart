@@ -1,14 +1,9 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
 import 'package:thaibah/Model/islamic/nearbyMosqueModel.dart';
-import 'package:thaibah/Model/user_location.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/nearbyMosqueBloc.dart';
 import 'package:thaibah/config/api.dart';
@@ -147,8 +142,8 @@ class _MasjidTerdekatState extends State<MasjidTerdekat> {
                               ApiService().iconUrl+'mesjid2.svg',
                               placeholderBuilder: (context) => CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
 
-                              height: ScreenUtil.getInstance().setHeight(60),
-                              width: ScreenUtil.getInstance().setWidth(60),
+                              height: ScreenUtilQ.getInstance().setHeight(60),
+                              width: ScreenUtilQ.getInstance().setWidth(60),
                             ),
                           ),
                           title: Text(

@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 
@@ -39,8 +39,8 @@ class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> {
   }
 
   Widget buildProduk(AsyncSnapshot<GetDetailChekoutSuplemenModel> snapshot, BuildContext context){
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     double _crossAxisSpacing = 1, _mainAxisSpacing = 3, _aspectRatio = 3;
     int _crossAxisCount = 2;
     double screenWidth = MediaQuery.of(context).size.width;
@@ -123,8 +123,8 @@ class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> {
 
   Widget _loadingProduk(BuildContext context){
     var width = MediaQuery.of(context).size.width;
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Container(
       width:  width / 1,
       color: Colors.white,

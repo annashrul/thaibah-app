@@ -3,8 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:thaibah/Model/newsModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/detail_berita_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
 
@@ -51,10 +51,10 @@ class _NewsHomeState extends State<NewsHome> {
 
   Widget buildContent(AsyncSnapshot<NewsModel> snapshot, BuildContext context){
     var width = MediaQuery.of(context).size.width;
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Container(
-      height: ScreenUtil.getInstance().setHeight(750),
+      height: ScreenUtilQ.getInstance().setHeight(750),
       width:  width / 1,
 //      margin: EdgeInsets.only(bottom: 5, top: 10),
       child: ListView.builder(

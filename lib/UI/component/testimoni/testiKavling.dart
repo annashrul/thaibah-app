@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:thaibah/Model/tertimoniModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/detailInspirasi.dart';
@@ -129,7 +129,7 @@ class _TestiKavlingState extends State<TestiKavling> {
                                 new Stack(
                                   children: <Widget>[
                                     Container(
-                                      height: ScreenUtil.getInstance().setHeight(450),
+                                      height: ScreenUtilQ.getInstance().setHeight(450),
                                       child: CachedNetworkImage(
                                         imageUrl: snapshot.data.result.data[index].thumbnail,
                                         placeholder: (context, url) => Center(
@@ -150,7 +150,7 @@ class _TestiKavlingState extends State<TestiKavling> {
                                     ),
                                     Container(
                                       color:Colors.black.withOpacity(0.5),
-                                      height:ScreenUtil.getInstance().setHeight(450),
+                                      height:ScreenUtilQ.getInstance().setHeight(450),
                                       margin: EdgeInsets.only(top:0.0,bottom:0.0),
                                       alignment: Alignment.bottomLeft,
                                       child: Padding(

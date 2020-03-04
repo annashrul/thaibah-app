@@ -5,13 +5,13 @@ import 'dart:io';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/registUIModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/Widgets/responsive_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
@@ -256,8 +256,8 @@ class _CreateMemberState extends State<CreateMember> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(

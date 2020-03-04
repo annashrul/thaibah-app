@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_villains/villain.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/UI/checkout_mlm_ui.dart';
 import 'package:thaibah/config/style.dart';
@@ -68,261 +67,114 @@ class _DetailProdukMlmUIState extends State<DetailProdukMlmiUI> with WidgetsBind
       bottomNavigationBar: _bottomBarBeli(context),
       key: scaffoldKey,
       //backgroundColor: Colors.transparent,
-      body: Villain(
-        villainAnimation: VillainAnimation.fromBottom(
-          curve: Curves.fastOutSlowIn,
-          relativeOffset: 0.05,
-          from: Duration(milliseconds: 200),
-          to: Duration(milliseconds: 400),
-        ),
-        secondaryVillainAnimation: VillainAnimation.fade(),
-        animateExit: true,
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                backgroundColor: Styles.primaryColor,
-                expandedHeight: 200.0,
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                    centerTitle: true,
-                    title: Text(widget.title,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                        )),
-                    background: Image.network(
-                      widget.picture,
-                      fit: BoxFit.cover,
-                    )),
-              ),
-            ];
-          },
-          body: ListView(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12.0,12.0,12.0,12.0),
-                    child: Row(children: <Widget>[
-                      Expanded(
-                        flex: 6,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
-                            Text("Jakarta Utara", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
-                          ],),
-                      ),
-
-                      SizedBox(width: 5,),
-                      Expanded(
-                        flex: 3,
-                        child: Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(5)),
-                                color: Styles.primaryColor),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(widget.satuan, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
-                            )
-                        ),
-                      ),
-                    ],),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                          flex: 1,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              children: <Widget>[
-                                Text("Tipe", style: TextStyle(fontFamily: 'Rubik', color: Colors.black45)),
-                                Text("KQ", style: TextStyle(fontFamily: 'Rubik', color: Colors.black)),
-                                // Text("200m2"),
-                              ])
-                      ),
-                      Container(height: 35, child: VerticalDivider(color: Colors.grey)),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text("Luas Tanah", style: TextStyle(fontFamily: 'Rubik', color: Colors.black45)),
-                            Text("200m2"),
-                          ],),
-                      ),
-                      Container(height: 35, child: VerticalDivider(color: Colors.grey)),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text("Harga/m2", style: TextStyle(fontFamily: 'Rubik', color: Colors.black45)),
-                            Text("Rp. 2.000.000"),
-                          ],),
-                      ),
-                    ],),
-                  Divider(),
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child:  Html(
-                      data: widget.descriptions,
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              backgroundColor: Styles.primaryColor,
+              expandedHeight: 200.0,
+              floating: false,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: true,
+                  title: Text(widget.title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      )),
+                  background: Image.network(
+                    widget.picture,
+                    fit: BoxFit.cover,
+                  )),
+            ),
+          ];
+        },
+        body: ListView(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12.0,12.0,12.0,12.0),
+                  child: Row(children: <Widget>[
+                    Expanded(
+                      flex: 6,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
+                          Text("Jakarta Utara", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
+                        ],),
                     ),
+
+                    SizedBox(width: 5,),
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(5)),
+                              color: Styles.primaryColor),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(widget.satuan, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
+                          )
+                      ),
+                    ),
+                  ],),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                        flex: 1,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Text("Tipe", style: TextStyle(fontFamily: 'Rubik', color: Colors.black45)),
+                              Text("KQ", style: TextStyle(fontFamily: 'Rubik', color: Colors.black)),
+                              // Text("200m2"),
+                            ])
+                    ),
+                    Container(height: 35, child: VerticalDivider(color: Colors.grey)),
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text("Luas Tanah", style: TextStyle(fontFamily: 'Rubik', color: Colors.black45)),
+                          Text("200m2"),
+                        ],),
+                    ),
+                    Container(height: 35, child: VerticalDivider(color: Colors.grey)),
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text("Harga/m2", style: TextStyle(fontFamily: 'Rubik', color: Colors.black45)),
+                          Text("Rp. 2.000.000"),
+                        ],),
+                    ),
+                  ],),
+                Divider(),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child:  Html(
+                    data: widget.descriptions,
                   ),
+                ),
 
-                ],
-              ),
+              ],
+            ),
 
-            ],
+          ],
 
-          ),
         ),
-//        child: StreamBuilder(
-//            stream: productMlmDetailKavlingBloc.getDetailProductKavling,
-//            builder: (context,AsyncSnapshot<ProductMlmDetailModel> snapshot){
-//              if(snapshot.hasData){
-//                if(name!=snapshot.data.result.title){
-//                  name=snapshot.data.result.title;
-//                }
-//                if(harga!=int.parse(snapshot.data.result.rawPrice)){
-//                  harga=int.parse(snapshot.data.result.rawPrice);
-//                }
-//                if(picture!=snapshot.data.result.picture){
-//                  picture=snapshot.data.result.picture;
-//                }
-//                if(qty!=snapshot.data.result.qty){
-//                  qty=snapshot.data.result.qty;
-//                }
-//                if(id!=snapshot.data.result.id){
-//                  id=snapshot.data.result.id;
-//                }
-//
-//                return NestedScrollView(
-//                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-//                    return <Widget>[
-//                      SliverAppBar(
-//                        backgroundColor: Styles.primaryColor,
-//                        expandedHeight: 200.0,
-//                        floating: false,
-//                        pinned: true,
-//                        flexibleSpace: FlexibleSpaceBar(
-//                            centerTitle: true,
-//                            title: Text(snapshot.data.result.title,
-//                                style: TextStyle(
-//                                  color: Colors.white,
-//                                  fontSize: 16.0,
-//                                )),
-//                            background: Image.network(
-//                              snapshot.data.result.picture,
-//                              fit: BoxFit.cover,
-//                            )),
-//                      ),
-//                    ];
-//                  },
-//                  body: ListView(
-//                    shrinkWrap: true,
-//                    physics: NeverScrollableScrollPhysics(),
-//                    children: <Widget>[
-//                      Column(
-//                        crossAxisAlignment: CrossAxisAlignment.start,
-//                        children: <Widget>[
-//                          Padding(
-//                            padding: const EdgeInsets.fromLTRB(12.0,12.0,12.0,12.0),
-//                            child: Row(children: <Widget>[
-//                              Expanded(
-//                                flex: 6,
-//                                child: Column(
-//                                  crossAxisAlignment: CrossAxisAlignment.start,
-//                                  children: <Widget>[
-//                                    Text(snapshot.data.result.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
-//                                    Text("Jakarta Utara", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
-//                                  ],),
-//                              ),
-//
-//                              SizedBox(width: 5,),
-//                              Expanded(
-//                                flex: 3,
-//                                child: Container(
-//                                    padding: EdgeInsets.all(5),
-//                                    decoration: BoxDecoration(
-//                                        borderRadius: BorderRadius.all(Radius.circular(5)),
-//                                        color: Styles.primaryColor),
-//                                    child: Align(
-//                                      alignment: Alignment.center,
-//                                      child: Text(snapshot.data.result.satuan, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
-//                                    )
-//                                ),
-//                              ),
-//                            ],),
-//                          ),
-//                          Row(
-//                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                            crossAxisAlignment: CrossAxisAlignment.start,
-//                            children: <Widget>[
-//                              Expanded(
-//                                  flex: 1,
-//                                  child: Column(
-//                                      crossAxisAlignment: CrossAxisAlignment.center,
-//                                      mainAxisSize: MainAxisSize.max,
-//                                      children: <Widget>[
-//                                        Text("Tipe", style: TextStyle(fontFamily: 'Rubik', color: Colors.black45)),
-//                                        Text("KQ", style: TextStyle(fontFamily: 'Rubik', color: Colors.black)),
-//                                        // Text("200m2"),
-//                                      ])
-//                              ),
-//                              Container(height: 35, child: VerticalDivider(color: Colors.grey)),
-//                              Expanded(
-//                                flex: 3,
-//                                child: Column(
-//                                  crossAxisAlignment: CrossAxisAlignment.center,
-//                                  children: <Widget>[
-//                                    Text("Luas Tanah", style: TextStyle(fontFamily: 'Rubik', color: Colors.black45)),
-//                                    Text("200m2"),
-//                                  ],),
-//                              ),
-//                              Container(height: 35, child: VerticalDivider(color: Colors.grey)),
-//                              Expanded(
-//                                flex: 3,
-//                                child: Column(
-//                                  crossAxisAlignment: CrossAxisAlignment.center,
-//                                  children: <Widget>[
-//                                    Text("Harga/m2", style: TextStyle(fontFamily: 'Rubik', color: Colors.black45)),
-//                                    Text("Rp. 2.000.000"),
-//                                  ],),
-//                              ),
-//                            ],),
-//                          Divider(),
-//                          Padding(
-//                            padding: EdgeInsets.all(10),
-//                            child:  Html(
-//                              data: snapshot.data.result.descriptions,
-//                            ),
-//                          ),
-//
-//                        ],
-//                      ),
-//
-//                    ],
-//
-//                  ),
-//                );
-//              }else{
-//                return Container(
-//                    padding: EdgeInsets.all(20.0),
-//                    child: Center(child: CircularProgressIndicator())
-//                );
-//              }
-//            }
-//        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

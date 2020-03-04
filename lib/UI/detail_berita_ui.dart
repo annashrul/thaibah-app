@@ -8,7 +8,6 @@ import 'package:thaibah/Model/categoryModel.dart';
 import 'package:thaibah/Model/newsDetailModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
-import 'package:flutter_icons/flutter_icons.dart';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:thaibah/UI/component/news/categoryNewsDetail.dart';
@@ -77,7 +76,7 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                         Container(
                           width: 40,
                           child: IconButton(
-                            icon: Icon(SimpleLineIcons.getIconData("arrow-left")),
+                            icon: Icon(Icons.arrow_back_ios),
                             color: AppTheme.Colors.black,
                             onPressed: () {
                               Navigator.pop(context);

@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:thaibah/Model/address/getListAddressModel.dart';
 import 'package:thaibah/Model/kotaModel.dart';
 import 'package:thaibah/Model/provinsiModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/address/addAddress.dart';
 import 'package:thaibah/UI/component/address/updateAddress.dart';
@@ -279,8 +279,8 @@ class _IndexAddressState extends State<IndexAddress> {
     return Column(
       children: <Widget>[
         SizedBox(height: height),
-        SizedBox(height: ScreenUtil.getInstance().setHeight(30)),
-        Text("Detail Alamat",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(24))),
+        SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
+        Text("Detail Alamat",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(24))),
         TextField(
           decoration: InputDecoration(
               hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
@@ -289,13 +289,13 @@ class _IndexAddressState extends State<IndexAddress> {
           maxLines: null,
           keyboardType: TextInputType.multiline,
         ),
-        SizedBox(height: ScreenUtil.getInstance().setHeight(35)),
+        SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
         _provinsi(context),
-        SizedBox(height: ScreenUtil.getInstance().setHeight(35)),
+        SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
         _kota(context),
-        SizedBox(height: ScreenUtil.getInstance().setHeight(35)),
+        SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
         _kecamatan(context),
-        SizedBox(height: ScreenUtil.getInstance().setHeight(35)),
+        SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
         SizedBox(height: height),
         Row(
           mainAxisSize: MainAxisSize.max,

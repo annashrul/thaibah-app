@@ -1,18 +1,16 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/regist_pin_ui.dart' as prefix1;
-import 'package:flutter_country_picker/flutter_country_picker.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/memberProvider.dart';
+
+import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 
 class Regist extends StatefulWidget {
   Regist() : super();
@@ -196,8 +194,8 @@ class _RegistState extends State<Regist> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
@@ -253,7 +251,7 @@ class _RegistState extends State<Regist> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Lengkapi Form Dibawah Ini ..",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(40))),
+                        Text("Lengkapi Form Dibawah Ini ..",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(40))),
                       ],
                     ),
                   ),
@@ -271,7 +269,7 @@ class _RegistState extends State<Regist> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nama",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+                        Text("Nama",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
                         TextFormField(
                           maxLength: 60,
                           autofocus: false,
@@ -295,7 +293,7 @@ class _RegistState extends State<Regist> {
                         RichText(
                           text: TextSpan(
                             text: 'No WhatsApp ',
-                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
+                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtilQ.getInstance().setSp(26)),
                             children: <TextSpan>[
                               TextSpan(text: '( Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
                             ],
@@ -350,7 +348,7 @@ class _RegistState extends State<Regist> {
                         RichText(
                           text: TextSpan(
                             text: 'PIN ',
-                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
+                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtilQ.getInstance().setSp(26)),
                             children: <TextSpan>[
                               TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
                             ],
@@ -383,7 +381,7 @@ class _RegistState extends State<Regist> {
                         RichText(
                           text: TextSpan(
                             text: 'Konfirmasi PIN ',
-                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
+                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtilQ.getInstance().setSp(26)),
                             children: <TextSpan>[
 //                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
                             ],
@@ -413,7 +411,7 @@ class _RegistState extends State<Regist> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Kode Referral",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+                        Text("Kode Referral",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
                         TextFormField(
                           maxLength: 15,
                           maxLengthEnforced: true,
@@ -573,7 +571,7 @@ class _RegistState extends State<Regist> {
   Widget horizontalLine() => Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.0),
     child: Container(
-      width: ScreenUtil.getInstance().setWidth(120),
+      width: ScreenUtilQ.getInstance().setWidth(120),
       height: 1.0,
       color: Colors.black26.withOpacity(.2),
     ),

@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/penukaranBonus.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 
@@ -86,7 +86,7 @@ class _UpdateKtpState extends State<UpdateKtp> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text("Silahkan Upload atau Ambil Photo KTP",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+                  Text("Silahkan Upload atau Ambil Photo KTP",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
                   Container(
                       width: double.infinity,
                       margin: EdgeInsets.only(top:10.0),
@@ -113,10 +113,10 @@ class _UpdateKtpState extends State<UpdateKtp> {
                                 new Text('Galeri',style: new TextStyle(fontSize: 11.0,fontFamily: "Rubik")),
                               ],
                             ),
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
+                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(50),),
                             _radioValue2 == 'camera' ? Icon(Icons.camera_alt) : Icon(Icons.folder),
                             _image == null ? _radioValue2 == 'camera' ? Text('Ambil Photo',style:TextStyle(fontFamily: "Rubik")) : Text('Upload Photo',style:TextStyle(fontFamily: "Rubik")) : Text('$_image',style:TextStyle(fontFamily: "Rubik")),
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
+                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(50),),
                           ],
                         ),
                         onPressed: () async {

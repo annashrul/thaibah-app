@@ -1,19 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
-
-import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
-import 'package:thaibah/Model/user_location.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/prayerBloc.dart';
-import 'package:thaibah/config/api.dart';
 
 enum PlayerState { stopped, playing, paused }
 typedef void OnError(Exception exception);

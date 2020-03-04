@@ -34,8 +34,6 @@ class PinScreenState extends State<PinScreen> {
   }
 
   Future biometrics() async {
-
-
     setState(() {
       isLoading = true;
     });

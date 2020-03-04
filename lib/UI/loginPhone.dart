@@ -1,7 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/authModel.dart';
@@ -17,6 +16,8 @@ import 'dart:math' as math;
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+
+import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 
 class LoginPhone extends StatefulWidget {
   @override
@@ -154,8 +155,8 @@ class _LoginPhoneState extends State<LoginPhone> {
   }
 
   Widget pages(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
@@ -186,15 +187,15 @@ class _LoginPhoneState extends State<LoginPhone> {
                     children: <Widget>[
                       Image.asset(
                         "",
-                        width: ScreenUtil.getInstance().setWidth(150),
-                        height: ScreenUtil.getInstance().setHeight(150),
+                        width: ScreenUtilQ.getInstance().setWidth(150),
+                        height: ScreenUtilQ.getInstance().setHeight(150),
                       ),
                     ],
                   ),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(180)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
                   Container(
                     width: double.infinity,
-                    height: ScreenUtil.getInstance().setHeight(320),
+                    height: ScreenUtilQ.getInstance().setHeight(320),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(0.0),
@@ -208,9 +209,9 @@ class _LoginPhoneState extends State<LoginPhone> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text("Masuk",style: TextStyle(fontSize: ScreenUtil.getInstance().setSp(45),fontFamily: "Rubik",letterSpacing: .6,fontWeight: FontWeight.bold)),
-                          SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
-                          Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Telah Anda Daftarkan)",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
+                          Text("Masuk",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(45),fontFamily: "Rubik",letterSpacing: .6,fontWeight: FontWeight.bold)),
+                          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+                          Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Telah Anda Daftarkan)",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
                           Row(
                             children: <Widget>[
                               Container(
@@ -266,20 +267,20 @@ class _LoginPhoneState extends State<LoginPhone> {
                       ),
                     ),
                   ),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(20)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("*Pastikan Handphone Anda Terkoneksi Dengan Internet*",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26),fontWeight: FontWeight.bold,color:Colors.red)),
+                    child: Text("*Pastikan Handphone Anda Terkoneksi Dengan Internet*",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,color:Colors.red)),
                   ),
 
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       InkWell(
                         child: Container(
                           width: MediaQuery.of(context).size.width/1,
-                          height: ScreenUtil.getInstance().setHeight(100),
+                          height: ScreenUtilQ.getInstance().setHeight(100),
                           decoration: BoxDecoration(
                               gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
                               borderRadius: BorderRadius.circular(6.0),
@@ -314,7 +315,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                       )
                     ],
                   ),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -323,7 +324,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                       horizontalLine()
                     ],
                   ),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(30)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
 //                  Row(
 //                    mainAxisAlignment: MainAxisAlignment.center,
 //                    children: <Widget>[
@@ -347,7 +348,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                       InkWell(
                         child: Container(
                           width: MediaQuery.of(context).size.width/1,
-                          height: ScreenUtil.getInstance().setHeight(100),
+                          height: ScreenUtilQ.getInstance().setHeight(100),
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: Colors.green,
@@ -409,7 +410,7 @@ class _LoginPhoneState extends State<LoginPhone> {
   Widget horizontalLine() => Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.0),
     child: Container(
-      width: ScreenUtil.getInstance().setWidth(120),
+      width: ScreenUtilQ.getInstance().setWidth(120),
       height: 1.0,
       color: Colors.black26.withOpacity(.2),
     ),

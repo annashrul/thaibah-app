@@ -4,12 +4,12 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:location/location.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/UI/Homepage/beranda.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
 import 'package:thaibah/UI/component/about.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
@@ -43,36 +43,15 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
   bool showAlignmentCards = false;
   bool isLoading = false;
   bool isLoading2 = false;
-
-
-
-
-
-
-
-
   Future<Null> blockedMember() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('cek', true);
     prefs.setString('id', null);
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
   }
-
   Location location = Location();
-
-//  Map<String, double> latitude;
-//  Map<String, double> longitude;
-
   String latitude = '';
   String longitude = '';
-
-
-
-
-
-
-
-
   Future updateApk() async{
     String url = 'https://play.google.com/store/apps/details?id=com.thaibah';
     if (await canLaunch(url)) {
@@ -81,11 +60,9 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
       print(url);
     }
   }
-
   Future play() async{
     AudioPlayer audioPlayer = AudioPlayer();
     await audioPlayer.play('https://thaibah.com/assets/adzan_.mp3');
-
   }
 
   @override
@@ -230,8 +207,8 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
   @override
   Widget build(BuildContext context) {
 
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -253,8 +230,8 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
         backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
         child: SvgPicture.asset(
           ApiService().assetsLocal+"t.svg",
-          height: ScreenUtil.getInstance().setHeight(50),
-          width: ScreenUtil.getInstance().setWidth(50),
+          height: ScreenUtilQ.getInstance().setHeight(50),
+          width: ScreenUtilQ.getInstance().setWidth(50),
           color: currentTab == 2 ? Colors.white : Colors.green,
         ),
         onPressed: () {
@@ -289,12 +266,12 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
                       children: <Widget>[
                         currentTab == 0 ? SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Home_Warna.svg",
-                          height: ScreenUtil.getInstance().setHeight(50),
-                          width: ScreenUtil.getInstance().setWidth(50),
+                          height: ScreenUtilQ.getInstance().setHeight(50),
+                          width: ScreenUtilQ.getInstance().setWidth(50),
                         ) : SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Home_Abu.svg",
-                          height: ScreenUtil.getInstance().setHeight(50),
-                          width: ScreenUtil.getInstance().setWidth(50),
+                          height: ScreenUtilQ.getInstance().setHeight(50),
+                          width: ScreenUtilQ.getInstance().setWidth(50),
                         )
                       ],
                     ),
@@ -312,12 +289,12 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
                       children: <Widget>[
                         currentTab == 1 ? SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Produk_Warna.svg",
-                          height: ScreenUtil.getInstance().setHeight(50),
-                          width: ScreenUtil.getInstance().setWidth(50),
+                          height: ScreenUtilQ.getInstance().setHeight(50),
+                          width: ScreenUtilQ.getInstance().setWidth(50),
                         ) : SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Produk_abu.svg",
-                          height: ScreenUtil.getInstance().setHeight(50),
-                          width: ScreenUtil.getInstance().setWidth(50),
+                          height: ScreenUtilQ.getInstance().setHeight(50),
+                          width: ScreenUtilQ.getInstance().setWidth(50),
                         )
                       ],
                     ),
@@ -343,12 +320,12 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
                       children: <Widget>[
                         currentTab == 3 ? SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Testimoni_Warna.svg",
-                          height: ScreenUtil.getInstance().setHeight(50),
-                          width: ScreenUtil.getInstance().setWidth(50),
+                          height: ScreenUtilQ.getInstance().setHeight(50),
+                          width: ScreenUtilQ.getInstance().setWidth(50),
                         ) : SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Testimoni_Abu.svg",
-                          height: ScreenUtil.getInstance().setHeight(50),
-                          width: ScreenUtil.getInstance().setWidth(50),
+                          height: ScreenUtilQ.getInstance().setHeight(50),
+                          width: ScreenUtilQ.getInstance().setWidth(50),
                         )
                       ],
                     ),
@@ -366,12 +343,12 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
                       children: <Widget>[
                         currentTab == 4 ? SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Profile_Warna.svg",
-                          height: ScreenUtil.getInstance().setHeight(50),
-                          width: ScreenUtil.getInstance().setWidth(50),
+                          height: ScreenUtilQ.getInstance().setHeight(50),
+                          width: ScreenUtilQ.getInstance().setWidth(50),
                         ) : SvgPicture.asset(
                           ApiService().assetsLocal+"Icon_Utama_Profile_abu.svg",
-                          height: ScreenUtil.getInstance().setHeight(50),
-                          width: ScreenUtil.getInstance().setWidth(50),
+                          height: ScreenUtilQ.getInstance().setHeight(50),
+                          width: ScreenUtilQ.getInstance().setWidth(50),
                         )
                       ],
                     ),
@@ -475,8 +452,8 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
         backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
         child: SvgPicture.asset(
           ApiService().assetsLocal+"t.svg",
-          height: ScreenUtil.getInstance().setHeight(50),
-          width: ScreenUtil.getInstance().setWidth(50),
+          height: ScreenUtilQ.getInstance().setHeight(50),
+          width: ScreenUtilQ.getInstance().setWidth(50),
           color: currentTab == 2 ? Colors.white : Colors.green,
         ),
         onPressed: () {
@@ -803,8 +780,8 @@ class FabWithIconsState extends State<FabWithIcons> with TickerProviderStateMixi
           backgroundColor: backgroundColor,
           child:SvgPicture.asset(
             ApiService().assetsLocal+"t.svg",
-            height: ScreenUtil.getInstance().setHeight(50),
-            width: ScreenUtil.getInstance().setWidth(50),
+            height: ScreenUtilQ.getInstance().setHeight(50),
+            width: ScreenUtilQ.getInstance().setWidth(50),
             color: Colors.green,
           ),
 //          child: Icon(widget.icons[index], color: foregroundColor),
@@ -827,8 +804,8 @@ class FabWithIconsState extends State<FabWithIcons> with TickerProviderStateMixi
       tooltip: 'Thaibah',
       child: SvgPicture.asset(
         ApiService().assetsLocal+"t.svg",
-        height: ScreenUtil.getInstance().setHeight(50),
-        width: ScreenUtil.getInstance().setWidth(50),
+        height: ScreenUtilQ.getInstance().setHeight(50),
+        width: ScreenUtilQ.getInstance().setWidth(50),
         color: Colors.green,
       ),
       elevation: 2.0,

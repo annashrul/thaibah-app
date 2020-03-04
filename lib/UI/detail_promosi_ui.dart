@@ -2,14 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_villains/villain.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as prefix0;
-import 'package:thaibah/config/api.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'Homepage/index.dart';
-import 'Widgets/pin_screen.dart';
 
 
 class DetailPromosiUI extends StatefulWidget {
@@ -68,50 +63,40 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
           ),
         ),
       ),
-      body: Villain(
-          villainAnimation: VillainAnimation.fromBottom(
-            curve: Curves.fastOutSlowIn,
-            relativeOffset: 0.05,
-            from: Duration(milliseconds: 200),
-            to: Duration(milliseconds: 400),
-          ),
-          secondaryVillainAnimation: VillainAnimation.fade(),
-          animateExit: true,
-          child:Stack(
-            alignment: Alignment.topCenter,
+      body: Stack(
+        alignment: Alignment.topCenter,
+        children: <Widget>[
+          ListView(
             children: <Widget>[
-              ListView(
-                children: <Widget>[
-                  _buildBackdrop(context),
-                  SizedBox(height: 24.0),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Text(
-                      '${(widget.createdAt)}',
-                      style: Theme.of(context).textTheme.body1.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54,
-                          fontFamily: 'Rubik'
-                      ),
-                    ),
+              _buildBackdrop(context),
+              SizedBox(height: 24.0),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text(
+                  '${(widget.createdAt)}',
+                  style: Theme.of(context).textTheme.body1.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black54,
+                      fontFamily: 'Rubik'
                   ),
-                  SizedBox(height: 10.0),
+                ),
+              ),
+              SizedBox(height: 10.0),
 
-                  title(context),
+              title(context),
 
-                  SizedBox(height: 8.0),
+              SizedBox(height: 8.0),
 
-                  source(context),
+              source(context),
 
-                  SizedBox(height: 20.0),
+              SizedBox(height: 20.0),
 
-                  preview(context),
+              preview(context),
 
-                  SizedBox(height: 15.0),
-                ],
-              )
+              SizedBox(height: 15.0),
             ],
           )
+        ],
       ),
       bottomNavigationBar: widget.link == '-' || widget.link == null ? Text(''):  InkWell(
         onTap: () async {
@@ -129,8 +114,8 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
           }
         },
         child: Container(
-          width: ScreenUtil.getInstance().setWidth(710),
-          height: ScreenUtil.getInstance().setHeight(100),
+          width: ScreenUtilQ.getInstance().setWidth(710),
+          height: ScreenUtilQ.getInstance().setHeight(100),
           decoration: BoxDecoration(
               gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
               borderRadius: BorderRadius.circular(0.0),

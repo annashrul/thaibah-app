@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_villains/villain.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/component/keranjang.dart';
@@ -10,6 +8,8 @@ import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/config/style.dart';
 import 'package:thaibah/resources/addressProvider.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
+
+import 'Widgets/alertq.dart';
 
 class DetailProdukMlmSuplemeniUI extends StatefulWidget {
   final String id,penjual,title,type,price,satuan,qty,picture,descriptions,category,total_ppn;
@@ -92,76 +92,67 @@ class _DetailProdukMlmUIState extends State<DetailProdukMlmSuplemeniUI> with Wid
 //      bottomNavigationBar: _bottomBarBeli(context),
       key: scaffoldKey,
       //backgroundColor: Colors.transparent,
-      body: Villain(
-        villainAnimation: VillainAnimation.fromBottom(
-          curve: Curves.fastOutSlowIn,
-          relativeOffset: 0.05,
-          from: Duration(milliseconds: 200),
-          to: Duration(milliseconds: 400),
-        ),
-        secondaryVillainAnimation: VillainAnimation.fade(),
-        animateExit: true,
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                backgroundColor: Styles.primaryColor,
-                expandedHeight: 200.0,
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                    centerTitle: true,
-                    title: Text(widget.title,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                        )
-                    ),
-                    background: Image.network(
-                      widget.picture,
-                      fit: BoxFit.cover,
-                    )
-                ),
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              backgroundColor: Styles.primaryColor,
+              expandedHeight: 200.0,
+              floating: false,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: true,
+                  title: Text(widget.title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      )
+                  ),
+                  background: Image.network(
+                    widget.picture,
+                    fit: BoxFit.cover,
+                  )
               ),
-            ];
-          },
-          body: ListView(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12.0,12.0,12.0,12.0),
-                    child: Row(children: <Widget>[
-                      Expanded(
-                        flex: 6,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
-                            Text("Stok Tersedia ( "+widget.qty+" )", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, fontFamily: 'Rubik'),),
-                            Text("Berat ${widget.weight} Gram", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, fontFamily: 'Rubik'),),
-                            Text("Harga ini sudah termasuk PPN ${widget.ppn}%", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, fontFamily: 'Rubik'),),
-                          ],),
-                      ),
+            ),
+          ];
+        },
+        body: ListView(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12.0,12.0,12.0,12.0),
+                  child: Row(children: <Widget>[
+                    Expanded(
+                      flex: 6,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
+                          Text("Stok Tersedia ( "+widget.qty+" )", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, fontFamily: 'Rubik'),),
+                          Text("Berat ${widget.weight} Gram", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, fontFamily: 'Rubik'),),
+                          Text("Harga ini sudah termasuk PPN ${widget.ppn}%", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, fontFamily: 'Rubik'),),
+                        ],),
+                    ),
 
-                      SizedBox(width: 5,),
+                    SizedBox(width: 5,),
 
-                      Expanded(
-                        flex: 3,
-                        child: Container(
+                    Expanded(
+                      flex: 3,
+                      child: Container(
                           padding: EdgeInsets.all(5),
                           decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),color: Styles.primaryColor),
                           child: Align(
                             alignment: Alignment.center,
                             child: Text(widget.satuan, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'Rubik'),),
                           )
-                        ),
                       ),
+                    ),
 
-                    ],
+                  ],
                   ),
                 ),
                 Divider(),
@@ -174,7 +165,6 @@ class _DetailProdukMlmUIState extends State<DetailProdukMlmSuplemeniUI> with Wid
               ],
             )
           ],
-          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -276,7 +266,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> with SingleTickerPr
       setState(() {
         isLoading  = false;
       });
-      return Alert(
+      return AlertQ(
         style: AlertStyle(
             titleStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
             descStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik')

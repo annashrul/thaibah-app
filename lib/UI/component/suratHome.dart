@@ -2,9 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/quran_read_ui.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
@@ -100,17 +99,14 @@ class _SuratHomeState extends State<SuratHome> {
   }
 
   Widget buildContent() {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Container(
       child: Padding(
           padding: const EdgeInsets.all(5.0),
-          child: new StaggeredGridView.countBuilder(
+          child: ListView.builder(
             primary: false,
             physics: ScrollPhysics(),
-            crossAxisCount: 4,
-            mainAxisSpacing: 2.0,
-            crossAxisSpacing: 2.0,
             itemCount: 1,
             itemBuilder: (context, index) {
               return new GestureDetector(
@@ -127,7 +123,7 @@ class _SuratHomeState extends State<SuratHome> {
                             //new Center(child: new CircularProgressIndicator()),
                             new Center(
                               child: Container(
-                                height: ScreenUtil.getInstance().setHeight(400),
+                                height: ScreenUtilQ.getInstance().setHeight(400),
 //                                width:  _width / 1,
                                 child: CachedNetworkImage(
                                   imageUrl: "https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
@@ -188,7 +184,7 @@ class _SuratHomeState extends State<SuratHome> {
                   )
               );
             },
-            staggeredTileBuilder: (index) => new StaggeredTile.fit(1),
+
           )
       ),
     );

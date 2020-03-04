@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:thaibah/Model/configModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/member/contactModel.dart' as prefix0;
@@ -21,6 +20,7 @@ import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/transferProvider.dart';
 
+import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'Widgets/pin_screen.dart';
 
 class TransferUI extends StatefulWidget {
@@ -206,8 +206,8 @@ class _TransferUIState extends State<TransferUI> {
                 margin: EdgeInsets.only(left: 10.0,right:20.0),
                 child: Image.network(
                   widget.qr,
-                  height: ScreenUtil.getInstance().setHeight(60),
-                  width: ScreenUtil.getInstance().setWidth(60),
+                  height: ScreenUtilQ.getInstance().setHeight(60),
+                  width: ScreenUtilQ.getInstance().setWidth(60),
                 ),
               ),
             )

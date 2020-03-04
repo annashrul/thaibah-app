@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_parallax/flutter_parallax.dart';
 
 class PageWithdrawStatus extends StatefulWidget {
   final String amount,accHolderName,accNumber,bankCode;
@@ -25,14 +24,8 @@ class _PageWithdrawStatusState extends State<PageWithdrawStatus> with SingleTick
   Widget clipShape() {
     return Stack(
       children: <Widget>[
-        new Parallax.inside(
-          child: new Align(
-            alignment: Alignment.center,
-            child: Image.network('https://www.1designshop.com/wp-content/uploads/2015/12/1dsp-20151221-pattern005.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          mainAxisExtent: 500.0,
+        Image.network('https://www.1designshop.com/wp-content/uploads/2015/12/1dsp-20151221-pattern005.png',
+          fit: BoxFit.cover,
         ),
         _detailSuccess()
       ],

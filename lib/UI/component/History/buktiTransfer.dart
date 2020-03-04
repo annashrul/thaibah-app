@@ -4,13 +4,11 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
-import 'package:thaibah/config/api.dart';
 
 class BuktiTransfer extends StatefulWidget {
   final String id_deposit;
@@ -125,13 +123,13 @@ class _BuktiTransferState extends State<BuktiTransfer> {
           children: <Widget>[
             SizedBox(
               width: double.infinity,
-              height: ScreenUtil.getInstance().setHeight(130),
+              height: ScreenUtilQ.getInstance().setHeight(130),
               child: new OutlineButton(
                 borderSide: BorderSide(color: Colors.grey,width: 1.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: ScreenUtil.getInstance().setHeight(30),),
+                    SizedBox(height: ScreenUtilQ.getInstance().setHeight(30),),
                     Icon(Icons.cloud_upload),
                     _image == null ? Text('Upload Bukti Transfer',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.red)) : Center(child: Text('$_image',textAlign:TextAlign.center,style: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,color:Colors.grey)))
                   ],

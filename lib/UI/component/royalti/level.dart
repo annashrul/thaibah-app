@@ -76,7 +76,6 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
 
   Widget wrapperBuildContent(BuildContext context){
     return Container(
-
       padding: EdgeInsets.only(right:12.0,left:12.0,top:0,bottom:0),
       child: Container(
         decoration: BoxDecoration(

@@ -52,7 +52,6 @@ class _MyFeedState extends State<MyFeed> {
     }
     var res = await SosmedProvider().sendFeed(caption, base64Image);
     if(res is GeneralInsertId){
-
       GeneralInsertId results = res;
       if(results.status == 'success'){
         _bloc.fetchListSosmed(1, perpage,'ada');
@@ -669,74 +668,100 @@ class _BottomWidgetState extends State<BottomWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          InkWell(
-            onTap: (){
-              getImageFile();
-            },
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.green,
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.all(
-                    Radius.circular(5.0)
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        height: 40.0,
-                        width: 40.0,
-                        child:_image != null ? Image.file(_image) :Image.network("https://vignette.wikia.nocookie.net/solo-leveling/images/5/5a/WK_No_Image.png/revision/latest?cb=20190324133049"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children:<Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width/1.7,
+                child: InkWell(
+                  onTap: (){
+                    getImageFile();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.green,
+                        width: 1.0,
                       ),
-                      new SizedBox(width: 10.0),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            child: Row(
-                              children: <Widget>[
-                                Text("Upload Gambar",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                SizedBox(width: 10.0),
-                                Icon(Icons.backup,color: Colors.white,)
-                              ],
+                      borderRadius: BorderRadius.all(
+                          Radius.circular(5.0)
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              height: 40.0,
+                              width: 40.0,
+                              child:_image != null ? Image.file(_image) :Image.network("https://vignette.wikia.nocookie.net/solo-leveling/images/5/5a/WK_No_Image.png/revision/latest?cb=20190324133049"),
                             ),
-                          )
-                        ],
-                      )
-                    ],
+                            new SizedBox(width: 10.0),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text("Upload Gambar",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                      SizedBox(width: 10.0),
+                                      Icon(Icons.backup,color: Colors.white,)
+                                    ],
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                )
               ),
-            ),
+              SizedBox(width:10.0),
+              Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(5.0)
+                    ),
+                  ),
+
+                  width: MediaQuery.of(context).size.width/4,
+                  child: InkWell(
+                    onTap: (){
+                      if(captionController.text == ''){
+                        FocusScope.of(context).requestFocus(FocusNode());
+                      }else{
+                        Navigator.of(context).pop();
+                        captionFocus.unfocus();
+                        widget.sendFeed(captionController.text,_image);
+                        captionController.text = '';
+                        _image = null;
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(10.0, 22.0, 10.0, 22.0),
+                      child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),),
+                    ),
+                  )
+              )
+            ]
           ),
           Padding(
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
             child: TextFormField(
               style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
               controller: captionController,
-              textInputAction: TextInputAction.done,
+              textInputAction: TextInputAction.newline,
               keyboardType: TextInputType.multiline,
               maxLines: null,
               focusNode: FocusNode(),
               autofocus: true,
-              onFieldSubmitted: (value){
-                if(captionController.text == ''){
-                  FocusScope.of(context).requestFocus(FocusNode());
-                }else{
-                  Navigator.of(context).pop();
-                  captionFocus.unfocus();
-                  widget.sendFeed(captionController.text,_image);
-                  captionController.text = '';
-                  _image = null;
-                }
-              },
+
               decoration: new InputDecoration(
                 hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
                 border: InputBorder.none,

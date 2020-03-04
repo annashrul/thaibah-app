@@ -4,14 +4,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'listLikeSosmed.dart';
 
@@ -33,6 +34,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
   var captionController = TextEditingController();
   bool isLoading = false;
   bool isLoadingLikeOrUnLike = false;
+  bool isLoadingShare = false;
   int jmlKomen = 0;
   int jmlLike = 0;
   bool isLikes = false;
@@ -116,6 +118,27 @@ class _DetailSosmedState extends State<DetailSosmed> {
     setState(() {isLoading = false;});
     _blocDetail.fetchListDetailSosmed(widget.id);
 
+  }
+  Future share(img,caption) async{
+    setState(() {
+      isLoadingShare = true;
+    });
+    var response = await Client().get(img);
+    final bytes = response.bodyBytes;
+    Timer(Duration(seconds: 1), () async {
+      setState(() {
+        isLoadingShare = false;
+      });
+      await WcFlutterShare.share(
+          sharePopupTitle: 'Thaibah Share Inspirasi & Informasi',
+          bytesOfFile:bytes,
+          subject: '',
+          text: '$caption',
+          fileName: 'share.png',
+          mimeType: 'image/png',
+
+      );
+    });
   }
 
   @override
@@ -213,6 +236,16 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                       )
                                     ],
                                   ),
+                                  isLoadingShare ? CircularProgressIndicator(): InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          isLoadingShare=true;
+                                        });
+                                        share(snapshot.data.result.picture,snapshot.data.result.caption);
+                                      },
+                                      child:new Icon(FontAwesomeIcons.shareAlt)
+                                  ),
+
 
                                 ],
                               ),
@@ -290,6 +323,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                       new Icon(FontAwesomeIcons.comment),
                                       new SizedBox(width: 10.0),
                                       Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+
+
                                     ],
                                   ),
                                 ],

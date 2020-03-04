@@ -52,7 +52,6 @@ class _PinState extends State<Pin> {
       print(result.result);
       if(result.status == 'success'){
         setState(() {_isLoading  = false;});
-
         if(widget.param == 'beranda'){
           prefs.setBool('isPin', true);
           Timer(Duration(seconds: 3), () {

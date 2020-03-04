@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'Widgets/alertq.dart';
 
 
 
@@ -999,39 +1000,6 @@ class _MainUIState extends State<MainUI> {
 //  }
 
 
-  Future<bool> _onBackPressed() {
-    return Alert(
-      style: AlertStyle(
-        titleStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
-        descStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik')
-      ),
-      context: context,
-      type: AlertType.warning,
-      title: "ANDA YAKIN",
-      desc: "Akan Meninggalkan Aplikasi Ini ??",
-      buttons: [
-        DialogButton(
-          child: Text(
-            "TIDAK",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-          onPressed: () => Navigator.of(context).pop(false),
-          color: Color.fromRGBO(0, 179, 134, 1.0),
-        ),
-        DialogButton(
-          child: Text(
-            "YA",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-          onPressed: () => Navigator.of(context).pop(true),
-          gradient: LinearGradient(colors: [
-            Color.fromRGBO(116, 116, 191, 1.0),
-            Color.fromRGBO(52, 138, 199, 1.0)
-          ]),
-        )
-      ],
-    ).show();
-  }
 
 
 //  Widget build(BuildContext context) {

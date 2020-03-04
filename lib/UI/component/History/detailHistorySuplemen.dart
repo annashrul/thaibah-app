@@ -4,14 +4,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/MLM/detailHistoryPembelianSuplemen.dart';
 import 'package:thaibah/Model/MLM/resiModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/UI/Widgets/alertq.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/MLM/resi.dart';
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
@@ -379,7 +379,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                   }
                   else{
                     if(status != 4){
-                      Alert(
+                      AlertQ(
                         style: AlertStyle(
                             titleStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
                             descStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik')
@@ -455,8 +455,8 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
   }
   Widget buildProduk(AsyncSnapshot<DetailHistoryPembelianSuplemenModel> snapshot, BuildContext context){
     var width = MediaQuery.of(context).size.width;
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Container(
       width:  width / 1,
       color: Colors.white,

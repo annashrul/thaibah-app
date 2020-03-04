@@ -4,7 +4,7 @@ import 'dart:core';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/detailInspirasi.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
@@ -57,8 +57,8 @@ class _InspirasiHomeState extends State<InspirasiHome> {
 
 
   Widget buildContent(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Container(
       padding: EdgeInsets.only(left:12.0,right:12.0),
       child:  Column(
@@ -69,7 +69,7 @@ class _InspirasiHomeState extends State<InspirasiHome> {
               padding: EdgeInsets.all(0),
               margin: EdgeInsets.only(top:0.0,bottom:0.0),
               alignment: Alignment.bottomLeft,
-              height: ScreenUtil.getInstance().setHeight(500),
+              height: ScreenUtilQ.getInstance().setHeight(500),
 //              decoration: BoxDecoration(
 //                image: DecorationImage(
 //                  image: NetworkImage(widget.thumbnail),
@@ -123,7 +123,7 @@ class _InspirasiHomeState extends State<InspirasiHome> {
                       ),
                     ),
                     width: MediaQuery.of(context).size.width/2,
-                    height: ScreenUtil.getInstance().setHeight(100),
+                    height: ScreenUtilQ.getInstance().setHeight(100),
                     child: InkWell(
                       onTap: () async {
                         await WcFlutterShare.share(
@@ -155,7 +155,7 @@ class _InspirasiHomeState extends State<InspirasiHome> {
                       ),
                     ),
                     width: MediaQuery.of(context).size.width/2,
-                    height: ScreenUtil.getInstance().setHeight(100),
+                    height: ScreenUtilQ.getInstance().setHeight(100),
 //                      color:Color(0xFF116240),
                     child: InkWell(
                       onTap: () async {

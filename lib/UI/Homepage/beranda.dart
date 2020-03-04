@@ -43,8 +43,8 @@ import 'package:thaibah/UI/upgradePlatinum.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 
 
 
@@ -177,6 +177,7 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
       );
     }
   }
+
   DateTime dt = DateTime.now();
 
   PrayerModel prayerModel;
@@ -213,12 +214,12 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
     return isLoading ? _loading() : Column(
       children: <Widget>[
         Flexible(
-          flex: 4,
+          flex: 5,
           child: Container(
             child: Stack(
               children: <Widget>[
                 Positioned(
-                  bottom: 50,
+                  bottom: 40,
                   top: 0,
                   child: Container(
                     width: MediaQuery.of(context).size.width,
@@ -406,7 +407,6 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                 Navigator.of(context, rootNavigator: true).push(
                   new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),
                 ).whenComplete(loadData);
-
               },
               child:ListTile(
                 contentPadding: EdgeInsets.only(left:10.0,right:10),
@@ -414,9 +414,9 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                   children: <Widget>[
                     SvgPicture.asset(
                       isLoading?"http://lequytong.com/Content/Images/no-image-02.png":ApiService().assetsLocal+'Icon_Utama_TopUp.svg',
-                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtil.getInstance().setWidth(60),height: ScreenUtil.getInstance().setHeight(60)),
-                      height: ScreenUtil.getInstance().setHeight(60),
-                      width: ScreenUtil.getInstance().setWidth(60),
+                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
+                      height: ScreenUtilQ.getInstance().setHeight(60),
+                      width: ScreenUtilQ.getInstance().setWidth(60),
                     ),
                     SizedBox(height: 5.0),
                     Text("Top Up", style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
@@ -439,9 +439,9 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                   children: <Widget>[
                     SvgPicture.asset(
                       isLoading?"http://lequytong.com/Content/Images/no-image-02.png":ApiService().assetsLocal+'Icon_Utama_Transfer.svg',
-                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtil.getInstance().setWidth(60),height: ScreenUtil.getInstance().setHeight(60)),
-                      height: ScreenUtil.getInstance().setHeight(60),
-                      width: ScreenUtil.getInstance().setWidth(60),
+                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
+                      height: ScreenUtilQ.getInstance().setHeight(60),
+                      width: ScreenUtilQ.getInstance().setWidth(60),
                     ),
                     SizedBox(height: 5.0),
                     Text("Transfer", style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
@@ -464,9 +464,9 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                   children: <Widget>[
                     SvgPicture.asset(
                       isLoading?"http://lequytong.com/Content/Images/no-image-02.png":ApiService().assetsLocal+'Icon_Utama_Penarikan.svg',
-                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtil.getInstance().setWidth(60),height: ScreenUtil.getInstance().setHeight(60)),
-                      height: ScreenUtil.getInstance().setHeight(60),
-                      width: ScreenUtil.getInstance().setWidth(60),
+                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
+                      height: ScreenUtilQ.getInstance().setHeight(60),
+                      width: ScreenUtilQ.getInstance().setWidth(60),
                     ),
                     SizedBox(height: 5.0),
                     Text("Penarikan", style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
@@ -489,9 +489,9 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                   children: <Widget>[
                     SvgPicture.asset(
                       isLoading?"http://lequytong.com/Content/Images/no-image-02.png":ApiService().assetsLocal+'Icon_Utama_History.svg',
-                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtil.getInstance().setWidth(60),height: ScreenUtil.getInstance().setHeight(60)),
-                      height: ScreenUtil.getInstance().setHeight(60),
-                      width: ScreenUtil.getInstance().setWidth(60),
+                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
+                      height: ScreenUtilQ.getInstance().setHeight(60),
+                      width: ScreenUtilQ.getInstance().setWidth(60),
                     ),
                     SizedBox(height: 5.0),
                     Text("History", style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
@@ -592,8 +592,8 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
           child: SvgPicture.network(
             ApiService().iconUrl+iconUrl,
             placeholderBuilder: (context) => CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-            height: ScreenUtil.getInstance().setHeight(60),
-            width: ScreenUtil.getInstance().setWidth(60),
+            height: ScreenUtilQ.getInstance().setHeight(60),
+            width: ScreenUtilQ.getInstance().setWidth(60),
           )
         ),
         SizedBox(height: 10),
@@ -884,8 +884,8 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
     );
   }
   Widget wrapperIcon(BuildContext context,String imgUrl, String title, String type){
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -904,9 +904,9 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
           },
           child: SvgPicture.network(
             isLoading?"http://lequytong.com/Content/Images/no-image-02.png":'$imgUrl',
-            placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtil.getInstance().setWidth(60),height: ScreenUtil.getInstance().setHeight(60)),
-            height: ScreenUtil.getInstance().setHeight(60),
-            width: ScreenUtil.getInstance().setWidth(60),
+            placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
+            height: ScreenUtilQ.getInstance().setHeight(60),
+            width: ScreenUtilQ.getInstance().setWidth(60),
           ),
         ),
         SizedBox(height: 5.0),

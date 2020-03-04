@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/kotaModel.dart';
 import 'package:thaibah/Model/provinsiModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/address/indexAddress.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
@@ -124,15 +124,15 @@ class _AddAddressState extends State<AddAddress> {
   Widget horizontalLine() => Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.0),
     child: Container(
-      width: ScreenUtil.getInstance().setWidth(120),
+      width: ScreenUtilQ.getInstance().setWidth(120),
       height: 1.0,
       color: Colors.black26.withOpacity(.2),
     ),
   );
 
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.white,
@@ -319,8 +319,8 @@ class _AddAddressState extends State<AddAddress> {
 
 
   Widget build_(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
@@ -350,15 +350,15 @@ class _AddAddressState extends State<AddAddress> {
                     children: <Widget>[
                       Image.asset(
                         "assets/images/logoOnBoardTI.png",
-                        width: ScreenUtil.getInstance().setWidth(150),
-                        height: ScreenUtil.getInstance().setHeight(150),
+                        width: ScreenUtilQ.getInstance().setWidth(150),
+                        height: ScreenUtilQ.getInstance().setHeight(150),
                       ),
                     ],
                   ),
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(180)),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
                   Container(
                     width: double.infinity,
-                    height: ScreenUtil.getInstance().setHeight(1000),
+                    height: ScreenUtilQ.getInstance().setHeight(1000),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(0.0),
@@ -372,15 +372,15 @@ class _AddAddressState extends State<AddAddress> {
                         child:Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text("Form Alamat",style: TextStyle(fontSize: ScreenUtil.getInstance().setSp(45),fontFamily: "Rubik",letterSpacing: .6,fontWeight: FontWeight.bold)),
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(35)),
+                            Text("Form Alamat",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(45),fontFamily: "Rubik",letterSpacing: .6,fontWeight: FontWeight.bold)),
+                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
                             _provinsi(context),
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(35)),
+                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
                             _kota(context),
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(35)),
+                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
                             _kecamatan(context),
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(35)),
-                            Text("Detail Alamat",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(24))),
+                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
+                            Text("Detail Alamat",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(24))),
                             TextField(
                               decoration: InputDecoration(
                                   hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
@@ -410,14 +410,14 @@ class _AddAddressState extends State<AddAddress> {
                                 }
                               },
                             ),
-                            SizedBox(height: ScreenUtil.getInstance().setHeight(30)),
+                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
                                 InkWell(
                                   child: Container(
                                     width: double.infinity,
-                                    height: ScreenUtil.getInstance().setHeight(100),
+                                    height: ScreenUtilQ.getInstance().setHeight(100),
                                     decoration: BoxDecoration(
                                         gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
                                         borderRadius: BorderRadius.circular(6.0),

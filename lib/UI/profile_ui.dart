@@ -1,42 +1,27 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-//import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/Model/profileModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/alertq.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'package:thaibah/UI/component/History/deposit.dart';
 import 'package:thaibah/UI/component/History/historyDeposit.dart';
 import 'package:thaibah/UI/component/History/historyPenarikan.dart';
 import 'package:thaibah/UI/component/History/indexHistory.dart';
 import 'package:thaibah/UI/component/dataDiri/indexMember.dart';
-import 'package:thaibah/UI/component/penarikan.dart';
 import 'package:thaibah/UI/component/penukaranBonus.dart';
 import 'package:thaibah/UI/component/privacyPolicy.dart';
-import 'package:thaibah/UI/history_ui.dart';
 import 'package:thaibah/UI/jaringan_ui.dart';
-import 'package:thaibah/UI/saldo_ui.dart';
-import 'package:thaibah/UI/socmed/listFeed.dart';
-import 'package:thaibah/UI/video_list_ui.dart';
 import 'package:thaibah/bloc/profileBloc.dart';
 import 'package:thaibah/config/api.dart';
-import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/memberProvider.dart';
-import 'package:http/http.dart' as http;
-
-import 'Widgets/pin_screen.dart';
 import 'component/sosmed/myFeed.dart';
 import 'loginPhone.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
@@ -48,6 +33,8 @@ class ProfileUI extends StatefulWidget {
 }
 
 class _ProfileUIState extends State<ProfileUI> {
+  StreamSubscription streamConnectionStatus;
+
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   double _height;
@@ -127,7 +114,7 @@ class _ProfileUIState extends State<ProfileUI> {
   }
   Future logout() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return Alert(
+    return AlertQ(
       style: AlertStyle(
           titleStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
           descStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik')
@@ -164,23 +151,52 @@ class _ProfileUIState extends State<ProfileUI> {
       ],
     ).show();
   }
+  bool boolHasConnection;
 
+  Future<Null> getConnectionStatus() async {
+    streamConnectionStatus = new Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      debugPrint(result.toString());
 
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+
+        setState(() {
+          boolHasConnection = true;
+        });
+      } else {
+        setState(() {
+          boolHasConnection = false;
+        });
+      }
+    });
+  }
 
 
   @override
   void initState() {
     super.initState();
-    _bloc.fetchProfileList();
+//    _bloc.fetchProfileList();
 //    profileBloc.fetchProfileList();
-    cekVersion();
+//    cekVersion();
+    _bloc.fetchProfileList();
+    getConnectionStatus();
+    print(boolHasConnection);
 
   }
+
   @override
   void dispose() {
-    super.dispose();
-    _bloc.dispose();
+    try {
+      streamConnectionStatus?.cancel();
+    } catch (exception, stackTrace) {
+      print(exception.toString());
+    } finally {
+      super.dispose();
+    }
   }
+
   bool isLoadingShare = false;
   Future share(param) async{
     setState(() {

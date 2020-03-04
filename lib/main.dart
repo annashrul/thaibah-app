@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +18,8 @@ import 'package:http/http.dart' show Client, Response;
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/location_service.dart';
 import 'package:connectivity/connectivity.dart';
+
+import 'UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 void main(){
@@ -163,7 +164,7 @@ class _MyAppState extends State<MyApp>  {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.light, statusBarColor: Colors.transparent));
 
     return isLoading?CircularProgressIndicator(): StreamProvider<UserLocation>(
-        builder: (context) => LocationService().locationStream,
+        create: (context) => LocationService().locationStream,
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           home: Splash()
@@ -207,8 +208,8 @@ class SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -230,8 +231,8 @@ class SplashState extends State<Splash> {
                         radius: 50.0,
                         child: SvgPicture.asset(
                           'assets/images/svg/splash.svg',
-                          height: ScreenUtil.getInstance().setHeight(150),
-                          width: ScreenUtil.getInstance().setWidth(150),
+                          height: ScreenUtilQ.getInstance().setHeight(150),
+                          width: ScreenUtilQ.getInstance().setWidth(150),
                         ),
                       ),
                       SizedBox(height: 20.0,),

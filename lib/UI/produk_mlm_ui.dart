@@ -5,7 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:thaibah/Model/MLM/listCartModel.dart';
 import 'package:thaibah/Model/productMlmSuplemenModel.dart';
@@ -15,6 +14,7 @@ import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
 
+import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'Widgets/loadMoreQ.dart';
 import 'Widgets/skeletonFrame.dart';
 
@@ -172,8 +172,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                   margin:EdgeInsets.only(top:10.0),
                   child: SvgPicture.asset(
                     ApiService().assetsLocal+"Icon_Utama_Produk_abu.svg",
-                    height: ScreenUtil.getInstance().setHeight(50),
-                    width: ScreenUtil.getInstance().setWidth(50),
+                    height: ScreenUtilQ.getInstance().setHeight(50),
+                    width: ScreenUtilQ.getInstance().setWidth(50),
                     color: Colors.white,
                   ),
                 ),
@@ -224,8 +224,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   }
 
   Widget buildContent(AsyncSnapshot<ProductMlmSuplemenModel> snapshot, BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return snapshot.data.result.data.length > 0 ? isLoading ? _loading() : RefreshIndicator(
       child: Padding(
           padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),

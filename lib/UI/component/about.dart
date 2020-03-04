@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:thaibah/Model/promosiModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/detail_promosi_ui.dart';
@@ -111,8 +111,8 @@ class _AboutState extends State<About>{
 
 
   Widget buildContent(AsyncSnapshot<PromosiModel> snapshot, BuildContext context,) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     if(snapshot.data.result.data.length > 0){
       return RefreshIndicator(
         child: LoadMoreQ(
@@ -144,7 +144,7 @@ class _AboutState extends State<About>{
                         new Stack(
                           children: <Widget>[
                             Container(
-                              height: ScreenUtil.getInstance().setHeight(450),
+                              height: ScreenUtilQ.getInstance().setHeight(450),
                               child: CachedNetworkImage(
                                 imageUrl: snapshot.data.result.data[index].thumbnail,
                                 placeholder: (context, url) => Center(
@@ -165,7 +165,7 @@ class _AboutState extends State<About>{
                             ),
                             Container(
                               color:Colors.black.withOpacity(0.5),
-                              height:ScreenUtil.getInstance().setHeight(450),
+                              height:ScreenUtilQ.getInstance().setHeight(450),
                               margin: EdgeInsets.only(top:0.0,bottom:0.0),
                               alignment: Alignment.bottomLeft,
                               child: Padding(
@@ -214,8 +214,8 @@ class _AboutState extends State<About>{
   }
 
   Widget _loading(BuildContext context,) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return ListView.builder(
       itemCount: 4,
       itemBuilder: (context, index) {
@@ -231,7 +231,7 @@ class _AboutState extends State<About>{
                     new Stack(
                       children: <Widget>[
                         Container(
-                          height: ScreenUtil.getInstance().setHeight(450),
+                          height: ScreenUtilQ.getInstance().setHeight(450),
                           child: SkeletonFrame(width: double.infinity,height: 200),
                         ),
                       ],

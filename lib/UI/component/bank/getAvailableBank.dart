@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Model/depositManual/listAvailableBank.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/History/detailDeposit.dart';
 import 'package:thaibah/UI/component/detail/detailTopUp.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
@@ -177,8 +177,8 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
           },
         ),
         bottomNavigationBar: Container(
-          width: ScreenUtil.getInstance().setWidth(710),
-          height: ScreenUtil.getInstance().setHeight(100),
+          width: ScreenUtilQ.getInstance().setWidth(710),
+          height: ScreenUtilQ.getInstance().setHeight(100),
           decoration: BoxDecoration(
               gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
               borderRadius: BorderRadius.circular(0.0),

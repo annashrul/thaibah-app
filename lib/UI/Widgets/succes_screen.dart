@@ -1,7 +1,6 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:thaibah/Constants/constants.dart';
 
 
@@ -36,15 +35,18 @@ class _SuccessScreenState extends State<SuccessScreen> with SingleTickerProvider
   Widget clipShape() {
     return Stack(
       children: <Widget>[
-          new Parallax.inside(
-            child: new Align(
-              alignment: Alignment.center,
-              child: Image.network('https://www.1designshop.com/wp-content/uploads/2015/12/1dsp-20151221-pattern005.png', 
-            fit: BoxFit.cover,
-            ),
-            ),
-            mainAxisExtent: 500.0,
-          ),
+        Image.network('https://www.1designshop.com/wp-content/uploads/2015/12/1dsp-20151221-pattern005.png',
+          fit: BoxFit.cover,
+        ),
+//          new Parallax.inside(
+//            child: new Align(
+//              alignment: Alignment.center,
+//              child: Image.network('https://www.1designshop.com/wp-content/uploads/2015/12/1dsp-20151221-pattern005.png',
+//            fit: BoxFit.cover,
+//            ),
+//            ),
+//            mainAxisExtent: 500.0,
+//          ),
           _detailSuccess()
       ],
     );
