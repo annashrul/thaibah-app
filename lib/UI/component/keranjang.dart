@@ -57,6 +57,8 @@ class _KeranjangState extends State<Keranjang> {
               kdKec: results.result.kdKec,
               kecPengirim: results.result.kecPengirim,
               masaVoucher: results.result.masaVoucher,
+              showPlatinum: results.result.platinumShow,
+              saldoPlatinum: results.result.saldoPlatinum,
             ),
           ),
         );

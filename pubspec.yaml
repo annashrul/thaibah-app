@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  device_info: ^0.4.1+5
   youtube_player_flutter: ^6.0.3+2
   connectivity:
   font_awesome_flutter:

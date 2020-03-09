@@ -216,8 +216,8 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
 
     return latitude == null || longitude == null ? CircularProgressIndicator() :Scaffold(
-        key: scaffoldKey,
-        backgroundColor: Colors.white,
+      key: scaffoldKey,
+      backgroundColor: Colors.white,
       body: WillPopScope(
         onWillPop: onWillPop,
         child: PageStorage(
@@ -524,58 +524,58 @@ class _UpdatePageState extends State<UpdatePage> {
     return Scaffold(
       key: scaffoldKey,
       body: WillPopScope(
-        child: Container(
-          padding: EdgeInsets.all(20.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  child: Center(
-                    child: Image.asset("assets/images/warning.png",width: 100.0),
+          child: Container(
+            padding: EdgeInsets.all(20.0),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: Center(
+                      child: Image.asset("assets/images/warning.png",width: 100.0),
+                    ),
                   ),
-                ),
-                SizedBox(height: 20.0),
-                Container(
-                  child: Center(
-                    child: Text("Silahkan Perbaharui Aplikasi Anda Ke Versi ${ApiService().versionCode} !!".toUpperCase(), style:TextStyle(color:Colors.red,fontSize:14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                  SizedBox(height: 20.0),
+                  Container(
+                    child: Center(
+                      child: Text("Silahkan Perbaharui Aplikasi Anda Ke Versi ${ApiService().versionCode} !!".toUpperCase(), style:TextStyle(color:Colors.red,fontSize:14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                    ),
                   ),
-                ),
-                SizedBox(height: 20.0),
-                Container(
-                  child: Center(
-                    child: Text("Tekan Tombol Dibawah Ini Untuk Memperbaharui Aplikasi ...".toUpperCase(), style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                  SizedBox(height: 20.0),
+                  Container(
+                    child: Center(
+                      child: Text("Tekan Tombol Dibawah Ini Untuk Memperbaharui Aplikasi ...".toUpperCase(), style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                    ),
                   ),
-                ),
-                SizedBox(height: 20.0),
-                Container(
-                  child: Center(
-                    child: FlatButton(
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(18.0),
-                          side: BorderSide(color: Colors.green)
-                      ),
-                      color: Colors.white,
-                      textColor: Colors.green,
-                      padding: EdgeInsets.all(20.0),
-                      onPressed: () {
-                        updateApk();
-                      },
-                      child: Text(
-                        "Perbaharui Aplikasi Sekarang".toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold
+                  SizedBox(height: 20.0),
+                  Container(
+                    child: Center(
+                      child: FlatButton(
+                        shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(18.0),
+                            side: BorderSide(color: Colors.green)
+                        ),
+                        color: Colors.white,
+                        textColor: Colors.green,
+                        padding: EdgeInsets.all(20.0),
+                        onPressed: () {
+                          updateApk();
+                        },
+                        child: Text(
+                          "Perbaharui Aplikasi Sekarang".toUpperCase(),
+                          style: TextStyle(
+                              fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
-        ),
-        onWillPop: onWillPop
+          onWillPop: onWillPop
       ),
     );
   }

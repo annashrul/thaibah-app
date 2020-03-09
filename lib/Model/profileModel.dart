@@ -42,7 +42,7 @@ class Result {
   String cover;
   String kdReferral;
   String kdUnique;
-  dynamic gender;
+  String gender;
   String qr;
   String saldo;
   String rawSaldo;

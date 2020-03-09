@@ -139,7 +139,7 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
                 Container(
                   width: 100,
                   height: 100,
-                  margin: EdgeInsets.symmetric(horizontal: 8.0),
+                  margin: EdgeInsets.only(left: 10.0,right:10.0),
                   decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(200.0),
@@ -156,11 +156,12 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
                   visible: true,
                   child: Column(
                     children: <Widget>[
-                      Text(snapshot.data.result[index].memberName, textAlign: TextAlign.center,style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                      Text(snapshot.data.result[index].level, textAlign: TextAlign.center,style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
+                      Text(snapshot.data.result[index].memberName, textAlign: TextAlign.center,style: TextStyle(fontSize:12.0,color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                      Text(snapshot.data.result[index].level, textAlign: TextAlign.center,style: TextStyle(fontSize:12.0,color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
                     ],
                   ),
                 ),
+                SizedBox(width: 10.0),
               ],
             );
           },

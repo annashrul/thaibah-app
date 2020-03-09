@@ -1,12 +1,50 @@
 import 'dart:async';
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
 
+
 class UserRepository {
+
+  requestTimeOut(Function callback){
+    return Container(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox.fromSize(
+              size: Size(100, 100), // button width and height
+              child: ClipOval(
+                child: Material(
+                  color: Colors.green, // button color
+                  child: InkWell(
+                    splashColor: Colors.green, // splash color
+                    onTap: () {
+                      callback();
+                    }, // button pressed
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.refresh,color: Colors.white,), // icon
+                        Text("coba lagi",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0,),
+            Text("gagal memuat. harap periksa koneksi internet anda !!"),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future getDeviceId() async{
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);

@@ -24,8 +24,8 @@ import 'package:thaibah/resources/productMlmProvider.dart';
 
 
 class CheckOutSuplemen extends StatefulWidget {
-  final total; final berat; final totQty; final saldoVoucher;final saldoMain;final address;final kdKec;final kecPengirim;final masaVoucher;
-  CheckOutSuplemen({this.total,this.berat,this.totQty,this.saldoVoucher,this.saldoMain,this.address,this.kdKec,this.kecPengirim,this.masaVoucher});
+  final total; final berat; final totQty; final saldoVoucher;final saldoMain;final address;final kdKec;final kecPengirim;final masaVoucher;final showPlatinum;final saldoPlatinum;
+  CheckOutSuplemen({this.total,this.berat,this.totQty,this.saldoVoucher,this.saldoMain,this.address,this.kdKec,this.kecPengirim,this.masaVoucher,this.showPlatinum,this.saldoPlatinum});
   @override
   _CheckOutSuplemenState createState() => _CheckOutSuplemenState();
 }
@@ -76,14 +76,17 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   int totBayar = 0;
   String saldoMain = "0";
   String saldoVoucher = "0";
+  String saldoPlatinum = "0";
   var expiredVoucher;
-
+  var showPlatinum;
 
   Future pilih() async{
     expiredVoucher = widget.masaVoucher;
+    showPlatinum = widget.showPlatinum;
     setState(() {
       saldoVoucher = widget.saldoVoucher;
       saldoMain = widget.saldoMain;
+      saldoPlatinum = widget.saldoPlatinum;
     });
 
     if(dropdownValue == 'Saya'){
@@ -126,7 +129,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       cekKec = kdKec;
     }
 
-    await ongkirBloc.fetchOngkirList(kec_pengirim,"${cekKec}","${widget.berat}",_currentItemSelectedKurir);
+    await ongkirBloc.fetchOngkirList(kec_pengirim,"$cekKec","${widget.berat}",_currentItemSelectedKurir);
   }
 
   void showInSnackBar(String value) {
@@ -155,13 +158,16 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       case 'saldo':
         setState(() {
           cekColor = false;
-//            _image = null;
         });
         break;
       case 'voucher':
         setState(() {
           cekColor = false;
-//            _image = null;
+        });
+        break;
+      case 'platinum':
+        setState(() {
+          cekColor = false;
         });
         break;
     }
@@ -843,7 +849,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 ],
               ),
             ),
-            expiredVoucher == true ? Container(
+            Container(
               padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -872,8 +878,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       ],
                     ),
                   ),
-                  SizedBox(height: 5.0),
-                  Container(
+                  expiredVoucher == true ? SizedBox(height: 5.0) : SizedBox(height: 0.0),
+                  expiredVoucher == true ? Container(
                     padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
@@ -896,16 +902,9 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
 
                       ],
                     ),
-                  ),
-
-                ],
-              ),
-            ) : Container(
-              padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
+                  ) : Container(),
+                  showPlatinum == true ? SizedBox(height: 5.0) : SizedBox(height: 0.0),
+                  showPlatinum == true ? Container(
                     padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
@@ -917,18 +916,18 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                         Row(
                           children: <Widget>[
                             Radio(
-                              value: 'saldo',
+                              value: 'platinum',
                               groupValue: _radioValue2,
                               onChanged: _handleRadioValueChange2,
                             ),
-                            new Text('Saldo Utama',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                            new Text('Saldo Platinum',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoMain",style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                        Text("$saldoPlatinum",style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
 
                       ],
                     ),
-                  ),
+                  ) : Container(),
                 ],
               ),
             ),

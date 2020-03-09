@@ -45,6 +45,8 @@ class Result {
   int jumlahBarang;
   String saldoMain;
   String saldoVoucher;
+  String saldoPlatinum;
+  bool platinumShow;
   bool masaVoucher;
 
   Result({
@@ -58,6 +60,8 @@ class Result {
     this.jumlahBarang,
     this.saldoMain,
     this.saldoVoucher,
+    this.saldoPlatinum,
+    this.platinumShow,
     this.masaVoucher,
   });
 
@@ -72,6 +76,8 @@ class Result {
     jumlahBarang: json["jumlah_barang"],
     saldoMain: json["saldo_main"],
     saldoVoucher: json["saldo_voucher"],
+    saldoPlatinum: json["saldo_platinum"],
+    platinumShow: json["platinum_show"],
     masaVoucher: json["masa_voucher"],
   );
 
@@ -86,6 +92,8 @@ class Result {
     "jumlah_barang": jumlahBarang,
     "saldo_main": saldoMain,
     "saldo_voucher": saldoVoucher,
+    "saldo_platinum": saldoPlatinum,
+    "platinum_show": platinumShow,
     "masa_voucher": masaVoucher,
   };
 }

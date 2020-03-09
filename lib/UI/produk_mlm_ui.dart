@@ -1,7 +1,9 @@
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -12,11 +14,13 @@ import 'package:thaibah/UI/component/keranjang.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
 
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'Widgets/loadMoreQ.dart';
 import 'Widgets/skeletonFrame.dart';
+import 'package:http/http.dart' as http;
 
 class ProdukMlmUI extends StatefulWidget {
 
@@ -40,6 +44,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   String versionCode = '';
   bool versi = false;
   final _bloc = ProductMlmSuplemenBloc();
+  bool retry=false;
+  ProductMlmSuplemenModel productMlmSuplemenModel;
 
   Future addCart(var id, var harga, var qty, var weight) async{
     setState(() {});
@@ -92,7 +98,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   void load() {
     print("load $perpage");
     setState(() {isLoading = false;});
-    _bloc.fetchProductMlmSuplemenList(1,perpage);
+
+    loadData(1,perpage);
     print(perpage);
   }
 
@@ -113,9 +120,36 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     setState(() {
       perpage = perpage += 2;
     });
-    _bloc.fetchProductMlmSuplemenList(1,perpage);
+    loadData(1,perpage);
     print(perpage);
     return true;
+  }
+
+
+  Future loadData(var page, var limit) async{
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    final token = await userRepository.getToken();
+    try{
+      final jsonString = await http.get(
+          ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      ).timeout(Duration(seconds: ApiService().timerActivity));
+      if (jsonString.statusCode == 200) {
+        final jsonResponse = json.decode(jsonString.body);
+        productMlmSuplemenModel = new ProductMlmSuplemenModel.fromJson(jsonResponse);
+        setState(() {
+          isLoading = false;retry = false;
+        });
+      } else {
+        throw Exception('Failed to load photos');
+      }
+    }catch(e){
+      setState(() {
+        isLoading = false;retry = true;
+      });
+      GagalHitProvider().fetchRequest('produk','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+    }
   }
 
   @override
@@ -124,21 +158,15 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     countCart();
     print('####################### aktif ############################');
     versi = true;
-    if(mounted){
-      _bloc.fetchProductMlmSuplemenList(1,perpage);
-    }
-
+    loadData(1,perpage);
+    isLoading=true;
     print("###################### $mounted ###########################");
   }
 
   @override
   void dispose() {
     super.dispose();
-    _bloc.dispose();
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +194,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                   if(total!=0){
                     Navigator.of(context).push(new MaterialPageRoute(builder: (_) => Keranjang())).whenComplete(countCart);
                   }
-
                 },
                 child: Container(
                   margin:EdgeInsets.only(top:10.0),
@@ -179,14 +206,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                 ),
 
               ),
-//              new IconButton(
-//                icon: Icon(Icons.shopping_cart),
-//                onPressed: () {
-//                  if(total!=0){
-//                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => Keranjang())).whenComplete(countCart);
-//                  }
-//                }
-//              ),
+
               total != 0 ?new Positioned(
                 right: 11,
                 top: 11,
@@ -208,37 +228,32 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         automaticallyImplyLeading: true,
         title: new Text("Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
       ),
-      body: StreamBuilder(
-        stream: _bloc.getResult,
-        builder: (context, AsyncSnapshot<ProductMlmSuplemenModel> snapshot) {
-          // print(snapshot.hasData);
-          if (snapshot.hasData) {
-            return buildContent(snapshot, context);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return _loading();
-        },
-      ),
+      body: retry==true?UserRepository().requestTimeOut((){
+        setState(() {
+          retry=false;
+          isLoading=true;
+        });
+        loadData(1, perpage);
+      }):buildContent(context)
     );
   }
 
-  Widget buildContent(AsyncSnapshot<ProductMlmSuplemenModel> snapshot, BuildContext context) {
+  Widget buildContent(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
-    return snapshot.data.result.data.length > 0 ? isLoading ? _loading() : RefreshIndicator(
+    return  isLoading ? _loading() :  productMlmSuplemenModel.result.data.length > 0 ? RefreshIndicator(
       child: Padding(
           padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
           child: LoadMoreQ(
             child: ListView.builder(
               primary: false,
               physics: ScrollPhysics(),
-              itemCount: snapshot.data.result.data.length,
+              itemCount: productMlmSuplemenModel.result.data.length,
               itemBuilder: (context, index) {
                 return  GestureDetector(
                     onTap: (){
-                      if(snapshot.data.result.data[index].qty != 0){
-                        addCart(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
+                      if(productMlmSuplemenModel.result.data[index].qty != 0){
+                        addCart(productMlmSuplemenModel.result.data[index].id,int.parse(productMlmSuplemenModel.result.data[index].totalPrice),"1",productMlmSuplemenModel.result.data[index].weight.toString());
                       }else{
                         print('gagal');
                       }
@@ -267,7 +282,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                     ),
                                   ),
                                   child: CachedNetworkImage(
-                                    imageUrl: snapshot.data.result.data[index].picture,
+                                    imageUrl: productMlmSuplemenModel.result.data[index].picture,
                                     placeholder: (context, url) => Center(
                                       child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
                                     ),
@@ -306,9 +321,9 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                             padding: EdgeInsets.all(5),
                                             child: Row(
                                               children: <Widget>[
-                                                Text(snapshot.data.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily: 'Rubik',fontSize: 14.0,fontWeight: FontWeight.bold),),
+                                                Text(productMlmSuplemenModel.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily: 'Rubik',fontSize: 14.0,fontWeight: FontWeight.bold),),
                                                 SizedBox(width: 5.0),
-                                                snapshot.data.result.data[index].isplatinum == 1 ?
+                                                productMlmSuplemenModel.result.data[index].isplatinum == 1 ?
                                                 Container(
                                                   padding: EdgeInsets.all(2),
                                                   decoration: new BoxDecoration(
@@ -330,13 +345,13 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                     ),
                                     Container(
                                       padding: EdgeInsets.all(5),
-                                      child: Text("Sisa : "+ snapshot.data.result.data[index].qty.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
+                                      child: Text("Sisa : "+ productMlmSuplemenModel.result.data[index].qty.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
                                     ),
                                     Container(
                                       padding: EdgeInsets.all(5),
-                                      child: Text("Harga : "+ snapshot.data.result.data[index].satuan+"/${snapshot.data.result.data[index].satuanBarang}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
+                                      child: Text("Harga : "+ productMlmSuplemenModel.result.data[index].satuan+"/${productMlmSuplemenModel.result.data[index].satuanBarang}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
                                     ),
-                                    snapshot.data.result.data[index].isplatinum == 1 ?
+                                    productMlmSuplemenModel.result.data[index].isplatinum == 1 ?
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
@@ -347,7 +362,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                         Container(
                                           padding: EdgeInsets.all(5),
                                           child: Html(
-                                            data: snapshot.data.result.data[index].detail,
+                                            data: productMlmSuplemenModel.result.data[index].detail,
                                             defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
                                           ),
                                         )
@@ -357,7 +372,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                     Container(
                                       padding: EdgeInsets.all(5),
                                       child: Html(
-                                        data: snapshot.data.result.data[index].descriptions,
+                                        data:productMlmSuplemenModel.result.data[index].descriptions,
                                         defaultTextStyle: TextStyle(fontFamily: 'Rubik'),
                                       ),
                                     ),
@@ -385,8 +400,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                                     child: FlatButton(
                                                       child: Icon(Icons.add_shopping_cart, color: Colors.white),
                                                       onPressed: () {
-                                                        if(snapshot.data.result.data[index].qty != 0){
-                                                          addCart(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
+                                                        if(productMlmSuplemenModel.result.data[index].qty != 0){
+                                                          addCart(productMlmSuplemenModel.result.data[index].id,int.parse(productMlmSuplemenModel.result.data[index].totalPrice),"1",productMlmSuplemenModel.result.data[index].weight.toString());
 //                                                        widget.onItemInteraction(snapshot.data.result.data[index].id,int.parse(snapshot.data.result.data[index].totalPrice),"1",snapshot.data.result.data[index].weight.toString());
                                                         }else{
 
@@ -414,7 +429,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
             whenEmptyLoad: true,
             delegate: DefaultLoadMoreDelegate(),
             textBuilder: DefaultLoadMoreTextBuilder.english,
-            isFinish: snapshot.data.result.data.length < perpage,
+            isFinish: productMlmSuplemenModel.result.data.length < perpage,
           )
       ),
       onRefresh: refresh,

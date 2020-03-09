@@ -43,6 +43,7 @@ class Result {
     String saldoMain;
     String saldoBonus;
     String saldoVoucher;
+    String saldoPlatinum;
     String level;
     String levelPlatinum;
     int levelPlatinumRaw;
@@ -58,6 +59,7 @@ class Result {
         this.saldoMain,
         this.saldoBonus,
         this.saldoVoucher,
+        this.saldoPlatinum,
         this.level,
         this.levelPlatinum,
         this.levelPlatinumRaw,
@@ -74,6 +76,7 @@ class Result {
         saldoMain: json["saldo_main"],
         saldoBonus: json["saldo_bonus"],
         saldoVoucher: json["saldo_voucher"],
+        saldoPlatinum: json["saldo_platinum"],
         level: json["level"],
         levelPlatinum: json["level_platinum"],
         levelPlatinumRaw: json["level_platinum_raw"],
@@ -90,6 +93,7 @@ class Result {
         "saldo_main": saldoMain,
         "saldo_bonus": saldoBonus,
         "saldo_voucher": saldoVoucher,
+        "saldo_platinum": saldoPlatinum,
         "level": level,
         "level_platinum": levelPlatinum,
         "level_platinum_raw": levelPlatinumRaw,

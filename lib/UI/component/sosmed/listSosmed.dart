@@ -86,7 +86,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                 }
 
                 return InkWell(
-                  onTap: ()async {
+                  onTap: () async {
                     await Navigator.push(
                       context,
                       CupertinoPageRoute(

@@ -13,14 +13,25 @@ class SosmedBloc extends BaseBloc{
     if(_isDisposed) {
       print('false');
     }else{
-      ListSosmedModel listSosmedModel =  await repository.fetchListSosmed(page,limit,param);
+      ListSosmedModel listSosmedModel = await repository.fetchListSosmed(page,limit,param);
+      _serviceController.stream.listen((data){
+        print("DataReceived: " + data.status);
+      },onDone: (){
+        print('task done');
+      }, onError: (error){
+        print(error);
+      });
       _serviceController.sink.add(listSosmedModel);
     }
   }
+
+
+
   void dispose() {
     _serviceController.close();
     _isDisposed = true;
   }
+
 }
 
 class InboxSosmedBloc extends BaseBloc{

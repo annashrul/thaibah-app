@@ -14,21 +14,25 @@ class ProductMlmSuplemenProvider {
   Client client = Client();
   final userRepository = UserRepository();
 
-  Future<ProductMlmSuplemenModel> fetchProductMlmSuplemen(var page, var limit) async{
-		final token = await userRepository.getToken();
+  Future fetchProductMlmSuplemen(var page, var limit) async{
+    final token = await userRepository.getToken();
     final response = await client.get(
-      ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-    );
-    print("########################### PRODUK SUPLEMEN ############################");
-    print(response.body);
-    print('product/mlm?page=$page&limit=$limit&category=suplemen');
-    if (response.statusCode == 200) {
-      // If the call to the server was successful, parse the JSON
-      return compute(productMlmSuplemenModelFromJson, response.body);
-    } else {
-      // If that call was not successful, throw an error.
-      throw Exception('Failed to load product suplemen');
+        ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+    ).timeout(Duration(microseconds: ApiService().timerActivity));
+		try{
+      print("########################### PRODUK SUPLEMEN ############################");
+      print(response.body);
+      print('product/mlm?page=$page&limit=$limit&category=suplemen');
+      if (response.statusCode == 200) {
+        // If the call to the server was successful, parse the JSON
+        return compute(productMlmSuplemenModelFromJson, response.body);
+      } else {
+        // If that call was not successful, throw an error.
+        throw Exception('Failed to load product suplemen');
+      }
+    }catch(e){
+      return compute(generalFromJson, response.body);
     }
 	}
 

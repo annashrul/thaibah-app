@@ -17,8 +17,7 @@ class ProductMlmBloc extends BaseBloc<ProductMlmModel>{
 
 class ProductMlmSuplemenBloc extends BaseBloc{
   final ProductMlmSuplemenProvider _repository = ProductMlmSuplemenProvider();
-  final BehaviorSubject<ProductMlmSuplemenModel> getResult =
-  BehaviorSubject<ProductMlmSuplemenModel>();
+  final BehaviorSubject<ProductMlmSuplemenModel> getResult = BehaviorSubject<ProductMlmSuplemenModel>();
   fetchProductMlmSuplemenList(var page, var limit) async {
     ProductMlmSuplemenModel response = await _repository.fetchProductMlmSuplemen(page, limit);
     getResult.sink.add(response);

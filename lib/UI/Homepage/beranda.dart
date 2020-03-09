@@ -3,11 +3,9 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
@@ -16,7 +14,6 @@ import 'package:thaibah/UI/Widgets/mainCompass.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/asma_ui.dart';
-import 'package:thaibah/UI/component/inspirasi.dart';
 import 'package:thaibah/UI/component/news/newsPage.dart';
 import 'package:thaibah/UI/component/penarikan.dart';
 import 'package:thaibah/UI/component/pin/indexPin.dart';
@@ -45,6 +42,8 @@ import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
+import 'package:device_info/device_info.dart';
 
 
 
@@ -56,14 +55,14 @@ class Beranda extends StatefulWidget {
   BerandaState createState()=>BerandaState();
 }
 
-class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
+class BerandaState extends State<Beranda>{
 
   final TextStyle whiteText = TextStyle(color: Colors.white);
   final userRepository = UserRepository();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
 
 
-  String _name='',_saldoBonus="0",_saldoMain="0", _saldoVoucher="0",_saldo='0',_levelPlatinum='';
+  String _name='',_saldoBonus="0",_saldoMain="0", _saldoVoucher="0",_saldoPlatinum="0",_saldo='0',_levelPlatinum='';
   String pinku = "", id="", _nohp='', _level='';
   String _picture='',_kdRefferal='',_qr='';
   int levelPlatinumRaw=0;
@@ -103,55 +102,75 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
     }
   }
 
-  Future<void> loadData() async {
+  Future<void> refresh() async{
     Timer(Duration(seconds: 1), () {
       setState(() {isLoading = true;});
     });
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+    loadData();
+  }
+
+  bool retry = false;
+
+
+  Future<void> loadData() async {
     final prefs = await SharedPreferences.getInstance();
     final isPinZero  = await userRepository.getPin();
     final token = await userRepository.getToken();
     String id = await userRepository.getID();
-    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id,headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password});
-    if (jsonString.statusCode == 200) {
-      setState(() {isLoading = false;});
-      final jsonResponse = json.decode(jsonString.body);
-      info = new Info.fromJson(jsonResponse);
-      _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
-      _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
-     _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);
-      final checkVersion = await userRepository.cekVersion();
-      final checkStatusMember = await userRepository.cekStatusMember();
-      final checkLoginStatus = await userRepository.cekStatusLogin();
-      if(checkVersion == true){
-        setState(() {isLoading = false;});
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
-      }else if(checkStatusMember == true){
-        setState(() {isLoading = false;});
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-      }else if(checkLoginStatus == true){
-        setState(() {isLoading = false;});
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-      }else{
-        if(isPinZero == 0){
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    try{
+      var jsonString = await http.get(
+          ApiService().baseUrl+'info?id='+id,
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      ).timeout(Duration(seconds: ApiService().timerActivity));
+      if (jsonString.statusCode == 200) {
+        setState(() {isLoading = false;retry = false;});
+        final jsonResponse = json.decode(jsonString.body);
+        info = new Info.fromJson(jsonResponse);
+        _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
+        _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
+        _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);_saldoPlatinum=(info.result.saldoPlatinum);
+        final checkVersion = await userRepository.cekVersion();
+        final checkStatusMember = await userRepository.cekStatusMember();
+        final checkLoginStatus = await userRepository.cekStatusLogin();
+        if(checkVersion == true){
+          setState(() {isLoading = false;});
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+        }else if(checkStatusMember == true){
+          setState(() {isLoading = false;});
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+        }else if(checkLoginStatus == true){
+          setState(() {isLoading = false;});
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
         }else{
-          setState(() {
-            isPin = prefs.getBool('isPin');
-          });
-          if(isPin == false){
-            prefs.setBool('isPin', true);
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
+          if(isPinZero == 0){
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
+          }else{
+            setState(() {
+              isPin = prefs.getBool('isPin');
+            });
+            if(isPin == false){
+              prefs.setBool('isPin', true);
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
+            }
           }
         }
-      }
 
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load info');
+      }
+    }catch(e){
       setState(() {
-        isLoading = false;
+        isLoading = false;retry = true;
       });
-    } else {
-      throw Exception('Failed to load info');
+      GagalHitProvider().fetchRequest('home','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }
+
   }
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
@@ -192,10 +211,11 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
     // TODO: implement initState
     super.initState();
     loadData();
-    isLoading = true;
+    isLoading=true;
     versi = true;
     latitude  = widget.lat;
     longitude = widget.lng;
+    retry = false;
   }
   @override
   void dispose(){
@@ -206,8 +226,13 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    return buildContent(context);
+    return  retry==true ?UserRepository().requestTimeOut((){
+      setState(() {
+        isLoading=true;
+        retry=false;
+      });
+      loadData();
+    }): buildContent(context);
   }
 
   Widget buildContent(BuildContext context){
@@ -232,7 +257,7 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                       gradient: LinearGradient(
                         begin: Alignment.bottomRight,
                         end: Alignment.topLeft,
-                        colors: isLoading?<Color>[Color(0xFFfafafa),Color(0xFFfafafa)]:<Color>[Color(0xFF116240),Color(0xFF30cc23)],
+                        colors: <Color>[Color(0xFF116240),Color(0xFF30cc23)],
                       ),
                     ),
                     child: Column(
@@ -244,10 +269,10 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                             children: <Widget>[
                               Row(
                                 children: <Widget>[
-                                  isLoading?SkeletonFrame(width: 100.0,height: 100.0,):CircleAvatar(
+                                  CircleAvatar(
                                     radius: 35.0,
                                     child: CachedNetworkImage(
-                                      imageUrl: _picture==null?IconImgs.noImage:_picture,
+                                      imageUrl: _picture,
                                       imageBuilder: (context, imageProvider) => Container(
                                         width: 100.0,
                                         height: 100.0,
@@ -269,7 +294,7 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                                         children: <Widget>[
                                           Padding(
                                             padding: const EdgeInsets.only(left: 0.0),
-                                            child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                            child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                                           ),
                                           SizedBox(width: 7.0),
                                           levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
@@ -315,44 +340,7 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                             child: Container(height: 1.0,color: Colors.white),
                           ),
                         ),
-                        Container(
-                            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Utama',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,)),
-                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
-                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoMain,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                  ],
-                                ),
-                                SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Bonus',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
-                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoBonus,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                  ],
-                                ),
-                                SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text('Saldo Voucher',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0): SizedBox(height:2.0),
-                                    isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 12.0) : Text(_saldoVoucher,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
-                                  ],
-                                ),
-
-                              ],
-                            )
-                        ),
+                        levelPlatinumRaw==0?CardSaldo(saldoMain: _saldoMain,saldoBonus: _saldoBonus,saldoVoucher: _saldoVoucher,saldoPlatinum: _saldoPlatinum):CardSaldoNoPlatinum(saldoMain: _saldoMain,saldoBonus: _saldoBonus,saldoVoucher: _saldoVoucher,saldoPlatinum: _saldoPlatinum),
                       ],
                     ),
                   ),
@@ -361,7 +349,21 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
                   bottom: 0,
                   left: 10,
                   right: 10,
-                  child: buildCardSaldo(),
+                  child: Card(
+                    elevation: 1.0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                    color: Colors.white,
+                    child: Row(
+                      children: <Widget>[
+                        CardEmoney(imgUrl:'Icon_Utama_TopUp',title:'Top Up',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),).then((val){
+                          loadData(); //you get details from screen2 here
+                        });},),
+                        CardEmoney(imgUrl:'Icon_Utama_Transfer',title:'Transfer',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),).whenComplete(loadData);},),
+                        CardEmoney(imgUrl:'Icon_Utama_Penarikan',title:'Penarikan',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Penarikan(saldoMain: _saldoMain)),).whenComplete(loadData);},),
+                        CardEmoney(imgUrl:'Icon_Utama_History',title:'Riwayat',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => HistoryUI(page: 'home')));},),
+                      ],
+                    ),
+                  )
                 )
               ],
             ),
@@ -372,7 +374,7 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
           child: RefreshIndicator(
             child: ListView(
               children: <Widget>[
-                NewsHomePage(),
+               NewsHomePage(),
                 buildCardIcon(),
                 const SizedBox(height: 15.0),
                 titleQ("Jenjang Karir",Colors.black,true,'level'),
@@ -386,124 +388,14 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
               ],
             ),
             key: _refresh,
-            onRefresh: loadData
+            onRefresh: refresh
           )
         )
       ]
     );
   }
 
-  /* STRUKTUR WIDGET CARD E-WALLET */
-  Widget buildCardSaldo(){
-    return Card(
-      elevation: isLoading?0.0:1.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: isLoading?Colors.transparent:Colors.white,
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: GestureDetector(
-              onTap: (){
-                Navigator.of(context, rootNavigator: true).push(
-                  new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),
-                ).whenComplete(loadData);
-              },
-              child:ListTile(
-                contentPadding: EdgeInsets.only(left:10.0,right:10),
-                title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:16.0):Center(child: Column(
-                  children: <Widget>[
-                    SvgPicture.asset(
-                      isLoading?"http://lequytong.com/Content/Images/no-image-02.png":ApiService().assetsLocal+'Icon_Utama_TopUp.svg',
-                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
-                      height: ScreenUtilQ.getInstance().setHeight(60),
-                      width: ScreenUtilQ.getInstance().setWidth(60),
-                    ),
-                    SizedBox(height: 5.0),
-                    Text("Top Up", style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                  ],
-                )),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap:(){
-                Navigator.of(context, rootNavigator: true).push(
-                  new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),
-                ).whenComplete(loadData);
 
-              },
-              child:ListTile(
-                contentPadding: EdgeInsets.all(10.0),
-                title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:16.0):Center(child: Column(
-                  children: <Widget>[
-                    SvgPicture.asset(
-                      isLoading?"http://lequytong.com/Content/Images/no-image-02.png":ApiService().assetsLocal+'Icon_Utama_Transfer.svg',
-                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
-                      height: ScreenUtilQ.getInstance().setHeight(60),
-                      width: ScreenUtilQ.getInstance().setWidth(60),
-                    ),
-                    SizedBox(height: 5.0),
-                    Text("Transfer", style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                  ],
-                )),
-              )
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap:(){
-                Navigator.of(context, rootNavigator: true).push(
-                new CupertinoPageRoute(builder: (context) => Penarikan(saldoMain: _saldoMain)),
-                ).whenComplete(loadData);
-
-              },
-              child:ListTile(
-                contentPadding: EdgeInsets.all(10.0),
-                title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:16.0):Center(child: Column(
-                  children: <Widget>[
-                    SvgPicture.asset(
-                      isLoading?"http://lequytong.com/Content/Images/no-image-02.png":ApiService().assetsLocal+'Icon_Utama_Penarikan.svg',
-                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
-                      height: ScreenUtilQ.getInstance().setHeight(60),
-                      width: ScreenUtilQ.getInstance().setWidth(60),
-                    ),
-                    SizedBox(height: 5.0),
-                    Text("Penarikan", style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                  ],
-                )),
-              )
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: (){
-                Navigator.of(context, rootNavigator: true).push(
-                  new CupertinoPageRoute(builder: (context) => HistoryUI(page: 'home')),
-                ).whenComplete(loadData);
-
-              },
-              child: ListTile(
-                contentPadding: EdgeInsets.all(10.0),
-                title: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:16.0):Center(child: Column(
-                  children: <Widget>[
-                    SvgPicture.asset(
-                      isLoading?"http://lequytong.com/Content/Images/no-image-02.png":ApiService().assetsLocal+'Icon_Utama_History.svg',
-                      placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
-                      height: ScreenUtilQ.getInstance().setHeight(60),
-                      width: ScreenUtilQ.getInstance().setWidth(60),
-                    ),
-                    SizedBox(height: 5.0),
-                    Text("History", style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                  ],
-                )),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
   /* STRUKTUR WIDGET CARD ISLAMIC */
   Widget buildCardIcon(){
     return Card(
@@ -519,14 +411,31 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
             childAspectRatio: 1.1,
             crossAxisCount: 4,
             children: <Widget>[
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Baca_Alquran.svg','Al-Quran','alquran'),
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Waktu_Shalat.svg','Waktu Sholat','prayer'),
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Masjid_Terdekat.svg', 'Masjid','masjid'),
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Doa_Harian.svg', 'Doa Harian','doa'),
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Hadits.svg', 'hadits','Hadits'),
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Asmaul_Husna.svg','Asmaul Husna','asmaulhusna'),
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Kalender_Hijriah.svg','Kalender','kalender'),
-              wrapperIcon(context,ApiService().iconUrl+'Icon_Utama_Lainnya.svg','Lainnya','lainnya'),
+              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Baca_Alquran.svg',title: 'Al-Quran',xFunction: (){
+                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));
+              }),
+              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Waktu_Shalat.svg',title: 'Waktu Sholat',xFunction: (){
+                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)));
+              }),
+              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Masjid_Terdekat.svg',title: 'Masjid',xFunction: (){
+                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));
+              }),
+              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Doa_Harian.svg',title: 'Doa Harian',xFunction: (){
+                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));
+              }),
+              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Hadits.svg',title: 'Hadits',xFunction: (){
+                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));
+              }),
+              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Asmaul_Husna.svg',title: 'Asmaul Husna',xFunction: (){
+                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));
+              }),
+              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Kalender_Hijriah.svg',title: 'Kalender',xFunction: (){
+                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));
+              }),
+              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Lainnya.svg',title: 'Lainnya',xFunction: (){
+                _lainnyaModalBottomSheet(context,'ppob');
+              }),
+
             ],
           )
       ),
@@ -883,37 +792,6 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
       ],
     );
   }
-  Widget wrapperIcon(BuildContext context,String imgUrl, String title, String type){
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize:MainAxisSize.min ,
-      children: <Widget>[
-        GestureDetector(
-          onTap: () {
-            if(type == 'alquran'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()),);}
-            if(type == 'prayer'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)),);}
-            if(type == 'masjid'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())),);}
-            if(type == 'doa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')),);}
-            if(type == 'Hadits'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));}
-            if(type == 'asmaulhusna'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));}
-            if(type == 'kalender'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));}
-            if(type == 'lainnya'){_lainnyaModalBottomSheet(context,'ppob');}
-          },
-          child: SvgPicture.network(
-            isLoading?"http://lequytong.com/Content/Images/no-image-02.png":'$imgUrl',
-            placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
-            height: ScreenUtilQ.getInstance().setHeight(60),
-            width: ScreenUtilQ.getInstance().setWidth(60),
-          ),
-        ),
-        SizedBox(height: 5.0),
-        isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:16.0):Text("$title", style: TextStyle(fontWeight:FontWeight.bold,color:Colors.black,fontSize: 10,fontFamily: 'Rubik')),
-      ],
-    );
-  }
   void _lainnyaModalBottomSheet(context, String param){
     showModalBottomSheet(
         isScrollControlled: param == 'barcode' ? false : true,
@@ -992,16 +870,215 @@ class BerandaState extends State<Beranda> with AutomaticKeepAliveClientMixin {
         }
     );
   }
-  @override
-  bool get wantKeepAlive => true;
+
 }
+
+class CardSaldoNoPlatinum extends StatefulWidget {
+  final String saldoMain;
+  final String saldoBonus;
+  final String saldoVoucher;
+  final String saldoPlatinum;
+  CardSaldoNoPlatinum({this.saldoMain,this.saldoBonus,this.saldoVoucher,this.saldoPlatinum});
+  @override
+  _CardSaldoNoPlatinumState createState() => _CardSaldoNoPlatinumState();
+}
+
+class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text('Saldo Utama',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,)),
+                SizedBox(height:2.0),
+                Text(widget.saldoMain,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+              ],
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text('Saldo Bonus',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                SizedBox(height:2.0),
+                Text(widget.saldoBonus,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+              ],
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text('Saldo Voucher',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                SizedBox(height:2.0),
+                Text(widget.saldoVoucher,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+              ],
+            ),
+          ],
+        )
+    );
+  }
+}
+
+
+
+class CardSaldo extends StatefulWidget {
+  final String saldoMain;
+  final String saldoBonus;
+  final String saldoVoucher;
+  final String saldoPlatinum;
+  CardSaldo({this.saldoMain,this.saldoBonus,this.saldoVoucher,this.saldoPlatinum});
+  @override
+  _CardSaldoState createState() => _CardSaldoState();
+}
+
+class _CardSaldoState extends State<CardSaldo> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text('Saldo Utama',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,)),
+                SizedBox(height:2.0),
+                Text(widget.saldoMain,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+              ],
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text('Saldo Bonus',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                SizedBox(height:2.0),
+                Text(widget.saldoBonus,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+              ],
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text('Saldo Voucher',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                SizedBox(height:2.0),
+                Text(widget.saldoVoucher,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+              ],
+            ),
+           SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text('Saldo Platinum',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                SizedBox(height:2.0),
+                Text(widget.saldoPlatinum,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+              ],
+            ),
+          ],
+        )
+    );
+  }
+}
+
+
+class CardEmoney extends StatefulWidget {
+  final String imgUrl;final String title; final Function xFunction;
+  CardEmoney({this.imgUrl,this.title,this.xFunction});
+  @override
+  _CardEmoneyState createState() => _CardEmoneyState();
+}
+
+class _CardEmoneyState extends State<CardEmoney> {
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: (){
+          widget.xFunction();
+        },
+        child:ListTile(
+          contentPadding: EdgeInsets.only(left:10.0,right:10,top:10,bottom:10),
+          title: Center(child: Column(
+            children: <Widget>[
+              SvgPicture.network(
+                ApiService().iconUrl+widget.imgUrl+'.svg',
+                placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
+                height: ScreenUtilQ.getInstance().setHeight(60),
+                width: ScreenUtilQ.getInstance().setWidth(60),
+              ),
+              SizedBox(height: 5.0),
+              Text(widget.title, style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+            ],
+          )),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+class WrapperIcon extends StatefulWidget {
+  final String imgUrl; String title; Function xFunction;
+  WrapperIcon({this.imgUrl,this.title,this.xFunction});
+  @override
+  _WrapperIconState createState() => _WrapperIconState();
+}
+
+class _WrapperIconState extends State<WrapperIcon> {
+  @override
+  Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize:MainAxisSize.min ,
+      children: <Widget>[
+        GestureDetector(
+          onTap: () {
+            widget.xFunction();
+//            if(type == 'alquran'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()),);}
+//            if(type == 'prayer'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)),);}
+//            if(type == 'masjid'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())),);}
+//            if(type == 'doa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')),);}
+//            if(type == 'Hadits'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));}
+//            if(type == 'asmaulhusna'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));}
+//            if(type == 'kalender'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));}
+//            if(type == 'lainnya'){_lainnyaModalBottomSheet(context,'ppob');}
+          },
+          child: SvgPicture.network(
+            widget.imgUrl,
+            placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
+            height: ScreenUtilQ.getInstance().setHeight(60),
+            width: ScreenUtilQ.getInstance().setWidth(60),
+          ),
+        ),
+        SizedBox(height: 5.0),
+        Text(widget.title, style: TextStyle(fontWeight:FontWeight.bold,color:Colors.black,fontSize: 10,fontFamily: 'Rubik')),
+      ],
+    );
+  }
+}
+
 
 
 class CompasPage extends StatefulWidget {
   @override
   _CompasPageState createState() => _CompasPageState();
 }
-
 class _CompasPageState extends State<CompasPage> {
 
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,11 +20,13 @@ import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/bloc/profileBloc.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/memberProvider.dart';
+import 'package:thaibah/resources/profileProvider.dart';
 import 'component/sosmed/myFeed.dart';
 import 'loginPhone.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
-
+import 'package:device_info/device_info.dart';
 
 class ProfileUI extends StatefulWidget {
   @override
@@ -34,13 +35,13 @@ class ProfileUI extends StatefulWidget {
 
 class _ProfileUIState extends State<ProfileUI> {
   StreamSubscription streamConnectionStatus;
-
+  ProfileModel profileModel;
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   double _height;
   double _width;
   bool isLoading = false;
-  String spCover, spPicture, spName, spReff, spUnique, id;
+//  String spCover, spPicture, spName, spReff, spUnique, id;
   bool loginStatus;
   Future<File> file;
   File _image;
@@ -49,6 +50,7 @@ class _ProfileUIState extends State<ProfileUI> {
   final userRepository = UserRepository();
   String versionCode = '';
   bool versi = false;
+  bool retry=false;
   final _bloc=ProfileBloc();
   Future cekVersion() async {
 //    String id = await userRepository.getID();
@@ -74,18 +76,32 @@ class _ProfileUIState extends State<ProfileUI> {
 //    profileBloc.fetchProfileList();
     _bloc.fetchProfileList();
   }
-  Future getProfile() async{
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      loginStatus = prefs.getBool('login');
-      spCover = prefs.getString('cover');
-      spPicture = prefs.getString('picture');
-      spName = prefs.getString('name');
-      spReff = prefs.getString('kd_referral');
-      id    = prefs.getString("id");
-    });
-    return;
+
+  int jumlahJaringan=0;
+  String name='',picture='',cover='',kdReferral='',saldo='',rawSaldo='',saldoMain='',saldoBonus='',downline='';
+  String kaki1='',kaki2='',kaki3='',privacyPolicy='',omsetJaringan='',id='';
+  Future<void> loadData() async{
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    print('abus');
+    var res = await ProfileProvider().fetchProfile();
+    if(res is ProfileModel){
+      setState(() {
+        isLoading = false;retry = false;
+        var result = res.result;
+        jumlahJaringan=result.jumlahJaringan;
+        name=result.name;picture=result.picture;cover=result.cover;kdReferral=result.kdReferral;saldo=result.saldo;rawSaldo=result.rawSaldo;saldoMain=result.saldoMain;
+        saldoBonus=result.saldoBonus;downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
+        id=result.id;
+      });
+    }else{
+      GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      setState(() {
+        isLoading = false;retry = true;
+      });
+    }
   }
+
 
   void showInSnackBar(String value) {
     FocusScope.of(context).requestFocus(new FocusNode());
@@ -103,14 +119,6 @@ class _ProfileUIState extends State<ProfileUI> {
       backgroundColor: Colors.redAccent,
       duration: Duration(seconds: 3),
     ));
-  }
-  Future<Directory> getTemporaryDirectory() async {
-    return Directory.systemTemp;
-  }
-  Future clearData() async{
-    var appDir = (await getTemporaryDirectory()).path;
-    new Directory(appDir).delete(recursive: true);
-    print('############################# HAPUS DATA ##################################');
   }
   Future logout() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -151,39 +159,15 @@ class _ProfileUIState extends State<ProfileUI> {
       ],
     ).show();
   }
-  bool boolHasConnection;
 
-  Future<Null> getConnectionStatus() async {
-    streamConnectionStatus = new Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      debugPrint(result.toString());
-
-      if (result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi) {
-
-        setState(() {
-          boolHasConnection = true;
-        });
-      } else {
-        setState(() {
-          boolHasConnection = false;
-        });
-      }
-    });
-  }
 
 
   @override
   void initState() {
     super.initState();
 //    _bloc.fetchProfileList();
-//    profileBloc.fetchProfileList();
-//    cekVersion();
-    _bloc.fetchProfileList();
-    getConnectionStatus();
-    print(boolHasConnection);
-
+    loadData();
+    isLoading=true;
   }
 
   @override
@@ -223,29 +207,21 @@ class _ProfileUIState extends State<ProfileUI> {
     return Scaffold(
       key: scaffoldKey,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: RefreshIndicator(
+      body: isLoading ? _loading() : retry == true ? UserRepository().requestTimeOut((){
+        setState(() {
+          retry=false;
+          isLoading=true;
+        });
+        loadData();
+      }) : RefreshIndicator(
           child: Container(
             height: _height,
             width: _width,
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                  StreamBuilder(
-                      stream: _bloc.subject,
-                      builder: (context,AsyncSnapshot<ProfileModel> snapshot){
-                        if (snapshot.hasData) {
-                          return Column(
-                            children: <Widget>[
-                              _headerProfile(snapshot.data.result.jumlahJaringan,snapshot.data.result.name, snapshot.data.result.picture, snapshot.data.result.cover, snapshot.data.result.kdReferral, snapshot.data.result.saldo, snapshot.data.result.rawSaldo, snapshot.data.result.saldoMain, snapshot.data.result.saldoBonus, snapshot.data.result.downline),
-                              _menuMember(snapshot.data.result.kaki1,snapshot.data.result.kaki2,snapshot.data.result.kaki3,snapshot.data.result.privacy,snapshot.data.result.kdReferral,snapshot.data.result.jumlahJaringan,snapshot.data.result.omsetJaringan,snapshot.data.result.name,snapshot.data.result.saldoMain,snapshot.data.result.saldoBonus,snapshot.data.result.id),
-                            ],
-                          );
-                        } else if (snapshot.hasError) {
-                          return Text(snapshot.error.toString());
-                        }
-                        return _loading();
-                      }
-                  ),
+                  _headerProfile(),
+                  _menuMember(),
                 ],
               ),
             ),
@@ -256,7 +232,44 @@ class _ProfileUIState extends State<ProfileUI> {
     );
   }
 
-  Widget _headerProfile(var jumlahJaringan,var name,picture,var cover,var kdRefferal,var saldo,var rawSaldo,var saldoMain,var saldoBonus,var downline){
+  Widget requestTimeOut(){
+    return Container(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+
+            SizedBox.fromSize(
+              size: Size(100, 100), // button width and height
+              child: ClipOval(
+                child: Material(
+                  color: Colors.green, // button color
+                  child: InkWell(
+                    splashColor: Colors.green, // splash color
+                    onTap: () {
+
+                    }, // button pressed
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.refresh,color: Colors.white,), // icon
+                        Text("coba lagi",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0,),
+            Text("gagal memuat. harap periksa koneksi internet anda !!"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _headerProfile(){
     return Stack(
       alignment: Alignment.center,
       children: <Widget>[
@@ -324,7 +337,7 @@ class _ProfileUIState extends State<ProfileUI> {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Text(
-                          kdRefferal,
+                          kdReferral,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.white,fontFamily: 'Rubik',
                               shadows: [
@@ -339,7 +352,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         SizedBox(width: 5),
                         Icon(Icons.content_copy, color: Colors.white, size: 15,),]),
                   onTap: () {
-                    Clipboard.setData(new ClipboardData(text: kdRefferal));
+                    Clipboard.setData(new ClipboardData(text: kdReferral));
                     scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Kode Referral Berhasil Disalin")));
                   },
                 ),
@@ -394,7 +407,7 @@ class _ProfileUIState extends State<ProfileUI> {
                                   setState(() {
                                     isLoadingShare=true;
                                   });
-                                  share(kdRefferal);
+                                  share(kdReferral);
 
                                 },
                                 child: isLoadingShare?CircularProgressIndicator(): Container(
@@ -502,7 +515,7 @@ class _ProfileUIState extends State<ProfileUI> {
 
   }
 
-  Widget _menuMember(var kaki1,var kaki2,var kaki3,var privasi,var kdReferral, var jumlahJaringan,var omsetJaringan,var name,var saldoMain,var saldoBonus, var id){
+  Widget _menuMember(){
     return Container(
       margin: EdgeInsets.only(top: 5),
       color: Colors.white,
@@ -826,7 +839,7 @@ class _ProfileUIState extends State<ProfileUI> {
           FlatButton(
               onPressed: () async {
                 Navigator.of(context, rootNavigator: true).push(
-                  new CupertinoPageRoute(builder: (context) => PrivacyPolicy(privasi: privasi)),
+                  new CupertinoPageRoute(builder: (context) => PrivacyPolicy(privasi: privacyPolicy)),
                 );
 //                logout();
               },

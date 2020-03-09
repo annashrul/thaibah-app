@@ -74,6 +74,7 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
   void initState(){
     load();
     isLoading = true;
+
   }
 
 
@@ -114,7 +115,7 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
                 wrapOnboarding,
                 onTapDoneButton: (){
                   Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => DashboardThreePage(param: 'produk')),
+                    new CupertinoPageRoute(builder: (context) => DashboardThreePage(param:'produk')),
                   );
                 },
                 showSkipButton: true,
