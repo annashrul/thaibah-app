@@ -81,7 +81,7 @@ class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> {
                                 color: Colors.transparent,
                                 image: DecorationImage(
                                   image: imageProvider,
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.contain,
                                 ),
                                 boxShadow: [new BoxShadow(color:Colors.transparent,blurRadius: 5.0,offset: new Offset(2.0, 5.0))],
                               ),
@@ -97,12 +97,12 @@ class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(0.0),
-                              child: new Text('${snapshot.data.result.produk[i].title}',style: new TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black),),
+                              child: new Text('${snapshot.data.result.produk[i].title}',style: new TextStyle(fontSize: 11.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black),),
                             ),
                             SizedBox(height: 5.0),
                             Text('${snapshot.data.result.produk[i].qty} Barang (${snapshot.data.result.produk[i].weight} Gram) x Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice))}',style: TextStyle(fontSize: 10,fontFamily: 'Rubik',color:Colors.grey,fontWeight: FontWeight.bold),),
                             SizedBox(height: 5.0),
-                            Text('Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice)*int.parse(snapshot.data.result.produk[i].qty) )}',style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.redAccent,fontWeight: FontWeight.bold),)
+                            Text('Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice)*int.parse(snapshot.data.result.produk[i].qty) )}',style: TextStyle(fontSize: 11,fontFamily: 'Rubik',color: Colors.redAccent,fontWeight: FontWeight.bold),)
                           ],
                           crossAxisAlignment: CrossAxisAlignment.start,
                         ),

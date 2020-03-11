@@ -225,7 +225,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         ],
         centerTitle: false,
         elevation: 0.0,
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
         title: new Text("Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
       ),
       body: retry==true?UserRepository().requestTimeOut((){
@@ -251,29 +251,23 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
               itemCount: productMlmSuplemenModel.result.data.length,
               itemBuilder: (context, index) {
                 return  GestureDetector(
-                    onTap: (){
-                      if(productMlmSuplemenModel.result.data[index].qty != 0){
-                        addCart(productMlmSuplemenModel.result.data[index].id,int.parse(productMlmSuplemenModel.result.data[index].totalPrice),"1",productMlmSuplemenModel.result.data[index].weight.toString());
-                      }else{
-                        print('gagal');
-                      }
-                    },
-                    child: Card(
+                  onTap: (){
+                    if(productMlmSuplemenModel.result.data[index].qty != 0){
+                      addCart(productMlmSuplemenModel.result.data[index].id,int.parse(productMlmSuplemenModel.result.data[index].totalPrice),"1",productMlmSuplemenModel.result.data[index].weight.toString());
+                    }else{
+                      print('gagal');
+                    }
+                  },
+                  child: Card(
                       elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
                       child: new Column(
                         children: <Widget>[
                           new Stack(
                             children: <Widget>[
-                              //new Center(child: new CircularProgressIndicator()),
                               new Center(
                                 child: Container(
                                   width:MediaQuery.of(context).size.width/1,
-//
-//                                  borderRadius: BorderRadius.only(
-//                                      topLeft: Radius.circular(10.0),
-//                                      topRight: Radius.circular( 10.0)
-//                                  ),
                                   height:MediaQuery.of(context).size.height/2,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.only(
@@ -360,7 +354,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                           child: Text("Detail Produk Platinum", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
                                         ),
                                         Container(
-                                          padding: EdgeInsets.all(5),
+                                          padding: EdgeInsets.all(3),
                                           child: Html(
                                             data: productMlmSuplemenModel.result.data[index].detail,
                                             defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
@@ -370,7 +364,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                     )
                                         : Container(),
                                     Container(
-                                      padding: EdgeInsets.all(5),
+                                      padding: EdgeInsets.all(3),
                                       child: Html(
                                         data:productMlmSuplemenModel.result.data[index].descriptions,
                                         defaultTextStyle: TextStyle(fontFamily: 'Rubik'),
@@ -434,7 +428,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
       ),
       onRefresh: refresh,
       key: _refresh,
-    ) : Container(child: Center(child:Text('Tida Ada Data')));
+    ) : Container(child: Center(child:Text('Tidak Ada Data')));
 
   }
 

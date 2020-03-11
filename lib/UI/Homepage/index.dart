@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +23,7 @@ import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:unicorndial/unicorndial.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -50,8 +52,8 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
   }
   Location location = Location();
-  String latitude = '';
-  String longitude = '';
+  static String latitude = '';
+  static String longitude = '';
   Future updateApk() async{
     String url = 'https://play.google.com/store/apps/details?id=com.thaibah';
     if (await canLaunch(url)) {
@@ -99,21 +101,26 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
     print("################################# KALUAR APLIKASI ${prefs.getBool('isPin')} ##############################");
     return true;
   }
-  int currentTab = 0; // to keep track of active tab index
-  final List<Widget> screens = [
-    Beranda(),
-    ProdukMlmUI(),
-    About(),
-    Testimoni(),
-    ProfileUI(),
-  ]; // to store nested tabs
-  final PageStorageBucket bucket = PageStorageBucket();
-  Widget currentScreen = Beranda();
 
+  bool modeUpdate = false;
 
+  Future checkModeUpdate() async{
+    final prefs = await SharedPreferences.getInstance();
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    if(prefs.get('pin') == null || prefs.get('pin') == '') {
+      print('pin kosong');
+      setState(() {
+        modeUpdate = true;
+      });
+      GagalHitProvider().fetchRequest('index','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+    }
+  }
   // Our first view
   @override
   void initState() {
+    checkModeUpdate();
+    cekPath();
     location.onLocationChanged().listen((value) {
       if(mounted){
         setState(() {
@@ -191,31 +198,42 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 
 
   }
-  String _lastSelected = 'TAB: 0';
 
-  void _selectedTab(int index) {
-    setState(() {
-      _lastSelected = 'TAB: $index';
-    });
-  }
-  void _selectedFab(int index) {
-    setState(() {
-      _lastSelected = 'FAB: $index';
-    });
+  int currentTab = 0; // to keep track of active tab index
+  final List<Widget> screens = [
+    Beranda(lat: latitude,lng: longitude),
+    ProdukMlmUI(),
+    About(),
+    Testimoni(),
+    ProfileUI(),
+  ]; // to store nested tabs
+  final PageStorageBucket bucket = PageStorageBucket();
+  Widget currentScreen =  Beranda();
+
+  void cekPath(){
+    if(widget.param == 'beranda' || widget.param == ''){
+      setState(() {
+        currentTab = 0;
+        currentScreen = Beranda(lat: latitude,lng: longitude);
+      });
+    }
+    if(widget.param == 'produk'){
+      setState(() {
+        currentTab = 1;
+        currentScreen = ProdukMlmUI();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-
-
-    return latitude == null || longitude == null ? CircularProgressIndicator() :Scaffold(
+    return modeUpdate == true ? modeUpdateBuild() : latitude == null || longitude == null ? CircularProgressIndicator() :Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
       body: WillPopScope(
@@ -434,34 +452,47 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
 //        )
     );
   }
-
-  Widget _buildFab(BuildContext context) {
-    final icons = [ Icons.sms, Icons.mail, Icons.phone ];
-    return AnchoredOverlay(
-      showOverlay: true,
-      overlayBuilder: (context, offset) {
-        return CenterAbout(
-          position: Offset(offset.dx, offset.dy - icons.length * 35.0),
-          child: FabWithIcons(
-            icons: icons,
-            onIconTapped: _selectedFab,
+  Widget modeUpdateBuild(){
+    return Scaffold(
+      key: scaffoldKey,
+      backgroundColor: Colors.white,
+      body: Container(
+        padding:EdgeInsets.all(10.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox.fromSize(
+                size: Size(100, 100), // button width and height
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.green, // button color
+                    child: InkWell(
+                      splashColor: Colors.green, // splash color
+                      onTap: () async {
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        prefs.clear();
+                        prefs.commit();
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.power_settings_new,color: Colors.white,), // icon
+                          Text("Keluar",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.0,),
+              Text("anda baru saja mengupgdate aplikasi thaibah.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+              Text("tekan tombol keluar untuk melanjutkan proses pemakaian aplikasi thaibah",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+            ],
           ),
-        );
-      },
-      child: FloatingActionButton(
-        backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
-        child: SvgPicture.asset(
-          ApiService().assetsLocal+"t.svg",
-          height: ScreenUtilQ.getInstance().setHeight(50),
-          width: ScreenUtilQ.getInstance().setWidth(50),
-          color: currentTab == 2 ? Colors.white : Colors.green,
         ),
-        onPressed: () {
-          setState(() {
-//            currentScreen = About();// if user taps on this dashboard tab will be active
-            currentTab = 2;
-          });
-        },
       ),
     );
   }

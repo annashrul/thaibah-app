@@ -120,9 +120,6 @@ class _TestiKavlingState extends State<TestiKavling> {
 
                         },
                         child: Container(
-                            decoration: new BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
-                            ),
                             padding: EdgeInsets.all(10.0),
                             child: Column(
                               children: <Widget>[
@@ -162,7 +159,7 @@ class _TestiKavlingState extends State<TestiKavling> {
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: <Widget>[
                                         Container(
-                                          margin: EdgeInsets.only(top:100.0,bottom:0.0),
+                                          margin: EdgeInsets.only(top:65.0,bottom:0.0),
                                           alignment: Alignment.bottomLeft,
                                           child: Padding(
                                             padding: const EdgeInsets.all(15.0),
@@ -195,7 +192,7 @@ class _TestiKavlingState extends State<TestiKavling> {
                                           ),
                                         ),
                                         Container(
-                                          margin: EdgeInsets.only(top:100.0,bottom:0.0),
+                                          margin: EdgeInsets.only(top:65.0,bottom:0.0),
                                           alignment: Alignment.bottomLeft,
                                           child: Padding(
                                             padding: const EdgeInsets.all(15.0),

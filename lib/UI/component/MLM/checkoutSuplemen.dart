@@ -24,8 +24,8 @@ import 'package:thaibah/resources/productMlmProvider.dart';
 
 
 class CheckOutSuplemen extends StatefulWidget {
-  final total; final berat; final totQty; final saldoVoucher;final saldoMain;final address;final kdKec;final kecPengirim;final masaVoucher;final showPlatinum;final saldoPlatinum;
-  CheckOutSuplemen({this.total,this.berat,this.totQty,this.saldoVoucher,this.saldoMain,this.address,this.kdKec,this.kecPengirim,this.masaVoucher,this.showPlatinum,this.saldoPlatinum});
+  final total; final berat; final totQty; final saldoVoucher;final saldoMain;final address;final kdKec;final kecPengirim;final masaVoucher;final showPlatinum;final saldoPlatinum;final saldoGabungan;
+  CheckOutSuplemen({this.total,this.berat,this.totQty,this.saldoVoucher,this.saldoMain,this.address,this.kdKec,this.kecPengirim,this.masaVoucher,this.showPlatinum,this.saldoPlatinum,this.saldoGabungan});
   @override
   _CheckOutSuplemenState createState() => _CheckOutSuplemenState();
 }
@@ -77,6 +77,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   String saldoMain = "0";
   String saldoVoucher = "0";
   String saldoPlatinum = "0";
+  String saldoGabungan = "0";
   var expiredVoucher;
   var showPlatinum;
 
@@ -87,6 +88,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       saldoVoucher = widget.saldoVoucher;
       saldoMain = widget.saldoMain;
       saldoPlatinum = widget.saldoPlatinum;
+      saldoGabungan = widget.saldoGabungan;
     });
 
     if(dropdownValue == 'Saya'){
@@ -150,8 +152,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     ));
   }
   String alamat = '';
-  String _radioValue2 = 'saldo';
   bool cekColor = true;
+  String _radioValue2 = 'saldo';
   void _handleRadioValueChange2(String value) {
     _radioValue2 = value;
     switch (_radioValue2) {
@@ -166,6 +168,11 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         });
         break;
       case 'platinum':
+        setState(() {
+          cekColor = false;
+        });
+        break;
+      case 'gabungan':
         setState(() {
           cekColor = false;
         });
@@ -870,10 +877,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                               groupValue: _radioValue2,
                               onChanged: _handleRadioValueChange2,
                             ),
-                            new Text('Saldo Utama',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                            Text('Saldo Utama',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoMain",style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                        Text("$saldoMain",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
 
                       ],
                     ),
@@ -898,8 +905,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                             new Text('Saldo Voucher',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoVoucher",style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
-
+                        Text("$saldoVoucher",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
                       ],
                     ),
                   ) : Container(),
@@ -923,7 +929,47 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                             new Text('Saldo Platinum',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoPlatinum",style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                        Text("$saldoPlatinum",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+
+                      ],
+                    ),
+                  ) : Container(),
+                  showPlatinum == true ? SizedBox(height: 5.0) : SizedBox(height: 0.0),
+                  showPlatinum == true ? Container(
+                    padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Radio(
+                              value: 'gabungan',
+                              groupValue: _radioValue2,
+                              onChanged: _handleRadioValueChange2,
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text('Saldo Gabungan',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                                Text('gabungan saldo platinum & utama',style: new TextStyle(color:Colors.green,fontStyle: FontStyle.italic,fontSize: 10.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                              ],
+                            )
+
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text("$saldoPlatinum",textAlign:TextAlign.right,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                            Text("$saldoGabungan",textAlign:TextAlign.left,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                          ],
+                        )
 
                       ],
                     ),

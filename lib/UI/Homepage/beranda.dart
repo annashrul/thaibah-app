@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +38,7 @@ import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/UI/transfer_ui.dart';
 import 'package:thaibah/UI/upgradePlatinum.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/autoSizeTextQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
@@ -80,27 +81,7 @@ class BerandaState extends State<Beranda>{
   Info info;
 
   String versionCode = '';int statusMember;
-  Future<void> chekcer() async {
-    final checkVersion = await userRepository.cekVersion();
-    final checkStatusMember = await userRepository.cekStatusMember();
-    final checkLoginStatus = await userRepository.cekStatusLogin();
-    Timer(Duration(seconds: 1), () {
-      setState(() {isLoading = true;});
-    });
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    if(checkVersion == true){
-      setState(() {isLoading = false;});
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
-    }else if(checkStatusMember == true){
-      setState(() {isLoading = false;});
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-    }else if(checkLoginStatus == true){
-      setState(() {isLoading = false;});
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-    }else{
-      loadData();
-    }
-  }
+
 
   Future<void> refresh() async{
     Timer(Duration(seconds: 1), () {
@@ -111,66 +92,79 @@ class BerandaState extends State<Beranda>{
   }
 
   bool retry = false;
-
-
+  bool modeUpdate = false;
   Future<void> loadData() async {
     final prefs = await SharedPreferences.getInstance();
-    final isPinZero  = await userRepository.getPin();
-    final token = await userRepository.getToken();
-    String id = await userRepository.getID();
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    try{
-      var jsonString = await http.get(
-          ApiService().baseUrl+'info?id='+id,
-          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-      ).timeout(Duration(seconds: ApiService().timerActivity));
-      if (jsonString.statusCode == 200) {
-        setState(() {isLoading = false;retry = false;});
-        final jsonResponse = json.decode(jsonString.body);
-        info = new Info.fromJson(jsonResponse);
-        _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
-        _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
-        _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);_saldoPlatinum=(info.result.saldoPlatinum);
-        final checkVersion = await userRepository.cekVersion();
-        final checkStatusMember = await userRepository.cekStatusMember();
-        final checkLoginStatus = await userRepository.cekStatusLogin();
-        if(checkVersion == true){
-          setState(() {isLoading = false;});
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
-        }else if(checkStatusMember == true){
-          setState(() {isLoading = false;});
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-        }else if(checkLoginStatus == true){
-          setState(() {isLoading = false;});
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-        }else{
-          if(isPinZero == 0){
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
+    if(prefs.get('pin') == null || prefs.get('pin') == '') {
+      print('pin kosong');
+      setState(() {
+        isLoading = false;modeUpdate = true;
+      });
+      GagalHitProvider().fetchRequest('home','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+    }else{
+      final token = await userRepository.getToken();
+      String id = await userRepository.getID();
+      try{
+        var jsonString = await http.get(
+            ApiService().baseUrl+'info?id='+id,
+            headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+        ).timeout(Duration(seconds: ApiService().timerActivity));
+        if (jsonString.statusCode == 200) {
+          setState(() {isLoading = false;retry = false;});
+          final jsonResponse = json.decode(jsonString.body);
+          info = new Info.fromJson(jsonResponse);
+          _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
+          _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
+          _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);_saldoPlatinum=(info.result.saldoPlatinum);
+          final checkVersion = await userRepository.cekVersion();
+          final checkStatusMember = await userRepository.cekStatusMember();
+          final checkLoginStatus = await userRepository.cekStatusLogin();
+          if(checkVersion == true){
+            setState(() {isLoading = false;});
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+          }else if(checkStatusMember == true){
+            setState(() {isLoading = false;});
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+          }else if(checkLoginStatus == true){
+            setState(() {isLoading = false;});
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
           }else{
-            setState(() {
-              isPin = prefs.getBool('isPin');
-            });
-            if(isPin == false){
-              prefs.setBool('isPin', true);
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
+            final isPinZero  = await userRepository.getPin();
+            if(isPinZero == 0){
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
+            }else{
+              setState(() {
+                isPin = prefs.getBool('isPin');
+              });
+              if(isPin == false){
+                prefs.setBool('isPin', true);
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
+              }
             }
           }
+
+          setState(() {
+            isLoading = false;
+          });
+        } else {
+          throw Exception('Failed to load info');
         }
-
+      } on TimeoutException catch(e){
+        print('timeout: $e');
         setState(() {
-          isLoading = false;
+          isLoading = false;retry = true;
         });
-      } else {
-        throw Exception('Failed to load info');
+        GagalHitProvider().fetchRequest('home','kondisi = timeout $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      } on Error catch (e) {
+        print('Error: $e');
+        setState(() {
+          isLoading = false;retry = true;
+        });
+        GagalHitProvider().fetchRequest('home','kondisi = error $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
       }
-    }catch(e){
-      setState(() {
-        isLoading = false;retry = true;
-      });
-      GagalHitProvider().fetchRequest('home','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }
-
   }
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
@@ -196,7 +190,6 @@ class BerandaState extends State<Beranda>{
       );
     }
   }
-
   DateTime dt = DateTime.now();
 
   PrayerModel prayerModel;
@@ -226,218 +219,326 @@ class BerandaState extends State<Beranda>{
 
   @override
   Widget build(BuildContext context) {
-    return  retry==true ?UserRepository().requestTimeOut((){
+    return  modeUpdate == true ? modeUpdateBuild() : retry==true ? UserRepository().requestTimeOut((){
       setState(() {
         isLoading=true;
         retry=false;
       });
       loadData();
-    }): buildContent(context);
+    }):buildContent(context);
   }
 
-  Widget buildContent(BuildContext context){
-    return isLoading ? _loading() : Column(
-      children: <Widget>[
-        Flexible(
-          flex: 5,
-          child: Container(
-            child: Stack(
-              children: <Widget>[
-                Positioned(
-                  bottom: 40,
-                  top: 0,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.fromLTRB(0, 50.0, 0, 0.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20.0),
-                        bottomRight: Radius.circular(20.0),
-                      ),
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomRight,
-                        end: Alignment.topLeft,
-                        colors: <Color>[Color(0xFF116240),Color(0xFF30cc23)],
-                      ),
-                    ),
+  Widget modeUpdateBuild(){
+    return Container(
+      padding:EdgeInsets.all(10.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox.fromSize(
+              size: Size(100, 100), // button width and height
+              child: ClipOval(
+                child: Material(
+                  color: Colors.green, // button color
+                  child: InkWell(
+                    splashColor: Colors.green, // splash color
+                    onTap: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.clear();
+                      prefs.commit();
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+                    }, // button pressed
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        ListTile(
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  CircleAvatar(
-                                    radius: 35.0,
-                                    child: CachedNetworkImage(
-                                      imageUrl: _picture,
-                                      imageBuilder: (context, imageProvider) => Container(
-                                        width: 100.0,
-                                        height: 100.0,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                        ),
-                                      ),
-                                      placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
-                                      errorWidget: (context, url, error) => Icon(Icons.error),
-                                    ),
-                                  ),
-                                  SizedBox(width: 7.0),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 0.0),
-                                            child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                          ),
-                                          SizedBox(width: 7.0),
-                                          levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
-                                            onTap: (){
-                                              Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
-                                            },
-                                            child: Container(
-                                                padding: EdgeInsets.all(5),
-                                                decoration: new BoxDecoration(
-                                                  color: Colors.red,
-                                                  borderRadius: BorderRadius.circular(6),
-                                                ),
-                                                constraints: BoxConstraints(
-                                                  minWidth: 14,
-                                                  minHeight: 14,
-                                                ),
-                                                child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
-                                            ),
-                                          ):Container(child:Image.asset("assets/images/platinum.png",height:20.0,width:20.0))
-                                        ],
-                                      ),
-                                      levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 0.0),
-                                        child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                      ),
-                                      SizedBox(height: 7.0),
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 0.0),
-                                        child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-
-                        ),
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                          child: SizedBox(
-                            child: Container(height: 1.0,color: Colors.white),
-                          ),
-                        ),
-                        levelPlatinumRaw==0?CardSaldo(saldoMain: _saldoMain,saldoBonus: _saldoBonus,saldoVoucher: _saldoVoucher,saldoPlatinum: _saldoPlatinum):CardSaldoNoPlatinum(saldoMain: _saldoMain,saldoBonus: _saldoBonus,saldoVoucher: _saldoVoucher,saldoPlatinum: _saldoPlatinum),
+                        Icon(Icons.power_settings_new,color: Colors.white,), // icon
+                        Text("Keluar",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
                       ],
                     ),
                   ),
                 ),
-                Positioned(
-                  bottom: 0,
-                  left: 10,
-                  right: 10,
-                  child: Card(
-                    elevation: 1.0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                    color: Colors.white,
-                    child: Row(
-                      children: <Widget>[
-                        CardEmoney(imgUrl:'Icon_Utama_TopUp',title:'Top Up',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),).then((val){
-                          loadData(); //you get details from screen2 here
-                        });},),
-                        CardEmoney(imgUrl:'Icon_Utama_Transfer',title:'Transfer',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),).whenComplete(loadData);},),
-                        CardEmoney(imgUrl:'Icon_Utama_Penarikan',title:'Penarikan',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Penarikan(saldoMain: _saldoMain)),).whenComplete(loadData);},),
-                        CardEmoney(imgUrl:'Icon_Utama_History',title:'Riwayat',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => HistoryUI(page: 'home')));},),
-                      ],
+              ),
+            ),
+            SizedBox(height: 10.0,),
+            Text("anda baru saja mengupgdate aplikasi thaibah.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+            Text("tekan tombol keluar untuk melanjutkan proses pemakaian aplikasi thaibah",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget buildContent(BuildContext context){
+    var ratio = ui.window.devicePixelRatio;
+//    double mq=MediaQuery.of(context).size.height/13;
+    double mq;
+    if(ratio>=4.0){
+      mq = MediaQuery.of(context).size.height/20;
+    }else if(ratio >= 3.5 && ratio < 4.0){
+      mq = MediaQuery.of(context).size.height/13;
+    }else if(ratio >= 3.0 && ratio <3.5){
+      mq = MediaQuery.of(context).size.height/16;
+    }else if(ratio >= 2.5 && ratio <3.0){
+      mq = MediaQuery.of(context).size.height/30;
+    }else if(ratio >= 2.0 && ratio <2.5){
+      mq = MediaQuery.of(context).size.height/15;
+    }else if(ratio >= 1.0 && ratio < 2.0){
+      mq = MediaQuery.of(context).size.height/40;
+    }
+    // mq 4.5 = 20
+    // mq 4.0 = 20
+    // mq 3.5 = 13
+    print("longestSide ${MediaQuery.of(context).size.longestSide}");
+    print("shortestSide ${MediaQuery.of(context).size.shortestSide}");
+    print("aspectRatio ${MediaQuery.of(context).size.aspectRatio}");
+    print("devicePixelRatio ${ui.window.devicePixelRatio}");
+    return isLoading ? _loading() :Column(
+        children: <Widget>[
+          Flexible(
+            flex: ratio >= 2.5 && ratio <3.0 || ratio >= 1.0 && ratio < 2.0 ? 1 : ratio < 2.5 && ratio >= 2.0 ? 2 : 2,
+//            flex: 1,
+            fit: FlexFit.loose,
+            child: Container(
+              child: Stack(
+                children: <Widget>[
+                  Positioned(
+                    bottom: 40,
+                    top: 0,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.fromLTRB(0.0, mq, 0.0, 0.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20.0),
+                          bottomRight: Radius.circular(20.0),
+                        ),
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomRight,
+                          end: Alignment.topLeft,
+                          colors: <Color>[Color(0xFF116240),Color(0xFF30cc23)],
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          ListTile(
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    CircleAvatar(
+                                      radius: 35.0,
+                                      child: CachedNetworkImage(
+                                        imageUrl: _picture,
+                                        imageBuilder: (context, imageProvider) => Container(
+                                          width: 100.0,
+                                          height: 100.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                          ),
+                                        ),
+                                        placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
+                                        errorWidget: (context, url, error) => Icon(Icons.error),
+                                      ),
+                                    ),
+                                    SizedBox(width: 7.0),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 0.0),
+                                              child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                            ),
+                                            SizedBox(width: 7.0),
+                                            levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
+                                              onTap: (){
+                                                Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
+                                              },
+                                              child: Container(
+                                                  padding: EdgeInsets.all(5),
+                                                  decoration: new BoxDecoration(
+                                                    color: Colors.red,
+                                                    borderRadius: BorderRadius.circular(6),
+                                                  ),
+                                                  constraints: BoxConstraints(
+                                                    minWidth: 14,
+                                                    minHeight: 14,
+                                                  ),
+                                                  child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
+                                              ),
+                                            ):Container(child:Image.asset("assets/images/platinum.png",height:20.0,width:20.0))
+                                          ],
+                                        ),
+                                        levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 0.0),
+                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                        ),
+                                        SizedBox(height: 7.0),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 0.0),
+                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                          ),
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                            child: SizedBox(
+                              child: Container(height: 1.0,color: Colors.white),
+                            ),
+                          ),
+                          levelPlatinumRaw==0?CardSaldo(saldoMain: _saldoMain,saldoBonus: _saldoBonus,saldoVoucher: _saldoVoucher,saldoPlatinum: _saldoPlatinum):CardSaldoNoPlatinum(saldoMain: _saldoMain,saldoBonus: _saldoBonus,saldoVoucher: _saldoVoucher,saldoPlatinum: _saldoPlatinum),
+                        ],
+                      ),
                     ),
+                  ),
+                  Positioned(
+                      bottom: 0,
+                      left: 10,
+                      right: 10,
+                      child: Card(
+                        elevation: 1.0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                        color: Colors.white,
+                        child: Row(
+                          children: <Widget>[
+                            CardEmoney(imgUrl:'Icon_Utama_TopUp',title:'Top Up',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),).then((val){
+                              loadData(); //you get details from screen2 here
+                            });}),
+                            CardEmoney(imgUrl:'Icon_Utama_Transfer',title:'Transfer',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),).whenComplete(loadData);},),
+                            CardEmoney(imgUrl:'Icon_Utama_Penarikan',title:'Penarikan',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Penarikan(saldoMain: _saldoMain)),).whenComplete(loadData);},),
+                            CardEmoney(imgUrl:'Icon_Utama_History',title:'Riwayat',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => HistoryUI(page: 'home')));},),
+                          ],
+                        ),
+                      )
                   )
-                )
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        Flexible(
-          flex: 6,
-          child: RefreshIndicator(
-            child: ListView(
-              children: <Widget>[
-               NewsHomePage(),
-                buildCardIcon(),
-                const SizedBox(height: 15.0),
-                titleQ("Jenjang Karir",Colors.black,true,'level'),
-                const SizedBox(height: 15.0),
-                WrapperLevel(),
-                const SizedBox(height: 15.0),
-                titleQ("Informasi & Inspirasi",Colors.black,true,'inspirasi'),
-                const SizedBox(height: 15.0),
-                ListSosmed(),
-                const SizedBox(height: 15.0),
-              ],
-            ),
-            key: _refresh,
-            onRefresh: refresh
+          Flexible(
+            flex: 2,
+              fit: FlexFit.loose,
+              child: RefreshIndicator(
+                  child: SingleChildScrollView(
+                      child:Column(
+                        children: <Widget>[
+                          NewsHomePage(),
+                          Card(
+                            elevation: 1.0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                            color: Colors.white,
+                            margin: const EdgeInsets.only(left:15.0,right: 15.0,top: 0.0,bottom: 0.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize:MainAxisSize.min ,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize:MainAxisSize.min ,
+                                  children: <Widget>[
+                                    CardEmoney(imgUrl:'Icon_Utama_Baca_Alquran',title:'Al-Quran',xFunction: (){
+                                      Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));}),
+                                    CardEmoney(imgUrl:'Icon_Utama_Waktu_Shalat',title:'Waktu Shalat',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)));},),
+                                    CardEmoney(imgUrl:'Icon_Utama_Masjid_Terdekat',title:'Masjid',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>  MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));},),
+                                    CardEmoney(imgUrl:'Icon_Utama_Doa_Harian',title:'Doa Harian',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));},),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize:MainAxisSize.min ,
+                                  children: <Widget>[
+                                    CardEmoney(imgUrl:'Icon_Utama_Hadits',title:'Hadits',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));},),
+                                    CardEmoney(imgUrl:'Icon_Utama_Asmaul_Husna',title:'Asmaul Husna',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));},),
+                                    CardEmoney(imgUrl:'Icon_Utama_Kalender_Hijriah',title:'Kalender',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));},),
+                                    CardEmoney(imgUrl:'Icon_Utama_Lainnya',title:'Lainnya',xFunction: (){
+                                      _lainnyaModalBottomSheet(context,'ppob');
+                                    },),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+//                              buildCardIcon(),
+                          const SizedBox(height: 15.0),
+                          titleQ("Jenjang Karir",Colors.black,true,'level'),
+                          const SizedBox(height: 15.0),
+                          WrapperLevel(),
+                          const SizedBox(height: 15.0),
+                          titleQ("Informasi & Inspirasi",Colors.black,true,'inspirasi'),
+                          const SizedBox(height: 0.0),
+                          ListSosmed(),
+                          const SizedBox(height: 15.0),
+                        ],
+                      )
+                  ),
+                  key: _refresh,
+                  onRefresh: refresh
+              )
           )
-        )
-      ]
+
+        ]
     );
   }
 
 
   /* STRUKTUR WIDGET CARD ISLAMIC */
   Widget buildCardIcon(){
-    return Card(
-      elevation: isLoading?0.0:1.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: isLoading?Colors.transparent:Colors.white,
+    return Container(
+      decoration: BoxDecoration(
+        color:isLoading?Colors.transparent:Colors.green,
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0),bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
+      ),
+//      color: isLoading?Colors.transparent:Colors.white,
       margin: const EdgeInsets.only(left:15.0,right: 15.0,top: 10.0,bottom: 0.0),
-      child: Padding(
-          padding: EdgeInsets.only(left:0.0,right:0.0,top:10.0,bottom: 0.0),
-          child: GridView.count(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            childAspectRatio: 1.1,
-            crossAxisCount: 4,
-            children: <Widget>[
-              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Baca_Alquran.svg',title: 'Al-Quran',xFunction: (){
-                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));
-              }),
-              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Waktu_Shalat.svg',title: 'Waktu Sholat',xFunction: (){
-                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)));
-              }),
-              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Masjid_Terdekat.svg',title: 'Masjid',xFunction: (){
-                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));
-              }),
-              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Doa_Harian.svg',title: 'Doa Harian',xFunction: (){
-                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));
-              }),
-              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Hadits.svg',title: 'Hadits',xFunction: (){
-                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));
-              }),
-              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Asmaul_Husna.svg',title: 'Asmaul Husna',xFunction: (){
-                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));
-              }),
-              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Kalender_Hijriah.svg',title: 'Kalender',xFunction: (){
-                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));
-              }),
-              WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Lainnya.svg',title: 'Lainnya',xFunction: (){
-                _lainnyaModalBottomSheet(context,'ppob');
-              }),
+      child: GridView.count(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        childAspectRatio: 1.1,
+        crossAxisCount: 4,
+        children: <Widget>[
+          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Baca_Alquran.svg',title: 'Al-Quran',xFunction: (){
+            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));
+          }),
+          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Waktu_Shalat.svg',title: 'Waktu Sholat',xFunction: (){
+            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)));
+          }),
+          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Masjid_Terdekat.svg',title: 'Masjid',xFunction: (){
+            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));
+          }),
+          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Doa_Harian.svg',title: 'Doa Harian',xFunction: (){
+            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));
+          }),
+          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Hadits.svg',title: 'Hadits',xFunction: (){
+            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));
+          }),
+          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Asmaul_Husna.svg',title: 'Asmaul Husna',xFunction: (){
+            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));
+          }),
+          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Kalender_Hijriah.svg',title: 'Kalender',xFunction: (){
+            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));
+          }),
+          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Lainnya.svg',title: 'Lainnya',xFunction: (){
+            _lainnyaModalBottomSheet(context,'ppob');
+          }),
 
-            ],
-          )
+        ],
       ),
     );
   }
@@ -889,15 +990,23 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
     return Container(
         padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('Saldo Utama',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,)),
+                AutoSizeTextQ(
+                  'Saldo Utama',
+                  style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,),
+                  maxLines: 2,
+                ),
                 SizedBox(height:2.0),
-                Text(widget.saldoMain,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ(
+                  widget.saldoMain,
+                  style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                  maxLines: 2
+                ),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -905,9 +1014,13 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('Saldo Bonus',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ(
+                  'Saldo Bonus',
+                  style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                  maxLines: 2
+                ),
                 SizedBox(height:2.0),
-                Text(widget.saldoBonus,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -915,9 +1028,9 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('Saldo Voucher',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                Text(widget.saldoVoucher,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
           ],
@@ -942,7 +1055,7 @@ class _CardSaldoState extends State<CardSaldo> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
+        padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -950,9 +1063,17 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('Saldo Utama',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,)),
+                AutoSizeTextQ(
+                  'Saldo Utama',
+                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,),
+                  maxLines: 2,
+                ),
                 SizedBox(height:2.0),
-                Text(widget.saldoMain,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ(
+                    widget.saldoMain,
+                    style: TextStyle(fontSize:11.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    maxLines: 2
+                ),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -960,9 +1081,13 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('Saldo Bonus',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ(
+                    'Saldo Bonus',
+                    style: TextStyle(fontSize:11.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    maxLines: 2
+                ),
                 SizedBox(height:2.0),
-                Text(widget.saldoBonus,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:11.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -970,19 +1095,19 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('Saldo Voucher',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:11.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                Text(widget.saldoVoucher,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:11.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
-           SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('Saldo Platinum',style: TextStyle(fontSize:12.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:11.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                Text(widget.saldoPlatinum,style: TextStyle(fontSize:12.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),),
+                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
           ],
@@ -1010,6 +1135,9 @@ class _CardEmoneyState extends State<CardEmoney> {
         child:ListTile(
           contentPadding: EdgeInsets.only(left:10.0,right:10,top:10,bottom:10),
           title: Center(child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize:MainAxisSize.min ,
             children: <Widget>[
               SvgPicture.network(
                 ApiService().iconUrl+widget.imgUrl+'.svg',
@@ -1018,7 +1146,7 @@ class _CardEmoneyState extends State<CardEmoney> {
                 width: ScreenUtilQ.getInstance().setWidth(60),
               ),
               SizedBox(height: 5.0),
-              Text(widget.title, style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
             ],
           )),
         ),
@@ -1262,3 +1390,48 @@ class _CompasPageState extends State<CompasPage> {
 //  }
 //}
 //
+class CustomText {
+  final String label;
+  final double fontSize;
+  final String fontName;
+  final int textColor;
+  final int iconColor;
+  final TextAlign textAlign;
+  final int maxLines;
+  final IconData icon;
+
+  CustomText(
+      {@required this.label,
+        this.fontSize = 10.0,
+        this.fontName,
+        this.textColor = 0xFF000000,
+        this.iconColor = 0xFF000000,
+        this.textAlign = TextAlign.start,
+        this.maxLines = 1,
+        this.icon=Icons.broken_image
+      });
+
+  Widget text() {
+    var text = new Text(
+      label,
+      textAlign: textAlign,
+      overflow: TextOverflow.ellipsis,
+      maxLines: maxLines,
+      style: new TextStyle(
+        color: Color(textColor),
+        fontSize: fontSize,
+        fontFamily: fontName,
+      ),
+    );
+
+    return new Row(
+      children: <Widget>[
+        new Padding(
+          padding: EdgeInsets.all(10.0),
+          child: new Icon(icon,color: Color(iconColor),),
+        ),
+        text
+      ],
+    );
+  }
+}

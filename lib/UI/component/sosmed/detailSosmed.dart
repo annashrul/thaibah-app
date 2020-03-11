@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -11,6 +10,7 @@ import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
@@ -60,30 +60,40 @@ class _DetailSosmedState extends State<DetailSosmed> {
 
 
   Future sendLikeOrUnLike(bool param) async{
-
-
     var res = await SosmedProvider().sendLikeOrUnLike(widget.id);
-    if(res is General){
-      General results = res;
-      if(results.status == 'success'){
-        setState(() {
-          isLoadingLikeOrUnLike = false;
-        });
-        _blocDetail.fetchListDetailSosmed(widget.id);
-      }else{
+    print("######################## $res #######################");
+    if(res.toString() == 'timeout' || res.toString() == 'error'){
+      setState(() {
+        isLoadingLikeOrUnLike = false;
+      });
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      GagalHitProvider().fetchRequest('like or unlike','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      return showInSnackBar("terjadi kesalah jaringan");
+    }else{
+      if(res is General){
+        General results = res;
+        if(results.status == 'success'){
+          setState(() {
+            isLoadingLikeOrUnLike = false;
+          });
+          _blocDetail.fetchListDetailSosmed(widget.id);
+        }else{
+          setState(() {
+            isLoadingLikeOrUnLike = false;
+          });
+          return showInSnackBar(results.msg);
+        }
+      }
+      else{
+        General results = res;
         setState(() {
           isLoadingLikeOrUnLike = false;
         });
         return showInSnackBar(results.msg);
       }
     }
-    else{
-      General results = res;
-      setState(() {
-        isLoadingLikeOrUnLike = false;
-      });
-      return showInSnackBar(results.msg);
-    }
+
 
   }
   void showInSnackBar(String value) {
@@ -236,17 +246,18 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                       )
                                     ],
                                   ),
-                                  isLoadingShare ? CircularProgressIndicator(): InkWell(
-                                      onTap:(){
-                                        setState(() {
-                                          isLoadingShare=true;
-                                        });
-                                        share(snapshot.data.result.picture,snapshot.data.result.caption);
-                                      },
-                                      child:new Icon(FontAwesomeIcons.shareAlt)
+                                  isLoadingShare ? CircularProgressIndicator(): Container(
+                                    margin: EdgeInsets.only(right: 10.0),
+                                    child:InkWell(
+                                        onTap:(){
+                                          setState(() {
+                                            isLoadingShare=true;
+                                          });
+                                          share(snapshot.data.result.picture,snapshot.data.result.caption);
+                                        },
+                                        child:new Icon(FontAwesomeIcons.shareAlt)
+                                    )
                                   ),
-
-
                                 ],
                               ),
                             ),
@@ -317,12 +328,12 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                             _blocDetail.fetchListDetailSosmed(widget.id); //you get details from screen2 here
                                           });
                                         },
-                                        child:int.parse(snapshot.data.result.likes) != 0 ? Text("$sukai",style: TextStyle(decoration: TextDecoration.underline,fontFamily: 'Rubik',fontWeight: FontWeight.bold)) : Text("$sukai",style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                                        child:int.parse(snapshot.data.result.likes) != 0 ? Text("$sukai",style: TextStyle(decoration: TextDecoration.underline,fontFamily: 'Rubik',fontWeight: FontWeight.bold,fontSize: 10.0)) : Text("$sukai",style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold,fontSize: 10.0),),
                                       ),
                                       new SizedBox(width: 16.0),
                                       new Icon(FontAwesomeIcons.comment),
                                       new SizedBox(width: 10.0),
-                                      Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                                      Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontSize:10.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
 
 
                                     ],

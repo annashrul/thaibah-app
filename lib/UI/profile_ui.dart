@@ -87,7 +87,7 @@ class _ProfileUIState extends State<ProfileUI> {
     var res = await ProfileProvider().fetchProfile();
     if(res is ProfileModel){
       setState(() {
-        isLoading = false;retry = false;
+        isLoading = false; retry = false;
         var result = res.result;
         jumlahJaringan=result.jumlahJaringan;
         name=result.name;picture=result.picture;cover=result.cover;kdReferral=result.kdReferral;saldo=result.saldo;rawSaldo=result.rawSaldo;saldoMain=result.saldoMain;
@@ -160,26 +160,24 @@ class _ProfileUIState extends State<ProfileUI> {
     ).show();
   }
 
-
+  Future<void> refresh() async {
+    Timer(Duration(seconds: 1), () {
+      setState(() {
+        isLoading = true;
+      });
+    });
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+    loadData();
+  }
 
   @override
   void initState() {
     super.initState();
-//    _bloc.fetchProfileList();
     loadData();
     isLoading=true;
   }
 
-  @override
-  void dispose() {
-    try {
-      streamConnectionStatus?.cancel();
-    } catch (exception, stackTrace) {
-      print(exception.toString());
-    } finally {
-      super.dispose();
-    }
-  }
+
 
   bool isLoadingShare = false;
   Future share(param) async{
@@ -226,46 +224,9 @@ class _ProfileUIState extends State<ProfileUI> {
               ),
             ),
           ),
-          onRefresh: _refresh
+          onRefresh: refresh
       ),
 
-    );
-  }
-
-  Widget requestTimeOut(){
-    return Container(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-
-            SizedBox.fromSize(
-              size: Size(100, 100), // button width and height
-              child: ClipOval(
-                child: Material(
-                  color: Colors.green, // button color
-                  child: InkWell(
-                    splashColor: Colors.green, // splash color
-                    onTap: () {
-
-                    }, // button pressed
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(Icons.refresh,color: Colors.white,), // icon
-                        Text("coba lagi",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 10.0,),
-            Text("gagal memuat. harap periksa koneksi internet anda !!"),
-          ],
-        ),
-      ),
     );
   }
 
@@ -275,7 +236,6 @@ class _ProfileUIState extends State<ProfileUI> {
       children: <Widget>[
         GestureDetector(
           onTap: (){
-
           },
           child: Container(
             height: MediaQuery.of(context).size.height/2.5,
@@ -301,8 +261,7 @@ class _ProfileUIState extends State<ProfileUI> {
                 Container(
                   width: 80.0,
                   height: 80.0,
-//                  color:Colors.black.withOpacity(0.5),
-                  margin: EdgeInsets.only(top:20.0),
+                  margin: EdgeInsets.only(top:0.0),
                   padding: EdgeInsets.all(10),
                   child: CircleAvatar(
                     minRadius: 90,

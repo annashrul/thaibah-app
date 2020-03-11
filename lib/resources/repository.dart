@@ -133,7 +133,7 @@ class Repository{
 
   Future<NearbyMosqueModel> fetchAllNearbyMosque(var lat, var lng) => nearbyMosqueProvider.fetchNearbyMosque(lat, lng);
   Future fetchConfig() => configProvider.fetchConfig();
-  Future fetchLoginNohp(var nohp, var deviceid) => loginProvider.fetchLoginNoHp(nohp, deviceid);
+  Future fetchLoginNohp(var nohp, var deviceid,var typeotp) => loginProvider.fetchLoginNoHp(nohp, deviceid,typeotp);
   Future fetchContact() => memberProvider.fetchContact();
   Future fetchMember(var id) => memberProvider.fetchMember(id);
   Future fetchCreateMyBank(var bankname,var bankcode,var acc_no, var acc_name) => myBankProvider.fetchCreateMyBank(bankname, bankcode, acc_no, acc_name);

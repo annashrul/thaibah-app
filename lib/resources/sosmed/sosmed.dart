@@ -110,22 +110,42 @@ class SosmedProvider {
   Future sendLikeOrUnLike(var id) async {
     final token = await userRepository.getToken();
     final deviceId = await userRepository.getDeviceId();
-    return await client.post(
-        ApiService().baseUrl+"socmed/like",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
-        body: {
-          "id_content":"$id",
-          "deviceid":"$deviceId",
-        }).then((Response response) {
-      var results;
+    var results;
+//    try{
+//      final response = await client.post(
+//          ApiService().baseUrl+"socmed/like",
+//          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+//          body: {"id_content":"$id","deviceid":"$deviceId"}
+//      ).timeout(Duration(microseconds: ApiService().timerActivity));
+//      if(response.statusCode == 200){
+//        results = General.fromJson(json.decode(response.body));
+//      }else{
+//        results = General.fromJson(json.decode(response.body));
+//      }
+//    }catch(e){
+//      results = 'gagal';
+//    }
+//    return results;
+//    var results;
+    try{
+      final response =  await client.post(
+          ApiService().baseUrl+"socmed/like",
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+          body: {"id_content":"$id","deviceid":"$deviceId"}
+      ).timeout(Duration(seconds: ApiService().timerActivity));
       if(response.statusCode == 200){
         results = General.fromJson(json.decode(response.body));
       }else if(response.statusCode == 400){
         results = General.fromJson(json.decode(response.body));
       }
       print(results.status);
-      return results;
-    });
+    } on TimeoutException catch(e){
+      results =  'timeout';
+    } on Error catch (e) {
+      print('Error: $e');
+      results = 'error';
+    }
+    return results;
   }
 
 

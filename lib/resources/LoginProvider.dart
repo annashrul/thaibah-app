@@ -44,11 +44,12 @@ class LoginProvider {
 //    });
 //  }
 
-  Future fetchLoginNoHp(var nohp,var deviceid) async {
+  Future fetchLoginNoHp(var nohp,var deviceid,var typeotp) async {
     return await client.post(ApiService().baseUrl+"auth/login",
       body: {
         "nohp":"$nohp",
         "deviceid":"$deviceid",
+        "typeotp":"$typeotp",
       }).then((Response response) {
         print(response.body);
       var results;

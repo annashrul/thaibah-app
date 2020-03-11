@@ -1,16 +1,8 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:thaibah/Model/mainUiModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/testimoni/testiKavling.dart';
 import 'package:thaibah/UI/component/testimoni/testiSuplemen.dart';
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
-import 'package:http/http.dart' as http;
 
 class Testimoni extends StatefulWidget {
   @override

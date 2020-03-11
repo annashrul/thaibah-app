@@ -10,7 +10,7 @@ class AuthEmailBloc extends BaseBloc<AuthModel> {
 
 class AuthNoHpBloc extends BaseBloc {
   Observable get getResult => fetcher.stream;
-  Future fetchAuthNoHp(var nohp,var deviceid) async =>  await repository.fetchLoginNohp(nohp, deviceid);
+  Future fetchAuthNoHp(var nohp,var deviceid,var typeotp) async =>  await repository.fetchLoginNohp(nohp, deviceid,typeotp);
 }
 
 

@@ -1,10 +1,13 @@
 
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/authModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
+import 'package:thaibah/Model/typeOtpModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/regist_ui.dart';
@@ -16,8 +19,10 @@ import 'dart:math' as math;
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
 
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPhone extends StatefulWidget {
   @override
@@ -36,6 +41,28 @@ class _LoginPhoneState extends State<LoginPhone> {
 
   final userRepository = UserRepository();
 
+  bool typeOtp = true;
+  TypeOtpModel typeOtpModel;
+  Future<void> loadData() async {
+    try{
+      var jsonString = await http.get(
+          ApiService().baseUrl+'info/typeotp'
+      ).timeout(Duration(seconds: ApiService().timerActivity));
+      if (jsonString.statusCode == 200) {
+        final jsonResponse = json.decode(jsonString.body);
+        typeOtpModel = new TypeOtpModel.fromJson(jsonResponse);
+        setState(() {
+          typeOtp=typeOtpModel.result.typeOtp;
+        });
+      } else {
+        throw Exception('Failed to load info');
+      }
+    } on TimeoutException catch(e){
+      print('timeout: $e');
+    } on Error catch (e) {
+      print('Error: $e');
+    }
+  }
 
   Future login() async{
     if(codeCountry == ''){
@@ -68,7 +95,13 @@ class _LoginPhoneState extends State<LoginPhone> {
       setState(() {_isLoading = false;});
       return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
     }else{
-      var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId);
+      if(typeOtp==false){
+        _radioValue2 = null;
+      }else{
+        _radioValue2 = _radioValue2;
+      }
+      print(_radioValue2);
+      var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId,_radioValue2);
       if(res is AuthModel){
         AuthModel result = res;
         if(result.status == 'success'){
@@ -106,6 +139,7 @@ class _LoginPhoneState extends State<LoginPhone> {
         return showInSnackBar("No Handphone Tidak Terdaftar");
       }
     }
+    print(_radioValue2);
   }
 
 
@@ -122,6 +156,7 @@ class _LoginPhoneState extends State<LoginPhone> {
   @override
   void initState() {
     super.initState();
+    loadData();
     _isLoading = false;
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
     var settings = {
@@ -130,7 +165,20 @@ class _LoginPhoneState extends State<LoginPhone> {
     };
     OneSignal.shared.init(ApiService().deviceId, iOSSettings: settings);
   }
+  bool isSwitched = true;
+  String _radioValue2 = 'whatsapp';
+  void _handleRadioValueChange2(String value) {
+    _radioValue2 = value;
+    switch (_radioValue2) {
+      case 'whatsapp':
+        setState(() {});
+        break;
+      case 'sms':
+        setState(() {});
+        break;
+    }
 
+  }
   @override
   void dispose() {
     // TODO: implement dispose
@@ -144,14 +192,7 @@ class _LoginPhoneState extends State<LoginPhone> {
     _large =  ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     _medium =  ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
     return pages(context);
-//    return FutureBuilder<bool>(
-//      future: getLoginStatus(),
-//      builder: (context, snapshot) {
-//        if (snapshot.data == null) return CircularProgressIndicator();
-//        return (snapshot.data) ?
-//        DashboardThreePage():  pages(context);
-//      },
-//    );
+
   }
 
   Widget pages(BuildContext context) {
@@ -168,7 +209,7 @@ class _LoginPhoneState extends State<LoginPhone> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(top: 60.0),
+                padding: EdgeInsets.only(top: 30.0),
                 child: Center(child:Image.asset("assets/images/logoOnBoardTI.png",width: 120.0)),
               ),
               Expanded(
@@ -180,7 +221,7 @@ class _LoginPhoneState extends State<LoginPhone> {
 
           SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.only(left: 28.0, right: 28.0, top: 40.0),
+              padding: EdgeInsets.only(left: 28.0, right: 28.0, top: 10.0),
               child: Column(
                 children: <Widget>[
                   Row(
@@ -195,7 +236,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                   SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
                   Container(
                     width: double.infinity,
-                    height: ScreenUtilQ.getInstance().setHeight(320),
+                    height: ScreenUtilQ.getInstance().setHeight(typeOtp==true?460:320),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(0.0),
@@ -259,9 +300,66 @@ class _LoginPhoneState extends State<LoginPhone> {
                                   decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
                                 ),
                               ),
+
                             ],
                           ),
-                          SizedBox(height:10.0),
+                          SizedBox(height:typeOtp==true?5.0:0.0),
+                          typeOtp==true?Text("Kirim OTP via ?",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))):Text(''),
+                          SizedBox(height:typeOtp==true?5.0:0.0),
+                          typeOtp==true?Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                width:MediaQuery.of(context).size.width/2.5,
+                                padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.green,width: 3.0),
+                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Radio(
+                                          value: 'whatsapp',
+                                          groupValue: _radioValue2,
+                                          onChanged: _handleRadioValueChange2,
+                                        ),
+                                        Text("WahtsApp",textAlign:TextAlign.center,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 20.0),
+                              Container(
+                                width:MediaQuery.of(context).size.width/3,
+                                padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.green,width: 3.0),
+                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Radio(
+                                          value: 'sms',
+                                          groupValue: _radioValue2,
+                                          onChanged: _handleRadioValueChange2,
+                                        ),
+                                        Text("SMS",textAlign:TextAlign.center,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                                      ],
+                                    ),
+
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ):Container()
 
                         ],
                       ),

@@ -15,10 +15,9 @@ dependencies:
   font_awesome_flutter:
   flutter_bloc: ^0.20.0
   date_range_picker: ^1.0.5
-  cupertino_icons: ^0.1.2
+#  cupertino_icons: ^0.1.2
   rxdart: ^0.22.0
   http: ^0.12.0+1
-  expandable: ^2.1.1
   provider:
   intl: ^0.15.7
   image_picker:

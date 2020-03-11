@@ -47,6 +47,7 @@ class Result {
   String saldoVoucher;
   String saldoPlatinum;
   bool platinumShow;
+  String saldoGabunganUtama;
   bool masaVoucher;
 
   Result({
@@ -62,6 +63,7 @@ class Result {
     this.saldoVoucher,
     this.saldoPlatinum,
     this.platinumShow,
+    this.saldoGabunganUtama,
     this.masaVoucher,
   });
 
@@ -78,6 +80,7 @@ class Result {
     saldoVoucher: json["saldo_voucher"],
     saldoPlatinum: json["saldo_platinum"],
     platinumShow: json["platinum_show"],
+    saldoGabunganUtama: json["saldo_gabungan_utama"],
     masaVoucher: json["masa_voucher"],
   );
 
@@ -94,6 +97,7 @@ class Result {
     "saldo_voucher": saldoVoucher,
     "saldo_platinum": saldoPlatinum,
     "platinum_show": platinumShow,
+    "saldo_gabungan_utama": saldoGabunganUtama,
     "masa_voucher": masaVoucher,
   };
 }
