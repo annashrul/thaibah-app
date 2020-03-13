@@ -114,9 +114,7 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
               child: IntroViewsFlutter(
                 wrapOnboarding,
                 onTapDoneButton: (){
-                  Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => DashboardThreePage(param:'produk')),
-                  );
+                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage(param:'produk')), (Route<dynamic> route) => false);
                 },
                 showSkipButton: true,
                 doneText: Text("Mulai",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),

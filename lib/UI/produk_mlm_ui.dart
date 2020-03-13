@@ -1,6 +1,8 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'loginPhone.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info/device_info.dart';
@@ -125,31 +127,42 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     return true;
   }
 
+  bool modeUpdate = false;
 
   Future loadData(var page, var limit) async{
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     final token = await userRepository.getToken();
-    try{
-      final jsonString = await http.get(
-          ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
-          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-      ).timeout(Duration(seconds: ApiService().timerActivity));
-      if (jsonString.statusCode == 200) {
-        final jsonResponse = json.decode(jsonString.body);
-        productMlmSuplemenModel = new ProductMlmSuplemenModel.fromJson(jsonResponse);
-        setState(() {
-          isLoading = false;retry = false;
-        });
-      } else {
-        throw Exception('Failed to load photos');
-      }
-    }catch(e){
+    final prefs = await SharedPreferences.getInstance();
+    if(prefs.get('pin') == null || prefs.get('pin') == ''){
+      print('pin kosong');
       setState(() {
-        isLoading = false;retry = true;
+        isLoading = false;modeUpdate = true;
       });
-      GagalHitProvider().fetchRequest('produk','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      GagalHitProvider().fetchRequest('produk','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+    }else{
+      try{
+        final jsonString = await http.get(
+            ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
+            headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+        ).timeout(Duration(seconds: ApiService().timerActivity));
+        if (jsonString.statusCode == 200) {
+          final jsonResponse = json.decode(jsonString.body);
+          productMlmSuplemenModel = new ProductMlmSuplemenModel.fromJson(jsonResponse);
+          setState(() {
+            isLoading = false;retry = false;
+          });
+        } else {
+          throw Exception('Failed to load photos');
+        }
+      }catch(e){
+        setState(() {
+          isLoading = false;retry = true;
+        });
+        GagalHitProvider().fetchRequest('produk','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      }
     }
+
   }
 
   @override
@@ -432,7 +445,46 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
 
   }
 
-
+  Widget modeUpdateBuild(){
+    return Container(
+      padding:EdgeInsets.all(10.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox.fromSize(
+              size: Size(100, 100), // button width and height
+              child: ClipOval(
+                child: Material(
+                  color: Colors.green, // button color
+                  child: InkWell(
+                    splashColor: Colors.green, // splash color
+                    onTap: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.clear();
+                      prefs.commit();
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+                    }, // button pressed
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.power_settings_new,color: Colors.white,), // icon
+                        Text("Keluar",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0,),
+            Text("anda baru saja mengupgdate aplikasi thaibah.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+            Text("tekan tombol keluar untuk melanjutkan proses pemakaian aplikasi thaibah",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+          ],
+        ),
+      ),
+    );
+  }
   Widget _loading(){
     return Padding(
         padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),

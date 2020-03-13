@@ -1,7 +1,7 @@
 name: thaibah
 description: A new Flutter project.
 
-version: 1.1.6+19
+version: 1.1.9+22
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -37,12 +37,12 @@ dependencies:
   flutter_swiper: ^1.1.4
   country_code_picker: ^1.1.7
   flutter_country_picker: ^0.1.6
-  flutter_webview_plugin: ^0.3.10
+#  flutter_webview_plugin: ^0.3.10
   onesignal_flutter: ^2.2.0
   wc_flutter_share: ^0.1.1
   barcode_scan: ^1.0.0
   flutter_youtube: "^2.0.0"
-  flutter_local_notifications:
+#  flutter_local_notifications:
   unicorndial: "^1.1.5"
 
 dev_dependencies:

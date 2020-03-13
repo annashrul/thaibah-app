@@ -570,13 +570,13 @@ class _UpdatePageState extends State<UpdatePage> {
                   SizedBox(height: 20.0),
                   Container(
                     child: Center(
-                      child: Text("Silahkan Perbaharui Aplikasi Anda Ke Versi ${ApiService().versionCode} !!".toUpperCase(), style:TextStyle(color:Colors.red,fontSize:14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                      child: Text("Silahkan Perbaharui Aplikasi Anda Ke Versi ${ApiService().versionCode} !!".toUpperCase(), textAlign: TextAlign.center, style:TextStyle(color:Colors.red,fontSize:14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                     ),
                   ),
                   SizedBox(height: 20.0),
                   Container(
                     child: Center(
-                      child: Text("Tekan Tombol Dibawah Ini Untuk Memperbaharui Aplikasi ...".toUpperCase(), style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                      child: Text("Tekan Tombol Dibawah Ini Untuk Memperbaharui Aplikasi ...".toUpperCase(),  textAlign: TextAlign.center,style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                     ),
                   ),
                   SizedBox(height: 20.0),
@@ -595,9 +595,8 @@ class _UpdatePageState extends State<UpdatePage> {
                         },
                         child: Text(
                           "Perbaharui Aplikasi Sekarang".toUpperCase(),
-                          style: TextStyle(
-                              fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold
-                          ),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

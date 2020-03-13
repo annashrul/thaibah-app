@@ -80,26 +80,38 @@ class _ProfileUIState extends State<ProfileUI> {
   int jumlahJaringan=0;
   String name='',picture='',cover='',kdReferral='',saldo='',rawSaldo='',saldoMain='',saldoBonus='',downline='';
   String kaki1='',kaki2='',kaki3='',privacyPolicy='',omsetJaringan='',id='';
+  bool modeUpdate=false;
   Future<void> loadData() async{
+    final prefs = await SharedPreferences.getInstance();
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     print('abus');
     var res = await ProfileProvider().fetchProfile();
-    if(res is ProfileModel){
+    if(prefs.get('pin') == null || prefs.get('pin') == ''){
+      print('pin kosong');
       setState(() {
-        isLoading = false; retry = false;
-        var result = res.result;
-        jumlahJaringan=result.jumlahJaringan;
-        name=result.name;picture=result.picture;cover=result.cover;kdReferral=result.kdReferral;saldo=result.saldo;rawSaldo=result.rawSaldo;saldoMain=result.saldoMain;
-        saldoBonus=result.saldoBonus;downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
-        id=result.id;
+        isLoading = false;modeUpdate = true;
       });
+      GagalHitProvider().fetchRequest('profile','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }else{
-      GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-      setState(() {
-        isLoading = false;retry = true;
-      });
+      if(res is ProfileModel){
+        setState(() {
+          isLoading = false; retry = false;
+          var result = res.result;
+          jumlahJaringan=result.jumlahJaringan;
+          name=result.name;picture=result.picture;cover=result.cover;kdReferral=result.kdReferral;saldo=result.saldo;rawSaldo=result.rawSaldo;saldoMain=result.saldoMain;
+          saldoBonus=result.saldoBonus;downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
+          id=result.id;
+        });
+      }
+      else{
+        GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+        setState(() {
+          isLoading = false;retry = true;
+        });
+      }
     }
+
   }
 
 
@@ -205,7 +217,7 @@ class _ProfileUIState extends State<ProfileUI> {
     return Scaffold(
       key: scaffoldKey,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: isLoading ? _loading() : retry == true ? UserRepository().requestTimeOut((){
+      body: modeUpdate == true ? modeUpdateBuild() : isLoading ? _loading() : retry == true ? UserRepository().requestTimeOut((){
         setState(() {
           retry=false;
           isLoading=true;
@@ -229,7 +241,46 @@ class _ProfileUIState extends State<ProfileUI> {
 
     );
   }
-
+  Widget modeUpdateBuild(){
+    return Container(
+      padding:EdgeInsets.all(10.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox.fromSize(
+              size: Size(100, 100), // button width and height
+              child: ClipOval(
+                child: Material(
+                  color: Colors.green, // button color
+                  child: InkWell(
+                    splashColor: Colors.green, // splash color
+                    onTap: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.clear();
+                      prefs.commit();
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+                    }, // button pressed
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.power_settings_new,color: Colors.white,), // icon
+                        Text("Keluar",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0,),
+            Text("anda baru saja mengupgdate aplikasi thaibah.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+            Text("tekan tombol keluar untuk melanjutkan proses pemakaian aplikasi thaibah",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+          ],
+        ),
+      ),
+    );
+  }
   Widget _headerProfile(){
     return Stack(
       alignment: Alignment.center,

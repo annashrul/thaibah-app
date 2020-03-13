@@ -41,7 +41,7 @@ import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/autoSizeTextQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+//import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:device_info/device_info.dart';
@@ -271,9 +271,14 @@ class BerandaState extends State<Beranda>{
 
 
   Widget buildContent(BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     var ratio = ui.window.devicePixelRatio;
 //    double mq=MediaQuery.of(context).size.height/13;
+    //dayu = longestSide 785.0, shortestSide 360.0 Size(899.4, 411.4
     double mq;
+    int fl;
+
     if(ratio>=4.0){
       mq = MediaQuery.of(context).size.height/20;
     }else if(ratio >= 3.5 && ratio < 4.0){
@@ -281,7 +286,8 @@ class BerandaState extends State<Beranda>{
     }else if(ratio >= 3.0 && ratio <3.5){
       mq = MediaQuery.of(context).size.height/16;
     }else if(ratio >= 2.5 && ratio <3.0){
-      mq = MediaQuery.of(context).size.height/30;
+      mq = ScreenUtilQ.getInstance().setWidth(10);
+      mq = MediaQuery.of(context).size.height/35;
     }else if(ratio >= 2.0 && ratio <2.5){
       mq = MediaQuery.of(context).size.height/15;
     }else if(ratio >= 1.0 && ratio < 2.0){
@@ -293,12 +299,13 @@ class BerandaState extends State<Beranda>{
     print("longestSide ${MediaQuery.of(context).size.longestSide}");
     print("shortestSide ${MediaQuery.of(context).size.shortestSide}");
     print("aspectRatio ${MediaQuery.of(context).size.aspectRatio}");
+    print("flifed ${MediaQuery.of(context).size.flipped}");
     print("devicePixelRatio ${ui.window.devicePixelRatio}");
     return isLoading ? _loading() :Column(
         children: <Widget>[
           Flexible(
-            flex: ratio >= 2.5 && ratio <3.0 || ratio >= 1.0 && ratio < 2.0 ? 1 : ratio < 2.5 && ratio >= 2.0 ? 2 : 2,
-//            flex: 1,
+//            flex: ratio >= 2.5 && ratio <3.0 || ratio >= 1.0 && ratio < 2.0 ? 1 : ratio < 2.5 && ratio >= 2.0 ? 2 : 2,
+            flex: 2,
             fit: FlexFit.loose,
             child: Container(
               child: Stack(
@@ -308,7 +315,7 @@ class BerandaState extends State<Beranda>{
                     top: 0,
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.fromLTRB(0.0, mq, 0.0, 0.0),
+                      padding: EdgeInsets.fromLTRB(0.0, ScreenUtilQ.getInstance().setHeight(50), 0.0, ScreenUtilQ.getInstance().setHeight(50)),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(20.0),
@@ -406,7 +413,8 @@ class BerandaState extends State<Beranda>{
                     ),
                   ),
                   Positioned(
-                      bottom: 0,
+//                    top:190,
+                      bottom:0,
                       left: 10,
                       right: 10,
                       child: Card(
@@ -1202,53 +1210,53 @@ class _WrapperIconState extends State<WrapperIcon> {
 }
 
 
-
-class CompasPage extends StatefulWidget {
-  @override
-  _CompasPageState createState() => _CompasPageState();
-}
-class _CompasPageState extends State<CompasPage> {
-
-
-
-  @override
-  Widget build(BuildContext context) {
-    return WebviewScaffold(
-      url: 'https://qiblafinder.withgoogle.com/intl/id/onboarding',
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Arah Kiblat", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
-      withZoom: true,
-      withLocalStorage: true,
-      hidden: true,
-      initialChild: Container(
-        color: Colors.white,
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-    );
-  }
-}
+//
+//class CompasPage extends StatefulWidget {
+//  @override
+//  _CompasPageState createState() => _CompasPageState();
+//}
+//class _CompasPageState extends State<CompasPage> {
+//
+//
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    return WebviewScaffold(
+//      url: 'https://qiblafinder.withgoogle.com/intl/id/onboarding',
+//      appBar: AppBar(
+//        leading: IconButton(
+//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+//          onPressed: () => Navigator.of(context).pop(),
+//        ),
+//        centerTitle: false,
+//        flexibleSpace: Container(
+//          decoration: BoxDecoration(
+//            gradient: LinearGradient(
+//              begin: Alignment.centerLeft,
+//              end: Alignment.centerRight,
+//              colors: <Color>[
+//                Color(0xFF116240),
+//                Color(0xFF30cc23)
+//              ],
+//            ),
+//          ),
+//        ),
+//        elevation: 1.0,
+//        automaticallyImplyLeading: true,
+//        title: new Text("Arah Kiblat", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//      ),
+//      withZoom: true,
+//      withLocalStorage: true,
+//      hidden: true,
+//      initialChild: Container(
+//        color: Colors.white,
+//        child: const Center(
+//          child: CircularProgressIndicator(),
+//        ),
+//      ),
+//    );
+//  }
+//}
 
 //
 //class IsPIN extends StatefulWidget {
