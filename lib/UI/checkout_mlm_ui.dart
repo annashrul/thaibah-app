@@ -2,12 +2,12 @@ import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 
@@ -276,7 +276,7 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return RichAlertDialog(
+              return RichAlertDialogQ(
                 alertTitle: richTitle("Transaksi Berhasil"),
                 alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
                 alertType: RichAlertType.SUCCESS,

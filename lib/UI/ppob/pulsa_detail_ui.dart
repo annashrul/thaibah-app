@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/checkoutPPOBModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -12,6 +11,7 @@ import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/PPOB/PPOBPraBloc.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 
 
@@ -206,7 +206,7 @@ class _DetailPulsaUIState extends State<DetailPulsaUI> with SingleTickerProvider
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return RichAlertDialog(
+                return RichAlertDialogQ(
                   alertTitle: richTitle("Transaksi Berhasil"),
                   alertSubtitle: richSubtitle(results.msg),
                   alertType: RichAlertType.SUCCESS,

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Model/tertimoniModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
@@ -176,6 +179,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> {
                                                     onTap: () {
                                                       Navigator.of(context, rootNavigator: true).push(
                                                         new CupertinoPageRoute(builder: (context) => DetailInspirasi(param:'Testimoni Produk',video: snapshot.data.result.data[index].video,caption: snapshot.data.result.data[index].caption,rating:snapshot.data.result.data[index].rating.toString())),
+
                                                       );
                                                     }, // button pressed
                                                     child: Column(
@@ -283,3 +287,5 @@ class _TestiSuplemenState extends State<TestiSuplemen> {
   }
 
 }
+
+

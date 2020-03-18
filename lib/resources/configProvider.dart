@@ -23,17 +23,22 @@ class ConfigProvider {
     }
   }
 
-  Future<Checker> cekVersion() async{
-    final token = await userRepository.getToken();
-    final response = await client.get(
-      ApiService().baseUrl+'info/checker',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-    );
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      return compute(checkerFromJson,response.body);
-    } else {
-      throw Exception('Failed to load info');
+  Future cekVersion() async{
+    try{
+      final token = await userRepository.getToken();
+      final response = await client.get(
+          ApiService().baseUrl+'info/checker',
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      ).timeout(Duration(seconds: ApiService().timerActivity));
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        return compute(checkerFromJson,response.body);
+      } else {
+        throw Exception('Failed to load cek versi');
+      }
+    }
+    catch(e){
+      return 'gagal';
     }
   }
 

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,6 +20,7 @@ import 'package:thaibah/UI/component/sosmed/inboxSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyFeed extends StatefulWidget {
 
@@ -288,9 +290,22 @@ class _MyFeedState extends State<MyFeed> {
                                         Align(
                                           alignment: Alignment.centerLeft,
                                           child: Container(
-                                            child: Html(
-                                              data:caption, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+                                            child:Linkify(
+                                              onOpen: (link) async {
+                                                if (await canLaunch(link.url)) {
+                                                  await launch(link.url);
+                                                } else {
+                                                  throw 'Could not launch $link';
+                                                }
+                                              },
+                                              text: caption,
+                                              style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+                                              linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
                                             ),
+//
+//                                            child: Html(
+//                                              data:caption, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+//                                            ),
                                           ),
                                         ),
                                       ],

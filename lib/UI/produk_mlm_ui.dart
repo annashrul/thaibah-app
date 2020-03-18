@@ -23,6 +23,7 @@ import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'Widgets/loadMoreQ.dart';
 import 'Widgets/skeletonFrame.dart';
 import 'package:http/http.dart' as http;
+import 'package:thaibah/UI/Widgets/tutorialClearData.dart';
 
 class ProdukMlmUI extends StatefulWidget {
 
@@ -48,7 +49,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   final _bloc = ProductMlmSuplemenBloc();
   bool retry=false;
   ProductMlmSuplemenModel productMlmSuplemenModel;
-
+  bool moreThenOne = false;
+  int counterHit =0;
   Future addCart(var id, var harga, var qty, var weight) async{
     setState(() {});
 //    print(harga);
@@ -129,6 +131,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
 
   bool modeUpdate = false;
 
+
+
   Future loadData(var page, var limit) async{
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -141,26 +145,37 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
       });
       GagalHitProvider().fetchRequest('produk','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }else{
-      try{
-        final jsonString = await http.get(
-            ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
-            headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-        ).timeout(Duration(seconds: ApiService().timerActivity));
-        if (jsonString.statusCode == 200) {
-          final jsonResponse = json.decode(jsonString.body);
-          productMlmSuplemenModel = new ProductMlmSuplemenModel.fromJson(jsonResponse);
-          setState(() {
-            isLoading = false;retry = false;
-          });
-        } else {
-          throw Exception('Failed to load photos');
-        }
-      }catch(e){
-        setState(() {
-          isLoading = false;retry = true;
-        });
-        GagalHitProvider().fetchRequest('produk','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      if(counterHit >= 2){
+       setState(() {
+         isLoading = false;
+         moreThenOne = true;
+       });
+       GagalHitProvider().fetchRequest('produk','kondisi = percobaan 2x gagal, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+
       }
+      else{
+        try{
+          final jsonString = await http.get(
+              ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
+              headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+          ).timeout(Duration(seconds: ApiService().timerActivity));
+          if (jsonString.statusCode == 200) {
+            final jsonResponse = json.decode(jsonString.body);
+            productMlmSuplemenModel = new ProductMlmSuplemenModel.fromJson(jsonResponse);
+            setState(() {
+              isLoading = false;retry = false;
+            });
+          } else {
+            throw Exception('Failed to load photos');
+          }
+        }catch(e){
+          setState(() {
+            isLoading = false;retry = true;
+          });
+          GagalHitProvider().fetchRequest('produk','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+        }
+      }
+
     }
 
   }
@@ -173,6 +188,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     versi = true;
     loadData(1,perpage);
     isLoading=true;
+    moreThenOne=false;
     print("###################### $mounted ###########################");
   }
 
@@ -243,10 +259,13 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
       ),
       body: retry==true?UserRepository().requestTimeOut((){
         setState(() {
+          counterHit = counterHit+1;
           retry=false;
           isLoading=true;
         });
         loadData(1, perpage);
+      }):moreThenOne==true?UserRepository().moreThenOne(context, (){
+        Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TutorialClearData()));
       }):buildContent(context)
     );
   }

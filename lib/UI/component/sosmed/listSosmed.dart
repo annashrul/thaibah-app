@@ -4,10 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ListSosmed extends StatefulWidget {
   @override
@@ -79,11 +82,16 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
                 String caption = '';
-                if(snapshot.data.result.data[index].caption.length > 100){
-                  caption = snapshot.data.result.data[index].caption.substring(0,100)+ " ....";
+                if(snapshot.data.result.data[index].caption.substring(0,1) == "<"){
+                  caption = 'konten tidak tersedia';
                 }else{
-                  caption = snapshot.data.result.data[index].caption;
+                  if(snapshot.data.result.data[index].caption.length > 100){
+                    caption = snapshot.data.result.data[index].caption.substring(0,100)+ " ....";
+                  }else{
+                    caption = snapshot.data.result.data[index].caption;
+                  }
                 }
+
 
                 return InkWell(
                   onTap: () async {
@@ -118,9 +126,21 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                     Align(
                                       alignment: Alignment.centerLeft,
                                       child: Container(
-                                        child: Html(
-                                          data:caption, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+                                        child:Linkify(
+                                          onOpen: (link) async {
+                                            if (await canLaunch(link.url)) {
+                                              await launch(link.url);
+                                            } else {
+                                              throw 'Could not launch $link';
+                                            }
+                                          },
+                                          text: removeAllHtmlTags(caption),
+                                          style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+                                          linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
                                         ),
+//                                        child: Html(
+//                                          data:caption, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
+//                                        ),
                                       ),
                                     ),
                                   ],

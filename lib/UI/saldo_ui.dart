@@ -4,19 +4,12 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/component/bank/getAvailableBank.dart';
 import 'package:thaibah/UI/component/pin/indexPin.dart';
-import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/flutterMaskedText.dart';
 import 'package:thaibah/config/user_repo.dart';
-
-import 'Homepage/index.dart';
-import 'Widgets/pin_screen.dart';
-
 String pin = "";
-
-
 class SaldoUI extends StatefulWidget {
 
   String saldo; String name;
@@ -37,7 +30,7 @@ class _SaldoUIState extends State<SaldoUI> {
   TextEditingController pinController = TextEditingController();
   final FocusNode saldoFocus = FocusNode();
 //  MoneyMaskedTextController moneyMaskedTextController;
-  var moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
+  var moneyController = MoneyMaskedTextControllerQ(decimalSeparator: '.', thousandSeparator: ',');
   String _saldo;
   bool isLoading = false;
   double _crossAxisSpacing = 8, _mainAxisSpacing = 12, _aspectRatio = 2;

@@ -5,12 +5,12 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/depositManual/detailDepositProvider.dart';
@@ -66,7 +66,7 @@ class _DetailDepositState extends State<DetailDeposit> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return RichAlertDialog(
+            return RichAlertDialogQ(
               alertTitle: richTitle("Uplod Bukti Transfer Berhasil"),
               alertSubtitle: richSubtitle("Silahkan Tunggu Konfirmasi Dari Admin"),
               alertType: RichAlertType.SUCCESS,
@@ -89,7 +89,7 @@ class _DetailDepositState extends State<DetailDeposit> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return RichAlertDialog(
+            return RichAlertDialogQ(
               alertTitle: richTitle("Terjadi Kesalahan"),
               alertSubtitle: richSubtitle("Uplod Bukti Transfer Berhasil"),
               alertType: RichAlertType.ERROR,

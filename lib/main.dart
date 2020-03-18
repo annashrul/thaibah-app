@@ -22,8 +22,25 @@ import 'package:connectivity/connectivity.dart';
 import 'UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-void main(){
-  runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var id = prefs.getString('id');
+  var pin = prefs.getString('pin');
+  var token = prefs.getString('token');
+  var cek = prefs.getBool('cek');
+  print(id);
+  print(cek);
+  print(pin);
+  print(token);
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+//      home: id == null ? LoginPhone() : MyApp()
+      home: cek == false ? Splash() : (id == null || pin == null || token == null ? Splash() :  MyApp())
+    )
+  );
+//  runApp(MyApp());
 }
 
 
@@ -267,8 +284,6 @@ class _IntroScreenState extends State<IntroScreen> {
   Future load() async{
     Client client = Client();
     final response = await client.get(ApiService().baseUrl+'info/onboarding');
-
-
     if(response.statusCode == 200){
       final jsonResponse = json.decode(response.body);
       if(response.body.isNotEmpty){

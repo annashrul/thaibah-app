@@ -5,23 +5,19 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:thaibah/Model/configModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/member/contactModel.dart' as prefix0;
 import 'package:thaibah/Model/transferDetailModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/component/detailTransfer.dart';
 import 'package:thaibah/bloc/configBloc.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
-import 'package:thaibah/bloc/transferBloc.dart';
-import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/flutterMaskedText.dart';
 import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/transferProvider.dart';
 
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
-import 'Widgets/pin_screen.dart';
 
 class TransferUI extends StatefulWidget {
   final String saldo, qr;
@@ -41,7 +37,7 @@ class _TransferUIState extends State<TransferUI> {
   final FocusNode tfFocus       = FocusNode();
   final FocusNode penerimaFocus = FocusNode();
   final FocusNode pesanFocus    = FocusNode();
-  var moneyMaskedTextController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
+  var moneyMaskedTextController = MoneyMaskedTextControllerQ(decimalSeparator: '.', thousandSeparator: ',');
 
   _fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
     currentFocus.unfocus();

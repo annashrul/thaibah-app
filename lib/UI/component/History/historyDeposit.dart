@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:intl/intl.dart';
 import 'package:thaibah/Model/depositManual/historyDepositModel.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/detailDeposit.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
+import 'package:thaibah/config/dateRangePickerQ.dart' as DateRagePicker;
 
 class HistoryDeposit extends StatefulWidget {
   @override
@@ -32,7 +32,7 @@ class _HistoryDepositState extends State<HistoryDeposit> {
   final dateController = TextEditingController();
   final FocusNode searchFocus       = FocusNode();
   Future<Null> _selectDate(BuildContext context) async{
-    final List<DateTime> picked = await DateRagePicker.showDatePicker(
+    final List<DateTime> picked = await DateRagePicker.showDatePickerQ(
         context: context,
         initialFirstDate: new DateTime.now(),
         initialLastDate: (new DateTime.now()).add(new Duration(days: 1)),

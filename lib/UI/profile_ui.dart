@@ -27,6 +27,7 @@ import 'component/sosmed/myFeed.dart';
 import 'loginPhone.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'package:device_info/device_info.dart';
+import 'package:thaibah/UI/Widgets/tutorialClearData.dart';
 
 class ProfileUI extends StatefulWidget {
   @override
@@ -51,42 +52,19 @@ class _ProfileUIState extends State<ProfileUI> {
   String versionCode = '';
   bool versi = false;
   bool retry=false;
-  final _bloc=ProfileBloc();
-  Future cekVersion() async {
-//    String id = await userRepository.getID();
-//    var jsonString = await http.get(ApiService().baseUrl+'info?id='+id);
-//    if (jsonString.statusCode == 200) {
-//      final jsonResponse = json.decode(jsonString.body);
-//      Info response = new Info.fromJson(jsonResponse);
-//      versionCode = (response.result.versionCode);
-//      if(versionCode != ApiService().versionCode){
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
-//      }
-//      setState(() {
-//        isLoading = false;
-//      });
-//      print("###########################################################LOAD DATA HOME###############################################################");
-//      print(jsonResponse);
-//    } else {
-//      throw Exception('########################################################### FALIED LOAD DATA HOME###############################################################');
-//    }
-  }
-  Future<void> _refresh() async {
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-//    profileBloc.fetchProfileList();
-    _bloc.fetchProfileList();
-  }
-
   int jumlahJaringan=0;
   String name='',picture='',cover='',kdReferral='',saldo='',rawSaldo='',saldoMain='',saldoBonus='',downline='';
   String kaki1='',kaki2='',kaki3='',privacyPolicy='',omsetJaringan='',id='';
   bool modeUpdate=false;
+  bool moreThenOne = false;
+  int counterHit =0;
+
   Future<void> loadData() async{
     final prefs = await SharedPreferences.getInstance();
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     print('abus');
-    var res = await ProfileProvider().fetchProfile();
+
     if(prefs.get('pin') == null || prefs.get('pin') == ''){
       print('pin kosong');
       setState(() {
@@ -94,22 +72,33 @@ class _ProfileUIState extends State<ProfileUI> {
       });
       GagalHitProvider().fetchRequest('profile','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }else{
-      if(res is ProfileModel){
+      if(counterHit >= 2){
         setState(() {
-          isLoading = false; retry = false;
-          var result = res.result;
-          jumlahJaringan=result.jumlahJaringan;
-          name=result.name;picture=result.picture;cover=result.cover;kdReferral=result.kdReferral;saldo=result.saldo;rawSaldo=result.rawSaldo;saldoMain=result.saldoMain;
-          saldoBonus=result.saldoBonus;downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
-          id=result.id;
+          isLoading = false;
+          moreThenOne = true;
         });
+        GagalHitProvider().fetchRequest('profile','kondisi = percobaan 2x gagal, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+
+      }else{
+        var res = await ProfileProvider().fetchProfile();
+        if(res is ProfileModel){
+          setState(() {
+            isLoading = false; retry = false;
+            var result = res.result;
+            jumlahJaringan=result.jumlahJaringan;
+            name=result.name;picture=result.picture;cover=result.cover;kdReferral=result.kdReferral;saldo=result.saldo;rawSaldo=result.rawSaldo;saldoMain=result.saldoMain;
+            saldoBonus=result.saldoBonus;downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
+            id=result.id;
+          });
+        }
+        else{
+          GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+          setState(() {
+            isLoading = false;retry = true;
+          });
+        }
       }
-      else{
-        GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-        setState(() {
-          isLoading = false;retry = true;
-        });
-      }
+
     }
 
   }
@@ -187,6 +176,8 @@ class _ProfileUIState extends State<ProfileUI> {
     super.initState();
     loadData();
     isLoading=true;
+    moreThenOne = false;
+
   }
 
 
@@ -217,13 +208,16 @@ class _ProfileUIState extends State<ProfileUI> {
     return Scaffold(
       key: scaffoldKey,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: modeUpdate == true ? modeUpdateBuild() : isLoading ? _loading() : retry == true ? UserRepository().requestTimeOut((){
+      body: modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() : retry == true ? UserRepository().requestTimeOut((){
         setState(() {
+          counterHit = counterHit+1;
           retry=false;
           isLoading=true;
         });
         loadData();
-      }) : RefreshIndicator(
+      }) : moreThenOne==true?UserRepository().moreThenOne(context, (){
+        Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TutorialClearData()));
+      }): RefreshIndicator(
           child: Container(
             height: _height,
             width: _width,
@@ -241,46 +235,7 @@ class _ProfileUIState extends State<ProfileUI> {
 
     );
   }
-  Widget modeUpdateBuild(){
-    return Container(
-      padding:EdgeInsets.all(10.0),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SizedBox.fromSize(
-              size: Size(100, 100), // button width and height
-              child: ClipOval(
-                child: Material(
-                  color: Colors.green, // button color
-                  child: InkWell(
-                    splashColor: Colors.green, // splash color
-                    onTap: () async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      prefs.clear();
-                      prefs.commit();
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-                    }, // button pressed
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(Icons.power_settings_new,color: Colors.white,), // icon
-                        Text("Keluar",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 10.0,),
-            Text("anda baru saja mengupgdate aplikasi thaibah.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-            Text("tekan tombol keluar untuk melanjutkan proses pemakaian aplikasi thaibah",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-          ],
-        ),
-      ),
-    );
-  }
+
   Widget _headerProfile(){
     return Stack(
       alignment: Alignment.center,
@@ -589,6 +544,7 @@ class _ProfileUIState extends State<ProfileUI> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text("Omset Jaringan Anda", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+//                          omsetJaringan=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(omsetJaringan))}"
                           Text("Rp ${formatter.format(int.parse(omsetJaringan))}", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
                         ],
                       ),
@@ -1048,41 +1004,7 @@ class _ProfileUIState extends State<ProfileUI> {
                     ],
                   )
               ),
-              Divider(),
-              FlatButton(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SkeletonFrame(width: 80.0, height: 16.0),
-                          SizedBox(height:5.0),
-                          SkeletonFrame(width: 250.0, height: 16.0),
-                        ],
-                      ),
-                      Icon(Icons.arrow_right)
-                    ],
-                  )
-              ),
-              Divider(),
-              FlatButton(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SkeletonFrame(width: 80.0, height: 16.0),
-                          SizedBox(height:5.0),
-                          SkeletonFrame(width: 250.0, height: 16.0),
-                        ],
-                      ),
-                      Icon(Icons.arrow_right)
-                    ],
-                  )
-              ),
-              Divider(),
+
             ],
           ),
         )

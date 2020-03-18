@@ -14,6 +14,7 @@ import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
 import 'package:thaibah/UI/component/about.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
+import 'package:thaibah/UI/component/myProfile.dart';
 import 'package:thaibah/UI/component/testimoni/testi.dart';
 import 'package:thaibah/UI/detail_berita_ui.dart';
 import 'package:thaibah/UI/history_ui.dart';
@@ -352,7 +353,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
                     minWidth: 40,
                     onPressed: () {
                       setState(() {
-                        currentScreen = ProfileUI(); // if user taps on this dashboard tab will be active
+                        currentScreen = MyProfile(); // if user taps on this dashboard tab will be active
                         currentTab = 4;
                       });
                     },

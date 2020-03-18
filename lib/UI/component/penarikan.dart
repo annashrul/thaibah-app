@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/myBankModel.dart' as prefix0;
@@ -14,6 +12,8 @@ import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/bank/indexBank.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
 import 'package:thaibah/bloc/withdrawBloc.dart';
+import 'package:thaibah/config/flutterMaskedText.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 
 import '../saldo_ui.dart';
 
@@ -28,7 +28,7 @@ class _PenarikanState extends State<Penarikan> {
   List<RadioModel> sampleData = new List<RadioModel>();
   double _crossAxisSpacing = 8, _mainAxisSpacing = 12, _aspectRatio = 2;
   int _crossAxisCount = 3;
-  var moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
+  var moneyController = MoneyMaskedTextControllerQ(decimalSeparator: '.', thousandSeparator: ',');
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
   double _height;
@@ -381,7 +381,7 @@ class _PenarikanState extends State<Penarikan> {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return RichAlertDialog(
+              return RichAlertDialogQ(
                 alertTitle: richTitle("Transaksi Berhasil"),
                 alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
                 alertType: RichAlertType.SUCCESS,

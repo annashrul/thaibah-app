@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/registPinUIModel.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 
 Future<Response> post(String url,var body)async{
   return await http
@@ -110,7 +110,7 @@ class _SecondScreenStatefulState extends State<SecondScreen> {
             context: context,
             builder: (BuildContext context) {
               return WillPopScope(
-                  child: RichAlertDialog(
+                  child: RichAlertDialogQ(
                     alertTitle: richTitle(showNotif==true?"Perhatian":"Pendaftaran Berhasil"),
                     alertSubtitle: richSubtitle(showNotif==true?"Klik Tombol Masuk Untuk Keluar Dari Halaman Ini":"Silahkan login dengan nomor yang telah anda daftarkan."),
                     alertType: showNotif==true?RichAlertType.WARNING:RichAlertType.SUCCESS,

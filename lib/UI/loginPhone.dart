@@ -19,8 +19,6 @@ import 'dart:math' as math;
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
-import 'package:thaibah/resources/gagalHitProvider.dart';
-
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:http/http.dart' as http;
 

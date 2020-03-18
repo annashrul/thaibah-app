@@ -7,7 +7,8 @@ import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/withdrawBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
-import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+//import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import 'package:thaibah/config/dateRangePickerQ.dart' as DateRagePicker;
 
 class HistoryPenarikan extends StatefulWidget {
   @override
@@ -32,7 +33,7 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
   final dateController = TextEditingController();
   final FocusNode searchFocus       = FocusNode();
   Future<Null> _selectDate(BuildContext context) async{
-    final List<DateTime> picked = await DateRagePicker.showDatePicker(
+    final List<DateTime> picked = await DateRagePicker.showDatePickerQ(
         context: context,
         initialFirstDate: new DateTime.now(),
         initialLastDate: (new DateTime.now()).add(new Duration(days: 1)),

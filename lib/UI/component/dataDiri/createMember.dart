@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/registUIModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
@@ -17,6 +16,7 @@ import 'package:thaibah/UI/Widgets/responsive_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -725,7 +725,7 @@ class _OtpPageStatefulState extends State<OtpPage> {
         showDialog(
             context: context,
             builder: (BuildContext context) {
-              return RichAlertDialog(
+              return RichAlertDialogQ(
                 alertTitle: richTitle("Berhasil"),
                 alertSubtitle: richSubtitle("Anda Berhasil Menambahkan Member"),
                 alertType: RichAlertType.SUCCESS,

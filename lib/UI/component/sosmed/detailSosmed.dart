@@ -3,15 +3,19 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
+import 'package:thaibah/config/autoSizeTextQ.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'listLikeSosmed.dart';
@@ -268,19 +272,31 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Html(data: snapshot.data.result.caption,defaultTextStyle: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                      Linkify(
+                                        onOpen: (link) async {
+                                          print('tap link');
+                                          if (await canLaunch(link.url)) {
+                                            await launch(link.url);
+                                          } else {
+                                            throw 'Could not launch $link';
+                                          }
+                                        },
+                                        text: snapshot.data.result.caption,
+                                        style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                                        linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                                      ),
                                       SizedBox(height: 10.0),
                                       Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(10.0),
-                                              topRight: Radius.circular( 10.0)
+                                            topLeft: Radius.circular(10.0),
+                                            topRight: Radius.circular( 10.0)
                                           ),
                                         ),
                                         child: Center(
-                                            child:Image.network(
-                                              snapshot.data.result.picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
-                                            )
+                                          child:Image.network(
+                                            snapshot.data.result.picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
+                                          )
                                         ),
                                       )
                                     ],
@@ -464,8 +480,26 @@ class _DetailSosmedState extends State<DetailSosmed> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          Html(data: snapshot.data.result.comment[index].name,defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                          Html(data: snapshot.data.result.comment[index].caption,defaultTextStyle: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//                          Html(data:snapshot.data.result.comment[index].name,defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                          AutoSizeTextQ(
+                            snapshot.data.result.comment[index].name,
+                            style: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+
+                          ),
+                          Linkify(
+                            onOpen: (link) async {
+                              if (await canLaunch(link.url)) {
+                                await launch(link.url);
+                              } else {
+                                throw 'Could not launch $link';
+                              }
+                            },
+                            text: snapshot.data.result.comment[index].caption,
+                            style: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                            linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                          ),
+
+//                          Html(data: snapshot.data.result.comment[index].caption,defaultTextStyle: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                         ],
                       ),
                     ),

@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/PPOB/PPOBPascaCheckoutModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/PPOB/PPOBPascaProvider.dart';
 
@@ -227,7 +227,7 @@ class _DetailPpobPascaState extends State<DetailPpobPasca> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return RichAlertDialog(
+                return RichAlertDialogQ(
                   alertTitle: richTitle("Transaksi Berhasil"),
                   alertSubtitle: richSubtitle("Transaksi Pembayaran ${widget.param} Berhasil Dilakukan"),
                   alertType: RichAlertType.SUCCESS,

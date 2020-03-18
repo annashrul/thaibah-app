@@ -7,10 +7,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 
 class DetailTopUp extends StatefulWidget {
   final String amount,raw_amount,unique,bank_name,atas_nama,no_rekening,picture,id_deposit,bank_code;
@@ -60,7 +60,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return RichAlertDialog(
+            return RichAlertDialogQ(
               alertTitle: richTitle("Pengisian Topup Anda Akan Segera Diproses"),
               alertSubtitle: richSubtitle("Harap Menuggu Paling Lambat 15 Menit"),
               alertType: RichAlertType.SUCCESS,
@@ -80,7 +80,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return RichAlertDialog(
+            return RichAlertDialogQ(
               alertTitle: richTitle("Error"),
               alertSubtitle: richSubtitle("Terjadi Kesalahan"),
               alertType: RichAlertType.ERROR,

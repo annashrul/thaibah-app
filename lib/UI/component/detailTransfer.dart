@@ -4,10 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
 
@@ -425,7 +425,7 @@ class _DetailTransferState extends State<DetailTransfer> {
         showDialog(
             context: context,
             builder: (BuildContext context) {
-              return RichAlertDialog(
+              return RichAlertDialogQ(
                 alertTitle: richTitle("Transaksi Berhasil"),
                 alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
                 alertType: RichAlertType.SUCCESS,

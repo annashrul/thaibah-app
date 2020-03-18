@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/MLM/detailHistoryPembelianSuplemen.dart';
 import 'package:thaibah/Model/MLM/resiModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -15,6 +14,7 @@ import 'package:thaibah/UI/Widgets/alertq.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/MLM/resi.dart';
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/resources/historyPembelianProvider.dart';
 
 class DetailHistorySuplemen extends StatefulWidget {
@@ -77,7 +77,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
         showDialog(
             context: context,
             builder: (BuildContext context) {
-              return RichAlertDialog(
+              return RichAlertDialogQ(
                 alertTitle: richTitle("Selesai"),
                 alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
                 alertType: RichAlertType.SUCCESS,

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart' as prefix4;
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart';
 import 'package:thaibah/Model/kecamatanModel.dart' as prefix2;
@@ -20,6 +19,7 @@ import 'package:thaibah/UI/component/MLM/produkCheckoutSuplemen.dart';
 import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart' as prefix4;
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/resources/productMlmProvider.dart';
 
 
@@ -627,7 +627,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         showDialog(
             context: context,
             builder: (BuildContext context) {
-              return RichAlertDialog(
+              return RichAlertDialogQ(
                 alertTitle: richTitle("Transaksi Berhasil"),
                 alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
                 alertType: RichAlertType.SUCCESS,

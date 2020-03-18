@@ -5,10 +5,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 
 class BuktiTransfer extends StatefulWidget {
   final String id_deposit;
@@ -50,7 +50,7 @@ class _BuktiTransferState extends State<BuktiTransfer> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return RichAlertDialog(
+            return RichAlertDialogQ(
               alertTitle: richTitle("Upload Bukti Transfer Berhasil"),
               alertSubtitle: richSubtitle("Silahkan Tunggu Konfirmasi Dari Admin"),
               alertType: RichAlertType.SUCCESS,
@@ -70,7 +70,7 @@ class _BuktiTransferState extends State<BuktiTransfer> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return RichAlertDialog(
+            return RichAlertDialogQ(
               alertTitle: richTitle("Terjadi Kesalahan"),
               alertSubtitle: richSubtitle(res.msg),
               alertType: RichAlertType.ERROR,

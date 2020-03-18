@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/checkerModel.dart';
+import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
 
 
 class UserRepository {
-
   requestTimeOut(Function callback){
     return Container(
       child: Center(
@@ -45,6 +45,111 @@ class UserRepository {
       ),
     );
   }
+  moreThenOne(BuildContext context, Function callback){
+    return Container(
+      padding:EdgeInsets.all(10.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox.fromSize(
+              size: Size(100, 100), // button width and height
+              child: ClipOval(
+                child: Material(
+                  color: Colors.green, // button color
+                  child: InkWell(
+                    splashColor: Colors.green, // splash color
+                    onTap: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.clear();
+                      prefs.commit();
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+                    }, // button pressed
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.power_settings_new,color: Colors.white,), // icon
+                        Text("Keluar",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0,),
+            Text("percobaan anda sudah melebihi 1x.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+            Text("silahkan keluar aplikasi terlebih dahulu, apabila masih ada kendala silahkan hubungi admin atau klik tombol di bawah ini",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+            SizedBox(height: 20.0),
+            Container(
+              child: Center(
+                child: FlatButton(
+                  shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(18.0),
+                      side: BorderSide(color: Colors.green)
+                  ),
+                  color: Colors.white,
+                  textColor: Colors.green,
+                  padding: EdgeInsets.all(20.0),
+                  onPressed: () {
+                    callback();
+
+//                    AppSettings.openAppSettings();
+//                    updateApk();
+                  },
+                  child: Text(
+                    "cara clear data".toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+  modeUpdate(BuildContext context){
+    return Container(
+      padding:EdgeInsets.all(10.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox.fromSize(
+              size: Size(100, 100), // button width and height
+              child: ClipOval(
+                child: Material(
+                  color: Colors.green, // button color
+                  child: InkWell(
+                    splashColor: Colors.green, // splash color
+                    onTap: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.clear();
+                      prefs.commit();
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+                    }, // button pressed
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.power_settings_new,color: Colors.white,), // icon
+                        Text("Keluar",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0,),
+            Text("anda baru saja mengupgdate aplikasi thaibah.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+            Text("tekan tombol keluar untuk melanjutkan proses pemakaian aplikasi thaibah",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future getDeviceId() async{
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
@@ -63,6 +168,7 @@ class UserRepository {
     if(res is Checker){
       Checker results = res;
       var versionCode = results.result.versionCode;
+      print("##################################### $versionCode ###########################");
       if(versionCode != ApiService().versionCode){
         return true;
       }

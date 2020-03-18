@@ -4,8 +4,6 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:rich_alert/rich_alert.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
@@ -13,6 +11,8 @@ import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/dataDiri/updateKtp.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
+import 'package:thaibah/config/flutterMaskedText.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 
 
@@ -33,7 +33,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
   final userRepository = UserRepository();
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  var moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
+  var moneyController = MoneyMaskedTextControllerQ(decimalSeparator: '.', thousandSeparator: ',');
 
   double _height;
   TextEditingController saldoController = TextEditingController();
@@ -366,7 +366,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return RichAlertDialog(
+                return RichAlertDialogQ(
                   alertTitle: richTitle("Transaksi Berhasil"),
                   alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
                   alertType: RichAlertType.SUCCESS,

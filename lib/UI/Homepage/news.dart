@@ -22,11 +22,7 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
   void initState() {
     super.initState();
     controller = new SwiperController();
-    _bloc.fetchNewsList(1, 4);
-//    WidgetsBinding.instance.addPostFrameCallback((_){
-//      _bloc.fetchNewsList(1, 4);
-//    });
-
+    _bloc.fetchNewsList(1, 6);
   }
 
   @override
@@ -45,7 +41,12 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         }
-        return _loading();
+        return Container(
+          padding: EdgeInsets.all(50.0),
+            child:Center(
+                child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green))
+            )
+        );
       },
     );
   }
@@ -99,24 +100,6 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
                 color: Colors.grey, activeColor: Colors.green
             )
         ),
-      ),
-    );
-  }
-
-  Widget _loading(){
-    return Container(
-      height: MediaQuery.of(context).size.height/5,
-//      color: Colors.transparent,
-      padding: EdgeInsets.only(left:16.0,right:16.0),
-      child: Column(
-        children: <Widget>[
-          Container(
-            child: SkeletonFrame(height: MediaQuery.of(context).size.height/5,width: double.infinity),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0),bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
-            ),
-          ),
-        ],
       ),
     );
   }
