@@ -589,104 +589,70 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   _callBackPin(BuildContext context,bool isTrue) async{
-    if(isTrue){
-      setState(() {
-        showDialog(
-          barrierDismissible: false,
+    var sendAddress; var sendVoucher; var sendKurir; var sendOngkir;
+    if(dropdownValue == 'Lainnya'){
+      sendAddress = "${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}";
+      addressType = 1;
+    }
+    if(dropdownValue == 'Saya'){
+      sendAddress = mainAddress;
+      addressType = 0;
+    }
+    if(_currentItemSelectedKurir == 'COD'){
+      sendVoucher = vouncher.text;
+      sendKurir = 'COD | Cash On Delivery';
+      sendOngkir = '0';
+    }else{
+      sendVoucher = '-';
+      sendKurir = "${_currentItemSelectedKurir} | ${paket[0]}";
+      sendOngkir = "${paket[1]}";
+    }
+
+    var res = await ProductMlmProvider().fetchCheckoutCart(widget.total,sendKurir,sendOngkir,sendAddress,addressType,sendVoucher,_radioValue2);
+    setState(() {Navigator.of(context).pop();});
+    if(res.status=="success"){
+      setState(() {Navigator.of(context).pop();});
+      showDialog(
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
-              content: LinearProgressIndicator(),
-            );
-          },
-        );
-      });
-      var sendAddress; var sendVoucher; var sendKurir; var sendOngkir;
-      if(dropdownValue == 'Lainnya'){
-        sendAddress = "${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}";
-        addressType = 1;
-      }
-      if(dropdownValue == 'Saya'){
-        sendAddress = mainAddress;
-        addressType = 0;
-      }
-      if(_currentItemSelectedKurir == 'COD'){
-        sendVoucher = vouncher.text;
-        sendKurir = 'COD | Cash On Delivery';
-        sendOngkir = '0';
-      }else{
-        sendVoucher = '-';
-        sendKurir = "${_currentItemSelectedKurir} | ${paket[0]}";
-        sendOngkir = "${paket[1]}";
-      }
-
-      var res = await ProductMlmProvider().fetchCheckoutCart(widget.total,sendKurir,sendOngkir,sendAddress,addressType,sendVoucher,_radioValue2);
-      setState(() {Navigator.of(context).pop();});
-      if(res.status=="success"){
-        setState(() {Navigator.of(context).pop();});
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return RichAlertDialogQ(
-                alertTitle: richTitle("Transaksi Berhasil"),
-                alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
-                alertType: RichAlertType.SUCCESS,
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("Lihat Riwayat"),
-                    onPressed: (){
+            return RichAlertDialogQ(
+              alertTitle: richTitle("Transaksi Berhasil"),
+              alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
+              alertType: RichAlertType.SUCCESS,
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Lihat Riwayat"),
+                  onPressed: (){
 //                      setState(() {
 //                        Navigator.pop(context);
 //                      });
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailHistorySuplemen(
-                              id: res.result.toString(),
-                              resi: 'kosong',
-                              status: 0,
-                              param:'checkout'
-                          ),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailHistorySuplemen(
+                            id: res.result.toString(),
+                            resi: 'kosong',
+                            status: 0,
+                            param:'checkout'
                         ),
-                      );
-                    },
-                  ),
-                  FlatButton(
-                    child: Text("Kembali"),
-                    onPressed: (){
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-                    },
-                  ),
-                ],
-              );
-            }
-        );
-      }
-      else{
-        setState(() {Navigator.of(context).pop();});
-        Navigator.pop(context);
-        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(res.msg)));
-      }
+                      ),
+                    );
+                  },
+                ),
+                FlatButton(
+                  child: Text("Kembali"),
+                  onPressed: (){
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                  },
+                ),
+              ],
+            );
+          }
+      );
     }
     else{
-      setState(() {Navigator.of(context).pop();});
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text("Pin Salah!"),
-            content: new Text("Masukan pin yang sesuai."),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      Navigator.pop(context);
+      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(res.msg)));
     }
   }
 

@@ -1,19 +1,19 @@
 
-
 import 'dart:async';
-import 'dart:core';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:core';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/checkoutPPOBModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
-import 'package:thaibah/bloc/PPOB/PPOBPraBloc.dart';
-import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
-
+import 'package:thaibah/resources/PPOB/PPOBPraProvider.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
+import 'package:thaibah/UI/Homepage/index.dart';
 
 class DetailPulsaUI extends StatefulWidget {
   DetailPulsaUI({this.param,this.cmd,this.no,this.code,this.provider,this.nominal,this.price,this.note,this.imgUrl, this.fee_charge,this.raw_price});
@@ -168,10 +168,6 @@ class _DetailPulsaUIState extends State<DetailPulsaUI> with SingleTickerProvider
   }
 
 
-
-
-
-
   Future<void> _pinBottomSheet(context) async {
     showDialog(
         context: context,
@@ -182,48 +178,51 @@ class _DetailPulsaUIState extends State<DetailPulsaUI> with SingleTickerProvider
   }
 
   Future _callBackPin(BuildContext context,bool isTrue) async{
-    if(isTrue){
-      setState(() {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: LinearProgressIndicator(),
-            );
-          },
-        );
-
-      });
-      var res = await checkoutPpobPraBloc.fetchCheckoutPpobPra(widget.no, widget.code, widget.raw_price, widget.fee_charge,idpelanggan);
-      print(res);
+    print("NO = ${widget.no}");
+    print("CODE = ${widget.code}");
+    print("PRICE = ${widget.raw_price}");
+    print("FEE CHARGE = ${widget.fee_charge}");
+    print("ID PELANGGAN = ${idpelanggan}");
+    var res = await PpobPraProvider().fetchChekoutPPOBPra(widget.no, widget.code, widget.raw_price, widget.fee_charge,idpelanggan);
+    print("##################### IEU RESPON ##############################");
+    if(res == 'gagal'){
+      Navigator.pop(context);
+      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('terjadi kesalahan, request timeout')));
+      GagalHitProvider().fetchRequest('profile','timeout = $res, halaman = checkout ${widget.param}');
+    }
+    else if(res == 'error'){
+      Navigator.pop(context);
+      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('terjadi kesalahan syntax')));
+      GagalHitProvider().fetchRequest('profile','error = $res, halaman = checkout ${widget.param}');
+    }
+    else{
       if(res is CheckoutPpobModel){
         CheckoutPpobModel results = res;
         if(results.status == 'success'){
           setState(() {
             Navigator.pop(context);
           });
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return RichAlertDialogQ(
-                  alertTitle: richTitle("Transaksi Berhasil"),
-                  alertSubtitle: richSubtitle(results.msg),
-                  alertType: RichAlertType.SUCCESS,
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text("Kembali"),
-                      onPressed: (){
-                        Navigator.of(context, rootNavigator: true).push(
-                          new CupertinoPageRoute(builder: (context) => DashboardThreePage()),
-                        );
-                      },
-                    ),
-                  ],
-                );
-              });
-
-
+          return dialogCash(context,results.result.idtrx,results.result.no,results.result.serial,results.result.tanggal);
+//          showDialog(
+//              context: context,
+//              builder: (BuildContext context) {
+//                return RichAlertDialogQ(
+//                  alertTitle: richTitle("Transaksi Berhasil"),
+//                  alertSubtitle: richSubtitle(results.msg),
+//                  alertType: RichAlertType.SUCCESS,
+//                  actions: <Widget>[
+//                    FlatButton(
+//                      child: Text("Kembali"),
+//                      onPressed: (){
+//                        Navigator.of(context, rootNavigator: true).push(
+//                          new CupertinoPageRoute(builder: (context) => DashboardThreePage()),
+//                        );
+//                      },
+//                    ),
+//                  ],
+//                );
+//              }
+//            );
         }
         else{
           setState(() {
@@ -231,40 +230,177 @@ class _DetailPulsaUIState extends State<DetailPulsaUI> with SingleTickerProvider
           });
           scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));
         }
-      }else{
-        setState(() {
-          Navigator.pop(context);
-        });
+      }
+      else{
         General results = res;
         Navigator.pop(context);
         print(results.msg);
         scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));
       }
-    }else{
-      setState(() {
-        Navigator.pop(context);
-      });
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text("Pin Salah!"),
-            content: new Text("Masukan pin yang sesuai."),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
     }
   }
 
+  void dialogCash(BuildContext context, var id,var no,var serial, var tgl) {
+    showDialog(
+        context: context,
+        builder: (context){
+          return StatefulBuilder(
+              builder: (context, setState){
+                return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    height: 400.0,
+                    width: 300.0,
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          width: double.infinity,
+                          height: 400.0,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                        Column(
+                          children: <Widget>[
+                            Container(
+                              width: double.infinity,
+                              height: 50,
+                              alignment: Alignment.bottomCenter,
+                              decoration: BoxDecoration(
+                                color: Color(0xff454dff),
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(12),
+                                  topRight: Radius.circular(12),
+                                ),
+                              ),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "BERHASIL",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  GestureDetector(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('Kode Transkasi', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          SizedBox(width: 10.0,),
+                                          Flexible(
+                                            child: Text(': $id', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          ),
+                                          SizedBox(width: 10.0,),
+                                          Icon(Icons.content_copy, color: Colors.black, size: 15,),
+                                        ]
+                                    ),
+                                    onTap: () {
+                                      Clipboard.setData(new ClipboardData(text: '$id'));
+                                      scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("kode transaksi Berhasil Disalin")));
+                                    },
+                                  ),
+                                  SizedBox(height: 20.0),
+                                  GestureDetector(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('No', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          SizedBox(width: 10.0,),
+                                          Flexible(
+                                            child: Text(': $no', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          ),
+                                        ]
+                                    ),
+                                    onTap: () {},
+                                  ),
 
+                                  SizedBox(height: 20.0),
+                                  GestureDetector(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('Serial', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          SizedBox(width: 10.0,),
+                                          Flexible(
+                                            child: Text(': $serial', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          ),
+                                          SizedBox(width: 10.0,),
+                                          Icon(Icons.content_copy, color: Colors.black, size: 15,),
+                                        ]
+                                    ),
+                                    onTap: () {
+                                      Clipboard.setData(new ClipboardData(text: '$serial'));
+                                      scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Serial Number Berhasil Disalin")));
+                                    },
+                                  ),
+                                  SizedBox(height: 20.0),
+                                  GestureDetector(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('Tanggal', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          SizedBox(width: 10.0,),
+                                          Flexible(
+                                            child: Text(': $tgl', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          ),
+                                        ]
+                                    ),
+                                    onTap: () {},
+                                  ),
+                                ],
+                              ),
+                            )
+
+                          ],
+                        ),
+                        Align(
+                          // These values are based on trial & error method
+                          alignment: Alignment(1.05, -1.05),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context, rootNavigator: true).push(
+                                new CupertinoPageRoute(builder: (context) => DashboardThreePage()),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.close,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+          );
+        }
+    );
+  }
 
 }
 

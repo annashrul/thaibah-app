@@ -705,15 +705,7 @@ class _SecondScreenState extends State<SecondScreen> {
 //  }
 
   Future _check(String txtOtp, BuildContext context) async {
-    isLoading ? showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: LinearProgressIndicator(),
-        );
-      },
-    ):Container();
+
     if (widget.otp == txtOtp) {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
@@ -737,7 +729,7 @@ class _SecondScreenState extends State<SecondScreen> {
         prefs.setBool('isLogin', true);
 
       });
-      CircularProgressIndicator();
+
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
     } else {
       setState(() {

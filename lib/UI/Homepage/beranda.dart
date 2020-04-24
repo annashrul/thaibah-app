@@ -276,150 +276,134 @@ class BerandaState extends State<Beranda>{
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return isLoading ? _loading() :Column(
       children: <Widget>[
-        Stack(
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height/3.5 + MediaQuery.of(context).viewPadding.top,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomRight,
-                      end: Alignment.topLeft,
-                      colors: <Color>[Color(0xFF116240),Color(0xFF30cc23)],
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  height: 20.0,
-                  color: Colors.white,
-                ),
-              ],
+        Container(
+          padding:EdgeInsets.only(top:30.0,left:10.0,right:10.0,bottom:10.0),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+              colors: <Color>[Color(0xFF116240),Color(0xFF30cc23)],
             ),
-            Padding(
-              padding: const EdgeInsets.only(top:30.0),
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          ),
+          child: Column(
+            children: [
+              ListTile(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            CircleAvatar(
-                              radius: 32.0,
-                              child: CachedNetworkImage(
-                                imageUrl: _picture,
-                                imageBuilder: (context, imageProvider) => Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                  ),
-                                ),
-                                placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
-                                errorWidget: (context, url, error) => Icon(Icons.error),
+                        CircleAvatar(
+                          radius: 32.0,
+                          child: CachedNetworkImage(
+                            imageUrl: _picture,
+                            imageBuilder: (context, imageProvider) => Container(
+                              width: 100.0,
+                              height: 100.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                               ),
                             ),
-                            SizedBox(width: 7.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
+                            errorWidget: (context, url, error) => Icon(Icons.error),
+                          ),
+                        ),
+                        SizedBox(width: 7.0),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 0.0),
-                                      child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                    ),
-                                    SizedBox(width: 7.0),
-                                    levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
-                                      onTap: (){
-                                        Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
-                                      },
-                                      child: Container(
-                                          padding: EdgeInsets.all(5),
-                                          decoration: new BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius: BorderRadius.circular(6),
-                                          ),
-                                          constraints: BoxConstraints(
-                                            minWidth: 14,
-                                            minHeight: 14,
-                                          ),
-                                          child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 0.0),
+                                  child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                ),
+                                SizedBox(width: 7.0),
+                                levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
+                                  onTap: (){
+                                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
+                                  },
+                                  child: Container(
+                                      padding: EdgeInsets.all(5),
+                                      decoration: new BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(6),
                                       ),
-                                    ):Container(child:Image.asset("${ApiService().assetsLocal}platinum.png",height:20.0,width:20.0))
-                                  ],
-                                ),
-                                levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 0.0),
-                                  child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                ),
-                                SizedBox(height: 7.0),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 0.0),
-                                  child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                ),
+                                      constraints: BoxConstraints(
+                                        minWidth: 14,
+                                        minHeight: 14,
+                                      ),
+                                      child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
+                                  ),
+                                ):Container(child:Image.asset("${ApiService().assetsLocal}platinum.png",height:20.0,width:20.0))
                               ],
+                            ),
+                            levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 0.0),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                            ),
+                            SizedBox(height: 7.0),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 0.0),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                             ),
                           ],
                         ),
                       ],
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 20.0),
-                    child: SizedBox(
-                      child: Container(height: 1.0,color: Colors.white),
-                    ),
-                  ),
-                  levelPlatinumRaw==0?CardSaldo(
-                    saldoMain: _saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
-                    saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
-                    saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
-                    saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
-                  ):CardSaldoNoPlatinum(
-                    saldoMain: _saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
-                    saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
-                    saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
-                    saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
-                  ),
-                  SizedBox(height:15.0),
-                  Container(
-                    padding: const EdgeInsets.only(left:10.0,right:10.0),
-                    child:Card(
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              CardEmoney(imgUrl:'Icon_Utama_TopUp',title:'Top Up',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),).then((val){
-                                loadData(); //you get details from screen2 here
-                              });}),
-                              CardEmoney(imgUrl:'Icon_Utama_Transfer',title:'Transfer',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),).whenComplete(loadData);},),
-                              CardEmoney(imgUrl:'Icon_Utama_Penarikan',title:'Penarikan',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Penarikan(saldoMain: _saldoMain)),).whenComplete(loadData);},),
-                              CardEmoney(imgUrl:'Icon_Utama_History',title:'Riwayat',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => HistoryUI(page: 'home')));},),
-                            ],
-                          )
-                        ],
-                      ),
-                    )
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              Container(
+                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                child: SizedBox(
+                  child: Container(height: 1.0,color: Colors.white),
+                ),
+              ),
+              levelPlatinumRaw==0?CardSaldo(
+                  saldoMain: _saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
+                  saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
+                  saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
+                  saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
+              ):CardSaldoNoPlatinum(
+                  saldoMain: _saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
+                  saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
+                  saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
+                  saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
+              ),
+              SizedBox(height:15.0),
+              Container(
+                  padding: const EdgeInsets.only(left:0.0,right:0.0),
+                  child:Card(
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            CardEmoney(imgUrl:'Icon_Utama_TopUp',title:'Top Up',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),).then((val){
+                              loadData(); //you get details from screen2 here
+                            });}),
+                            CardEmoney(imgUrl:'Icon_Utama_Transfer',title:'Transfer',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),).whenComplete(loadData);},),
+                            CardEmoney(imgUrl:'Icon_Utama_Penarikan',title:'Penarikan',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Penarikan(saldoMain: _saldoMain)),).whenComplete(loadData);},),
+                            CardEmoney(imgUrl:'Icon_Utama_History',title:'Riwayat',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => HistoryUI(page: 'home')));},),
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+              ),
+            ],
+          ),
         ),
-
+        SizedBox(height:10.0),
         Flexible(
           flex:1,
           child:RefreshIndicator(
@@ -782,18 +766,18 @@ class BerandaState extends State<Beranda>{
             if(page == 'pulsa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PulsaUI(nohp: _nohp))).whenComplete(loadData);}
             if(page == 'listrik'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ListrikUI(nohp: _nohp))).whenComplete(loadData);}
             if(page == 'telepon'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'telkom',title:'Telepon / Internet'))).whenComplete(loadData);}
-            if(page == 'zakat'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ZakatUI())).whenComplete(loadData);}
+//            if(page == 'zakat'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ZakatUI())).whenComplete(loadData);}
             if(page == 'masjid'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));}
             if(page == 'hadis'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));}
             if(page == 'doa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));}
             if(page == 'kalender'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));}
             if(page == 'emoney'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPrabayar(nohp:_nohp,param: "E_MONEY",title:'E-Money'))).whenComplete(loadData);}
             if(page == 'bpjs'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'BPJS',title:'BPJS'))).whenComplete(loadData);}
-            if(page == 'asuransi'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'ASURANSI',title:'Asuransi'))).whenComplete(loadData);}
+//            if(page == 'asuransi'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'ASURANSI',title:'Asuransi'))).whenComplete(loadData);}
 //            if(page == 'telpPasca'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'TELEPHONE_PASCABAYAR',title:'Telepon Pascabayar')));}
             if(page == 'pdam'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'PDAM',title:'PDAM'))).whenComplete(loadData);}
             if(page == 'multiFinance'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'MULTIFINANCE',title:'Multi Finance'))).whenComplete(loadData);}
-            if(page == 'wifiId'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPrabayar(nohp:_nohp,param: "VOUCHER_WIFIID",title:'Voucher Wifi ID'))).whenComplete(loadData);}
+//            if(page == 'wifiId'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPrabayar(nohp:_nohp,param: "VOUCHER_WIFIID",title:'Voucher Wifi ID'))).whenComplete(loadData);}
             if(page == 'tvKabel'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: "PEMBAYARAN_TV",title:'Tv Kabel'))).whenComplete(loadData);}
           },
           child: SvgPicture.network(
@@ -1144,13 +1128,13 @@ class BerandaState extends State<Beranda>{
                             moreStructure("revisi/pulsa.svg", "pulsa", "Pulsa"),
                             moreStructure("revisi/Icon_PPOB_LISTRIK.svg", "listrik", "Listrik"),
                             moreStructure("revisi/Icon_PPOB_TELEPON_PASCA_BAYAR.svg", "telepon", "Telepon/Internet"),
-                            moreStructure("revisi/Icon_PPOB_ZAKAT.svg", "zakat", "Zakat"),
+//                            moreStructure("revisi/Icon_PPOB_ZAKAT.svg", "zakat", "Zakat"),
                             moreStructure("revisi/Icon_PPOB_E _ MONEY.svg", "emoney", "E-Money"),
                             moreStructure("revisi/Icon_PPOB_BPJS.svg", "bpjs", "BPJS"),
-                            moreStructure("revisi/Icon_PPOB_Asuransi.svg", "asuransi", "Asuransi"),
+//                            moreStructure("revisi/Icon_PPOB_Asuransi.svg", "asuransi", "Asuransi"),
                             moreStructure("revisi/Icon_PPOB_PDAM.svg", "pdam", "PDAM"),
                             moreStructure("revisi/Icon_PPOB_MultiFinance.svg", "multiFinance", "Multi Finance"),
-                            moreStructure("revisi/Icon_PPOB_VOUCHER_WIFI_ID.svg", "wifiId", "Wifi ID"),
+//                            moreStructure("revisi/Icon_PPOB_VOUCHER_WIFI_ID.svg", "wifiId", "Wifi ID"),
                             moreStructure("revisi/Icon_PPOB_TV_KABEL.svg", "tvKabel", "Tv Kabel"),
                           ],
                         )

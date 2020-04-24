@@ -143,16 +143,17 @@ class _DetailSosmedState extends State<DetailSosmed> {
       setState(() {
         isLoadingShare = false;
       });
-      await WcFlutterShare.share(
-          sharePopupTitle: 'Thaibah Share Inspirasi & Informasi',
-          bytesOfFile:bytes,
-          subject: '',
-          text: '$caption',
-          fileName: 'share.png',
-          mimeType: 'image/png',
 
-      );
     });
+    await WcFlutterShare.share(
+      sharePopupTitle: 'Thaibah Share Sosial Media',
+      bytesOfFile:bytes,
+      subject: '',
+      text: '$caption',
+      fileName: 'share.png',
+      mimeType: 'image/png',
+
+    );
   }
 
   @override
@@ -418,12 +419,12 @@ class _DetailSosmedState extends State<DetailSosmed> {
 //                  ],
 //                ),
 //              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              Container(
+//                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
                 child: TextFormField(
                   style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
                   controller: captionController,
-                  textInputAction: TextInputAction.done,
+                  textInputAction: TextInputAction.newline,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   autofocus: true,
@@ -442,6 +443,29 @@ class _DetailSosmedState extends State<DetailSosmed> {
                 ),
               ),
               SizedBox(height: 10),
+              Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(5.0)
+                    ),
+                  ),
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                  width: MediaQuery.of(context).size.width/1,
+                  child: InkWell(
+                    onTap: (){
+                      if(captionController.text != ''){
+                        setState(() {isLoading = true;});
+                        Navigator.of(context).pop();
+                        sendComment();
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(10.0, 22.0, 10.0, 22.0),
+                      child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),),
+                    ),
+                  )
+              )
             ],
           ),
         )
@@ -483,7 +507,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
 //                          Html(data:snapshot.data.result.comment[index].name,defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                           AutoSizeTextQ(
                             snapshot.data.result.comment[index].name,
-                            style: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                            style: TextStyle(color:Colors.grey,fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
 
                           ),
                           Linkify(

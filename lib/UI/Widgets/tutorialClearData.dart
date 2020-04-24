@@ -2,6 +2,7 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/pageViewModel.dart';
 import 'package:thaibah/UI/splash/introViews.dart';
+import 'package:thaibah/config/api.dart';
 
 class TutorialClearData extends StatefulWidget {
   @override
@@ -24,8 +25,8 @@ class _TutorialClearDataState extends State<TutorialClearData> {
           Text('Tekan Tombol Pengaturan Yang Berada Di Slide Akhir',style: TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
         ],
       ),
-      mainImage: Image.network(
-        'https://pngimage.net/wp-content/uploads/2018/06/one-png-5.png',
+      mainImage: Image.asset(
+        '${ApiService().assetsLocal}one.png',
         width: 285.0,
         alignment: Alignment.center,
       ),
@@ -41,8 +42,8 @@ class _TutorialClearDataState extends State<TutorialClearData> {
           Text('Pilih Penyimpanan atau Storage ( pada beberapa hp tahap ini tidak diperlukan, maka langsung saja ke tahap berikutnya )',style: TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
         ],
       ),
-      mainImage: Image.network(
-        'https://i.ya-webdesign.com/images/number-2-png-7.png',
+      mainImage: Image.asset(
+        '${ApiService().assetsLocal}two.png',
         width: 285.0,
         alignment: Alignment.center,
       ),
@@ -58,8 +59,8 @@ class _TutorialClearDataState extends State<TutorialClearData> {
           Text('Tekan Tombol Hapus Data atau Clear Data',style: TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
         ],
       ),
-      mainImage: Image.network(
-        'https://cdn.onlinewebfonts.com/svg/img_29115.png',
+      mainImage: Image.asset(
+        '${ApiService().assetsLocal}three.png',
         width: 285.0,
         alignment: Alignment.center,
       ),
@@ -75,8 +76,8 @@ class _TutorialClearDataState extends State<TutorialClearData> {
           Text('Setalah Langkah 1 sampai 3 Beres, Masuk Kembali Ke Aplikasi Thaibah',style: TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
         ],
       ),
-      mainImage: Image.network(
-        'https://cdn.onlinewebfonts.com/svg/img_29008.png',
+      mainImage: Image.asset(
+        '${ApiService().assetsLocal}four.png',
         width: 285.0,
         alignment: Alignment.center,
       ),
@@ -92,7 +93,7 @@ class _TutorialClearDataState extends State<TutorialClearData> {
         ],
       ),
       mainImage: Image.asset(
-        'assets/images/diterima.png',
+        '${ApiService().assetsLocal}diterima.png',
         width: 285.0,
         alignment: Alignment.center,
       ),

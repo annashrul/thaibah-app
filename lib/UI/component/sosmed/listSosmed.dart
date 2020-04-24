@@ -65,7 +65,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return Container(child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white))));
+          return Container(padding:EdgeInsets.all(20.0),child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green))));
         }
     );
   }

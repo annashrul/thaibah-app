@@ -3,7 +3,6 @@
 //     final checkoutPpobModel = checkoutPpobModelFromJson(jsonString);
 
 import 'dart:convert';
-
 import 'package:thaibah/Model/base_model.dart';
 
 CheckoutPpobModel checkoutPpobModelFromJson(String str) => CheckoutPpobModel.fromJson(json.decode(str));
@@ -35,37 +34,29 @@ class CheckoutPpobModel extends BaseModel {
 }
 
 class Result {
-  var produk;
-  var target;
-  var mtrpln;
-  var note;
-  var token;
-  var status;
+  String idtrx;
+  String no;
+  String serial;
+  String tanggal;
 
   Result({
-    this.produk,
-    this.target,
-    this.mtrpln,
-    this.note,
-    this.token,
-    this.status,
+    this.idtrx,
+    this.no,
+    this.serial,
+    this.tanggal,
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-    produk: json["produk"],
-    target: json["target"],
-    mtrpln: json["mtrpln"],
-    note: json["note"],
-    token: json["token"],
-    status: json["status"],
+    idtrx: json["idtrx"],
+    no: json["no"],
+    serial: json["serial"],
+    tanggal: json["tanggal"],
   );
 
   Map<String, dynamic> toJson() => {
-    "produk": produk,
-    "target": target,
-    "mtrpln": mtrpln,
-    "note": note,
-    "token": token,
-    "status": status,
+    "idtrx": idtrx,
+    "no": no,
+    "serial": serial,
+    "tanggal": tanggal,
   };
 }

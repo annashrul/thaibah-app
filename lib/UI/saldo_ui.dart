@@ -98,7 +98,6 @@ class _SaldoUIState extends State<SaldoUI> {
     amount = sbtrLast3;
     print(amount);
   }
-
   int selectedRadioTile;
   int selectedRadio;
   setSelectedRadioTile(int val) {
@@ -282,7 +281,6 @@ class RadioItem extends StatelessWidget {
   RadioItem(this._item);
   @override
   Widget build(BuildContext context) {
-
     return new Container(
       padding:EdgeInsets.all(10.0),
       child: new Center(
@@ -302,6 +300,7 @@ class RadioItem extends StatelessWidget {
     );
   }
 }
+
 class RadioModel {
   bool isSelected;
   final String buttonText;

@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/PPOB/PPOBPascaCheckoutModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/UI/Widgets/alertq.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -127,7 +129,7 @@ class _DetailPpobPascaState extends State<DetailPpobPasca> {
                 child: ListView(
                   children: <Widget>[
                     TokenCard(
-                      param: widget.param,
+                      param: widget.product_name,
                       iconUrl: IconImgs.noImage,
                       provider: widget.type,
                       no: widget.no_pelanggan,
@@ -158,6 +160,7 @@ class _DetailPpobPascaState extends State<DetailPpobPasca> {
                                     color: Colors.transparent,
                                     child: InkWell(
                                       onTap: () {
+//                                        dialogCash(context);
 //                                        print("${widget.no}, ${widget.code},${widget.raw_price},${widget.fee_charge}");
                                         _pinBottomSheet(context);
                                       },
@@ -193,30 +196,29 @@ class _DetailPpobPascaState extends State<DetailPpobPasca> {
   }
 
   _callBackPin(BuildContext context,bool isTrue) async{
-    if(isTrue){
-      setState(() {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: LinearProgressIndicator(),
-            );
-          },
-        );
-      });
-      var price;
-      if(widget.param == 'ZAKAT'){
-        price = widget.nominal;
-      }else{
-        price = widget.jumlah_bayar;
-      }
-//      902,031,093.00
-//      "code":"RZZ",
-//    "orderid":"1122",
-//    "price":"42000"
-      var res = await PpobPascaProvider().fetchPpobPascaCheckout(widget.code, widget.tagihan_id,price );
-//      var res = await PpobPascaProvider().fetchPpobPascaCheckout("RZZ", "1122","42000" );
+    var price;
+    if(widget.param == 'ZAKAT'){
+      price = widget.nominal;
+    }else{
+      price = widget.jumlah_bayar;
+    }
+    print("CODE = ${widget.code}");
+    print("ORDERID = ${widget.tagihan_id}");
+    print("PRICE = ${price}");
+//    Navigator.pop(context);
+    var res = await PpobPascaProvider().fetchPpobPascaCheckout(widget.code, widget.tagihan_id,price );
+
+//
+    print(res);
+    if(res == 'gagal'){
+      Navigator.pop(context);
+      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('terjadi kesalahan, request timeout')));
+    }
+    else if(res == 'error'){
+      Navigator.pop(context);
+      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('error respon')));
+    }
+    else{
       if(res is PpobPascaCheckoutModel){
         PpobPascaCheckoutModel results = res;
         if(results.status=="success"){
@@ -224,68 +226,240 @@ class _DetailPpobPascaState extends State<DetailPpobPasca> {
             Navigator.pop(context);
           });
           print("#####################################################BERHASIL#######################################");
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return RichAlertDialogQ(
-                  alertTitle: richTitle("Transaksi Berhasil"),
-                  alertSubtitle: richSubtitle("Transaksi Pembayaran ${widget.param} Berhasil Dilakukan"),
-                  alertType: RichAlertType.SUCCESS,
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text("Kembali"),
-                      onPressed: (){
-                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-                      },
-                    ),
-                  ],
-                );
-              }
+          return dialogCash(
+              context,
+              results.result.idtrx,
+              results.result.total,
+              results.result.nama,
+              results.result.target,
+              results.result.mtrpln,
+              results.result.token
           );
+//          showDialog(
+//              context: context,
+//              builder: (BuildContext context) {
+//                return RichAlertDialogQ(
+//                  alertTitle: richTitle("Transaksi Berhasil"),
+//                  alertSubtitle: richSubtitle("kd trx : ${res.result.idtrx} \n total : ${res.result.total} \n nama : ${res.result.nama} \n target : ${res.result.target} \n no : ${res.result.mtrpln} \n token : ${res.result.token} \n "),
+//                  alertType: RichAlertType.SUCCESS,
+//                  actions: <Widget>[
+//                    FlatButton(
+//                      child: Text("Kembali"),
+//                      onPressed: (){
+//                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+//                      },
+//                    ),
+//                  ],
+//                );
+//              }
+//          );
         }
         else{
-          setState(() {
-            Navigator.pop(context);
-          });
-          print("#####################################################BERHASIL#######################################");
+          print("#####################################################GAGAK#######################################");
           Navigator.pop(context);
           scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));
         }
-      }else{
+      }
+      else{
         General results = res;
-        setState(() {
-          Navigator.pop(context);
-        });
         print("#####################################################BERHASIL#######################################");
         Navigator.pop(context);
         scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));
       }
     }
-    else{
-      setState(() {
-        Navigator.pop(context);
-      });
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text("Pin Salah!"),
-            content: new Text("Masukan pin yang sesuai."),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
+
   }
 
+  void dialogCash(BuildContext context, var id,var total,var nama,var target,var no,var token) {
+    showDialog(
+        context: context,
+        builder: (context){
+          return StatefulBuilder(
+              builder: (context, setState){
+                return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    height: 400.0,
+                    width: 300.0,
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          width: double.infinity,
+                          height: 400.0,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                        Column(
+                          children: <Widget>[
+                            Container(
+                              width: double.infinity,
+                              height: 50,
+                              alignment: Alignment.bottomCenter,
+                              decoration: BoxDecoration(
+                                color: Color(0xff454dff),
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(12),
+                                  topRight: Radius.circular(12),
+                                ),
+                              ),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "BERHASIL",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  GestureDetector(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text('ID Transkasi', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                        SizedBox(width: 10.0,),
+                                        Text(': $id', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                        SizedBox(width: 10.0,),
+                                        Icon(Icons.content_copy, color: Colors.black, size: 15,),
+                                      ]
+                                    ),
+                                    onTap: () {
+                                      Clipboard.setData(new ClipboardData(text: '$id'));
+                                      scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("kode transaksi Berhasil Disalin")));
+                                    },
+                                  ),
+                                  SizedBox(height: 20.0),
+                                  GestureDetector(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('Total', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          SizedBox(width: 10.0,),
+                                          Text(': $total', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                        ]
+                                    ),
+                                    onTap: () {},
+                                  ),
+                                  SizedBox(height: 20.0),
+                                  GestureDetector(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('Nama', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          SizedBox(width: 10.0,),
+                                          Text(': Nama', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                        ]
+                                    ),
+                                    onTap: () {},
+                                  ),
+                                  SizedBox(height: 20.0),
+                                  GestureDetector(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('Target', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          SizedBox(width: 10.0,),
+                                          Text(': $target', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                        ]
+                                    ),
+                                    onTap: () {},
+                                  ),
+                                  SizedBox(height: 20.0),
+                                  GestureDetector(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('No', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          SizedBox(width: 10.0,),
+                                          Flexible(
+                                            child: Text(': $no', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          ),
+                                        ]
+                                    ),
+                                    onTap: () {},
+                                  ),
+                                  SizedBox(height: 20.0),
+                                  GestureDetector(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('Token', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          SizedBox(width: 10.0,),
+                                          Flexible(
+                                            child: Text(': $token', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontFamily: 'Rubik',)),
+                                          ),
+                                          SizedBox(width: 10.0,),
+                                          Icon(Icons.content_copy, color: Colors.black, size: 15,),
+                                        ]
+                                    ),
+                                    onTap: () {
+                                      Clipboard.setData(new ClipboardData(text: '$token'));
+                                      scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("token Berhasil Disalin")));
+                                    },
+                                  ),
 
+                                ],
+                              ),
+                            )
+
+                          ],
+                        ),
+                        Align(
+                          // These values are based on trial & error method
+                          alignment: Alignment(1.05, -1.05),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context, rootNavigator: true).push(
+                                new CupertinoPageRoute(builder: (context) => DashboardThreePage()),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.of(context, rootNavigator: true).push(
+                                    new CupertinoPageRoute(builder: (context) => DashboardThreePage()),
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+          );
+        }
+    );
+  }
 }
 
 

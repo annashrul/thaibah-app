@@ -31,6 +31,9 @@ class _TabPulsaState extends State<TabPulsa> {
     return StreamBuilder(
       stream: ppobPraBloc.getResult,
       builder: (context, AsyncSnapshot<PpobPraModel> snapshot) {
+        print(snapshot.hasData);
+        print(snapshot.hasError);
+        print(snapshot.hashCode);
         if (snapshot.hasData) {
           return vwPulsa(snapshot, context);
         } else if (snapshot.hasError) {

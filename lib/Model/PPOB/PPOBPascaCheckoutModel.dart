@@ -35,40 +35,40 @@ class PpobPascaCheckoutModel extends BaseModel {
 }
 
 class Result {
-  var produk;
-  var total;
-  var target;
-  var mtrpln;
-  var note;
-  var token;
-  var status;
+  String idtrx;
+  int total;
+  String nama;
+  String target;
+  String mtrpln;
+  String token;
+  String status;
 
   Result({
-    this.produk,
+    this.idtrx,
     this.total,
+    this.nama,
     this.target,
     this.mtrpln,
-    this.note,
     this.token,
     this.status,
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-    produk: json["produk"],
+    idtrx: json["idtrx"],
     total: json["total"],
+    nama: json["nama"],
     target: json["target"],
     mtrpln: json["mtrpln"],
-    note: json["note"],
     token: json["token"],
     status: json["status"],
   );
 
   Map<String, dynamic> toJson() => {
-    "produk": produk,
+    "idtrx": idtrx,
     "total": total,
+    "nama": nama,
     "target": target,
     "mtrpln": mtrpln,
-    "note": note,
     "token": token,
     "status": status,
   };

@@ -68,6 +68,9 @@ class _ProdukPpobPraState extends State<ProdukPpobPra> {
         child: StreamBuilder(
           stream: ppobPraBloc.getResult,
           builder: (context, AsyncSnapshot<PpobPraModel> snapshot) {
+            print(snapshot.hasData);
+            print(snapshot.hasError);
+            print(snapshot.hashCode);
             if (snapshot.hasData) {
               return Scrollbar(child: vwPulsa(snapshot, context));
             } else if (snapshot.hasError) {
@@ -166,8 +169,8 @@ class _ProdukPpobPraState extends State<ProdukPpobPra> {
 
                         ],
                       ),
-                    )
-                    ,)
+                    ),
+                  )
               ),
             );
           },
@@ -179,5 +182,7 @@ class _ProdukPpobPraState extends State<ProdukPpobPra> {
       );
     }
   }
+
+
 
 }

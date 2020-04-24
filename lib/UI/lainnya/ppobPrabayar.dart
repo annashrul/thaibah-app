@@ -78,7 +78,7 @@ class _PpobPrabayarState extends State<PpobPrabayar> {
   Future<void> cekStatus() async{
     param = widget.param;
     if(param == 'E_MONEY'){
-      ppobPraBloc.fetchPpobPra(param, '');
+//      ppobPraBloc.fetchPpobPra(param, '');
       setState(() {
         cekType = true;
       });
@@ -186,42 +186,31 @@ class _PpobPrabayarState extends State<PpobPrabayar> {
     );
   }
 
-
+  List layananEmoney = ["OVO","DANA","GOPAY","LINKAJA"];
   layanan(BuildContext context){
-    return StreamBuilder(
-        stream: ppobPraBloc.getResult,
-        builder: (context,AsyncSnapshot<PpobPraModel> snapshot) {
-          if(snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData ?
-          new InputDecorator(
-            decoration: const InputDecoration(
-                labelText: 'Layanan',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 16)
-            ),
-            isEmpty: _currentItemSelectedLayanan == null,
-            child: DropdownButtonHideUnderline(
-              child: new DropdownButton<String>(
-                value:_currentItemSelectedLayanan,
-                isDense: true,
-                onChanged: (String newValue) {
-                  setState(() {
-                    _onDropDownItemSelectedLayanan(newValue);
-                  });
-                },
-                items: snapshot.data.result.data.map((Datum items){
-                  return new DropdownMenuItem<String>(
-                    value: items.prov == null || items.prov == '' ?  null : items.prov,
-                    child: Text(items.prov,style: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                  );
-                }).toList(),
-              ),
-            ),
-          ): new Center(
-              child: new LinearProgressIndicator(
-                valueColor:new AlwaysStoppedAnimation<Color>(Colors.green),
-              )
-          );
-        }
+    return new InputDecorator(
+      decoration: const InputDecoration(
+          labelText: 'Layanan',
+          labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 16)
+      ),
+      isEmpty: _currentItemSelectedLayanan == null,
+      child: DropdownButtonHideUnderline(
+        child: new DropdownButton<String>(
+          value:_currentItemSelectedLayanan,
+          isDense: true,
+          onChanged: (String newValue) {
+            setState(() {
+              _onDropDownItemSelectedLayanan(newValue);
+            });
+          },
+          items: layananEmoney.map((items){
+            return new DropdownMenuItem<String>(
+              value: items,
+              child: Text(items,style: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 

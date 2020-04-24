@@ -24,7 +24,6 @@ class PpobPraProvider {
         _url = 'ppob/get/$type/$nohp';
       }
     }
-
     print(_url);
     final response = await client.get(
       ApiService().baseUrl+_url,
@@ -41,19 +40,54 @@ class PpobPraProvider {
   Future fetchChekoutPPOBPra(var no,var code,var price,var charge,var idpelanggan) async {
     final token = await userRepository.getToken();
     final pin = await userRepository.getPin();
-    return await client.post(ApiService().baseUrl+"ppob/pra/checkout",
-      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
-      body: {"no":"$no","code":"$code","price":"$price","charge":"$charge","pin":"$pin","idpelanggan":idpelanggan}
-    ).then((Response response) {
-      var results;
+//    try{
+//      final response = await client.post(
+//          ApiService().baseUrl+'ppob/pra/checkout',
+//          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+//          body: {"no":"$no","code":"$code","price":"$price","charge":"$charge","pin":"$pin","idpelanggan":idpelanggan}
+//      ).timeout(Duration(seconds: 60));
+//      if (response.statusCode == 200) {
+//        return CheckoutPpobModel.fromJson(json.decode(response.body));
+//      } else {
+//        return General.fromJson(json.decode(response.body));
+//      }
+//    } catch(e){
+//      return 'gagal';
+//    }
+
+    try{
+      final response = await client.post(
+          ApiService().baseUrl+'ppob/pra/checkout',
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+          body: {"no":"$no","code":"$code","price":"$price","charge":"$charge","pin":"$pin","idpelanggan":idpelanggan}
+      );
       print(response.statusCode);
-      if(response.statusCode == 200){
-        results = CheckoutPpobModel.fromJson(json.decode(response.body));
-      }else if(response.statusCode == 400){
-        results =  General.fromJson(json.decode(response.body));
+      if (response.statusCode == 200) {
+        return CheckoutPpobModel.fromJson(json.decode(response.body));
+      } else {
+        return General.fromJson(json.decode(response.body));
       }
-      return results;
-    });
+    }on TimeoutException catch (e) {
+      print('Timeout $e');
+      return 'gagal';
+    } on Error catch (e) {
+      print('Error: $e');
+      return 'error';
+    }
+
+//    return await client.post(ApiService().baseUrl+"ppob/pra/checkout",
+//      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
+//      body: {"no":"$no","code":"$code","price":"$price","charge":"$charge","pin":"$pin","idpelanggan":idpelanggan}
+//    ).then((Response response) {
+//      var results;
+//      print(response.statusCode);
+//      if(response.statusCode == 200){
+//        results = CheckoutPpobModel.fromJson(json.decode(response.body));
+//      }else if(response.statusCode == 400){
+//        results =  General.fromJson(json.decode(response.body));
+//      }
+//      return results;
+//    });
   }
 
 }

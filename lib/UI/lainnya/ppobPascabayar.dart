@@ -37,12 +37,46 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
   }
 
   Future cekTagihan() async{
-    final userRepository = UserRepository();
-    final nohp = await userRepository.getNoHp();
-    var res = await PpobPascaProvider().fetchPpobPascaCekTagihan(_currentItemSelectedLayanan, nohp, 0);
-    if(res is PpobPascaCekTagihanModel){
+//    final userRepository = UserRepository();
+//    final nohp = await userRepository.getNoHp();
+    print("LAYANAN = $_currentItemSelectedLayanan");
+    print("ID PELANGGAN = ${nominalController.text}");
+    String code = '';
+    String tambahan = '';
+    if(widget.param == 'PDAM'){
+      code='PDAM';
+      tambahan=_currentItemSelectedLayanan;
+    }else{
+      tambahan='';
+      if(_currentItemSelectedLayanan=='BPJS Kesehatan'){
+        code='BPJSKS';
+        tambahan='';
+      }else{
+        code=_currentItemSelectedLayanan;
+        tambahan='';
+      }
+    }
+    print("CODE = $code, TAMBAHAN = $tambahan, ID PELANGGAN = ${nominalController.text}");
+    var res = await PpobPascaProvider().fetchPpobPascaCekTagihan(
+        code,
+        tambahan,
+        nominalController.text
+    );
+//    var res = await PpobPascaProvider().fetchPpobPascaCekTagihan(_currentItemSelectedLayanan=='BPJS Kesehatan'?'BPJSKS':_currentItemSelectedLayanan,'' , nominalController.text);
+    if(res == 'timeout'){
+      setState(() {isLoading = false;});
+      return showInSnackBar('request timeout');
+    }
+    else if(res == 'error'){
+      setState(() {isLoading = false;});
+      return showInSnackBar('terjadi kesalahan syntax');
+    }
+    else if(res is PpobPascaCekTagihanModel){
       PpobPascaCekTagihanModel results = res;
       if(results.status == 'success'){
+        setState(() {
+          isLoading = false;
+        });
         Navigator.of(context, rootNavigator: true).push(
           new CupertinoPageRoute(builder: (context) => DetailPpobPasca(
               param : "${widget.title}",
@@ -50,7 +84,7 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
               code:results.result.code,
               product_name:results.result.productName,
               type:results.result.type,
-              phone:results.result.phone,
+              phone:results.result.phone.toString(),
               no_pelanggan:results.result.noPelanggan,
               nama:results.result.nama,
               periode:results.result.periode,
@@ -67,7 +101,8 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
         });
         return showInSnackBar(results.msg);
       }
-    }else{
+    }
+    else{
       setState(() {
         isLoading = false;
       });
@@ -97,7 +132,7 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
   @override
   void initState() {
     super.initState();
-    ppobPascaBloc.fetchPpobPasca(widget.param);
+//    ppobPascaBloc.fetchPpobPasca(widget.param);
   }
   @override
   Widget build(BuildContext context) {
@@ -127,7 +162,7 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
           ),
         ),
       ),
-      body: isLoading==true ? Container(child: Center(child: CircularProgressIndicator())):ListView(
+      body: ListView(
         children: <Widget>[
           Container(
             padding:EdgeInsets.only(left:10.0,right:10.0),
@@ -156,7 +191,7 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      _layanan(context),
+                      layananHarcore(),
                     ],
                   ),
                 ),
@@ -221,41 +256,121 @@ class _PpobPascabayarState extends State<PpobPascabayar> {
       ),
     );
   }
-  _layanan(BuildContext context) {
-    return StreamBuilder(
-        stream: ppobPascaBloc.getResult,
-        builder: (context,AsyncSnapshot<PpobPascaModel> snapshot) {
-          if(snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData ?
-          new InputDecorator(
-            decoration: const InputDecoration(
-                labelText: 'Layanan',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: 16)
-            ),
-            isEmpty: _currentItemSelectedLayanan == null,
-            child: DropdownButtonHideUnderline(
-              child: new DropdownButton<String>(
-                value:_currentItemSelectedLayanan,
-                isDense: true,
-                onChanged: (String newValue) {
-                  setState(() {
-                    _onDropDownItemSelectedLayanan(newValue);
-                  });
-                },
-                items: snapshot.data.result.data.map((Datum items){
-                  return new DropdownMenuItem<String>(
-                    value: items.code.toString() != null ? items.code.toString() : null,
-                    child: Text(items.note,style: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                  );
-                }).toList(),
-              ),
-            ),
-          ): new Center(
-              child: new LinearProgressIndicator(
-                valueColor:new AlwaysStoppedAnimation<Color>(Colors.green),
-              )
-          );
-        }
+  List layananPDAM = [
+    "PDAM PALYJA",
+    "PDAM AETRA/TPJ",
+    "PDAM KAB BANDUNG",
+    "PDAM KOT BANDUNG",
+    "PDAM KOT DEPOK",
+    "PDAM KAB SLEMAN",
+    "PDAM KAB BANYUMAS",
+    "PDAM KAB BOYOLALI",
+    "PDAM KAB BREBES",
+    "PDAM KAB CILACAP",
+    "PDAM KAB GROBOGAN",
+    "PDAM KAB KARANGANYAR",
+    "PDAM KAB KEBUMEN",
+    "PDAM KAB KENDAL",
+    "PDAM KAB PEKALONGAN",
+    "PDAM KAB PURBALINGGA",
+    "PDAM KAB PURWOREJO",
+    "PDAM KAB REMBANG",
+    "PDAM KAB SEMARANG",
+    "PDAM KAB SRAGEN",
+    "PDAM KAB WONOGIRI",
+    "PDAM KAB WONOSOBO",
+    "PDAM KAB SALATIGA",
+    "PDAM KOT SEMARANG",
+    "PDAM KOT SURAKARTA",
+    "PDAM KAB BANGKALAN",
+    "PDAM KAB BOJONEGORO",
+    "PDAM KAB BONDOWOSO",
+    "PDAM KAB JEMBER",
+    "PDAM KAB MALANG",
+    "PDAM KAB MOJOKERTO",
+    "PDAM KAB PROBOLINGGO",
+    "PDAM KAB SIDOARJO",
+    "PDAM KAB SITUBONDO",
+    "PDAM KOT MADIUN",
+    "PDAM KOT SURABAYA",
+    "PDAM BANDAR LAMPUNG",
+    "PDAM MEDAN",
+    "PDAM PALEMBANG",
+    "PDAM KAB KUBU RAYA",
+    "PDAM KAB BALANGAN",
+    "PDAM KAB TAPIN",
+    "PDAM KOT BANJARBARU",
+    "PDAM KAB BERAU",
+    "PDAM KOT TANAH GROGOT",
+    "PDAM KOT MANADO",
+    "PDAM KAB BULELENG",
+    "PDAM KAB LOMBOK TENGAH",
+    "PDAM KOT MATARAM",
+    "PDAM KAB BOGOR",
+    "PDAM KOT BOGOR",
+    "PDAM KOT DENPASAR",
+    "PDAM KOT BANJARMASIN",
+    "PDAM KOT BALIKPAPAN",
+    "PDAM KOT PONTIANAK",
+    "PDAM KOT MAKASSAR",
+    "PDAM KAB KLATEN",
+    "PDAM KAB KARAWANG",
+    "PDAM JAMBI",
+    "PDAM KOT BEKASI",
+  ];
+
+  List layananMultifinance = ['BAF','FIF','MAF','MCF','WOM'];
+  List layananTvKable = ['INDOVISION','TOPTV','OKEVISION','YESTV'];
+  List layananBPJS = ['BPJS Kesehatan'];
+  List layananTelkom = ['TELKOM','FLEXI','SPEEDY','TELKOMVISION'];
+
+
+  layananHarcore(){
+    if(widget.param == 'PDAM'){
+      return  structureLayanan(layananPDAM);
+    }
+    if(widget.param == 'MULTIFINANCE'){
+      return  structureLayanan(layananMultifinance);
+    }
+    if(widget.param == 'PEMBAYARAN_TV'){
+      return  structureLayanan(layananTvKable);
+    }
+    if(widget.param == 'BPJS'){
+      return  structureLayanan(layananBPJS);
+    }
+    if(widget.param == 'telkom'){
+      return  structureLayanan(layananTelkom);
+    }
+
+  }
+
+  Widget structureLayanan(List param){
+    return  new InputDecorator(
+      decoration: const InputDecoration(
+          labelText: 'Layanan',
+          labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: 16)
+      ),
+      isEmpty: _currentItemSelectedLayanan == null,
+      child: DropdownButtonHideUnderline(
+        child: new DropdownButton<String>(
+          value:_currentItemSelectedLayanan,
+          isDense: true,
+          onChanged: (String newValue) {
+            setState(() {
+              _onDropDownItemSelectedLayanan(newValue);
+            });
+          },
+          items: param.map((items){
+            return new DropdownMenuItem<String>(
+              value: items,
+              child: Text(items,style: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }
+
+
+

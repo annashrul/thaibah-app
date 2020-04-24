@@ -22,11 +22,13 @@ import 'package:thaibah/UI/component/sosmed/myFeed.dart';
 import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 import 'package:thaibah/resources/profileProvider.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
+import 'dart:ui' as ui;
 
 class MyProfile extends StatefulWidget {
   @override
@@ -58,6 +60,27 @@ class _MyProfileState extends State<MyProfile> {
       DeviceOrientation.portraitDown,
     ]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.light, statusBarColor: Colors.transparent));
+    var ratio = ui.window.devicePixelRatio;
+    double mq;
+    int fl;
+
+    if(ratio>=4.0){
+      mq = MediaQuery.of(context).size.height/20;
+    }else if(ratio >= 3.5 && ratio < 4.0){
+
+    }else if(ratio >= 3.0 && ratio <3.5){
+      mq = MediaQuery.of(context).size.height/16;
+    }else if(ratio >= 2.5 && ratio <3.0){
+      mq = MediaQuery.of(context).size.height/30;
+      mq = MediaQuery.of(context).size.height/35;
+    }else if(ratio >= 2.0 && ratio <2.5){
+      mq = MediaQuery.of(context).size.height/15;
+    }
+    print("longestSide ${MediaQuery.of(context).size.longestSide}");
+    print("shortestSide ${MediaQuery.of(context).size.shortestSide}");
+    print("aspectRatio ${MediaQuery.of(context).size.aspectRatio}");
+    print("flifed ${MediaQuery.of(context).size.flipped}");
+    print("devicePixelRatio ${ui.window.devicePixelRatio}");
 
     return Scaffold(
       key: scaffoldKey,
@@ -70,203 +93,182 @@ class _MyProfileState extends State<MyProfile> {
         loadData();
       }) : moreThenOne==true?UserRepository().moreThenOne(context, (){
         Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TutorialClearData()));
-      }): RefreshIndicator(
-        child: Container(
-          child: Column(
-            children: <Widget>[
-              Stack(
-                children: <Widget>[
-                  Container(height: 250.0,width: double.infinity,color: Color(0xFF30cc23),),
-                  Positioned(
-                    bottom: 50.0,
-                    right: 100.0,
-                    child: Container(
-                      width: 400.0,
-                      height: 400.0,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color: Color(0xFF116240).withOpacity(0.5)),
-                    ),
+      }):Container(
+        child: Column(
+          children: <Widget>[
+            Stack(
+              children: <Widget>[
+                Container(height: 250.0,width: double.infinity,color: Color(0xFF30cc23),),
+                Positioned(
+                  bottom: 50.0,
+                  right: 100.0,
+                  child: Container(
+                    width: 400.0,
+                    height: 400.0,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color: Color(0xFF116240).withOpacity(0.5)),
                   ),
-                  Positioned(
-                    bottom: 100.0,
-                    left: 150.0,
-                    child: Container(
-                      width: 300.0,
-                      height: 300.0,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color: Color(0xFF30cc23).withOpacity(0.5)),
-                    ),
+                ),
+                Positioned(
+                  bottom: 100.0,
+                  left: 150.0,
+                  child: Container(
+                    width: 300.0,
+                    height: 300.0,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color: Color(0xFF30cc23).withOpacity(0.5)),
                   ),
-                  Column(
-                    children: <Widget>[
-                      SizedBox(height: 30.0,),
-                      Row(
-                        children: <Widget>[
-                          SizedBox(width: 10.0),
-                          Container(
-                            width: 75.0,
-                            height: 75.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white,style: BorderStyle.solid,width: 2.0),
-                            ),
-                            child:CircleAvatar(
-                              radius: 32.0,
-                              child: CachedNetworkImage(
-                                imageUrl: picture,
-                                imageBuilder: (context, imageProvider) => Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                  ),
-                                ),
-                                placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
-                                errorWidget: (context, url, error) => Icon(Icons.error),
-                              ),
-                            ),
-                          ),
-                          SizedBox( width: 10.0,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text('$name',style: TextStyle(color: Colors.white, fontFamily: 'Rubik', fontSize: 14.0, fontWeight: FontWeight.bold)),
-                              GestureDetector(
-                                child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Text('$kdReferral',style: TextStyle(
-                                          fontWeight: FontWeight.bold, color: Colors.white,fontFamily: 'Rubik',
-                                          shadows: [Shadow(blurRadius: 5.0,color: Colors.black,offset: Offset(0.0, 1.0))]
-                                      )),
-                                      SizedBox(width: 5),
-                                      Icon(Icons.content_copy, color: Colors.white, size: 15,),
-                                    ]
-                                ),
-                                onTap: () {
-                                  Clipboard.setData(new ClipboardData(text: '$kdReferral'));
-                                  scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Kode Referral Berhasil Disalin")));
-                                },
-                              ),
-                            ],
-                          ),
-                          SizedBox(width: MediaQuery.of(context).size.width/3),
-                          IconButton(
-                            icon: Icon(Icons.settings,color: Colors.white, size: 30.0,),
-                            onPressed: () => Navigator.of(context, rootNavigator: true).push(
-                              new CupertinoPageRoute(builder: (context) => IndexMember(id: id)),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 25.0,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          customCardOneFour(
-                                  (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral: kdReferral,name:name)));}
-                              ,'https://image.flaticon.com/icons/png/512/66/66585.png', 'Jaringan Saya', '$jumlahJaringan ( Orang )'
-                          ),
-                          customCardOneFour(
-                                  (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral: kdReferral,name:name)));},
-                              'https://images.vexels.com/media/users/3/151201/isolated/preview/ec82be449048cc1c2e8a06514bb1b356-right-foot-footprint-silhouette-by-vexels.png', 'Kaki Besar 1', '$kaki1 ( STP )'
-                          ),
-                          customCardOneFour(
-                                  (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral: kdReferral,name:name)));},
-                              'https://images.vexels.com/media/users/3/151201/isolated/preview/ec82be449048cc1c2e8a06514bb1b356-right-foot-footprint-silhouette-by-vexels.png', 'Kaki Besar 2', '$kaki2 ( STP )'
-                          ),
-                          customCardOneFour(
-                                  (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral: kdReferral,name:name)));},
-                              'https://images.vexels.com/media/users/3/151201/isolated/preview/ec82be449048cc1c2e8a06514bb1b356-right-foot-footprint-silhouette-by-vexels.png', 'Kaki Besar 3', '$kaki3 ( STP )'
-                          ),
-
-                        ],
-                      ),
-                      SizedBox(height: 15.0),
-                      Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Material(
-                                elevation: 5.0,
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: InkWell(
-                                  onTap: (){
-                                    setState(() {isLoadingShare=true;});
-                                    share('$kdReferral');
-                                  },
-                                  child: Container(
-                                    padding:EdgeInsets.all(20.0),
-                                    width: (MediaQuery.of(context).size.width / 3.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 0.0),
-                                          child: Center(
-                                              child:isLoadingShare?CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green)):SvgPicture.asset(ApiService().assetsLocal+'Icon_Share.svg', height: MediaQuery.of(context).size.height/20,)
-                                          ),
-                                        ),
-                                        SizedBox(height: 5.0),
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 0.0),
-                                          child: Center(
-                                            child: Text('Bagikan Link',textAlign: TextAlign.center,style: TextStyle(fontFamily: 'Rubik',fontSize: 12.0,color: Colors.black,fontWeight: FontWeight.bold)),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              customCards('png','QR Code',  '$qr',(){
-                                _lainnyaModalBottomSheet(context,'barcode','$qr');
-                              }),
-                              customCards('png','Rp Rp ${formatter.format(int.parse(omsetJaringan))}',  'https://images.vexels.com/media/users/3/137089/isolated/preview/c3286d4d32fa90ebcf09b488654612b9-wallet-icon-by-vexels.png',(){}),
-                            ],
-                          ),
-                          SizedBox(height: 5.0,)
-                        ],
-                      )
-                    ],
-                  )
-                ],
-              ),
-              SizedBox(height: 10.0,),
-              Flexible(
-                flex: 1,
-                  child: SingleChildScrollView(
-                    primary: true,
-                    scrollDirection: Axis.vertical,
-                    physics: ClampingScrollPhysics(),
-                    child: Column(
+                ),
+                Column(
+                  children: <Widget>[
+                    SizedBox(height: 30.0,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        customlistDetails('','Penukaran Bonus', Icons.monetization_on, Colors.green[100], Colors.red[400],PenukaranBonus(saldo: saldoMain, saldoBonus:saldoBonus)),
-                        customlistDetails('','Riwayat Penarikan', Icons.history, Colors.red[50], Colors.red[300],HistoryPenarikan()),
-                        customlistDetails('','Riwayat Pembelian', Icons.history, Colors.amber[200], Colors.white,IndexHistory()),
-                        customlistDetails('','Riwayat Top Up', Icons.history, Colors.blue[100], Colors.white,HistoryDeposit()),
-                        customlistDetails('','Sosial Media', Icons.perm_media, Colors.green, Colors.white,MyFeed()),
-                        customlistDetails('','Kebijakan & Privasi', Icons.lock, Colors.orange[100], Colors.orange[300],PrivacyPolicy(privasi: privacyPolicy)),
-                        customlistDetails('function','Keluar', Icons.power_settings_new, Colors.green[100], Colors.green[300],LoginPhone())
+                        SizedBox(width: 10.0),
+                        Container(
+                          width: 75.0,
+                          height: 75.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white,style: BorderStyle.solid,width: 2.0),
+                          ),
+                          child:CircleAvatar(
+                            radius: 32.0,
+                            child: CachedNetworkImage(
+                              imageUrl: picture,
+                              imageBuilder: (context, imageProvider) => Container(
+                                width: 100.0,
+                                height: 100.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                ),
+                              ),
+                              placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
+                            ),
+                          ),
+                        ),
+                        SizedBox( width: 10.0,),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('$name',style: TextStyle(color: Colors.white, fontFamily: 'Rubik', fontSize: 14.0, fontWeight: FontWeight.bold)),
+                            GestureDetector(
+                              child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Text('$kdReferral',style: TextStyle(
+                                        fontWeight: FontWeight.bold, color: Colors.white,fontFamily: 'Rubik',
+                                        shadows: [Shadow(blurRadius: 5.0,color: Colors.black,offset: Offset(0.0, 1.0))]
+                                    )),
+                                    SizedBox(width: 5),
+                                    Icon(Icons.content_copy, color: Colors.white, size: 15,),
+                                  ]
+                              ),
+                              onTap: () {
+                                Clipboard.setData(new ClipboardData(text: '$kdReferral'));
+                                scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Kode Referral Berhasil Disalin")));
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(width: MediaQuery.of(context).size.width/3.5,),
+                        IconButton(
+                          icon: Icon(Icons.settings,color: Colors.white, size: 20.0,),
+                          onPressed: () => Navigator.of(context, rootNavigator: true).push(
+                            new CupertinoPageRoute(builder: (context) => IndexMember(id: id)),
+                          ),
+                        ),
                       ],
                     ),
-                  )
-              )
-            ],
-          ),
+                    SizedBox(height: 25.0,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        customCardOneFour('jaringan_rev', 'Jaringan Saya', '$jumlahJaringan ( Orang )'),
+                        customCardOneFour('kaki_1', 'Kaki Besar 1', '$kaki1 ( STP )'),
+                        customCardOneFour('kaki_2', 'Kaki Besar 2', '$kaki2 ( STP )'),
+                        customCardOneFour('kaki_3', 'Kaki Besar 3', '$kaki3 ( STP )'),
+                      ],
+                    ),
+                    SizedBox(height: 15.0),
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Material(
+                              elevation: 5.0,
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: InkWell(
+                                onTap: (){
+                                  setState(() {isLoadingShare=true;});
+                                  share('$kdReferral');
+                                },
+                                child: Container(
+                                  padding:EdgeInsets.all(15.0),
+                                  width: (MediaQuery.of(context).size.width / 3.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 0.0),
+                                        child: Center(
+                                            child:isLoadingShare?CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green)):SvgPicture.network(ApiService().iconUrl+"share_rev.svg", height: MediaQuery.of(context).size.height/20,)
+                                        ),
+                                      ),
+                                      SizedBox(height: 5.0),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 0.0),
+                                        child: Center(
+                                          child: Text('Bagikan Link',textAlign: TextAlign.center,style: TextStyle(fontFamily: 'Rubik',fontSize: 12.0,color: Colors.black,fontWeight: FontWeight.bold)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            customCards('png','QR Code',  '$qr',(){_lainnyaModalBottomSheet(context,'barcode','$qr');}),
+                            customCards('','Rp ${formatter.format(int.parse(omsetJaringan))}',  'wallet_rev',(){}),
+                          ],
+                        ),
+                        SizedBox(height: 5.0,)
+                      ],
+                    )
+                  ],
+                )
+              ],
+            ),
+            Flexible(
+                flex: 1,
+                child: RefreshIndicator(
+                  child: ListView(
+                    children: <Widget>[
+                      customlistDetails('','Penukaran Bonus', Icons.monetization_on, Colors.green[100], Colors.red[400],PenukaranBonus(saldo: saldoMain, saldoBonus:saldoBonus)),
+                      customlistDetails('','Riwayat Penarikan', Icons.history, Colors.red[50], Colors.red[300],HistoryPenarikan()),
+                      customlistDetails('','Riwayat Pembelian', Icons.history, Colors.amber[200], Colors.white,IndexHistory()),
+                      customlistDetails('','Riwayat Top Up', Icons.history, Colors.blue[100], Colors.white,HistoryDeposit()),
+                      customlistDetails('','Sosial Media', Icons.perm_media, Colors.green, Colors.white,MyFeed()),
+                      customlistDetails('','Kebijakan & Privasi', Icons.lock, Colors.orange[100], Colors.orange[300],PrivacyPolicy(privasi: privacyPolicy)),
+                      customlistDetails('function','Keluar', Icons.power_settings_new, Colors.green[100], Colors.green[300],LoginPhone())
+                    ],
+                  ),
+                  onRefresh: refresh
+                )
+            )
+          ],
         ),
-        onRefresh: refresh,
-        color: Colors.green,
       ),
     );
   }
 
-  Widget customCardOneFour(Function callback, String pathImg, String titleOne, String titleTwo){
+  Widget customCardOneFour(String pathImg, String titleOne, String titleTwo){
     return InkWell(
-      onTap: callback,
+      onTap: () => Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral: kdReferral,name:name))),
       child: Column(
         children: <Widget>[
-          Image.network('$pathImg',height: 35,width: 35,color: Colors.white,),
+          SvgPicture.network(ApiService().iconUrl+'icon_'+pathImg+'.svg', height: 35,width:35),
           SizedBox(height: 5.0,),
           Text('$titleOne',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold,fontSize: 12.0)),
           SizedBox(height: 5.0,),
@@ -283,7 +285,7 @@ class _MyProfileState extends State<MyProfile> {
       child: InkWell(
         onTap: callback,
         child: Container(
-          padding:EdgeInsets.all(20.0),
+          padding:EdgeInsets.all(15.0),
           width: (MediaQuery.of(context).size.width / 3.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,20 +293,14 @@ class _MyProfileState extends State<MyProfile> {
               Padding(
                 padding: EdgeInsets.only(left: 0.0),
                 child: Center(
-                    child:param=='png'?Image.network(imagePath,height: MediaQuery.of(context).size.height/20):SvgPicture.asset(ApiService().assetsLocal+imagePath+'.svg', height: MediaQuery.of(context).size.height/20,)
+                  child:param=='png'?Image.network(imagePath,height: MediaQuery.of(context).size.height/20):SvgPicture.network(ApiService().iconUrl+imagePath+'.svg', height: MediaQuery.of(context).size.height/20,)
                 ),
               ),
               SizedBox(height: 5.0),
               Padding(
                 padding: EdgeInsets.only(left: 0.0),
                 child: Center(
-                  child: Text(title,textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontFamily: 'Rubik',
-                          fontSize: 12.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                      )),
+                  child: Text(title,textAlign: TextAlign.center,style: TextStyle(fontFamily: 'Rubik',fontSize: 12.0,color: Colors.black,fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -317,49 +313,50 @@ class _MyProfileState extends State<MyProfile> {
   Widget customlistDetails(String param,String title, IconData icon, Color backgroundColor, Color iconColor,Widget xWidget) {
     return InkWell(
       onTap: () async {
-        param == 'function' ? AlertQ(
-          style: AlertStyle(
-              titleStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
-              descStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik')
-          ),
-          context: context,
-          type: AlertType.warning,
-          title: "ANDA YAKIN",
-          desc: "Akan Keluar Aplikasi Ini ??",
-          buttons: [
-            DialogButton(
-              child: Text("TIDAK",style: TextStyle(color: Colors.white, fontSize: 20)),
-              onPressed: () => Navigator.of(context).pop(),
-              color: Color.fromRGBO(0, 179, 134, 1.0),
-            ),
-            DialogButton(
-              child: Text("YA",style: TextStyle(color: Colors.white, fontSize: 20)),
-              onPressed: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                var res = await MemberProvider().logout();
-                if(res.status == 'success'){
-                  prefs.clear();
-                  prefs.commit();
-                  prefs.setBool('cek', true);
-                  prefs.setString('id', null);
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => xWidget), (Route<dynamic> route) => false);
-                }
-              },
-              gradient: LinearGradient(colors: [
-                Color.fromRGBO(116, 116, 191, 1.0),
-                Color.fromRGBO(52, 138, 199, 1.0)
-              ]),
-            )
-          ],
-        ).show() : Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => xWidget));
+        param == 'function' ? showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return RichAlertDialogQ(
+                alertTitle: richTitle("Keluar"),
+                alertSubtitle: richSubtitle("Anda Yakin Akan Keluar Aplikasi ?"),
+                alertType: RichAlertType.WARNING,
+                actions: <Widget>[
+                  Container(
+                    color: Colors.green,
+                    child: FlatButton(
+                      child: Text("YA", style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                      onPressed: () async {
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        var res = await MemberProvider().logout();
+                        if(res.status == 'success'){
+                          prefs.clear();
+                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => xWidget), (Route<dynamic> route) => false);
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  Container(
+                    color:Colors.red,
+                    child: FlatButton(
+                      child: Text("TIDAK", style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  )
+                ],
+              );
+            }
+        ) : Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => xWidget));
       },
       child: ListTile(
-        title: Text(title,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 18.0)),
+        title: Text(title,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 12.0)),
         leading: CircleAvatar(
           backgroundColor: backgroundColor,
-          child: Center(child: Icon(icon, color: iconColor,),),
+          child: Center(child: Icon(icon, color: iconColor)),
         ),
-        trailing: Icon(Icons.chevron_right, color: Colors.black),
+        trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey,size: 20,),
       ),
     );
   }
@@ -567,10 +564,10 @@ class _MyProfileState extends State<MyProfile> {
         isLoadingShare = false;
       });
       await WcFlutterShare.share(
-          sharePopupTitle: 'Thaibah Share Link',
-          subject: 'Thaibah Share Link',
-          text: "https://thaibah.com/signup/$param\n\n\nAyo Buruan daftar",
-          mimeType: 'text/plain'
+        sharePopupTitle: 'Thaibah Share Link',
+        subject: 'Thaibah Share Link',
+        text: "https://thaibah.com/signup/$param\n\n\nAyo Buruan daftar",
+        mimeType: 'text/plain'
       );
     });
 
@@ -626,3 +623,4 @@ class _MyProfileState extends State<MyProfile> {
     loadData();
   }
 }
+

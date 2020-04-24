@@ -69,7 +69,8 @@ class _ZakatUIState extends State<ZakatUI>{
             nominal:nominalController.text
           )),
         );
-      }else{
+      }
+      else{
         setState(() {
           isLoading = false;
         });

@@ -78,7 +78,6 @@ class _ProfileUIState extends State<ProfileUI> {
           moreThenOne = true;
         });
         GagalHitProvider().fetchRequest('profile','kondisi = percobaan 2x gagal, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-
       }else{
         var res = await ProfileProvider().fetchProfile();
         if(res is ProfileModel){
@@ -146,9 +145,10 @@ class _ProfileUIState extends State<ProfileUI> {
             if(res.status == 'success'){
 //              clearData();
               prefs.clear();
-              prefs.commit();
-              prefs.setBool('cek', true);
-              prefs.setString('id', null);
+//              prefs.
+//              prefs.commit();
+//              prefs.setBool('cek', true);
+//              prefs.setString('id', null);
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
             }
           },
@@ -208,7 +208,7 @@ class _ProfileUIState extends State<ProfileUI> {
     return Scaffold(
       key: scaffoldKey,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() : retry == true ? UserRepository().requestTimeOut((){
+      body: modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? Container(child:Center(child:CircularProgressIndicator() )): retry == true ? UserRepository().requestTimeOut((){
         setState(() {
           counterHit = counterHit+1;
           retry=false;
