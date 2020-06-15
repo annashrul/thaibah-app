@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:thaibah/UI/component/History/historyBonus.dart';
 import 'package:thaibah/UI/component/History/historyMain.dart';
+import 'package:thaibah/UI/component/History/historyPlatinum.dart';
 import 'package:thaibah/UI/component/History/historyVoucher.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/style.dart';
@@ -41,7 +42,7 @@ class _HistoryUIState extends State<HistoryUI> with AutomaticKeepAliveClientMixi
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
-          length: 3,
+          length: 4,
           child: Scaffold(
             key: scaffoldKey,
             appBar: new AppBar(
@@ -79,6 +80,7 @@ class _HistoryUIState extends State<HistoryUI> with AutomaticKeepAliveClientMixi
                     Tab(text: "Utama",),
                     Tab(text: "Bonus"),
                     Tab(text: "Voucher"),
+                    Tab(text: "Platinum"),
                   ]
               ),
             ),
@@ -88,6 +90,7 @@ class _HistoryUIState extends State<HistoryUI> with AutomaticKeepAliveClientMixi
                   HistoryMain(),
                   HistoryBonus(),
                   HistoryVoucher(),
+                  HistoryPlatinum(),
                 ]
             ),
 

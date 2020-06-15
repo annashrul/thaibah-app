@@ -12,6 +12,7 @@ import 'package:thaibah/UI/component/detailInspirasi.dart';
 import 'package:thaibah/bloc/testiBloc.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'dart:async';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class TestiSuplemen extends StatefulWidget {
   @override
@@ -177,8 +178,16 @@ class _TestiSuplemenState extends State<TestiSuplemen> {
                                                   child: InkWell(
                                                     splashColor: Colors.green, // splash color
                                                     onTap: () {
+                                                      print("VIDEO = ${snapshot.data.result.data[index].video} || CAPTION = ${snapshot.data.result.data[index].caption} || rating=${snapshot.data.result.data[index].rating.toString()}");
+
                                                       Navigator.of(context, rootNavigator: true).push(
-                                                        new CupertinoPageRoute(builder: (context) => DetailInspirasi(param:'Testimoni Produk',video: snapshot.data.result.data[index].video,caption: snapshot.data.result.data[index].caption,rating:snapshot.data.result.data[index].rating.toString())),
+                                                        new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+                                                          video: snapshot.data.result.data[index].video,
+                                                          param:'Testimoni Produk',
+                                                          caption: snapshot.data.result.data[index].caption,
+                                                          rating:snapshot.data.result.data[index].rating.toString(),
+                                                          type: "Testimoni",
+                                                        )),
 
                                                       );
                                                     }, // button pressed

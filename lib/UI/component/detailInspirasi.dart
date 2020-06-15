@@ -12,87 +12,31 @@ class DetailInspirasi extends StatefulWidget {
 }
 
 class _DetailInspirasiState extends State<DetailInspirasi> {
-  var scaffoldKey = GlobalKey<ScaffoldState>();
-  static String urlVideo = '';
-  List<String> playlist = [];
-  final List<String> _ids = [];
-  String videoId;
-  Future arr() async{
-    _ids.add(widget.video);
-    videoId = YoutubePlayer.convertUrlToId(widget.video);
-    print(videoId); // BBAyRBTfsOU
-  }
-  bool cek = false;
-  Future cekType() async{
-    if(widget.type == 'inspirasi'){
-      setState(() {
-        cek = true;
-      });
-    }else{
-      setState(() {
-        cek = false;
-      });
-    }
-    print(cek);
-    print(widget.type);
-  }
-  int currentPos;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  YoutubePlayerController _controller;
-  TextEditingController _idController;
-  TextEditingController _seekToController;
-  PlayerState _playerState;
-  YoutubeMetaData _videoMetaData;
-  double _volume = 100;
-  bool _muted = false;
-  bool _isPlayerReady = false;
-  int count = 0;
+  static String videoId;
+  bool cek = false;
+  Future convertUrlYoutube() async{
+    setState(() {videoId = YoutubePlayer.convertUrlToId("${widget.video}");});
+  }
 
+  Future cekType() async{
+    cek = widget.type=='inspirasi'?true:false;
+  }
 
+  final List<YoutubePlayerController> _controllers = ['$videoId',].map<YoutubePlayerController>(
+    (videoId) => YoutubePlayerController(
+      initialVideoId: videoId,
+      flags: YoutubePlayerFlags(
+        autoPlay: true,
+      ),
+    ),
+  ).toList();
 
   @override
   void initState() {
     super.initState();
     cekType();
-    arr();
-    _controller = YoutubePlayerController(
-      initialVideoId: videoId,
-      flags: YoutubePlayerFlags(
-        mute: false,
-        autoPlay: true,
-        disableDragSeek: false,
-        loop: false,
-        isLive: false,
-        forceHideAnnotation: true,
-      ),
-    )..addListener(listener);
-    _idController = TextEditingController();
-    _seekToController = TextEditingController();
-    _videoMetaData = YoutubeMetaData();
-    _playerState = PlayerState.unknown;
-  }
-
-  void listener() {
-    if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
-      setState(() {
-        _playerState = _controller.value.playerState;
-        _videoMetaData = _controller.metadata;
-      });
-    }
-  }
-
-  @override
-  void deactivate() {
-    _controller.pause();
-    super.deactivate();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _idController.dispose();
-    _seekToController.dispose();
-    super.dispose();
+    convertUrlYoutube();
   }
 
   @override
@@ -122,53 +66,46 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
           ),
         ),
       ),
-      body: Container(
-        child: Center(
-          child: ListView(
-            children: [
-              YoutubePlayer(
-                aspectRatio: 16 / 9,
-                controller: _controller,
-                showVideoProgressIndicator: true,
-                progressIndicatorColor: Color(0xFF116240),
-                topActions: <Widget>[
-                  SizedBox(width: 8.0),
-                  Expanded(
-                    child: Text(
-                      _controller.metadata.title,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.0,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-
-                ],
-                onReady: () {
-                  _isPlayerReady = true;
-                },
-                onEnded: (id) {
-                  _controller.load(_ids[count++]);
-
-                },
-              ),
-              cek ? Container() : Container(
-                padding: EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text("Deksripsi",style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontSize: 20.0,fontFamily: 'Rubik')),
-                    Html(data: widget.caption,defaultTextStyle: TextStyle(color: Colors.black,fontFamily: 'Rubik'),),
-                    Divider(),
-                    generateStart(int.parse(widget.rating)),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 3,
+            child: ListView.separated(
+              itemBuilder: (context, index) {
+                return YoutubePlayer(
+                  key: ObjectKey(_controllers[index]),
+                  controller: _controllers[index],
+                  actionsPadding: EdgeInsets.only(left: 16.0),
+                  bottomActions: [
+                    CurrentPosition(),
+                    SizedBox(width: 10.0),
+                    ProgressBar(isExpanded: true),
+                    SizedBox(width: 10.0),
+                    RemainingDuration(),
+                    FullScreenButton(),
                   ],
-                ),
-              )
-            ],
+                );
+              },
+              itemCount: _controllers.length,
+              separatorBuilder: (context, _) => SizedBox(height: 10.0),
+            ),
           ),
-        ),
+          Expanded(
+            flex: 7,
+            child:  cek ? Container() : Container(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text("Deksripsi",style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontSize: 20.0,fontFamily: 'Rubik')),
+                  Html(data: widget.caption,defaultTextStyle: TextStyle(color: Colors.black,fontFamily: 'Rubik'),),
+                  Divider(),
+                  generateStart(int.parse(widget.rating)),
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

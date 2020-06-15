@@ -20,6 +20,10 @@ class HistoryProvider {
     if(param == 'voucher'){
       url = 'transaction/myhistory?type=voucher&page=$page&limit=$limit&datefrom=$from&dateto=$to&q=$q';
     }
+    if(param == 'platinum'){
+      url = 'transaction/myhistory?type=platinum&page=$page&limit=$limit&datefrom=$from&dateto=$to&q=$q';
+    }
+    print(param);
     print(url);
     final response = await client.get(
       ApiService().baseUrl+url,

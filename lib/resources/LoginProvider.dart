@@ -45,6 +45,7 @@ class LoginProvider {
 //  }
 
   Future fetchLoginNoHp(var nohp,var deviceid,var typeotp) async {
+    print("RUNNING URL ON ${ApiService().baseUrl}");
     return await client.post(ApiService().baseUrl+"auth/login",
       body: {
         "nohp":"$nohp",
