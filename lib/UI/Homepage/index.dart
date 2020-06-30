@@ -28,6 +28,7 @@ import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:unicorndial/unicorndial.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 
 
 class DashboardThreePage extends StatefulWidget {
@@ -96,20 +97,28 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
       scaffoldKey.currentState.showSnackBar(snackBar);
       return false;
     }
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isPin', true);
+    final dbHelper = DbHelper.instance;
+    final id = await userRepository.getDataUser('id');
+    final statusExitApp = await userRepository.getDataUser('statusExitApp');
+    Map<String, dynamic> row = {
+      DbHelper.columnId   : id,
+      DbHelper.columnStatusExitApp : '0',
+    };
+    await dbHelper.update(row);
+//    final prefs = await SharedPreferences.getInstance();
+//    prefs.setBool('isPin', true);
 //    var cek = prefs.setBool('isPin', true);
-    print("################################# KALUAR APLIKASI ${prefs.getBool('isPin')} ##############################");
+    print("################################# KALUAR APLIKASI $statusExitApp ##############################");
     return true;
   }
 
   bool modeUpdate = false;
 
   Future checkModeUpdate() async{
-    final prefs = await SharedPreferences.getInstance();
+    final pin = await userRepository.getDataUser('pin');
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    if(prefs.get('pin') == null || prefs.get('pin') == '') {
+    if(pin == null || pin == '') {
       print('pin kosong');
       setState(() {
         modeUpdate = true;

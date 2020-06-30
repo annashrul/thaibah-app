@@ -29,6 +29,7 @@ import 'package:thaibah/resources/memberProvider.dart';
 import 'package:thaibah/resources/profileProvider.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'dart:ui' as ui;
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 
 class MyProfile extends StatefulWidget {
   @override
@@ -84,16 +85,7 @@ class _MyProfileState extends State<MyProfile> {
 
     return Scaffold(
       key: scaffoldKey,
-      body:  modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() : retry == true ? UserRepository().requestTimeOut((){
-        setState(() {
-          counterHit = counterHit+1;
-          retry=false;
-          isLoading=true;
-        });
-        loadData();
-      }) : moreThenOne==true?UserRepository().moreThenOne(context, (){
-        Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TutorialClearData()));
-      }):Container(
+      body: isLoading?_loading():Container(
         child: Column(
           children: <Widget>[
             Stack(
@@ -326,10 +318,22 @@ class _MyProfileState extends State<MyProfile> {
                     child: FlatButton(
                       child: Text("YA", style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
                       onPressed: () async {
-                        SharedPreferences prefs = await SharedPreferences.getInstance();
                         var res = await MemberProvider().logout();
                         if(res.status == 'success'){
-                          prefs.clear();
+                          final dbHelper = DbHelper.instance;
+                          final id = await userRepository.getDataUser('id');
+                          final statusLogin = await userRepository.getDataUser('status');
+                          final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
+                          Map<String, dynamic> row = {
+                            DbHelper.columnId   : id,
+                            DbHelper.columnStatus : '0',
+                            DbHelper.columnStatusOnBoarding  : "1"
+                          };
+                          print("ID = $id");
+                          print("STATUS LOGIN = $statusLogin");
+                          print("STATUS ONBOARDING = $statusOnBoarding");
+                          final rowsAffected = await dbHelper.update(row);
+                          print(rowsAffected);
                           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => xWidget), (Route<dynamic> route) => false);
                         }
                       },

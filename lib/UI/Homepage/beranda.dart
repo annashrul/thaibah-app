@@ -50,7 +50,8 @@ import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:device_info/device_info.dart';
 import 'package:thaibah/UI/Widgets/tutorialClearData.dart';
 
-
+import 'package:thaibah/Model/userLocalModel.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 
 class Beranda extends StatefulWidget {
   final String lat;
@@ -61,8 +62,6 @@ class Beranda extends StatefulWidget {
 }
 
 class BerandaState extends State<Beranda>{
-
-
   final TextStyle whiteText = TextStyle(color: Colors.white);
   final userRepository = UserRepository();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
@@ -96,138 +95,50 @@ class BerandaState extends State<Beranda>{
     });
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     loadData();
-//    final _bloc = NewsBloc();
-//    _bloc.fetchNewsList(1, 6);
   }
 
   bool retry = false;
   bool modeUpdate = false;
   bool modeLogout = false;
+  int count = 0;
+
+
   Future<void> loadData() async {
+
+    final token = await userRepository.getDataUser('token');
+    final id = await userRepository.getDataUser('idServer');
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    print(counterRTO);
-    if(counterRTO >= 2){
+    try{
+      var jsonString = await http.get(
+          ApiService().baseUrl+'info?id='+id,
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      ).timeout(Duration(seconds: ApiService().timerActivity));
+      if (jsonString.statusCode == 200) {
+        setState(() {isLoading = false;retry = false;});
+        final jsonResponse = json.decode(jsonString.body);
+        info = new Info.fromJson(jsonResponse);
+        _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
+        _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
+        _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);_saldoPlatinum=(info.result.saldoPlatinum);
+      } else {
+        throw Exception('Failed to load info');
+      }
+    } on TimeoutException catch(e){
+      print('timeout: $e');
       setState(() {
-        modeLogout=true;
-        isLoading = false;
-        retry = true;
+        isLoading = false;retry = true;
       });
-      GagalHitProvider().fetchRequest('home','kondisi = percobaan 2x gagal, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-    }else{
-      final prefs = await SharedPreferences.getInstance();
-
-      if(prefs.get('pin') == null || prefs.get('pin') == '') {
-        print('pin kosong');
-        setState(() {
-          isLoading = false; modeUpdate = true;
-        });
-        GagalHitProvider().fetchRequest('home','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-      }
-      else{
-        final token = await userRepository.getToken();
-        String id = await userRepository.getID();
-        try{
-          var jsonString = await http.get(
-              ApiService().baseUrl+'info?id='+id,
-              headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-          ).timeout(Duration(seconds: ApiService().timerActivity));
-          if (jsonString.statusCode == 200) {
-            setState(() {isLoading = false;retry = false;});
-            final jsonResponse = json.decode(jsonString.body);
-            info = new Info.fromJson(jsonResponse);
-            _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
-            _qr= (info.result.qr);
-            _saldo= (info.result.saldo);
-            _saldoMain=(info.result.saldoMain);
-            _saldoBonus=(info.result.saldoBonus);
-            _saldoVoucher=(info.result.saldoVoucher);
-            _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);
-            _saldoPlatinum=(info.result.saldoPlatinum);
-            final checkLoginStatus = await userRepository.cekStatusLogin();
-            final checkVersion = await ConfigProvider().cekVersion();
-            if(checkVersion is Checker){
-              Checker checker = checkVersion;
-              if(checker.status == 'success'){
-                if(checker.result.versionCode != ApiService().versionCode){
-                  setState(() {isLoading = false;});
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
-                }
-                if(checker.result.statusMember == 0){
-                  setState(() {isLoading = false;});
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-                }
-              }
-            }else{
-              setState(() {
-                isLoading = false;retry = true;
-              });
-              GagalHitProvider().fetchRequest('home','kondisi = timeout cek versi | status member, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-            }
-            if(checkLoginStatus == true){
-              setState(() {isLoading = false;});
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-            }else{
-              final isPinZero  = await userRepository.getPin();
-              if(isPinZero == 0){
-                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => Pin(saldo: '',param: 'beranda')), (Route<dynamic> route) => false);
-              }else{
-                setState(() {
-                  isPin = prefs.getBool('isPin');
-                });
-                if(isPin == false){
-                  prefs.setBool('isPin', true);
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
-                }
-              }
-            }
-            setState(() {
-              isLoading = false;
-            });
-          } else {
-            throw Exception('Failed to load info');
-          }
-        } on TimeoutException catch(e){
-          print('timeout: $e');
-          setState(() {
-            isLoading = false;retry = true;
-          });
-          GagalHitProvider().fetchRequest('home','kondisi = timeout $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-        } on Error catch (e) {
-          print('Error: $e');
-          setState(() {
-            isLoading = false;retry = true;
-          });
-          GagalHitProvider().fetchRequest('home','kondisi = error $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-        }
-      }
+      GagalHitProvider().fetchRequest('home','kondisi = timeout $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+    } on Error catch (e) {
+      print('Error: $e');
+      setState(() {
+        isLoading = false;retry = true;
+      });
+      GagalHitProvider().fetchRequest('home','kondisi = error $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }
 
 
-  }
-  _callBackPin(BuildContext context,bool isTrue) async{
-    if(isTrue){
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-    }
-    else{
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text("Pin Salah!"),
-            content: new Text("Masukan pin yang sesuai."),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
   }
   DateTime dt = DateTime.now();
 
@@ -258,16 +169,7 @@ class BerandaState extends State<Beranda>{
 
   @override
   Widget build(BuildContext context) {
-    return  modeLogout == true ? UserRepository().moreThenOne(context, (){
-      Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TutorialClearData()));
-    }) : modeUpdate == true ? UserRepository().modeUpdate(context) : retry==true ? UserRepository().requestTimeOut((){
-      setState(() {
-        counterRTO = counterRTO+1;
-        isLoading=true;
-        retry=false;
-      });
-      loadData();
-    }):buildContent(context);
+    return buildContent(context);
   }
 
 

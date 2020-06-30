@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thaibah/Model/onboardingModel.dart';
+import 'package:thaibah/Model/onboardingModel.dart' as Prefix2;
 import 'package:thaibah/Model/pageViewModel.dart';
 import 'package:thaibah/Model/user_location.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
@@ -16,31 +16,19 @@ import 'package:thaibah/UI/splash/introViews.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:http/http.dart' show Client, Response;
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/configProvider.dart' as Prefix1;
 import 'package:thaibah/resources/location_service.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:thaibah/config/user_repo.dart';
 
+import 'Model/checkerModel.dart';
 import 'UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'UI/Widgets/pin_screen.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var id = prefs.getString('id');
-  var pin = prefs.getString('pin');
-  var token = prefs.getString('token');
-  var cek = prefs.getBool('cek');
-  print(id);
-  print(cek);
-  print(pin);
-  print(token);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-//      home: id == null ? LoginPhone() : MyApp()
-      home: cek == false ? Splash() : (id == null || pin == null || token == null ? Splash() :  MyApp())
-    )
-  );
-//  runApp(MyApp());
+  runApp(MyApp());
 }
 
 
@@ -51,126 +39,19 @@ class MyApp extends StatefulWidget {
 
 
 class _MyAppState extends State<MyApp>  {
-  bool isLoading = false;
-  SharedPreferences preferences;
-  String id="";
-   Future checkLoginStatus() async {
-    preferences = await SharedPreferences.getInstance();
-    setState(() {
-      isLoading = false;
-      id = preferences.getString("id");
-    });
-  }
-  String _connectionStatus = 'Unknown';
-  final Connectivity _connectivity = Connectivity();
-  StreamSubscription<ConnectivityResult> _connectivitySubscription;
-  final userRepository = UserRepository();
-
 
 
   @override
   void initState() {
     super.initState();
-    checkLoginStatus();
-    isLoading = true;
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-//    Timer.periodic(Duration(seconds:ApiService().timerActivity), (Timer t){
-//      chekcer();
-//    });
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _connectivitySubscription.cancel();
   }
 
-
-  Future<void> initConnectivity() async {
-    ConnectivityResult result;
-    try {
-      result = await _connectivity.checkConnectivity();
-    } on PlatformException catch (e) {
-      print(e.toString());
-    }
-    if (!mounted) {
-      return Future.value(null);
-    }
-    return _updateConnectionStatus(result);
-  }
-
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    switch (result) {
-      case ConnectivityResult.wifi:
-        String wifiName, wifiBSSID, wifiIP;
-
-        try {
-          if (Platform.isIOS) {
-            LocationAuthorizationStatus status =
-            await _connectivity.getLocationServiceAuthorization();
-            if (status == LocationAuthorizationStatus.notDetermined) {
-              status = await _connectivity.requestLocationServiceAuthorization();
-            }
-            if (status == LocationAuthorizationStatus.authorizedAlways ||
-                status == LocationAuthorizationStatus.authorizedWhenInUse) {
-              wifiName = await _connectivity.getWifiName();
-            } else {
-              wifiName = await _connectivity.getWifiName();
-            }
-          } else {
-            wifiName = await _connectivity.getWifiName();
-          }
-        } on PlatformException catch (e) {
-          print(e.toString());
-          wifiName = "Failed to get Wifi Name";
-        }
-
-        try {
-          if (Platform.isIOS) {
-            LocationAuthorizationStatus status =
-            await _connectivity.getLocationServiceAuthorization();
-            if (status == LocationAuthorizationStatus.notDetermined) {
-              status =
-              await _connectivity.requestLocationServiceAuthorization();
-            }
-            if (status == LocationAuthorizationStatus.authorizedAlways ||
-                status == LocationAuthorizationStatus.authorizedWhenInUse) {
-              wifiBSSID = await _connectivity.getWifiBSSID();
-            } else {
-              wifiBSSID = await _connectivity.getWifiBSSID();
-            }
-          } else {
-            wifiBSSID = await _connectivity.getWifiBSSID();
-          }
-        } on PlatformException catch (e) {
-          print(e.toString());
-          wifiBSSID = "Failed to get Wifi BSSID";
-        }
-
-        try {
-          wifiIP = await _connectivity.getWifiIP();
-        } on PlatformException catch (e) {
-          print(e.toString());
-          wifiIP = "Failed to get Wifi IP";
-        }
-
-        setState(() {
-          _connectionStatus = '$result\n'
-              'Wifi Name: $wifiName\n'
-              'Wifi BSSID: $wifiBSSID\n'
-              'Wifi IP: $wifiIP\n';
-        });
-        break;
-      case ConnectivityResult.mobile:
-      case ConnectivityResult.none:
-        setState(() => _connectionStatus = result.toString());
-        break;
-      default:
-        setState(() => _connectionStatus = 'Failed to get connectivity.');
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +61,7 @@ class _MyAppState extends State<MyApp>  {
     ]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.light, statusBarColor: Colors.transparent));
 
-    return isLoading?CircularProgressIndicator(): StreamProvider<UserLocation>(
+    return StreamProvider<UserLocation>(
         create: (context) => LocationService().locationStream,
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -196,24 +77,96 @@ class Splash extends StatefulWidget {
 }
 
 class SplashState extends State<Splash> {
-  Future checkFirstSeen() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool _seen = (prefs.getBool('seen') ?? false);
-    if (_seen) {
-      Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
-      prefs.setBool('isPin', false);
-    } else {
-      prefs.setBool('seen', true);
-      prefs.setBool('cek', true);
+  _callBackPin(BuildContext context,bool isTrue) async{
+    if(isTrue){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+    }
+    else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("Pin Salah!"),
+            content: new Text("Masukan pin yang sesuai."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
-      if(prefs.getBool('cek') == true){
+  Future checkFirstSeen() async {
+    final checker = await Prefix1.ConfigProvider().cekVersion();
+    final userRepository = UserRepository();
+    final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
+    final statusLogin = await userRepository.getDataUser('status');
+    final statusExitApp = await userRepository.getDataUser('statusExitApp');
+    print("STATUS LOGIN = $statusLogin");
+    print("STATUS ON BOARDING = $statusOnBoarding");
+    print("STATUS EXIT APP = $statusExitApp");
+
+    if(checker is Checker){
+      print("####################### CHECKING STATUS CHECKER ${checker.status} ################################");
+      if(checker.status == 'success'){
+        print("####################### SERVER VERSI ${checker.result.versionCode} & LOCAL VERSI ${ApiService().versionCode} ################################");
+        if(checker.result.versionCode != ApiService().versionCode){
+
+          print("####################### CHECKING VERSION COIDE ################################");
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
+        }
+        if(checker.result.statusMember == 0){
+          print("####################### CHECKING STATUS MEMBER ################################");
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+        }
+
+
+      }
+    }else{
+      print("####################### ELSE CHECKER ################################");
+      print(checker);
+
+    }
+
+    if(statusExitApp == '0'){
+      print("####################### CHECKING EXIT APP ################################");
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
+    }else{
+      if(statusOnBoarding == ''||statusOnBoarding=='0'){
+        print("####################### CHECKING STATUS ONBOARDING ################################");
         Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
-        prefs.setBool('isPin', false);
       }else{
-        prefs.setBool('isPin', false);
-        Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
+        if(statusLogin=='1'||statusLogin!='0'){
+          print("####################### CHECKING STATUS LOGIN ################################");
+          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
+        }else{
+          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new LoginPhone()));
+        }
       }
     }
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    bool _seen = (prefs.getBool('seen') ?? false);
+//    if (_seen) {
+//      Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
+//      prefs.setBool('isPin', false);
+//    } else {
+//      prefs.setBool('seen', true);
+//      prefs.setBool('cek', true);
+//
+//      if(prefs.getBool('cek') == true){
+//        Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
+//        prefs.setBool('isPin', false);
+//      }else{
+//        prefs.setBool('isPin', false);
+//        Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
+//      }
+//    }
   }
   @override
   void initState() {
@@ -287,8 +240,8 @@ class _IntroScreenState extends State<IntroScreen> {
     if(response.statusCode == 200){
       final jsonResponse = json.decode(response.body);
       if(response.body.isNotEmpty){
-        OnboardingModel onboardingModel = OnboardingModel.fromJson(jsonResponse);
-        onboardingModel.result.map((Result items){
+        Prefix2.OnboardingModel onboardingModel = Prefix2.OnboardingModel.fromJson(jsonResponse);
+        onboardingModel.result.map((Prefix2.Result items){
           setState(() {
             wrapOnboarding.add(PageViewModel(
               pageColor: Colors.white,
@@ -340,6 +293,7 @@ class _IntroScreenState extends State<IntroScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(wrapOnboarding);
     return new Scaffold(
         body: isLoading?Container(child: Center(child: CircularProgressIndicator(),),):Stack(
           children: <Widget>[

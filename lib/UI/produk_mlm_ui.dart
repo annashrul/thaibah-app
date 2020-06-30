@@ -97,7 +97,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     ));
   }
 
-  int perpage = 2;
+  int perpage = 10;
 
   void load() {
     print("load $perpage");

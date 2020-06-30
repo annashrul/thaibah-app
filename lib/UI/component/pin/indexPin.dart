@@ -43,13 +43,12 @@ class _PinState extends State<Pin> {
   }
   bool _isLoading = false;
   Future _check(var txtPin, BuildContext context) async {
-    print("PIN AKU DI UBAH $txtPin ");
     final name = await userRepository.getName();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var res = await updatePinMemberBloc.fetchUpdatePinMember(txtPin);
     if(res is General){
       General result = res;
-      print(result.result);
+//      print(result.result);
       if(result.status == 'success'){
         setState(() {_isLoading  = false;});
         if(widget.param == 'beranda'){
@@ -154,7 +153,7 @@ class _PinState extends State<Pin> {
               return true;
             },
             onSuccess: () {
-              print(currentText[0]);
+//              print(currentText[0]);
 //              if(currentText[0] == 0 || currentText[0] == '0'){
 //                return showInSnackBar("Mohon Maaf, PIN Tidak Boleh Diawali Oleh Angka 0",Colors.redAccent);
 //              }else{

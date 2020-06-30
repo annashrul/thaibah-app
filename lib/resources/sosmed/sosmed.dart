@@ -15,8 +15,8 @@ class SosmedProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<ListSosmedModel> fetchListSosmed(var page,var limit, var param) async{
-    final token = await userRepository.getToken();
-    final id = await userRepository.getID();
+    final token = await userRepository.getDataUser('token');
+    final id = await userRepository.getDataUser('idServer');
     var url;
     if(param == 'kosong'){
       url = 'socmed?page=$page&limit=$limit';
@@ -38,7 +38,7 @@ class SosmedProvider {
   }
 
   Future<ListInboxSosmedModel> fetchListInboxSosmed(var page,var limit) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'notif?page=$page&limit=$limit',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -54,7 +54,7 @@ class SosmedProvider {
   }
 
   Future<ListLikeSosmedModel> fetchListLikeSosmed(var id) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'socmed/like/get/$id',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -69,7 +69,7 @@ class SosmedProvider {
   }
 
   Future<ListDetailSosmedModel> fetchListDetailSosmed(var id) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'socmed/get/$id',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -87,7 +87,7 @@ class SosmedProvider {
 
 
   Future sendComment(var id,var caption) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final deviceId = await userRepository.getDeviceId();
     return await client.post(
         ApiService().baseUrl+"socmed/comment",
@@ -108,7 +108,7 @@ class SosmedProvider {
     });
   }
   Future sendLikeOrUnLike(var id) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final deviceId = await userRepository.getDeviceId();
     var results;
 //    try{
@@ -151,7 +151,7 @@ class SosmedProvider {
 
 
   Future sendFeed(var caption,var picture) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final deviceId = await userRepository.getDeviceId();
     return await client.post(
         ApiService().baseUrl+"socmed/create",
@@ -173,7 +173,7 @@ class SosmedProvider {
   }
 
   Future deleteFeed(var id) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"socmed/delete",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -193,7 +193,7 @@ class SosmedProvider {
   }
 
   Future deleteInbox(var id) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"notif/delete",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -213,7 +213,7 @@ class SosmedProvider {
   }
 
   Future deleteCountInbox() async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"notif/read_notif",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},

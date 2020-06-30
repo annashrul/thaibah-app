@@ -109,6 +109,7 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
       ),
     );
   }
+
   Widget generateStart(int rating){
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),

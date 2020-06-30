@@ -1,7 +1,7 @@
 name: thaibah
 description: A new Flutter project.
 
-version: 1.2.0+23
+version: 1.2.2+25
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -37,6 +37,8 @@ dependencies:
   unicorndial: "^1.1.5"
   flutter_linkify: ^3.1.0
   app_settings: 3.0.1
+  sqflite: any
+  path_provider: any
 
 dev_dependencies:
   flutter_test:

@@ -29,27 +29,27 @@ class PinScreenState extends State<PinScreen> {
       pin = pinQ.toString();
       cek = pin.split('');
     });
-    print("############## PIN ABI = $pinQ $cek #######################");
-    print("############## LOADING = $isLoading #######################");
+//    print("############## PIN ABI = $pinQ $cek #######################");
+//    print("############## LOADING = $isLoading #######################");
   }
 
   Future biometrics() async {
     setState(() {
       isLoading = true;
     });
-    print("################## STATUS LOADING $isLoading ###########################");
+//    print("################## STATUS LOADING $isLoading ###########################");
     var res= await MemberProvider().forgotPin();
     if(res is ResendOtp){
       setState(() {
         isLoading = true;
       });
       ResendOtp results = res;
-      print(results.result);
+//      print(results.result);
       if(results.status == 'success'){
         setState(() {
           isLoading = true;
         });
-        print(results.result.otp);
+//        print(results.result.otp);
         Timer(Duration(seconds: 4), () {
           Navigator.of(context).push(new MaterialPageRoute(builder: (context) => ResendAuth(otp:results.result.otp))).whenComplete(cekPin);
         });
@@ -91,7 +91,7 @@ class PinScreenState extends State<PinScreen> {
   @override
   void initState() {
 //    print
-    print('abus halaman');
+//    print('abus halaman');
     cekPin();
     setState(() {
       isLoading=false;
@@ -122,12 +122,12 @@ class PinScreenState extends State<PinScreen> {
         deskripsi: 'Masukan PIN Anda Untuk Melanjutkan Ke Halaman Berikutnya',
         passCodeVerify: (passcode) async {
           for (int i = 0; i < cek.length; i++) {
-            print(passcode[i]);
+//            print(passcode[i]);
             if (passcode[i] != int.parse(cek[i])) {
               return false;
             }
           }
-          print(passcode);
+//          print(passcode);
           return true;
         },
         onSuccess: () async{

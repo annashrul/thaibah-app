@@ -28,6 +28,7 @@ import 'loginPhone.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'package:device_info/device_info.dart';
 import 'package:thaibah/UI/Widgets/tutorialClearData.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 
 class ProfileUI extends StatefulWidget {
   @override
@@ -140,15 +141,12 @@ class _ProfileUIState extends State<ProfileUI> {
         DialogButton(
           child: Text("YA",style: TextStyle(color: Colors.white, fontSize: 20)),
           onPressed: () async {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
             var res = await MemberProvider().logout();
             if(res.status == 'success'){
-//              clearData();
-              prefs.clear();
-//              prefs.
-//              prefs.commit();
-//              prefs.setBool('cek', true);
-//              prefs.setString('id', null);
+              final dbHelper = DbHelper.instance;
+              final id = await userRepository.getDataUser('id');
+              final rowsDeleted = await dbHelper.delete(id);
+              print('deleted $rowsDeleted row(s): row $id');
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
             }
           },
@@ -208,16 +206,7 @@ class _ProfileUIState extends State<ProfileUI> {
     return Scaffold(
       key: scaffoldKey,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? Container(child:Center(child:CircularProgressIndicator() )): retry == true ? UserRepository().requestTimeOut((){
-        setState(() {
-          counterHit = counterHit+1;
-          retry=false;
-          isLoading=true;
-        });
-        loadData();
-      }) : moreThenOne==true?UserRepository().moreThenOne(context, (){
-        Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TutorialClearData()));
-      }): RefreshIndicator(
+      body: RefreshIndicator(
           child: Container(
             height: _height,
             width: _width,

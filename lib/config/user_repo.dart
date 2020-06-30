@@ -7,6 +7,7 @@ import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 
 
 class UserRepository {
@@ -272,6 +273,65 @@ class UserRepository {
       return true;
     }
     return false;
+  }
+
+  Future getDataUser(param) async{
+    int id;
+    String idServer='';
+    String name='';
+    String address='';
+    String email='';
+    String picture='';
+    String cover='';
+    String socketId='';
+    String kdUnique='';
+    String token='';
+    String phone='';
+    String pin='';
+    String referral='';
+    String status='0';
+    String ktp='';
+    String statusOnBoarding='0';
+    String statusExitApp='1';
+    final dbHelper = DbHelper.instance;
+    final allRows = await dbHelper.queryAllRows();
+    allRows.forEach((row){
+      id = row['id'];
+      idServer = row['id_server'];
+      name = row['name'];
+      address = row['address'];
+      email = row['email'];
+      picture = row['picture'];
+      cover = row['cover'];
+      socketId = row['socket_id'];
+      kdUnique = row['kd_unique'];
+      token = row['token'];
+      phone = row['phone'];
+      pin = row['pin'];
+      referral = row['referral'];
+      status = row['status'];
+      ktp = row['ktp'];
+      statusOnBoarding = row['status_on_boarding'];
+      statusExitApp = row['status_exit_app'];
+
+    });
+    if(param=='id'){return id;}
+    if(param=='idServer'){return idServer;}
+    if(param=='name'){return name;}
+    if(param=='address'){return address;}
+    if(param=='email'){return email;}
+    if(param=='picture'){return picture;}
+    if(param=='cover'){return cover;}
+    if(param=='socketId'){return socketId;}
+    if(param=='kdUnique'){return kdUnique;}
+    if(param=='token'){return token;}
+    if(param=='phone'){return phone;}
+    if(param=='pin'){return pin;}
+    if(param=='referral'){return referral;}
+    if(param=='status'){return status;}
+    if(param=='ktp'){return ktp;}
+    if(param=='statusOnBoarding'){return statusOnBoarding;}
+    if(param=='statusExitApp'){return statusExitApp;}
   }
 
 

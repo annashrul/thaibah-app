@@ -11,7 +11,7 @@ class ConfigProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<ConfigModel> fetchConfig() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'info/config',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -25,7 +25,7 @@ class ConfigProvider {
 
   Future cekVersion() async{
     try{
-      final token = await userRepository.getToken();
+      final token = await userRepository.getDataUser('token');
       final response = await client.get(
           ApiService().baseUrl+'info/checker',
           headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

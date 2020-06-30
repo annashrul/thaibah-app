@@ -12,7 +12,7 @@ class RoyaltiLevelProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<LevelModel> fetchLevel() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'transaction/royalti/level',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -28,7 +28,7 @@ class RoyaltiLevelProvider {
 
 
   Future<RoyaltiMemberModel> fetchRoyaltiMember(var param) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     var level = param == 'kosong' ? 'DIRHAM' : param;
     final response = await client.get(
       ApiService().baseUrl+'transaction/royalti/member/$level',

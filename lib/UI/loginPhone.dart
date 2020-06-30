@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:thaibah/Model/authModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/typeOtpModel.dart';
@@ -21,7 +22,8 @@ import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:thaibah/Model/userLocalModel.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 class LoginPhone extends StatefulWidget {
   @override
   _LoginPhoneState createState() => _LoginPhoneState();
@@ -39,9 +41,14 @@ class _LoginPhoneState extends State<LoginPhone> {
 
   final userRepository = UserRepository();
 
+  int count = 0;
+  List<UserLocalModel> contactList;
   bool typeOtp = true;
   TypeOtpModel typeOtpModel;
   Future<void> loadData() async {
+
+
+
     try{
       var jsonString = await http.get(
           ApiService().baseUrl+'info/typeotp'
@@ -61,8 +68,13 @@ class _LoginPhoneState extends State<LoginPhone> {
       print('Error: $e');
     }
   }
+  UserLocalModel userLocalModel;
 
   Future login() async{
+    final dbHelper = DbHelper.instance;
+    final creatingDb = await dbHelper.database;
+
+
     if(codeCountry == ''){
       setState(() {
         codeCountry = "62";
@@ -73,17 +85,11 @@ class _LoginPhoneState extends State<LoginPhone> {
     String replaced = '';
     String cek62 = "${rplc}${indexHiji}";
 
-    if(rplc == '0'){
-      replaced = "${_noHpController.text.substring(1,_noHpController.text.length)}";
-    }
-    else if(cek62 == '62'){
-      replaced = "${_noHpController.text.substring(2,_noHpController.text.length)}";
-    }
-    else{
-      replaced = "${_noHpController.text}";
-
-    }
+    if(rplc == '0'){replaced = "${_noHpController.text.substring(1,_noHpController.text.length)}";}
+    else if(cek62 == '62'){replaced = "${_noHpController.text.substring(2,_noHpController.text.length)}";}
+    else{replaced = "${_noHpController.text}";}
     String no = "${codeCountry}${replaced}";
+
 
 
     var status = await OneSignal.shared.getPermissionSubscriptionState();
@@ -93,12 +99,8 @@ class _LoginPhoneState extends State<LoginPhone> {
       setState(() {_isLoading = false;});
       return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
     }else{
-      if(typeOtp==false){
-        _radioValue2 = null;
-      }else{
-        _radioValue2 = _radioValue2;
-      }
-      print(_radioValue2);
+      if(typeOtp==false){_radioValue2 = null;}
+      else{_radioValue2 = _radioValue2;}
       var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId,_radioValue2);
       if(res is AuthModel){
         AuthModel result = res;
@@ -109,6 +111,35 @@ class _LoginPhoneState extends State<LoginPhone> {
             _noHpController.clear();
           });
 
+          Map<String, dynamic> row = {
+            DbHelper.columnIdServer  : result.result.id.toString(),
+            DbHelper.columnName  : result.result.name.toString(),
+            DbHelper.columnAddress  : result.result.address.toString(),
+            DbHelper.columnEmail : result.result.email.toString(),
+            DbHelper.columnPicture : result.result.picture.toString(),
+            DbHelper.columnCover  : result.result.cover.toString(),
+            DbHelper.columnSocketId  : result.result.socketid.toString(),
+            DbHelper.columnKdUnique  : result.result.kdUnique.toString(),
+            DbHelper.columnToken  :  result.result.token.toString(),
+            DbHelper.columnPhone  : result.result.noHp.toString(),
+            DbHelper.columnPin  :  result.result.pin.toString(),
+            DbHelper.columnReferral  : result.result.kdReferral.toString(),
+            DbHelper.columnKtp  : result.result.ktp.toString(),
+            DbHelper.columnStatus  : "1",
+            DbHelper.columnStatusOnBoarding  : "1",
+            DbHelper.columnStatusExitApp  : "1",
+
+          };
+          final countRow = await dbHelper.queryRowCount();
+          print("COUNT ROW DATABASE $countRow");
+          if(countRow >= 1){
+            await dbHelper.delete(countRow);
+            await dbHelper.insert(row);
+          }else{
+            print("CREATE");
+            await dbHelper.insert(row);
+          }
+          print("COUNT ROW DATABASE $countRow");
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SecondScreen(
             otp: result.result.otp.toString(),
             id:result.result.id.toString(),
@@ -124,7 +155,6 @@ class _LoginPhoneState extends State<LoginPhone> {
             pin: result.result.pin.toString(),
             noHp: result.result.noHp.toString(),
             ktp: result.result.ktp.toString(),
-
           )), (Route<dynamic> route) => false);
         }else{
           setState(() {_isLoading = false;});
@@ -137,7 +167,7 @@ class _LoginPhoneState extends State<LoginPhone> {
         return showInSnackBar("No Handphone Tidak Terdaftar");
       }
     }
-    print(_radioValue2);
+//    print(_radioValue2);
   }
 
 
@@ -152,9 +182,10 @@ class _LoginPhoneState extends State<LoginPhone> {
 
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
     loadData();
+
     _isLoading = false;
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
     var settings = {
@@ -184,6 +215,7 @@ class _LoginPhoneState extends State<LoginPhone> {
   }
   @override
   Widget build(BuildContext context) {
+
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
     _pixelRatio = MediaQuery.of(context).devicePixelRatio;
@@ -192,7 +224,32 @@ class _LoginPhoneState extends State<LoginPhone> {
     return pages(context);
 
   }
+  ListView createListView() {
+    TextStyle textStyle = Theme.of(context).textTheme.subhead;
+    return ListView.builder(
+      itemCount: count,
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          color: Colors.white,
+          elevation: 2.0,
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.red,
+              child: Icon(Icons.people),
+            ),
+            title: Text(this.contactList[index].name, style: textStyle,),
+            subtitle: Text(this.contactList[index].phone),
+            trailing: GestureDetector(
+              child: Icon(Icons.delete),
+              onTap: () {
+              },
+            ),
 
+          ),
+        );
+      },
+    );
+  }
   Widget pages(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
@@ -209,6 +266,9 @@ class _LoginPhoneState extends State<LoginPhone> {
               Padding(
                 padding: EdgeInsets.only(top: 30.0),
                 child: Center(child:Image.asset("assets/images/logoOnBoardTI.png",width: 120.0)),
+              ),
+              Expanded(
+                child: createListView(),
               ),
               Expanded(
                 child: Container(),
@@ -544,76 +604,6 @@ class _SecondScreenState extends State<SecondScreen> {
   var currentText;
   @override
   Widget build(BuildContext context) {
-//    return Scaffold(
-//      appBar: AppBar(
-//        leading: IconButton(
-//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-//          onPressed: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false)
-//        ),
-//        centerTitle: false,
-//        flexibleSpace: Container(
-//          decoration: BoxDecoration(
-//            gradient: LinearGradient(
-//              begin: Alignment.centerLeft,
-//              end: Alignment.centerRight,
-//              colors: <Color>[
-//                Color(0xFF116240),
-//                Color(0xFF30cc23)
-//              ],
-//            ),
-//          ),
-//        ),
-//        elevation: 1.0,
-//        automaticallyImplyLeading: true,
-//        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-//      ),
-//      key: _scaffoldKey,
-//      body: GestureDetector(
-//        onTap: () {
-//          FocusScope.of(context).requestFocus(new FocusNode());
-//        },
-//        child: Container(
-//          height: MediaQuery.of(context).size.height,
-//          width: MediaQuery.of(context).size.width,
-//          child: ListView(
-//            children: <Widget>[
-//              SizedBox(height: 30),
-//              Image.asset(
-//                'assets/images/verify.png',
-//                height: MediaQuery.of(context).size.height / 4,
-//                fit: BoxFit.fitHeight,
-//              ),
-//              SizedBox(height: 8),
-//              Padding(
-//                padding: const EdgeInsets.symmetric(vertical: 8.0),
-//                child: Text(
-//                  'Masukan Kode OTP',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-//                ),
-//              ),
-//              Padding(
-//                padding: const EdgeInsets.symmetric(vertical: 0.0,horizontal: 10.0),
-//                child: Text(
-//                  'Masukan kode OTP yang telah kami kirim melalui pesan ke no whatsApp anda',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-//                ),
-//              ),
-//              Padding(
-//                padding:
-//                const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30),
-//                child: Builder(
-//                  builder: (context) => Padding(
-//                    padding: const EdgeInsets.all(5.0),
-//                    child: Center(
-//                      child: otpInput(),
-//                    ),
-//                  ),
-//                )
-//              ),
-//            ],
-//          ),
-//        ),
-//      ),
-////      bottomNavigationBar: _bottomNavBarBeli(context),
-//    );
     return Scaffold(
         key: _scaffoldKey,
         body: Container(
@@ -647,62 +637,13 @@ class _SecondScreenState extends State<SecondScreen> {
                 });
 
                 _check(currentText, context);
-//                _check(currentText.toString(),context);
               }
           ),
         )
     );
   }
 
-//  Widget build_(BuildContext context) {
-//    return Scaffold(
-//      body: SafeArea(
-//        child:Center(
-//          child: Column(
-//            mainAxisSize: MainAxisSize.min,
-//            children: <Widget>[
-//              // SizedBox(height: 50,),
-//              Text("Masukan Kode OTP"),
-//              Text(widget.otp),
-//              otpInput(),
-//
-//              // buttonOtp()
-//            ],
-//          )
-//        ),
-//      )
-//    );
-//  }
-//
-//  Widget otpInput() {
-//    return Builder(
-//      builder: (context) => Padding(
-//        padding: const EdgeInsets.all(40.0),
-//        child: Center(
-//          child: PinPut(
-//            clearButtonIcon: new Icon(Icons.backspace, size: 21, color: Color(0xFF535c68)),
-//            pasteButtonIcon: new Icon(Icons.content_paste, size: 20),
-//            isTextObscure: true,
-//            keyboardType: TextInputType.number,
-//            fieldsCount: 4,
-//            onSubmit: (String txtOtp){
-//              setState(() {
-//                isLoading = true;
-//              });
-//              _check(txtOtp, context);
-//            },
-//            actionButtonsEnabled: false,
-//
-////            clearButtonIcon: Icon(Icons.backspace, size: 30),
-//            clearInput: true,
-//            onClear: (value){
-//
-//            },
-//          ),
-//        ),
-//      ),
-//    );
-//  }
+
 
   Future _check(String txtOtp, BuildContext context) async {
 
@@ -727,9 +668,7 @@ class _SecondScreenState extends State<SecondScreen> {
         prefs.setString('nohp', widget.noHp);
         prefs.setString('ktp', widget.ktp);
         prefs.setBool('isLogin', true);
-
       });
-
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
     } else {
       setState(() {
