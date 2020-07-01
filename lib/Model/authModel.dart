@@ -11,15 +11,15 @@ AuthModel authModelFromJson(String str) => AuthModel.fromJson(json.decode(str));
 String authModelToJson(AuthModel data) => json.encode(data.toJson());
 
 class AuthModel extends BaseModel {
-  Result result;
-  String msg;
-  String status;
-
   AuthModel({
     this.result,
     this.msg,
     this.status,
   });
+
+  Result result;
+  String msg;
+  String status;
 
   factory AuthModel.fromJson(Map<String, dynamic> json) => AuthModel(
     result: Result.fromJson(json["result"]),
@@ -35,22 +35,6 @@ class AuthModel extends BaseModel {
 }
 
 class Result {
-  String id;
-  String name;
-  dynamic address;
-  dynamic email;
-  String picture;
-  String cover;
-  String socketid;
-  int pin;
-  String ktp;
-  String kdReferral;
-  String kdUnique;
-  String token;
-  String noHp;
-  String otp;
-  String statusOtp;
-
   Result({
     this.id,
     this.name,
@@ -67,7 +51,27 @@ class Result {
     this.noHp,
     this.otp,
     this.statusOtp,
+    this.levelStatus,
+    this.tema,
   });
+
+  String id;
+  String name;
+  dynamic address;
+  dynamic email;
+  String picture;
+  String cover;
+  String socketid;
+  int pin;
+  String ktp;
+  String kdReferral;
+  String kdUnique;
+  String token;
+  String noHp;
+  String otp;
+  String statusOtp;
+  int levelStatus;
+  Tema tema;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     id: json["id"],
@@ -85,6 +89,8 @@ class Result {
     noHp: json["no_hp"],
     otp: json["otp"],
     statusOtp: json["status_otp"],
+    levelStatus: json["level_status"],
+    tema: Tema.fromJson(json["tema"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -103,5 +109,27 @@ class Result {
     "no_hp": noHp,
     "otp": otp,
     "status_otp": statusOtp,
+    "level_status": levelStatus,
+    "tema": tema.toJson(),
+  };
+}
+
+class Tema {
+  Tema({
+    this.warna1,
+    this.warna2,
+  });
+
+  String warna1;
+  String warna2;
+
+  factory Tema.fromJson(Map<String, dynamic> json) => Tema(
+    warna1: json["warna1"],
+    warna2: json["warna2"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "warna1": warna1,
+    "warna2": warna2,
   };
 }

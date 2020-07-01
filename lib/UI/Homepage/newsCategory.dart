@@ -25,7 +25,7 @@ class _NewsCategoryHomePageState extends State<NewsCategoryHomePage> {
   final _bloc = CategoryBloc();
   @override
   void initState() {
-    _bloc.fetchCategoryList();
+    _bloc.fetchCategoryList('berita');
     super.initState();
 //    categoryBloc.fetchCategoryList();
   }

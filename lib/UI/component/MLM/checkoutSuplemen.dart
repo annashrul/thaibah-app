@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
+import 'package:thaibah/Model/MLM/checkoutToDetailModel.dart';
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart' as prefix4;
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart';
+import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/kecamatanModel.dart' as prefix2;
 import 'package:thaibah/Model/kotaModel.dart';
 import 'package:thaibah/Model/kotaModel.dart' as prefix1;
@@ -20,6 +23,7 @@ import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart' as prefix4;
 import 'package:thaibah/config/richAlertDialogQ.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/productMlmProvider.dart';
 
 
@@ -219,8 +223,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     super.initState();
     pilih();
     _handleRadioValueChange2(_radioValue2);
-//    provinsiBloc.fetchProvinsiist();
-//    detailChekoutSuplemenBloc.fetchDetailChekoutSuplemenList();
     totQty   = widget.totQty;
     totBayar = widget.total;
     dropdownValue = 'Saya';
@@ -589,6 +591,9 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   _callBackPin(BuildContext context,bool isTrue) async{
+    final dbHelper = DbHelper.instance;
+
+//    setState(() {Navigator.of(context).pop();});
     var sendAddress; var sendVoucher; var sendKurir; var sendOngkir;
     if(dropdownValue == 'Lainnya'){
       sendAddress = "${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}";
@@ -609,51 +614,69 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     }
 
     var res = await ProductMlmProvider().fetchCheckoutCart(widget.total,sendKurir,sendOngkir,sendAddress,addressType,sendVoucher,_radioValue2);
-    setState(() {Navigator.of(context).pop();});
-    if(res.status=="success"){
-      setState(() {Navigator.of(context).pop();});
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return RichAlertDialogQ(
-              alertTitle: richTitle("Transaksi Berhasil"),
-              alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
-              alertType: RichAlertType.SUCCESS,
-              actions: <Widget>[
-                FlatButton(
-                  child: Text("Lihat Riwayat"),
-                  onPressed: (){
-//                      setState(() {
-//                        Navigator.pop(context);
-//                      });
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailHistorySuplemen(
-                            id: res.result.toString(),
-                            resi: 'kosong',
-                            status: 0,
-                            param:'checkout'
+    print("######################## STATUS CHECKOUT ${res.status}");
+    if(res is CheckoutToDetailModel){
+      CheckoutToDetailModel result = res;
+      if(result.status=="success"){
+        final userRepo = UserRepository();
+        final id = await userRepo.getDataUser("id");
+        final statusLevel = await userRepo.getDataUser("statusLevel");
+        Map<String, dynamic> row = {
+          DbHelper.columnId    : id,
+          DbHelper.columnStatusLevel  : result.result.levelStatus,
+          DbHelper.columnWarna1       : result.result.tema.warna1,
+          DbHelper.columnWarna2       : result.result.tema.warna2,
+        };
+        if(int.parse(statusLevel) < result.result.levelStatus){
+          await dbHelper.update(row);
+        }
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return RichAlertDialogQ(
+                alertTitle: richTitle("Transaksi Berhasil"),
+                alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
+                alertType: RichAlertType.SUCCESS,
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text("Lihat Riwayat"),
+                    onPressed: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailHistorySuplemen(
+                              id: result.result.id.toString(),
+                              resi: 'kosong',
+                              status: 0,
+                              param:'checkout'
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-                FlatButton(
-                  child: Text("Kembali"),
-                  onPressed: (){
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-                  },
-                ),
-              ],
-            );
-          }
-      );
+                      );
+                    },
+                  ),
+                  FlatButton(
+                    child: Text("Kembali"),
+                    onPressed: (){
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                    },
+                  ),
+                ],
+              );
+            }
+        );
+      }
+      else{
+        setState(() {Navigator.of(context).pop();});
+        setState(() {Navigator.of(context).pop();});
+        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result.msg)));
+      }
+    }else{
+      setState(() {Navigator.of(context).pop();});
+      setState(() {Navigator.of(context).pop();});
+      General result = res;
+      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result.msg)));
     }
-    else{
-      Navigator.pop(context);
-      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(res.msg)));
-    }
+
   }
 
   @override

@@ -15,7 +15,7 @@ class ProductMlmSuplemenProvider {
   final userRepository = UserRepository();
 
   Future fetchProductMlmSuplemen(var page, var limit) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -37,7 +37,7 @@ class ProductMlmSuplemenProvider {
 	}
 
   Future<ProductMlmDetailModel> fetchProductDetailMlm(String id) async{
-		final token = await userRepository.getToken();
+		final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm/get/'+id,
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -52,8 +52,8 @@ class ProductMlmSuplemenProvider {
 
 
   Future fetchCheckoutSuplemen(var id,var price,var qty,var nama,var pekerjaan,var alamat,var ktp,var kk,var npwp,var telp) async {
-		final pin = await userRepository.getPin();
-		final token = await userRepository.getToken();
+		final pin = await userRepository.getDataUser('pin');
+		final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/checkout/tanah",
       headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
       body: {
@@ -76,7 +76,7 @@ class ProductMlmSuplemenProvider {
 
 
   Future<ListCartModel> fetchListCart() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm/listcart',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -91,7 +91,7 @@ class ProductMlmSuplemenProvider {
   }
 
   Future<General> addProduct(var id,var price,var qty,var weight) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"product/mlm/addtocart",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
@@ -106,7 +106,7 @@ class ProductMlmSuplemenProvider {
   }
 
   Future<General> updateProduct(var id,var qty) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"product/mlm/updateqty",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
@@ -118,7 +118,7 @@ class ProductMlmSuplemenProvider {
     });
   }
   Future<General> deleteProduct(var id) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"product/mlm/deletecart",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {

@@ -18,8 +18,7 @@ class _CategoryHomeState extends State<CategoryHome> {
   void initState() {
     // TODO: implement initState
     super.initState();
-//    categoryBloc.fetchCategoryList();
-    _bloc.fetchCategoryList();
+    _bloc.fetchCategoryList('berita');
   }
   @override
   void dispose() {
@@ -30,7 +29,6 @@ class _CategoryHomeState extends State<CategoryHome> {
 
   @override
   Widget build(BuildContext context) {
-
     return StreamBuilder(
       stream: _bloc.getResult,
       builder: (context, AsyncSnapshot<CategoryModel> snapshot) {

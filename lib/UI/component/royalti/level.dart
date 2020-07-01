@@ -8,6 +8,7 @@ import 'package:thaibah/Model/royalti/royaltiMemberModel.dart';
 import 'package:thaibah/UI/Homepage/level.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/royalti/royaltiBloc.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class WrapperLevel extends StatefulWidget {
 
@@ -18,10 +19,13 @@ class WrapperLevel extends StatefulWidget {
 class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClientMixin  {
   @override
   bool get wantKeepAlive => true;
+  ThaibahColour thaibahColour;
   bool isLoading = false;
-
+  final userRepository = UserRepository();
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
   Future searchMember(param) async{
-
     if(mounted){
       Timer(Duration(seconds: 1), () {
         setState(() {
@@ -31,32 +35,24 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
       royaltiMemberBloc.fetchRoyaltiMemberList(param);
 
     }
-//    if(param == 'kosong'){
-//      setState(() {
-//        isLoading = false;
-//      });
-//      if(mounted){
-//        royaltiMemberBloc.fetchRoyaltiMemberList('kosong');
-//      }
-//
-//    }else{
-//      setState(() {
-//        isLoading = false;
-//      });
-//      if(mounted){
-//        royaltiMemberBloc.fetchRoyaltiMemberList(param);
-//      }
-//
-//
-//    }
-
-//    return CircularProgressIndicator(backgroundColor: Colors.green,);
   }
 
+  Future loadRepo() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadRepo();
     if(mounted){
       royaltiMemberBloc.fetchRoyaltiMemberList('kosong');
     }
@@ -86,13 +82,11 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
             topRight: Radius.circular(10.0),
           ),
           gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: <Color>[Color(0xFF30cc23),Color(0xFF116240)],
+            begin: Alignment.bottomRight,
+            end: Alignment.topLeft,
+            colors: <Color>[statusLevel!='0'?warna1:ThaibahColour.primary1,statusLevel!='0'?warna2:ThaibahColour.primary2],
           ),
         ),
-//        elevation: 0.0,
-//        color: Color(0xFF2196f3),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -116,7 +110,7 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
                   } else if (snapshot.hasError) {
                     return Text(snapshot.error.toString());
                   }
-                  return Container(child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white))));
+                  return Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white))));
                 }
             ),
           ],
@@ -127,7 +121,7 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
 
   Widget buildContent(AsyncSnapshot<RoyaltiMemberModel> snapshot, BuildContext context){
     if(snapshot.data.result.length > 0){
-      return isLoading?Container(child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Container(
+      return isLoading?Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Container(
         height: 150,
         margin: EdgeInsets.symmetric(horizontal: 16.0),
         child: ListView.builder(
@@ -171,10 +165,59 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
       return Container(
         margin: EdgeInsets.symmetric(vertical: 16.0),
         child: Center(
-          child: isLoading?Container(child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Text('tidak ada data',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+          child: isLoading?Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Text('tidak ada data',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
         ),
       );
     }
+  }
+
+  Widget _loading(BuildContext context){
+    return Container(
+      padding: EdgeInsets.only(right:12.0,left:12.0,top:0,bottom:0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(10.0),
+            bottomRight: Radius.circular(10.0),
+            topLeft: Radius.circular(10.0),
+            topRight: Radius.circular(10.0),
+          ),
+          gradient: LinearGradient(
+            begin: Alignment.bottomRight,
+            end: Alignment.topLeft,
+            colors: <Color>[statusLevel!='0'?warna1:ThaibahColour.primary1,statusLevel!='0'?warna2:ThaibahColour.primary2],
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 15.0),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0,right: 16.0),
+              child: Level(onItemInteraction:(param){
+                setState(() {
+                  isLoading = true;
+                });
+                searchMember(param);
+              }),
+            ),
+
+            const SizedBox(height: 20.0),
+            StreamBuilder(
+                stream: royaltiMemberBloc.getResult,
+                builder: (context, AsyncSnapshot<RoyaltiMemberModel> snapshot){
+                  if (snapshot.hasData) {
+                    return buildContent(snapshot, context);
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  return Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white))));
+                }
+            ),
+          ],
+        ),
+      ) ,
+    );
   }
 
 

@@ -9,12 +9,12 @@ class ProfileProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future fetchProfile() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     try{
       final response = await client.get(
           ApiService().baseUrl+'member/myprofile',
           headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-      ).timeout(Duration(seconds: ApiService().timerActivity));
+      );
       if (response.statusCode == 200) {
         return compute(profileModelFromJson,response.body);
       } else {

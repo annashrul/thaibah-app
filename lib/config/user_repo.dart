@@ -293,8 +293,12 @@ class UserRepository {
     String ktp='';
     String statusOnBoarding='0';
     String statusExitApp='1';
+    String statusLevel='0';
+    String warna1='';
+    String warna2='';
     final dbHelper = DbHelper.instance;
     final allRows = await dbHelper.queryAllRows();
+    print("TABLE USER $allRows");
     allRows.forEach((row){
       id = row['id'];
       idServer = row['id_server'];
@@ -313,6 +317,9 @@ class UserRepository {
       ktp = row['ktp'];
       statusOnBoarding = row['status_on_boarding'];
       statusExitApp = row['status_exit_app'];
+      statusLevel = row['status_level'];
+      warna1 = row['warna1'];
+      warna2 = row['warna2'];
 
     });
     if(param=='id'){return id;}
@@ -332,6 +339,9 @@ class UserRepository {
     if(param=='ktp'){return ktp;}
     if(param=='statusOnBoarding'){return statusOnBoarding;}
     if(param=='statusExitApp'){return statusExitApp;}
+    if(param=='statusLevel'){return statusLevel;}
+    if(param=='warna1'){return warna1;}
+    if(param=='warna2'){return warna2;}
   }
 
 

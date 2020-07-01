@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
@@ -101,12 +102,17 @@ class BerandaState extends State<Beranda>{
   bool modeUpdate = false;
   bool modeLogout = false;
   int count = 0;
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
 
   Future<void> loadData() async {
-
     final token = await userRepository.getDataUser('token');
     final id = await userRepository.getDataUser('idServer');
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     try{
@@ -115,13 +121,20 @@ class BerandaState extends State<Beranda>{
           headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
       ).timeout(Duration(seconds: ApiService().timerActivity));
       if (jsonString.statusCode == 200) {
-        setState(() {isLoading = false;retry = false;});
+        setState(() {
+          isLoading = false;retry = false;
+          warna1 = color1==''?ThaibahColour.primary1:hexToColors(color1);
+          warna2 = color2==''?ThaibahColour.primary2:hexToColors(color2);
+          statusLevel = levelStatus;
+        });
         final jsonResponse = json.decode(jsonString.body);
         info = new Info.fromJson(jsonResponse);
         _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
         _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
         _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);_saldoPlatinum=(info.result.saldoPlatinum);
+        print("LEVEL PLATINUM ${info.result.levelPlatinum}");
       } else {
+
         throw Exception('Failed to load info');
       }
     } on TimeoutException catch(e){
@@ -141,10 +154,8 @@ class BerandaState extends State<Beranda>{
 
   }
   DateTime dt = DateTime.now();
-
   PrayerModel prayerModel;
   int isActive = 0;
-
 
 
 
@@ -154,7 +165,7 @@ class BerandaState extends State<Beranda>{
     // TODO: implement initState
     super.initState();
     loadData();
-//    isLoading=true;
+    isLoading = true;
     versi = true;
     latitude  = widget.lat;
     longitude = widget.lng;
@@ -185,7 +196,7 @@ class BerandaState extends State<Beranda>{
             gradient: LinearGradient(
               begin: Alignment.bottomRight,
               end: Alignment.topLeft,
-              colors: <Color>[Color(0xFF116240),Color(0xFF30cc23)],
+              colors: <Color>[statusLevel!='0'?warna1:ThaibahColour.primary1,statusLevel!='0'?warna2:ThaibahColour.primary2],
             ),
           ),
           child: Column(
@@ -197,12 +208,12 @@ class BerandaState extends State<Beranda>{
                     Row(
                       children: <Widget>[
                         CircleAvatar(
-                          radius: 32.0,
+                          radius: 40.0,
                           child: CachedNetworkImage(
                             imageUrl: _picture,
                             imageBuilder: (context, imageProvider) => Container(
-                              width: 100.0,
-                              height: 100.0,
+                              width: 120.0,
+                              height: 120.0,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
@@ -253,6 +264,11 @@ class BerandaState extends State<Beranda>{
                               padding: const EdgeInsets.only(left: 0.0),
                               child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                             ),
+                            SizedBox(height: 7.0),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 0.0),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                            ),
                           ],
                         ),
                       ],
@@ -271,12 +287,11 @@ class BerandaState extends State<Beranda>{
                   saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
                   saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
                   saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
-              ):CardSaldoNoPlatinum(
-                  saldoMain: _saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
-                  saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
-                  saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
-                  saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
-              ),
+              ):cardSaldoNoPlatinum(
+                  context,_saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
+                  _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
+                  _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
+                  _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"),
               SizedBox(height:15.0),
               Container(
                   padding: const EdgeInsets.only(left:0.0,right:0.0),
@@ -400,7 +415,7 @@ class BerandaState extends State<Beranda>{
                         gradient: LinearGradient(
                           begin: Alignment.bottomRight,
                           end: Alignment.topLeft,
-                          colors: <Color>[Color(0xFF116240),Color(0xFF30cc23)],
+                          colors: <Color>[ThaibahColour.primary1,ThaibahColour.primary2],
                         ),
                       ),
                       child: Column(
@@ -1049,6 +1064,67 @@ class BerandaState extends State<Beranda>{
         }
     );
   }
+  Widget cardSaldoNoPlatinum(BuildContext context,saldoMain,saldoBonus,saldoVoucher,saldoPlatinum) {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                AutoSizeTextQ(
+                  'Saldo Utama',
+                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,),
+                  maxLines: 2,
+                ),
+                SizedBox(height:2.0),
+                AutoSizeTextQ(
+                    saldoMain,
+                    style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    maxLines: 2
+                ),
+              ],
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                AutoSizeTextQ(
+                    'Saldo Bonus',
+                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    maxLines: 2
+                ),
+                SizedBox(height:2.0),
+                AutoSizeTextQ(saldoBonus,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+              ],
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                SizedBox(height:2.0),
+                AutoSizeTextQ(saldoVoucher,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+              ],
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                SizedBox(height:2.0),
+                AutoSizeTextQ(saldoPlatinum,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+              ],
+            ),
+          ],
+        )
+    );
+  }
 }
 
 class CardSaldoNoPlatinum extends StatefulWidget {
@@ -1233,7 +1309,7 @@ class _CardEmoneyState extends State<CardEmoney> {
                 width: ScreenUtilQ.getInstance().setWidth(60),
               ),
               SizedBox(height: 5.0),
-              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:Color(0xFF116240),fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
             ],
           )),
         ),

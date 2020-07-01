@@ -270,7 +270,7 @@ class _ToggleButtonState extends State<ToggleButton> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _bloc.fetchCategoryList();
+    _bloc.fetchCategoryList('berita');
   }
 
   @override

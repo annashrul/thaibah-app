@@ -295,6 +295,20 @@ class _TestiSuplemenState extends State<TestiSuplemen> {
       );
   }
 
+//  Widget buildGrid(AsyncSnapshot<TestimoniModel> snapshot, BuildContext context){
+//    return Container(
+//      child: GridView.builder(
+//        itemCount: snapshot.data.result.data.length,
+//        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//          crossAxisCount: 2
+//        ),
+//        itemBuilder: (context,int index){
+//          return ();
+//        }
+//      ),
+//    );
+//  }
+
 }
 
 

@@ -12,7 +12,7 @@ class OngkirProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<ProvinsiModel> fetchProvinsi() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'ongkir/provinsi',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -26,7 +26,7 @@ class OngkirProvider {
   }
   
   Future<KotaModel> fetchKota(var idProv) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'ongkir/kota/'+idProv,
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -42,7 +42,7 @@ class OngkirProvider {
   }
 
   Future<KecamatanModel> fetchKecamatan(var idKota) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'ongkir/kecamatan/'+idKota,
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -59,7 +59,7 @@ class OngkirProvider {
 
 
   Future<OngkirModel> fetchAllOngkir(var dari,var ke,var berat, var kurir) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"ongkir/cekHarga",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},

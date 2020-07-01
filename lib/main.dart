@@ -65,7 +65,8 @@ class _MyAppState extends State<MyApp>  {
         create: (context) => LocationService().locationStream,
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: Splash()
+          home:  Splash(),
+
         )
     );
   }
@@ -77,6 +78,7 @@ class Splash extends StatefulWidget {
 }
 
 class SplashState extends State<Splash> {
+  bool isLoading = false;
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
@@ -113,6 +115,7 @@ class SplashState extends State<Splash> {
     print("STATUS EXIT APP = $statusExitApp");
 
     if(checker is Checker){
+      setState(() {isLoading=false;});
       print("####################### CHECKING STATUS CHECKER ${checker.status} ################################");
       if(checker.status == 'success'){
         print("####################### SERVER VERSI ${checker.result.versionCode} & LOCAL VERSI ${ApiService().versionCode} ################################");
@@ -129,51 +132,44 @@ class SplashState extends State<Splash> {
 
       }
     }else{
+      setState(() {isLoading=false;});
       print("####################### ELSE CHECKER ################################");
       print(checker);
 
     }
 
     if(statusExitApp == '0'){
+      setState(() {isLoading=false;});
       print("####################### CHECKING EXIT APP ################################");
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
     }else{
+
       if(statusOnBoarding == ''||statusOnBoarding=='0'){
+        setState(() {isLoading=false;});
         print("####################### CHECKING STATUS ONBOARDING ################################");
         Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
       }else{
         if(statusLogin=='1'||statusLogin!='0'){
+          setState(() {isLoading=false;});
           print("####################### CHECKING STATUS LOGIN ################################");
           Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
         }else{
+          setState(() {isLoading=false;});
           Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new LoginPhone()));
         }
       }
     }
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    bool _seen = (prefs.getBool('seen') ?? false);
-//    if (_seen) {
-//      Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
-//      prefs.setBool('isPin', false);
-//    } else {
-//      prefs.setBool('seen', true);
-//      prefs.setBool('cek', true);
-//
-//      if(prefs.getBool('cek') == true){
-//        Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
-//        prefs.setBool('isPin', false);
-//      }else{
-//        prefs.setBool('isPin', false);
-//        Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
-//      }
-//    }
+
   }
+
   @override
   void initState() {
     super.initState();
-    new Timer(new Duration(milliseconds: 500), () {
-      checkFirstSeen();
-    });
+    isLoading=true;
+    checkFirstSeen();
+//    new Timer(new Duration(milliseconds: 100), () {
+//
+//    });
   }
 
   @override
@@ -199,7 +195,7 @@ class SplashState extends State<Splash> {
                       CircleAvatar(
                         backgroundColor: Colors.transparent,
                         radius: 50.0,
-                        child: SvgPicture.asset(
+                        child: isLoading?CircularProgressIndicator(strokeWidth: 10):SvgPicture.asset(
                           'assets/images/svg/splash.svg',
                           height: ScreenUtilQ.getInstance().setHeight(150),
                           width: ScreenUtilQ.getInstance().setWidth(150),

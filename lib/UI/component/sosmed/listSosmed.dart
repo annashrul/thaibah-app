@@ -65,13 +65,13 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return Container(padding:EdgeInsets.all(20.0),child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green))));
+          return Container(padding:EdgeInsets.all(20.0),child:Center(child:CircularProgressIndicator(strokeWidth: 10,valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary1))));
         }
     );
   }
 
   Widget buildContent(AsyncSnapshot<ListSosmedModel> snapshot, BuildContext context){
-    return isLoading?CircularProgressIndicator():Container(
+    return isLoading?CircularProgressIndicator(strokeWidth: 10):Container(
       child:  Column(
         children: <Widget>[
           ListView.builder(
@@ -105,11 +105,6 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                     ).then((val){
                       _bloc.fetchListSosmed(1, perpage,'kosong'); //you get details from screen2 here
                     });
-//                    Navigator.of(context, rootNavigator: true).push(
-//                      new CupertinoPageRoute(builder: (context) => DetailSosmed(
-//                        id: snapshot.data.result.data[index].id,
-//                      )),
-//                    ).whenComplete(_bloc.fetchListSosmed(1, perpage,'kosong'));
                   },
                   child: Container(
                     padding: EdgeInsets.only(bottom: 0.0,left:15.0,right:15.0),
@@ -138,9 +133,6 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                           style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
                                           linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
                                         ),
-//                                        child: Html(
-//                                          data:caption, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
-//                                        ),
                                       ),
                                     ),
                                   ],
@@ -161,7 +153,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                     child: CachedNetworkImage(
                                       imageUrl: snapshot.data.result.data[index].picture,
                                       placeholder: (context, url) => Center(
-                                        child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+                                        child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
                                       ),
                                       errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
                                       imageBuilder: (context, imageProvider) => Container(
@@ -242,12 +234,12 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
               },
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(width: 1.0,color: Colors.green),
+                  border: Border.all(width: 1.0,color:ThaibahColour.primary1),
                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 ),
                 padding: EdgeInsets.all(15.0),
                 width: double.infinity,
-                child: Center(child: isLoading1 ? CircularProgressIndicator() : Text("Tampilkan Lebih Banyak",style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),)),
+                child: Center(child: isLoading1 ? CircularProgressIndicator(strokeWidth: 10,valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : Text("Tampilkan Lebih Banyak",style: TextStyle(color:ThaibahColour.primary1,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),)),
               ),
             ),
           ):Container()

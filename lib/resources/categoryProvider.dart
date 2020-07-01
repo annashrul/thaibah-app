@@ -9,10 +9,10 @@ class CategoryProvider {
   Client client = Client();
   final userRepository = UserRepository();
 
-  Future<CategoryModel> fetchCategory() async{
-    final token = await userRepository.getToken();
+  Future<CategoryModel> fetchCategory(var param) async{
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
-      ApiService().baseUrl+'category?type=berita',
+      ApiService().baseUrl+'category?type=$param',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print("###########################################################KATEGORI###############################################################");

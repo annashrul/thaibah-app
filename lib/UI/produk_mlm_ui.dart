@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'loginPhone.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -136,46 +137,26 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   Future loadData(var page, var limit) async{
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    final token = await userRepository.getToken();
-    final prefs = await SharedPreferences.getInstance();
-    if(prefs.get('pin') == null || prefs.get('pin') == ''){
-      print('pin kosong');
+    final token = await userRepository.getDataUser('token');
+    try{
+      final jsonString = await http.get(
+          ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      ).timeout(Duration(seconds: ApiService().timerActivity));
+      if (jsonString.statusCode == 200) {
+        final jsonResponse = json.decode(jsonString.body);
+        productMlmSuplemenModel = new ProductMlmSuplemenModel.fromJson(jsonResponse);
+        setState(() {
+          isLoading = false;retry = false;
+        });
+      } else {
+        throw Exception('Failed to load photos');
+      }
+    }catch(e){
       setState(() {
-        isLoading = false;modeUpdate = true;
+        isLoading = false;retry = true;
       });
-      GagalHitProvider().fetchRequest('produk','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-    }else{
-      if(counterHit >= 2){
-       setState(() {
-         isLoading = false;
-         moreThenOne = true;
-       });
-       GagalHitProvider().fetchRequest('produk','kondisi = percobaan 2x gagal, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-
-      }
-      else{
-        try{
-          final jsonString = await http.get(
-              ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
-              headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-          ).timeout(Duration(seconds: ApiService().timerActivity));
-          if (jsonString.statusCode == 200) {
-            final jsonResponse = json.decode(jsonString.body);
-            productMlmSuplemenModel = new ProductMlmSuplemenModel.fromJson(jsonResponse);
-            setState(() {
-              isLoading = false;retry = false;
-            });
-          } else {
-            throw Exception('Failed to load photos');
-          }
-        }catch(e){
-          setState(() {
-            isLoading = false;retry = true;
-          });
-          GagalHitProvider().fetchRequest('produk','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-        }
-      }
-
+      GagalHitProvider().fetchRequest('produk','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }
 
   }
@@ -208,8 +189,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
+                ThaibahColour.primary1,
+                ThaibahColour.primary2
               ],
             ),
           ),
@@ -246,7 +227,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                     borderRadius: BorderRadius.circular(6),
                   ),
                   constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
-                  child: Text('$total', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+                  child: Text('$total', style: TextStyle(color: Colors.white, fontSize: 8,fontFamily:ThaibahFont().fontQ), textAlign: TextAlign.center,),
                 ),
               ):Container()
             ],
@@ -255,7 +236,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         centerTitle: false,
         elevation: 0.0,
         automaticallyImplyLeading: false,
-        title: new Text("Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+        title: new Text(
+            "Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
       ),
       body: retry==true?UserRepository().requestTimeOut((){
         setState(() {
@@ -310,7 +292,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                   child: CachedNetworkImage(
                                     imageUrl: productMlmSuplemenModel.result.data[index].picture,
                                     placeholder: (context, url) => Center(
-                                      child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+                                      child: CircularProgressIndicator(strokeWidth:10,valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
                                     ),
                                     errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
                                     imageBuilder: (context, imageProvider) => Container(
@@ -347,7 +329,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                             padding: EdgeInsets.all(5),
                                             child: Row(
                                               children: <Widget>[
-                                                Text(productMlmSuplemenModel.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily: 'Rubik',fontSize: 14.0,fontWeight: FontWeight.bold),),
+                                                Text(productMlmSuplemenModel.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 14.0,fontWeight: FontWeight.bold),),
                                                 SizedBox(width: 5.0),
                                                 productMlmSuplemenModel.result.data[index].isplatinum == 1 ?
                                                 Container(
@@ -360,7 +342,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                                     minWidth: 14,
                                                     minHeight: 14,
                                                   ),
-                                                  child: Text("PRODUK PLATINUM",style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontSize: 12.0,fontWeight: FontWeight.bold),),
+                                                  child: Text("PRODUK PLATINUM",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 12.0,fontWeight: FontWeight.bold),),
                                                 ) : Container()
                                               ],
                                             ),
@@ -371,11 +353,11 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                     ),
                                     Container(
                                       padding: EdgeInsets.all(5),
-                                      child: Text("Sisa : "+ productMlmSuplemenModel.result.data[index].qty.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
+                                      child: Text("Sisa : "+ productMlmSuplemenModel.result.data[index].qty.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily:ThaibahFont().fontQ),),
                                     ),
                                     Container(
                                       padding: EdgeInsets.all(5),
-                                      child: Text("Harga : "+ productMlmSuplemenModel.result.data[index].satuan+"/${productMlmSuplemenModel.result.data[index].satuanBarang}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
+                                      child: Text("Harga : "+ productMlmSuplemenModel.result.data[index].satuan+"/${productMlmSuplemenModel.result.data[index].satuanBarang}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily:ThaibahFont().fontQ),),
                                     ),
                                     productMlmSuplemenModel.result.data[index].isplatinum == 1 ?
                                     Column(
@@ -383,13 +365,13 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                       children: <Widget>[
                                         Container(
                                           padding: EdgeInsets.all(5),
-                                          child: Text("Detail Produk Platinum", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'Rubik'),),
+                                          child: Text("Detail Produk Platinum", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily:ThaibahFont().fontQ),),
                                         ),
                                         Container(
                                           padding: EdgeInsets.all(3),
                                           child: Html(
                                             data: productMlmSuplemenModel.result.data[index].detail,
-                                            defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
+                                            defaultTextStyle: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ),
                                           ),
                                         )
                                       ],
@@ -399,7 +381,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                       padding: EdgeInsets.all(3),
                                       child: Html(
                                         data:productMlmSuplemenModel.result.data[index].descriptions,
-                                        defaultTextStyle: TextStyle(fontFamily: 'Rubik'),
+                                        defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ),
                                       ),
                                     ),
                                     Padding(

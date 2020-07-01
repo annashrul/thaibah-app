@@ -7,11 +7,11 @@ class CategoryBloc extends BaseBloc{
   bool _isDisposed = false;
   final PublishSubject<CategoryModel> _serviceController = new PublishSubject<CategoryModel>();
   Observable<CategoryModel> get getResult => _serviceController.stream;
-  fetchCategoryList() async {
+  fetchCategoryList(var param) async {
     if(_isDisposed) {
       print('false');
     }else{
-      CategoryModel categoryModel =  await repository.fetchAllCategory();
+      CategoryModel categoryModel =  await repository.fetchAllCategory(param);
       _serviceController.sink.add(categoryModel);
     }
   }

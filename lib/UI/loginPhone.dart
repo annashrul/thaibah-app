@@ -1,11 +1,13 @@
 
 import 'dart:convert';
 
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/authModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/typeOtpModel.dart';
@@ -71,10 +73,15 @@ class _LoginPhoneState extends State<LoginPhone> {
   UserLocalModel userLocalModel;
 
   Future login() async{
-    final dbHelper = DbHelper.instance;
-    final creatingDb = await dbHelper.database;
 
-
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    print("ID = ${androidInfo.id}");
+    print("TYPE = ${androidInfo.type}");
+    print("MODEL = ${androidInfo.model}");
+    print("PRODUCT = ${androidInfo.product}");
+    print("DEVICE = ${androidInfo.device}");
+    print("BRAND = ${androidInfo.brand}");
     if(codeCountry == ''){
       setState(() {
         codeCountry = "62";
@@ -101,7 +108,9 @@ class _LoginPhoneState extends State<LoginPhone> {
     }else{
       if(typeOtp==false){_radioValue2 = null;}
       else{_radioValue2 = _radioValue2;}
-      var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId,_radioValue2);
+      var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId,_radioValue2,"${androidInfo.brand} ${androidInfo.device}");
+      print("RESPONSE $res");
+
       if(res is AuthModel){
         AuthModel result = res;
         if(result.status == 'success'){
@@ -111,35 +120,7 @@ class _LoginPhoneState extends State<LoginPhone> {
             _noHpController.clear();
           });
 
-          Map<String, dynamic> row = {
-            DbHelper.columnIdServer  : result.result.id.toString(),
-            DbHelper.columnName  : result.result.name.toString(),
-            DbHelper.columnAddress  : result.result.address.toString(),
-            DbHelper.columnEmail : result.result.email.toString(),
-            DbHelper.columnPicture : result.result.picture.toString(),
-            DbHelper.columnCover  : result.result.cover.toString(),
-            DbHelper.columnSocketId  : result.result.socketid.toString(),
-            DbHelper.columnKdUnique  : result.result.kdUnique.toString(),
-            DbHelper.columnToken  :  result.result.token.toString(),
-            DbHelper.columnPhone  : result.result.noHp.toString(),
-            DbHelper.columnPin  :  result.result.pin.toString(),
-            DbHelper.columnReferral  : result.result.kdReferral.toString(),
-            DbHelper.columnKtp  : result.result.ktp.toString(),
-            DbHelper.columnStatus  : "1",
-            DbHelper.columnStatusOnBoarding  : "1",
-            DbHelper.columnStatusExitApp  : "1",
 
-          };
-          final countRow = await dbHelper.queryRowCount();
-          print("COUNT ROW DATABASE $countRow");
-          if(countRow >= 1){
-            await dbHelper.delete(countRow);
-            await dbHelper.insert(row);
-          }else{
-            print("CREATE");
-            await dbHelper.insert(row);
-          }
-          print("COUNT ROW DATABASE $countRow");
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SecondScreen(
             otp: result.result.otp.toString(),
             id:result.result.id.toString(),
@@ -155,11 +136,17 @@ class _LoginPhoneState extends State<LoginPhone> {
             pin: result.result.pin.toString(),
             noHp: result.result.noHp.toString(),
             ktp: result.result.ktp.toString(),
+            levelStatus:result.result.levelStatus.toString(),
+            warna1:result.result.tema.warna1,
+            warna2:result.result.tema.warna2,
           )), (Route<dynamic> route) => false);
-        }else{
+        }
+        else{
+          print("######### STATUS ${result.status}");
           setState(() {_isLoading = false;});
           return showInSnackBar("No Handphone Tidak Terdaftar");
         }
+
       }
       else{
         General results = res;
@@ -167,7 +154,7 @@ class _LoginPhoneState extends State<LoginPhone> {
         return showInSnackBar("No Handphone Tidak Terdaftar");
       }
     }
-//    print(_radioValue2);
+    print(_radioValue2);
   }
 
 
@@ -185,8 +172,10 @@ class _LoginPhoneState extends State<LoginPhone> {
   void initState(){
     super.initState();
     loadData();
+    setState(() {
+      _isLoading = false;
 
-    _isLoading = false;
+    });
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
     var settings = {
       OSiOSSettings.autoPrompt: false,
@@ -224,32 +213,7 @@ class _LoginPhoneState extends State<LoginPhone> {
     return pages(context);
 
   }
-  ListView createListView() {
-    TextStyle textStyle = Theme.of(context).textTheme.subhead;
-    return ListView.builder(
-      itemCount: count,
-      itemBuilder: (BuildContext context, int index) {
-        return Card(
-          color: Colors.white,
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.red,
-              child: Icon(Icons.people),
-            ),
-            title: Text(this.contactList[index].name, style: textStyle,),
-            subtitle: Text(this.contactList[index].phone),
-            trailing: GestureDetector(
-              child: Icon(Icons.delete),
-              onTap: () {
-              },
-            ),
 
-          ),
-        );
-      },
-    );
-  }
   Widget pages(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
@@ -267,9 +231,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                 padding: EdgeInsets.only(top: 30.0),
                 child: Center(child:Image.asset("assets/images/logoOnBoardTI.png",width: 120.0)),
               ),
-              Expanded(
-                child: createListView(),
-              ),
+
               Expanded(
                 child: Container(),
               ),
@@ -575,7 +537,7 @@ class _LoginPhoneState extends State<LoginPhone> {
 
 
 class SecondScreen extends StatefulWidget {
-  final String otp,id,name,address,email,picture,cover,socketid,kdReferral,kdUnique,token,pin,noHp,ktp;
+  final String otp,id,name,address,email,picture,cover,socketid,kdReferral,kdUnique,token,pin,noHp,ktp,levelStatus,warna1,warna2;
   SecondScreen({
     Key key,
     @required this.otp,
@@ -592,6 +554,9 @@ class SecondScreen extends StatefulWidget {
     @required this.pin,
     @required this.noHp,
     @required this.ktp,
+    @required this.levelStatus,
+    @required this.warna1,
+    @required this.warna2,
   }) : super(key: key);
   @override
   _SecondScreenState createState() => _SecondScreenState();
@@ -606,69 +571,89 @@ class _SecondScreenState extends State<SecondScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
-        body: Container(
-          child: LockScreenQ(
-              title: "Keamanan",
-              passLength: 4,
-              bgImage: "assets/images/bg.jpg",
-              borderColor: Colors.black,
-              showWrongPassDialog: true,
-              wrongPassContent: "Kode OTP Tidak Sesuai",
-              wrongPassTitle: "Opps!",
-              wrongPassCancelButtonText: "Batal",
-              deskripsi: 'Masukan Kode OTP Yang Telah Kami Kirim Melalui Pesan WhatsApp ${ApiService().showCode == true ? widget.otp : ""}',
-              passCodeVerify: (passcode) async {
-                var concatenate = StringBuffer();
-                passcode.forEach((item){
-                  concatenate.write(item);
-                });
-                setState(() {
-                  currentText = concatenate.toString();
-                });
-                if(currentText != widget.otp){
-                  return false;
-                }
-                return true;
-              },
-              onSuccess: () {
-
-                setState(() {
-                  isLoading = true;
-                });
-
-                _check(currentText, context);
+        body: isLoading?Container(
+          child:Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator(strokeWidth: 10)
+            ],
+          )
+        ):
+        LockScreenQ(
+            title: "Keamanan",
+            passLength: 4,
+            bgImage: "assets/images/bg.jpg",
+            borderColor: Colors.black,
+            showWrongPassDialog: true,
+            wrongPassContent: "Kode OTP Tidak Sesuai",
+            wrongPassTitle: "Opps!",
+            wrongPassCancelButtonText: "Batal",
+            deskripsi: 'Masukan Kode OTP Yang Telah Kami Kirim Melalui Pesan WhatsApp ${ApiService().showCode == true ? widget.otp : ""}',
+            passCodeVerify: (passcode) async {
+              var concatenate = StringBuffer();
+              passcode.forEach((item){
+                concatenate.write(item);
+              });
+              setState(() {
+                currentText = concatenate.toString();
+              });
+              if(currentText != widget.otp){
+                return false;
               }
-          ),
-        )
+              return true;
+            },
+            onSuccess: () {
+              setState(() {
+                isLoading = true;
+              });
+
+              _check(currentText, context);
+            }
+        ),
     );
   }
 
 
 
   Future _check(String txtOtp, BuildContext context) async {
-
+    final dbHelper = DbHelper.instance;
     if (widget.otp == txtOtp) {
-      final prefs = await SharedPreferences.getInstance();
-      setState(() {
-        isLoading = false;
-        alreadyLogin = true;
-        prefs.setBool('isPin', true);
-        prefs.setBool('login', alreadyLogin);
-        prefs.setString('id', widget.id);
-        prefs.setString('name', widget.name);
-        prefs.setString('address', widget.address);
-        prefs.setString('email', widget.email);
-        prefs.setString('picture', widget.picture);
-        prefs.setString('cover', widget.cover);
-        prefs.setString('socketid', widget.socketid);
-        prefs.setString('kd_referral', widget.kdReferral);
-        prefs.setString('kd_unique', widget.kdUnique);
-        prefs.setString('token', widget.token);
-        prefs.setString('pin', widget.pin);
-        prefs.setString('nohp', widget.noHp);
-        prefs.setString('ktp', widget.ktp);
-        prefs.setBool('isLogin', true);
-      });
+      Map<String, dynamic> row = {
+        DbHelper.columnIdServer  : widget.id.toString(),
+        DbHelper.columnName  : widget.name.toString(),
+        DbHelper.columnAddress  : widget.address.toString(),
+        DbHelper.columnEmail : widget.email.toString(),
+        DbHelper.columnPicture :widget.picture.toString(),
+        DbHelper.columnCover  : widget.cover.toString(),
+        DbHelper.columnSocketId  : widget.socketid.toString(),
+        DbHelper.columnKdUnique  : widget.kdUnique.toString(),
+        DbHelper.columnToken  :  widget.token.toString(),
+        DbHelper.columnPhone  : widget.noHp.toString(),
+        DbHelper.columnPin  :  widget.pin.toString(),
+        DbHelper.columnReferral  : widget.kdReferral.toString(),
+        DbHelper.columnKtp  : widget.ktp.toString(),
+        DbHelper.columnStatus  : "1",
+        DbHelper.columnStatusOnBoarding  : "1",
+        DbHelper.columnStatusExitApp  : "1",
+        DbHelper.columnStatusLevel  : widget.levelStatus,
+        DbHelper.columnWarna1  : widget.warna1.toString(),
+        DbHelper.columnWarna2  : widget.warna2.toString(),
+      };
+      final countRow = await dbHelper.queryRowCount();
+      print("COUNT ROW DATABASE $countRow");
+      if(countRow >= 1){
+        setState(() {isLoading=false;});
+        await dbHelper.deleteAll();
+        await dbHelper.insert(row);
+        setState(() {isLoading=false;});
+      }else{
+        print("CREATE");
+        await dbHelper.insert(row);
+        setState(() {isLoading=false;});
+      }
+      print("COUNT ROW DATABASE $countRow");
+
+
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
     } else {
       setState(() {

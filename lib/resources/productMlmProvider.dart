@@ -15,7 +15,7 @@ class ProductMlmProvider {
   final userRepository = UserRepository();
 
   Future<ProductMlmModel> fetchProductMlm(var page,var limit) async{
-		final token = await userRepository.getToken();
+		final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=kavling',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -28,7 +28,7 @@ class ProductMlmProvider {
 	}
 
   Future<ProductMlmDetailModel> fetchProductDetailMlmSuplemen(var id) async{
-		final token = await userRepository.getToken();
+		final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm/get/'+id,
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -40,7 +40,7 @@ class ProductMlmProvider {
     }
   }
   Future<ProductMlmDetailModel> fetchProductDetailMlmKavling(var id) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm/get/'+id,
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -53,9 +53,9 @@ class ProductMlmProvider {
   }
 
   Future<General> fetchCheckout(String id,String price,String qty, String jasper, String ongkir) async {
-		final pin = await userRepository.getPin();
-		final token = await userRepository.getToken();
-    return await client.post(ApiService().baseUrl+"transaction/checkout",
+    final pin = await userRepository.getDataUser('pin');
+    final token = await userRepository.getDataUser('token');
+    return  await client.post(ApiService().baseUrl+"transaction/checkout",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "id_product":"$id",
@@ -70,25 +70,17 @@ class ProductMlmProvider {
     });
   }
 
-  Future<CheckoutToDetailModel> fetchCheckoutCart(var total,var jasper,var ongkir, var alamat,var type_alamat,var voucher,var pembayaran) async {
-    final pin = await userRepository.getPin();
-    final token = await userRepository.getToken();
-    return await client.post(ApiService().baseUrl+"transaction/checkoutcart",
+  Future fetchCheckoutCart(var total,var jasper,var ongkir, var alamat,var type_alamat,var voucher,var pembayaran) async {
+    final pin = await userRepository.getDataUser('pin');
+    final token = await userRepository.getDataUser('token');
+    final response = await client.post(ApiService().baseUrl+"transaction/checkoutcart",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
-        body: {
-          "total":"$total",
-          "jasper":"$jasper",
-          "ongkir":"$ongkir",
-          "alamat":"$alamat",
-          "pin":"$pin",
-          "type_alamat":"$type_alamat",
-          "voucher":"$voucher",
-          "pembayaran":"$pembayaran",
-        }).then((Response response) {
-      var results = CheckoutToDetailModel.fromJson(json.decode(response.body));
-      print(results.result);
-      return results;
-    });
+        body: {"total":"$total","jasper":"$jasper","ongkir":"$ongkir","alamat":"$alamat","pin":"$pin","type_alamat":"$type_alamat","voucher":"$voucher", "pembayaran":"$pembayaran",});
+    if(response.statusCode == 200){
+      return  CheckoutToDetailModel.fromJson(json.decode(response.body));
+    }else{
+      return General.fromJson(json.decode(response.body));
+    }
   }
 
 }

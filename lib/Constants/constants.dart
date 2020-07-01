@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 final String TEST = "test";
 final String MAIN_UI = "main_ui";
@@ -82,6 +83,17 @@ removeAllHtmlTags(String htmlText) {
 
   return htmlText.replaceAll(exp, '');
 }
+Color hexToColors(String hexString, {String alphaChannel = 'FF'}) {
+  return Color(int.parse(hexString.replaceFirst('#', '0x$alphaChannel')));
+}
+class ThaibahColour{
+  static Color primary1 = Color(0xFF116240);
+  static Color primary2 = Color(0xFF30cc23);
+}
+class ThaibahFont{
+  final fontQ = 'Rubik';
+}
+
 
 class GojekPalette{
   static Color green        = Color.fromARGB(255, 69, 170, 74);

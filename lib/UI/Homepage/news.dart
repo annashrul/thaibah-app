@@ -41,18 +41,12 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         }
-        return Container(
-          padding: EdgeInsets.all(50.0),
-            child:Center(
-                child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green))
-            )
-        );
+        return _loading(context);
       },
     );
   }
 
   Widget buildContent(AsyncSnapshot<NewsModel> snapshot, BuildContext context){
-//    final scrollController = ScrollController(initialScrollOffset: 0);
     return Container(
       height: MediaQuery.of(context).size.height/4,
       color: Colors.transparent,
@@ -60,7 +54,6 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
       child: Swiper(
         key: _scaffoldKey,
         controller: controller,
-//        physics: const NeverScrollableScrollPhysics(),
         autoplay: true,
         fade: 0.0,
         itemBuilder: (BuildContext context, int index) {
@@ -97,9 +90,24 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
         scale: 1,
         pagination: new SwiperPagination(
             builder: new DotSwiperPaginationBuilder(
-                color: Colors.grey, activeColor: Colors.green
+                color: ThaibahColour.primary2, activeColor: ThaibahColour.primary1
             )
         ),
+      ),
+    );
+  }
+
+  Widget _loading(BuildContext context){
+    return Container(
+      height: MediaQuery.of(context).size.height/4,
+      color: Colors.transparent,
+      padding: EdgeInsets.only(left:15.0,right:15.0),
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: SkeletonFrame(width: double.infinity,height: MediaQuery.of(context).size.height/5),
+          ),
+        ],
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/profileModel.dart';
 import 'package:thaibah/UI/Widgets/alertq.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
@@ -40,11 +41,14 @@ class _MyProfileState extends State<MyProfile> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final formatter = new NumberFormat("#,###");
   final userRepository = UserRepository();
+
   bool isLoading=false, modeUpdate=false,moreThenOne=false,isLoadingShare=false,retry=false;
   int jumlahJaringan=0,counterHit=0;
   String name='',picture='',qr='',kdReferral='',saldo='',rawSaldo='',saldoMain='',saldoBonus='',downline='';
   String kaki1='',kaki2='',kaki3='',privacyPolicy='',omsetJaringan='',id='';
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
 
   @override
   void initState() {
@@ -90,14 +94,14 @@ class _MyProfileState extends State<MyProfile> {
           children: <Widget>[
             Stack(
               children: <Widget>[
-                Container(height: 250.0,width: double.infinity,color: Color(0xFF30cc23),),
+                Container(height: 250.0,width: double.infinity,color: statusLevel!='0'?warna2.withOpacity(0.5):ThaibahColour.primary2,),
                 Positioned(
                   bottom: 50.0,
                   right: 100.0,
                   child: Container(
                     width: 400.0,
                     height: 400.0,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color: Color(0xFF116240).withOpacity(0.5)),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color:  statusLevel!='0'?warna2.withOpacity(0.5):ThaibahColour.primary1.withOpacity(0.5)),
                   ),
                 ),
                 Positioned(
@@ -106,16 +110,16 @@ class _MyProfileState extends State<MyProfile> {
                   child: Container(
                     width: 300.0,
                     height: 300.0,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color: Color(0xFF30cc23).withOpacity(0.5)),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color:  statusLevel!='0'?warna2.withOpacity(0.5):ThaibahColour.primary2.withOpacity(0.5)),
                   ),
                 ),
                 Column(
                   children: <Widget>[
                     SizedBox(height: 30.0,),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        SizedBox(width: 10.0),
+                        SizedBox(width: 30.0),
                         Container(
                           width: 75.0,
                           height: 75.0,
@@ -164,13 +168,7 @@ class _MyProfileState extends State<MyProfile> {
                             ),
                           ],
                         ),
-                        SizedBox(width: MediaQuery.of(context).size.width/3.5,),
-                        IconButton(
-                          icon: Icon(Icons.settings,color: Colors.white, size: 20.0,),
-                          onPressed: () => Navigator.of(context, rootNavigator: true).push(
-                            new CupertinoPageRoute(builder: (context) => IndexMember(id: id)),
-                          ),
-                        ),
+
                       ],
                     ),
                     SizedBox(height: 25.0,),
@@ -206,7 +204,7 @@ class _MyProfileState extends State<MyProfile> {
                                       Padding(
                                         padding: EdgeInsets.only(left: 0.0),
                                         child: Center(
-                                            child:isLoadingShare?CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green)):SvgPicture.network(ApiService().iconUrl+"share_rev.svg", height: MediaQuery.of(context).size.height/20,)
+                                            child:isLoadingShare?CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)):SvgPicture.network(ApiService().iconUrl+"share_rev.svg", height: MediaQuery.of(context).size.height/20,)
                                         ),
                                       ),
                                       SizedBox(height: 5.0),
@@ -236,6 +234,7 @@ class _MyProfileState extends State<MyProfile> {
                 flex: 1,
                 child: RefreshIndicator(
                   child: ListView(
+                    padding: EdgeInsets.zero,
                     children: <Widget>[
                       customlistDetails('','Penukaran Bonus', Icons.monetization_on, Colors.green[100], Colors.red[400],PenukaranBonus(saldo: saldoMain, saldoBonus:saldoBonus)),
                       customlistDetails('','Riwayat Penarikan', Icons.history, Colors.red[50], Colors.red[300],HistoryPenarikan()),
@@ -243,6 +242,7 @@ class _MyProfileState extends State<MyProfile> {
                       customlistDetails('','Riwayat Top Up', Icons.history, Colors.blue[100], Colors.white,HistoryDeposit()),
                       customlistDetails('','Sosial Media', Icons.perm_media, Colors.green, Colors.white,MyFeed()),
                       customlistDetails('','Kebijakan & Privasi', Icons.lock, Colors.orange[100], Colors.orange[300],PrivacyPolicy(privasi: privacyPolicy)),
+                      customlistDetails('','Pengaturan', Icons.settings, Colors.black, Colors.white,IndexMember(id: id)),
                       customlistDetails('function','Keluar', Icons.power_settings_new, Colors.green[100], Colors.green[300],LoginPhone())
                     ],
                   ),
@@ -327,7 +327,8 @@ class _MyProfileState extends State<MyProfile> {
                           Map<String, dynamic> row = {
                             DbHelper.columnId   : id,
                             DbHelper.columnStatus : '0',
-                            DbHelper.columnStatusOnBoarding  : "1"
+                            DbHelper.columnStatusOnBoarding  : "1",
+                            DbHelper.columnStatusExitApp  : "1"
                           };
                           print("ID = $id");
                           print("STATUS LOGIN = $statusLogin");
@@ -372,25 +373,8 @@ class _MyProfileState extends State<MyProfile> {
           children: <Widget>[
             Stack(
               children: <Widget>[
-                Container(height: 250.0,width: double.infinity,color: Color(0xFF30cc23),),
-                Positioned(
-                  bottom: 50.0,
-                  right: 100.0,
-                  child: Container(
-                    width: 400.0,
-                    height: 400.0,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color: Color(0xFF116240).withOpacity(0.5)),
-                  ),
-                ),
-                Positioned(
-                  bottom: 100.0,
-                  left: 150.0,
-                  child: Container(
-                    width: 300.0,
-                    height: 300.0,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color: Color(0xFF30cc23).withOpacity(0.5)),
-                  ),
-                ),
+                Container( child: SkeletonFrame(width: double.infinity,height: 250.0)),
+
                 Column(
                   children: <Widget>[
 
@@ -577,43 +561,34 @@ class _MyProfileState extends State<MyProfile> {
 
   }
   Future<void> loadData() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+
+    setState(() {
+      warna1 = color1==''?ThaibahColour.primary1:hexToColors(color1);
+      warna2 = color2==''?ThaibahColour.primary2:hexToColors(color2);
+      statusLevel = levelStatus;
+    });
     final prefs = await SharedPreferences.getInstance();
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    if(prefs.get('pin') == null || prefs.get('pin') == ''){
-      print('pin kosong');
+    var res = await ProfileProvider().fetchProfile();
+    if(res is ProfileModel){
       setState(() {
-        isLoading = false;modeUpdate = true;
+        isLoading = false; retry = false;
+        var result = res.result;
+        jumlahJaringan=result.jumlahJaringan;
+        name=result.name;picture=result.picture;qr=result.qr;kdReferral=result.kdReferral;saldo=result.saldo;rawSaldo=result.rawSaldo;saldoMain=result.saldoMain;
+        saldoBonus=result.saldoBonus;downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
+        id=result.id;
       });
-      GagalHitProvider().fetchRequest('profile','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-    }else{
-      if(counterHit >= 2){
-        setState(() {
-          isLoading = false;
-          moreThenOne = true;
-        });
-        GagalHitProvider().fetchRequest('profile','kondisi = percobaan 2x gagal, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-
-      }else{
-        var res = await ProfileProvider().fetchProfile();
-        if(res is ProfileModel){
-          setState(() {
-            isLoading = false; retry = false;
-            var result = res.result;
-            jumlahJaringan=result.jumlahJaringan;
-            name=result.name;picture=result.picture;qr=result.qr;kdReferral=result.kdReferral;saldo=result.saldo;rawSaldo=result.rawSaldo;saldoMain=result.saldoMain;
-            saldoBonus=result.saldoBonus;downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
-            id=result.id;
-          });
-        }
-        else{
-          GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-          setState(() {
-            isLoading = false;retry = true;
-          });
-        }
-      }
-
+    }
+    else{
+      GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      setState(() {
+        isLoading = false;retry = true;
+      });
     }
 
   }

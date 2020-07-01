@@ -16,7 +16,7 @@ class MemberProvider {
   final userRepository = UserRepository();
 
   Future<MemberModel> fetchMember(var id) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/get/$id',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -75,8 +75,8 @@ class MemberProvider {
   }
 
   Future forgotPin() async {
-    final nama = await userRepository.getName();
-    final nohp = await userRepository.getNoHp();
+    final nama = await userRepository.getDataUser('name');
+    final nohp = await userRepository.getDataUser('phone');
     return await client.post(ApiService().baseUrl+"auth/resendotp",
         body: {
           "nohp":"$nohp",
@@ -96,7 +96,7 @@ class MemberProvider {
 
 
   Future fetchUpdateMember(var name,var no_hp, var gender,var picture, var cover, var ktp) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"member/update",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -113,7 +113,7 @@ class MemberProvider {
   }
 
   Future fetchUpdatePinMember(var pin) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"member/update",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -127,7 +127,7 @@ class MemberProvider {
   }
 
   Future<ContactModel> fetchContact() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/contact',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -141,7 +141,7 @@ class MemberProvider {
 
 
   Future<General> logout() async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"auth/logout",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},

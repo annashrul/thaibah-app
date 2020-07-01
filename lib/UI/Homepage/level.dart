@@ -36,7 +36,7 @@ class _LevelState extends State<Level> {
           else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return Container(child:Center(child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white))));
+          return Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white))));
         }
       ),
     );

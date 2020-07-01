@@ -140,6 +140,9 @@ class DbHelper {
   static final columnStatus = 'status';
   static final columnStatusOnBoarding = 'status_on_boarding';
   static final columnStatusExitApp = 'status_exit_app';
+  static final columnStatusLevel = 'status_level';
+  static final columnWarna1 = 'warna1';
+  static final columnWarna2 = 'warna2';
 
   DbHelper._privateConstructor();
   static final DbHelper instance = DbHelper._privateConstructor();
@@ -178,7 +181,10 @@ class DbHelper {
             $columnKtp TEXT NOT NULL,
             $columnStatus TEXT NOT NULL,
             $columnStatusOnBoarding TEXT NOT NULL,
-            $columnStatusExitApp TEXT NOT NULL
+            $columnStatusExitApp TEXT NOT NULL,
+            $columnStatusLevel TEXT NOT NULL,
+            $columnWarna1 TEXT NOT NULL,
+            $columnWarna2 TEXT NOT NULL
           )
           ''');
   }
@@ -209,10 +215,13 @@ class DbHelper {
     String phone = row[columnPhone];
     return await db.update(table, row, where: '$columnPhone = ?', whereArgs: [phone]);
   }
-
-
-  Future<int> delete(int id) async {
+  Future<int> delete(String id) async {
     Database db = await instance.database;
-    return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+    return await db.delete(table, where: '$columnIdServer = ?', whereArgs: [id]);
   }
+  Future<int> deleteAll() async {
+    Database db = await instance.database;
+    return await db.delete(table, where: '$columnIdServer');
+  }
+
 }

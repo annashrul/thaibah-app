@@ -11,7 +11,7 @@ class DetailCheckoutSuplemenProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future fetchDetailCheckoutSuplemen() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.post(
         ApiService().baseUrl+'transaction/checkout/detail',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},

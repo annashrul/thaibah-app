@@ -216,7 +216,9 @@ class _TestiKavlingState extends State<TestiKavling> {
                                                       child: Column(
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: <Widget>[
-                                                          index == cek ? isLoadingShare?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))):Icon(Icons.share) : Icon(Icons.share), // icon
+                                                          index == cek ? isLoadingShare?CircularProgressIndicator(
+                                                              valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))
+                                                          ):Icon(Icons.share) : Icon(Icons.share), // icon
                                                         ],
                                                       ),
                                                     ),

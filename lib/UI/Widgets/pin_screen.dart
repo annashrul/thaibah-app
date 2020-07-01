@@ -5,7 +5,6 @@ import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/component/pin/resendAuth.dart';
-//import 'package:thaibah/config/helperPin.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 
@@ -24,13 +23,12 @@ class PinScreenState extends State<PinScreen> {
     setState(() {
       isLoading = false;
     });
-    pinQ = await userRepository.getPin();
+    pinQ = await userRepository.getDataUser('pin');
     setState(() {
       pin = pinQ.toString();
       cek = pin.split('');
     });
-//    print("############## PIN ABI = $pinQ $cek #######################");
-//    print("############## LOADING = $isLoading #######################");
+    print("############## PIN ABI = $pinQ $cek #######################");
   }
 
   Future biometrics() async {
@@ -44,12 +42,10 @@ class PinScreenState extends State<PinScreen> {
         isLoading = true;
       });
       ResendOtp results = res;
-//      print(results.result);
       if(results.status == 'success'){
         setState(() {
           isLoading = true;
         });
-//        print(results.result.otp);
         Timer(Duration(seconds: 4), () {
           Navigator.of(context).push(new MaterialPageRoute(builder: (context) => ResendAuth(otp:results.result.otp))).whenComplete(cekPin);
         });
@@ -90,8 +86,6 @@ class PinScreenState extends State<PinScreen> {
 
   @override
   void initState() {
-//    print
-//    print('abus halaman');
     cekPin();
     setState(() {
       isLoading=false;
@@ -122,101 +116,24 @@ class PinScreenState extends State<PinScreen> {
         deskripsi: 'Masukan PIN Anda Untuk Melanjutkan Ke Halaman Berikutnya',
         passCodeVerify: (passcode) async {
           for (int i = 0; i < cek.length; i++) {
-//            print(passcode[i]);
             if (passcode[i] != int.parse(cek[i])) {
               return false;
             }
           }
-//          print(passcode);
           return true;
         },
         onSuccess: () async{
-
           setState(() {
             isLoading = true;
           });
           _check(context);
-//          widget.callback(context, true);
         }
       ),
-//      body: GestureDetector(
-//        onTap: () {
-//          FocusScope.of(context).requestFocus(new FocusNode());
-//        },
-//        child: Container(
-//          height: MediaQuery.of(context).size.height,
-//          width: MediaQuery.of(context).size.width,
-//          child: ListView(
-//            children: <Widget>[
-//              SizedBox(height: 30),
-//              Image.asset(
-//                'assets/images/verify.png',
-//                height: MediaQuery.of(context).size.height / 3,
-//                fit: BoxFit.fitHeight,
-//              ),
-//              SizedBox(height: 8),
-//              Padding(
-//                padding: const EdgeInsets.symmetric(vertical: 8.0),
-//                child: Text(
-//                  'Masukan Pin',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-//                ),
-//              ),
-//              SizedBox(
-//                height: 20,
-//              ),
-//              Padding(
-//                  padding:
-//                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
-//                  child: Builder(
-//                    builder: (context) => Padding(
-//                      padding: const EdgeInsets.all(5.0),
-//                      child: Center(
-//
-//                        child: pinInput(),
-//                      ),
-//                    ),
-//                  )
-//              ),
-//
-//            ],
-//          ),
-//        ),
-//      ),
     );
   }
 
-//  Widget pinInput() {
-//    return Builder(
-//      builder: (context) => Padding(
-//        padding: const EdgeInsets.all(5.0),
-//        child: Center(
-//          child: PinPut(
-//            fieldsCount: 6,
-//            isTextObscure: true,
-//            onSubmit: (String txtPin) => _check(txtPin, context),
-////            onClear: () => _scaffoldKey.currentState.r,
-//            actionButtonsEnabled: false,
-//            clearInput: true,
-//            clearButtonIcon: Icon(Icons.backspace),
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-
   Future _check(/*String txtPin,*/ BuildContext context) async {
-//    int herPin = await userRepository.getPin();
-//    print("PIN: $herPin");
-//    setState(() {
-//      Navigator.of(context).pop();
-//    });
     widget.callback(context, true);
-//    if (int.parse(txtPin) == herPin) {
-//      widget.callback(context, true);
-//    } else {
-//      widget.callback(context, false);
-//    }
-
   }
 
 

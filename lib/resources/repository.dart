@@ -133,7 +133,7 @@ class Repository{
 
   Future<NearbyMosqueModel> fetchAllNearbyMosque(var lat, var lng) => nearbyMosqueProvider.fetchNearbyMosque(lat, lng);
   Future fetchConfig() => configProvider.fetchConfig();
-  Future fetchLoginNohp(var nohp, var deviceid,var typeotp) => loginProvider.fetchLoginNoHp(nohp, deviceid,typeotp);
+  Future fetchLoginNohp(var nohp, var deviceid,var typeotp,var brand) => loginProvider.fetchLoginNoHp(nohp, deviceid,typeotp,brand);
   Future fetchContact() => memberProvider.fetchContact();
   Future fetchMember(var id) => memberProvider.fetchMember(id);
   Future fetchCreateMyBank(var bankname,var bankcode,var acc_no, var acc_name) => myBankProvider.fetchCreateMyBank(bankname, bankcode, acc_no, acc_name);
@@ -145,7 +145,7 @@ class Repository{
   Future<BankModel> fetchAllBank() => bankProvider.fetchBank();
   Future<PromosiModel> fetchAllPromosi() => promosiProvider.fetchPromosi();
   Future<PromosiModel> fetchAllListPromosi(var page, var limit) => promosiProvider.fetchListPromosi(page, limit);
-  Future<CategoryModel> fetchAllCategory() => categoryProvider.fetchCategory();
+  Future<CategoryModel> fetchAllCategory(var param) => categoryProvider.fetchCategory(param);
   Future<NewsModel> fetchAllHomeNews(var title) => newsProvider.fetchHomeNews(title);
   Future<DetailNewsPerCategoryModel> fetchAllDetailNewsPerCategory(var page,var limit,var title) => newsProvider.fetchDetailNewsPerCategory(page,limit,title);
   Future<NewsModel> fetchAllNews(var page, var limit) => newsProvider.fetchNews(page,limit);
