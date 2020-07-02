@@ -38,8 +38,9 @@ class DashboardThreePage extends StatefulWidget {
   _DashboardThreePageState createState() => _DashboardThreePageState();
 }
 
-class _DashboardThreePageState extends State<DashboardThreePage> {
-
+class _DashboardThreePageState extends State<DashboardThreePage> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin  {
+  @override
+  bool get wantKeepAlive => true;
   final TextStyle whiteText = TextStyle(color: Colors.white);
   final userRepository = UserRepository();
   SharedPreferences preferences;
@@ -105,9 +106,6 @@ class _DashboardThreePageState extends State<DashboardThreePage> {
       DbHelper.columnStatusExitApp : '0',
     };
     await dbHelper.update(row);
-//    final prefs = await SharedPreferences.getInstance();
-//    prefs.setBool('isPin', true);
-//    var cek = prefs.setBool('isPin', true);
     print("################################# KALUAR APLIKASI $statusExitApp ##############################");
     return true;
   }
@@ -539,6 +537,9 @@ class _UpdatePageState extends State<UpdatePage> {
     return true;
   }
   Future updateApk() async{
+    final prefs = await SharedPreferences.getInstance();
+    print("############# CLEAR SESSION ${prefs.getKeys().length}");
+    prefs.clear();
     String url = 'https://play.google.com/store/apps/details?id=com.thaibah';
     if (await canLaunch(url)) {
       await launch(url);
@@ -546,18 +547,13 @@ class _UpdatePageState extends State<UpdatePage> {
       print(url);
     }
   }
-  Future cekStatusLogin()async{
-    final prefs = await SharedPreferences.getInstance();
-    if(prefs.getString('id') == null || prefs.getString('id') == ''){
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
-    }
-  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    cekStatusLogin();
+//    cekStatusLogin();
   }
 
   @override

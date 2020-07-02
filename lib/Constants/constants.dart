@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:html/parser.dart';
 
 final String TEST = "test";
 final String MAIN_UI = "main_ui";
@@ -74,6 +75,11 @@ enum TransitionGoal {
   close,
 }
 
+removeTag(String htmlString){
+  var document = parse(htmlString);
+ String parsedString = parse(document.body.text).documentElement.text;
+ return parsedString;
+}
 removeAllHtmlTags(String htmlText) {
   RegExp exp = RegExp(
       r"^WS{1,2}:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:56789",

@@ -3,12 +3,16 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:infinite_widgets/infinite_widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:thaibah/Constants/constants.dart';
-import 'package:thaibah/Model/categoryModel.dart' as Prefix1;
 import 'package:thaibah/Model/categoryModel.dart';
-import 'package:thaibah/Model/tertimoniModel.dart';
+import 'package:thaibah/Model/tertimoniModel.dart'  as Prefix1;
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/component/testimoni/testiKavling.dart';
+import 'package:thaibah/UI/component/testimoni/testiSuplemen.dart';
 import 'package:thaibah/bloc/categoryBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -17,6 +21,8 @@ import 'package:thaibah/config/api.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'dart:async';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
+
+import '../detailInspirasi.dart';
 
 class Testimoni extends StatefulWidget {
   @override
@@ -46,15 +52,14 @@ class _TestimoniState extends State<Testimoni> with SingleTickerProviderStateMix
       statusLevel = levelStatus;
     });
   }
+
   @override
   void initState() {
-    print('#################### AKTIF INDEX TESTIMONI #####################');
-    currentPos = 0;
-    stateText = "Video not started";
     super.initState();
     loadTheme();
 
   }
+
   @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
@@ -96,11 +101,15 @@ class _TestimoniState extends State<Testimoni> with SingleTickerProviderStateMix
                     Tab(text: "Bisnis"),
                   ]
               ),
+              actions: <Widget>[
+                //Add the dropdown widget to the `Action` part of our appBar. it can also be among the `leading` part
+              ],
             ),
             body: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
                 children: <Widget>[
 //                  TestiSuplemen(),
-                  IndexTestimoni(),
+                  IndexTesti(),
                   TestiKavling(),
                 ]
             ),
@@ -111,48 +120,81 @@ class _TestimoniState extends State<Testimoni> with SingleTickerProviderStateMix
 
 }
 
-
-class IndexTestimoni extends StatefulWidget {
+class IndexTesti extends StatefulWidget {
   @override
-  _IndexTestimoniState createState() => _IndexTestimoniState();
+  _IndexTestiState createState() => _IndexTestiState();
 }
 
-class _IndexTestimoniState extends State<IndexTestimoni> with AutomaticKeepAliveClientMixin {
+class _IndexTestiState extends State<IndexTesti>with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
   bool isLoading=false;
-  final List<YoutubePlayerController> tampung= [];
-  var res = [];
-  int i =0;bool isLoadingShare = false;
+  bool isLoading1=false;
+  TabController _tabController;
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  bool isLoadingShare = false;
   int cek = 0;
-  final _bloc = CategoryBloc();
-
-  String _currentItemSelectedCategory=null;
-  TestimoniModel testimoniModel;
-  Future<void> loadData() async{
+  int perpage=10;
+  List video;
+  List<String> categoryArray=['0'];
+  List<String> categoryString=['semua'];
+  List<Widget> videosWidget = List();
+  final userRepository = UserRepository();
+  Future<void> loadCategory() async{
+    final token = await userRepository.getDataUser('token');
     try{
       final jsonString = await http.get(
-          ApiService().baseUrl+'testi?tipe=0&page=1&limit=100',
+          ApiService().baseUrl+'category?type=testimoni',
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      ).timeout(Duration(seconds: ApiService().timerActivity));
+      if (jsonString.statusCode == 200) {
+        final jsonResponse = json.decode(jsonString.body);
+        jsonResponse['result'].forEach((element){
+          setState(() {
+            categoryString.add(element['title']);
+            categoryArray.add(element['id'].toString());
+          });
+        });
+
+      }
+      else {
+        throw Exception('Failed to load photos');
+      }
+      _tabController = new TabController(length:categoryString.length, vsync: this, initialIndex: 0);
+      setState(() {
+        isLoading1=false;
+      });
+    }catch(e){
+      print(e);
+    }
+  }
+  Future<void> loadTestimoni(var idCategory) async{
+    String q='';
+    if(idCategory!=''){
+      q = 'testi?tipe=0&page=1&limit=${perpage.toString()}&category=$idCategory';
+    }else{
+      if(idCategory=='0'){
+        q='testi?tipe=0&page=1&limit=${perpage.toString()}';
+      }else{
+        q='testi?tipe=0&page=1&limit=${perpage.toString()}';
+      }
+
+    }
+    print(q);
+    try{
+      final jsonString = await http.get(
+          ApiService().baseUrl+q,
           headers: {'Authorization':'','username':ApiService().username,'password':ApiService().password}
       ).timeout(Duration(seconds: ApiService().timerActivity));
       if (jsonString.statusCode == 200) {
         final jsonResponse = json.decode(jsonString.body);
-        testimoniModel = new TestimoniModel.fromJson(jsonResponse);
-        testimoniModel.result.data.forEach((element) {
-          i++;
-          tampung.add(YoutubePlayerController(
-            initialVideoId: YoutubePlayer.convertUrlToId(element.video),
-            flags: const YoutubePlayerFlags(
-              autoPlay: false,
-            ),
-          ));
-          res.add(element.video);
-          print("ELEMET $element");
-        });
         setState(() {
           isLoading=false;
+          video = jsonResponse['result']['data'];
         });
-        print("load data $res");
+        print("############### RESPONSE $jsonResponse");
       }
       else {
         throw Exception('Failed to load photos');
@@ -161,20 +203,37 @@ class _IndexTestimoniState extends State<IndexTestimoni> with AutomaticKeepAlive
       print(e);
     }
   }
-  Future<void> refresh() async {
+
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
+  int cloneIndex=0;
+  Future<void> refresh() async{
     setState(() {
       isLoading=true;
+      _tabController.index = cloneIndex;
     });
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    loadData();
+    loadTestimoni('');
+  }
+
+  List<int> _data = [];
+
+  Future search(param) async{
+    setState(() {isLoading=true;});
+    param==0?loadTestimoni(''):loadTestimoni(categoryArray[param]);
   }
 
   Future share(param,index) async{
-    print("PARAM ${param[index-1]}");
-    print("PARAM $index");
     setState(() {
       isLoadingShare = true;
-      cek = index-1;
+      cek = index;
     });
 
     Timer(Duration(seconds: 1), () async {
@@ -184,79 +243,126 @@ class _IndexTestimoniState extends State<IndexTestimoni> with AutomaticKeepAlive
       await WcFlutterShare.share(
           sharePopupTitle: 'Thaibah Share Testimoni Produk',
           subject: 'Thaibah Share Testimoni Produk',
-          text: "${param[index-1]}",
+          text: "${param}",
           mimeType: 'text/plain'
       );
     });
   }
-  void _onDropDownItemSelectedCategory(String newValueSelected) async{
-    final val = newValueSelected;
-    setState(() {
-      _currentItemSelectedCategory = val;
+
+  loadNextData() {
+    perpage = perpage+=10;
+    Future.delayed(Duration(seconds: 1), () {
+      loadTestimoni('');
+      setState(() {});
     });
   }
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     isLoading=true;
-    loadData();
-    _bloc.fetchCategoryList('testimoni');
+    isLoading1=true;
+    loadTestimoni('');
+    loadCategory();
+    loadTheme();
   }
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    _bloc.dispose();
-  }
+
+
   @override
   Widget build(BuildContext context) {
-    return isLoading?_loading(context):Column(
-      children: <Widget>[
-        Expanded(
-          flex: 1,
-          child:Padding(
-            padding: EdgeInsets.only(left:5.0,right:5.0),
-            child:  kategori(context),
-          ),
-        ),
-        Expanded(
-          flex: 9,
-            child: RefreshIndicator(
-          child: Scrollbar(
-              child:Container(
-                child: GridView.builder(
-                    itemCount: tampung.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                    itemBuilder: (context,int index){
-                      return Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: Column(
-                          children: <Widget>[
-                            Expanded(
-                                flex:8,
-                                child: YoutubePlayer(
-                                  liveUIColor: Color(0xFFFFFFFF),
-                                  key: ObjectKey(tampung[index]),
-                                  controller: tampung[index],
-                                  bottomActions: [
-                                    CurrentPosition(),
-                                    const SizedBox(width: 10.0),
-                                    ProgressBar(isExpanded: true),
-                                    const SizedBox(width: 10.0),
-                                    RemainingDuration(),
-                                    FullScreenButton(),
-                                  ],
-                                )
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width/1,
-                                height: ScreenUtilQ.getInstance().setHeight(100),
+    return SafeArea(
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              floating: true,
+              pinned: false,
+              snap: false,
+              elevation: 5,
+              backgroundColor: Colors.white,
+              title: isLoading1?Center(child: CircularProgressIndicator(strokeWidth: 10,valueColor: new AlwaysStoppedAnimation<Color>(statusLevel!='0'?warna1:ThaibahColour.primary1)),):TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                onTap: (index) {
+                  print(index);
+                  setState(() {
+                    _tabController.index = index;
+                    cloneIndex = index;
+                  });
+                  search(index);
+                },
+                tabs: List.generate(categoryString.length, (index) => Tab(
+                  child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        categoryString[index],
+                        style: TextStyle(fontSize: 15,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    decoration: BoxDecoration(color: index == _tabController.index ? warna1 : Colors.black12, borderRadius: BorderRadius.circular(20)),
+                  ),
+                )),
+                labelPadding: EdgeInsets.symmetric(horizontal: 0),
+                indicatorWeight: 1,
+                indicatorColor: Colors.transparent,
+                unselectedLabelColor: Colors.black,
+                labelColor: Colors.white,
+              ),
+            ),
+            isLoading?SliverPadding(
+              padding: EdgeInsets.all(2.0),
+              sliver: SliverGrid(
+                delegate: SliverChildBuilderDelegate((BuildContext context,int index){
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(statusLevel!='0'?warna1:ThaibahColour.primary1)),
+                        ),
+                      )
+                    ],
+                  );
+                },childCount: 1),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 1,
+                ),
+              ),
+            ):
+            SliverToBoxAdapter(
+              child: video.length==0?Column(mainAxisAlignment:MainAxisAlignment.center,crossAxisAlignment:CrossAxisAlignment.center,children: <Widget>[Container(height: 600.0,child:Center(child:Text('Tidak Ada Data', style: TextStyle(fontSize: 15,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),)))],):RefreshIndicator(
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(1.0),
+                    height: 600.0,
+                    child: InfiniteGridView(
+                      loadingWidget:Center(child: CircularProgressIndicator(strokeWidth: 10)),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.all(1.0),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                height: ScreenUtilQ.getInstance().setHeight(230),
+                                alignment: Alignment.center,
+                                child: Center(
+                                  child: _signInButton(video[index]['video'],video[index]['caption'],video[index]['rating'].toString()),
+                                ),
                                 decoration: BoxDecoration(
-                                    gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
+                                    color: Color.fromRGBO(255, 255, 255, 0.19),
+                                    image: DecorationImage(
+                                      image: NetworkImage('https://backpackerjakarta.com/wp-content/uploads/2016/09/Gumuk-Pasir-Parangkusumo.png'),
+                                      fit: BoxFit.cover,
+                                    )
+                                ),
+                              ),
+
+                              Container(
+                                width: MediaQuery.of(context).size.width/1,
+                                height: ScreenUtilQ.getInstance().setHeight(60),
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(colors: [statusLevel!='0'?warna1:Color(0xFF116240),statusLevel!='0'?warna2:Color(0xFF30CC23)]),
                                     borderRadius: BorderRadius.circular(0.0),
                                     boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
                                 ),
@@ -267,116 +373,68 @@ class _IndexTestimoniState extends State<IndexTestimoni> with AutomaticKeepAlive
                                       setState(() {
                                         isLoadingShare = true;
                                       });
-                                      print(cek);
-                                      share(res,index+1);
+//
+                                      share(video[index]['video'],index);
                                     },
                                     child: Center(
-                                      child: index == cek ? isLoadingShare ? CircularProgressIndicator(
-                                          strokeWidth:10,
-                                          valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))
+                                      child: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))
                                       ):Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)) : Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-//                                  child: index==cek?CircularProgressIndicator(strokeWidth:10,valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)):Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
                                     ),
                                   ),
                                 ),
                               ),
-                            )
-                          ],
-                        ),
-                      );
-                    }
+                            ],
+
+                          ),
+                        );
+                      },
+                      itemCount: video.length,
+                      hasNext: video.length >= perpage,
+                      nextData: this.loadNextData,
+                    )
                 ),
-              )
-          ),
-          onRefresh: refresh,
-        )
-        )
-      ],
-    );
-  }
-
-  Widget kategori(BuildContext context) {
-    return StreamBuilder(
-      stream:  _bloc.getResult,
-      builder: (context, AsyncSnapshot<CategoryModel> snapshot) {
-        if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: snapshot.data.result.length,
-            itemBuilder: (context,int index){
-              return Text(snapshot.data.result[index].title);
-            }
-          );
-        } else if (snapshot.hasError) {
-          return Text(snapshot.error.toString());
-        }
-        return CircularProgressIndicator();
-      },
-//        builder: (context,AsyncSnapshot<CategoryModel> snapshot) {
-//          if(snapshot.hasData){
-//            print("SNAPSHOT $snapshot");
-//            return new InputDecorator(
-//              decoration: const InputDecoration(
-//                  labelText: 'Kategori Testimoni:',
-//                  labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
-//              ),
-//              isEmpty: _currentItemSelectedCategory == null,
-//              child: new DropdownButtonHideUnderline(
-//                child: new DropdownButton<String>(
-//                  value: _currentItemSelectedCategory,
-//                  isDense: true,
-//                  onChanged: (String newValue) {
-//                    setState(() {
-//                      _onDropDownItemSelectedCategory(newValue);
-//                    });
-//                  },
-//                  items: snapshot.data.result.map((Prefix1.Result items){
-//                    return new DropdownMenuItem<String>(
-//                      value: items.id.toString(),
-//                      child: Text(items.title,style: TextStyle(fontFamily: 'Rubik',fontSize: 12.0),),
-//                    );
-//                  }),
-//
-//                ),
-//              ),
-//            );
-//          }else if(snapshot.hasError){
-//            return Text(snapshot.error);
-//          }
-//          return Center(
-//              child: new LinearProgressIndicator(
-//                valueColor:new AlwaysStoppedAnimation<Color>(Colors.green),
-//              )
-//          );
-//        }
-    );
-  }
-
-  Widget _loading(BuildContext context) {
-    return Container(
-      child: GridView.builder(
-          itemCount:10,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-          itemBuilder: (context,int index){
-            return Container(
-              padding: EdgeInsets.all(10.0),
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                      flex:8,
-                      child:  SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/3),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      child:SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: ScreenUtilQ.getInstance().setHeight(100)),
-                    ),
-                  )
-                ],
+                  onRefresh: refresh
               ),
-            );
-          }
-      ),
+            ),
 
+          ],
+        )
+      ),
     );
   }
+  Widget _signInButton(var video,var caption,var rating) {
+    return ButtonTheme(
+        height: 50,
+        minWidth: 50,
+        child: InkWell(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(
+                new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+                    param:'Testimoni Produk',
+                    video: video,
+                    caption: caption,
+                    rating:rating.toString()
+                )),
+              );
+            }, //
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  flex: 10,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Icon(Icons.play_circle_outline,size: 70.0,color: Colors.white,)
+                  )
+                )
+              ]
+            )
+          )
+        )
+    );
+  }
+
 }

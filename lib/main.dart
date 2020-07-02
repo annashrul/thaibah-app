@@ -113,52 +113,70 @@ class SplashState extends State<Splash> {
     print("STATUS LOGIN = $statusLogin");
     print("STATUS ON BOARDING = $statusOnBoarding");
     print("STATUS EXIT APP = $statusExitApp");
-
     if(checker is Checker){
       setState(() {isLoading=false;});
       print("####################### CHECKING STATUS CHECKER ${checker.status} ################################");
       if(checker.status == 'success'){
         print("####################### SERVER VERSI ${checker.result.versionCode} & LOCAL VERSI ${ApiService().versionCode} ################################");
         if(checker.result.versionCode != ApiService().versionCode){
-
           print("####################### CHECKING VERSION COIDE ################################");
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
-        }
-        if(checker.result.statusMember == 0){
-          print("####################### CHECKING STATUS MEMBER ################################");
+        }else if(checker.result.statusMember == 0){
+          print("####################### CHECKING STATUS MEMBER ${checker.result.statusMember} ################################");
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+        }else{
+          if(statusExitApp == '0'){
+            setState(() {isLoading=false;});
+            print("####################### CHECKING EXIT APP ################################");
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
+          }else{
+            if(statusOnBoarding == ''||statusOnBoarding=='0'){
+              setState(() {isLoading=false;});
+              print("####################### CHECKING STATUS ONBOARDING ################################");
+              Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
+            }else{
+              if(statusLogin=='1'||statusLogin!='0'){
+                setState(() {isLoading=false;});
+                print("####################### CHECKING STATUS LOGIN ################################");
+                Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
+              }else{
+                setState(() {isLoading=false;});
+                Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new LoginPhone()));
+              }
+            }
+          }
         }
-
+      }else{
 
       }
     }else{
       setState(() {isLoading=false;});
       print("####################### ELSE CHECKER ################################");
       print(checker);
-
-    }
-
-    if(statusExitApp == '0'){
-      setState(() {isLoading=false;});
-      print("####################### CHECKING EXIT APP ################################");
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
-    }else{
-
-      if(statusOnBoarding == ''||statusOnBoarding=='0'){
+      if(statusExitApp == '0'){
         setState(() {isLoading=false;});
-        print("####################### CHECKING STATUS ONBOARDING ################################");
-        Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
+        print("####################### CHECKING EXIT APP ################################");
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
       }else{
-        if(statusLogin=='1'||statusLogin!='0'){
+        if(statusOnBoarding == ''||statusOnBoarding=='0'){
           setState(() {isLoading=false;});
-          print("####################### CHECKING STATUS LOGIN ################################");
-          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
+          print("####################### CHECKING STATUS ONBOARDING ################################");
+          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
         }else{
-          setState(() {isLoading=false;});
-          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new LoginPhone()));
+          if(statusLogin=='1'||statusLogin!='0'){
+            setState(() {isLoading=false;});
+            print("####################### CHECKING STATUS LOGIN ################################");
+            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
+          }else{
+            setState(() {isLoading=false;});
+            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new LoginPhone()));
+          }
         }
       }
+
     }
+
+
 
   }
 
@@ -291,7 +309,7 @@ class _IntroScreenState extends State<IntroScreen> {
   Widget build(BuildContext context) {
     print(wrapOnboarding);
     return new Scaffold(
-        body: isLoading?Container(child: Center(child: CircularProgressIndicator(),),):Stack(
+        body: isLoading?Container(child: Center(child: CircularProgressIndicator(),),):wrapOnboarding!=[]?Stack(
           children: <Widget>[
             IntroViewsFlutter(
               wrapOnboarding,
@@ -313,7 +331,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 child: Image.asset('assets/images/logoOnBoardTI.png', width: 100,)
             )
           ],
-        )
+        ):Text('Data Tidak Tersedia')
     );
   }
 }

@@ -10,6 +10,7 @@ import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/detail_promosi_ui.dart';
 import 'package:thaibah/bloc/promosiBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class About extends StatefulWidget {
 //  About({Key key}) : super(key: key);
@@ -17,7 +18,9 @@ class About extends StatefulWidget {
   _AboutState createState() => _AboutState();
 }
 
-class _AboutState extends State<About>{
+class _AboutState extends State<About> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = false;
@@ -99,7 +102,7 @@ class _AboutState extends State<About>{
           stream: promosiListBloc.allPromosiList,
           builder: (context, AsyncSnapshot<PromosiModel> snapshot) {
             if(snapshot.hasData){
-              return buildContent(snapshot, context);
+              return _buildContent(snapshot, context);
             }else if(snapshot.hasError){
               return Text(snapshot.error.toString());
             }
@@ -244,4 +247,88 @@ class _AboutState extends State<About>{
       },
     );
   }
+
+  Widget _buildContent(AsyncSnapshot<PromosiModel> snapshot, BuildContext context){
+    return ListView.builder(
+      itemCount: snapshot.data.result.data.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Container(
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: ScreenUtilQ.getInstance().setHeight(400),
+                child: CachedNetworkImage(
+                  imageUrl: snapshot.data.result.data[index].thumbnail,
+                  placeholder: (context, url) => Center(
+                    child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+                  ),
+                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                  imageBuilder: (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      borderRadius: new BorderRadius.circular(0.0),
+                      color: Colors.grey,
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(snapshot.data.result.data[index].thumbnail),
+                ),
+                title: Text(
+                  snapshot.data.result.data[index].title,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(snapshot.data.result.data[index].penulis+" . "+snapshot.data.result.data[index].createdAt,
+                    style: TextStyle(
+                      color: Colors.grey,
+                    )),
+                trailing: _threeItemPopup(snapshot.data.result.data[index].link),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _threeItemPopup(var link) => PopupMenuButton(
+    onSelected: (e) async{
+      String url = '$link';
+      if (await canLaunch(url)) {
+        await launch(url);
+      }else{
+        scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+            content: Text('Link Download Tidak Tersedia',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+          )
+        );
+      }
+    },
+    itemBuilder: (context) {
+      var list = List<PopupMenuEntry<Object>>();
+      list.add(
+        CheckedPopupMenuItem(
+          child: Text(
+            "Download",
+            style: TextStyle(color: Colors.black),
+          ),
+          value: 1,
+        ),
+      );
+      return list;
+    },
+    icon: Icon(
+      Icons.more_vert,
+      size: 20,
+      color: Colors.black,
+    ),
+  );
+
 }
