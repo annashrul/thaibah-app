@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
@@ -97,12 +98,12 @@ class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(0.0),
-                              child: new Text('${snapshot.data.result.produk[i].title}',style: new TextStyle(fontSize: 11.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black),),
+                              child: new Text('${snapshot.data.result.produk[i].title}',style: new TextStyle(fontSize: 11.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: Colors.black),),
                             ),
                             SizedBox(height: 5.0),
-                            Text('${snapshot.data.result.produk[i].qty} Barang (${snapshot.data.result.produk[i].weight} Gram) x Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice))}',style: TextStyle(fontSize: 10,fontFamily: 'Rubik',color:Colors.grey,fontWeight: FontWeight.bold),),
+                            Text('${snapshot.data.result.produk[i].qty} Barang (${snapshot.data.result.produk[i].weight} Gram) x Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice))}',style: TextStyle(fontSize: 10,fontFamily:ThaibahFont().fontQ,color:Colors.grey,fontWeight: FontWeight.bold),),
                             SizedBox(height: 5.0),
-                            Text('Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice)*int.parse(snapshot.data.result.produk[i].qty) )}',style: TextStyle(fontSize: 11,fontFamily: 'Rubik',color: Colors.redAccent,fontWeight: FontWeight.bold),)
+                            Text('Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice)*int.parse(snapshot.data.result.produk[i].qty) )}',style: TextStyle(fontSize: 11,fontFamily:ThaibahFont().fontQ,color: Colors.redAccent,fontWeight: FontWeight.bold),)
                           ],
                           crossAxisAlignment: CrossAxisAlignment.start,
                         ),

@@ -9,7 +9,7 @@ class HistoryProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<HistoryModel> fetchHistory(var param, var page,var limit,var from,var to, var q) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     var url;
     if(param == 'mainTrx'){
       url = 'transaction/myhistory?type=master&page=$page&limit=$limit&datefrom=$from&dateto=$to&q=$q';

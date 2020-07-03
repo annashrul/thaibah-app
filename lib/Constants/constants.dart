@@ -97,8 +97,9 @@ class ThaibahColour{
   static Color primary2 = Color(0xFF30cc23);
 }
 class ThaibahFont{
-  final fontQ = 'Rubik';
+  final fontQ = 'Rosemary';
 }
+
 
 
 class GojekPalette{

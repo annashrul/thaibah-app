@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/kotaModel.dart';
@@ -12,6 +13,7 @@ import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
 import 'package:thaibah/Model/kotaModel.dart' as prefix1;
 import 'package:thaibah/Model/kecamatanModel.dart' as prefix2;
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/addressProvider.dart';
 class AddAddress extends StatefulWidget {
   @override
@@ -40,6 +42,7 @@ class _AddAddressState extends State<AddAddress> {
   }
   String sProv='',sKota='',sKec='';
   getKota(id) async{
+
     kotaBloc.fetchKotaList(id.toString());
     setState(() {});
   }
@@ -86,13 +89,27 @@ class _AddAddressState extends State<AddAddress> {
   }
 
 
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     provinsiBloc.fetchProvinsiist();
     getPref();
+    loadTheme();
   }
 
   @override
@@ -113,7 +130,7 @@ class _AddAddressState extends State<AddAddress> {
             color: Colors.white,
             fontSize: 16.0,
             fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
+            fontFamily:ThaibahFont().fontQ),
       ),
       backgroundColor: Colors.redAccent,
       duration: Duration(seconds: 3),
@@ -137,28 +154,7 @@ class _AddAddressState extends State<AddAddress> {
         key: _scaffoldKey,
         backgroundColor: Colors.white,
         resizeToAvoidBottomPadding: true,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          centerTitle: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF116240),
-                  Color(0xFF30cc23)
-                ],
-              ),
-            ),
-          ),
-          elevation: 1.0,
-          automaticallyImplyLeading: true,
-          title: new Text("Tambah Alamat", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        ),
+        appBar:UserRepository().appBarWithButton(context,"Tambah Alamat",warna1,warna2,(){Navigator.of(context).pop();},Container()),
         body: ListView(
           children: <Widget>[
             Container(
@@ -228,9 +224,9 @@ class _AddAddressState extends State<AddAddress> {
                         RichText(
                           text: TextSpan(
                               text: 'Alamat',
-                              style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.black,fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
                               children: <TextSpan>[
-                                TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                                TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                               ]
                           ),
                         ),
@@ -273,42 +269,30 @@ class _AddAddressState extends State<AddAddress> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Alamat Pengiriman :", style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Rubik')),
-                        Text("${mainAddressController.text}$tKecamatan$tKota$tProvinsi", style: TextStyle(color:Colors.grey,fontSize:11.0,fontWeight: FontWeight.bold, fontFamily: 'Rubik'))
+                        Text("Alamat Pengiriman :", style: TextStyle(fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ)),
+                        Text("${mainAddressController.text}$tKecamatan$tKota$tProvinsi", style: TextStyle(color:Colors.grey,fontSize:11.0,fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ))
                       ],
                     ),
                   ),
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            color: Colors.green, shape: BoxShape.circle
-                        ),
-                        child: IconButton(
-                          color: Colors.white,
-                          onPressed: () {
-                            mainAddressFocus.unfocus();
-                            if(mainAddressController.text == ''){
-                              return showInSnackBar("Detail Alamat Harus Diisi");
-                            }else if(_currentItemSelectedProvinsi == '' || _currentItemSelectedProvinsi == null){
-                              return showInSnackBar("Provinsi Harus Diisi");
-                            }else if(_currentItemSelectedKota == '' || _currentItemSelectedKota == null){
-                              return showInSnackBar("Kota Harus Diisi");
-                            }else if(_currentItemSelectedKecamatan == '' || _currentItemSelectedKecamatan == null){
-                              return showInSnackBar("Kecamatan Harus Diisi");
-                            }
-                            else{
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              create();
-                            }
-                          },
-                          icon: _isLoading ? CircularProgressIndicator():Icon(Icons.arrow_forward),
-                        ),
-                      )
-                  ),
+                  UserRepository().buttonQ(context,warna1,warna2,(){
+                    mainAddressFocus.unfocus();
+                    if(mainAddressController.text == ''){
+                      return showInSnackBar("Detail Alamat Harus Diisi");
+                    }else if(_currentItemSelectedProvinsi == '' || _currentItemSelectedProvinsi == null){
+                      return showInSnackBar("Provinsi Harus Diisi");
+                    }else if(_currentItemSelectedKota == '' || _currentItemSelectedKota == null){
+                      return showInSnackBar("Kota Harus Diisi");
+                    }else if(_currentItemSelectedKecamatan == '' || _currentItemSelectedKecamatan == null){
+                      return showInSnackBar("Kecamatan Harus Diisi");
+                    }
+                    else{
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      create();
+                    }
+                  }, _isLoading)
+
                 ],
               ),
             ),
@@ -317,154 +301,6 @@ class _AddAddressState extends State<AddAddress> {
     );
   }
 
-
-  Widget build_(BuildContext context) {
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomPadding: true,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(top: 20.0),
-                child: Image.asset("assets/images/image_01.png"),
-              ),
-              Expanded(
-                child: Container(),
-              ),
-              Image.asset("assets/images/image_02.png")
-            ],
-          ),
-          SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(left: 28.0, right: 28.0, top: 60.0),
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Image.asset(
-                        "assets/images/logoOnBoardTI.png",
-                        width: ScreenUtilQ.getInstance().setWidth(150),
-                        height: ScreenUtilQ.getInstance().setHeight(150),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
-                  Container(
-                    width: double.infinity,
-                    height: ScreenUtilQ.getInstance().setHeight(1000),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(0.0),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black12,offset: Offset(0.0, 0.0),blurRadius: 0.0),
-                          BoxShadow(color: Colors.black12,offset: Offset(0.0, -5.0),blurRadius: 10.0),
-                        ]
-                    ),
-                    child: Padding(
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                        child:Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text("Form Alamat",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(45),fontFamily: "Rubik",letterSpacing: .6,fontWeight: FontWeight.bold)),
-                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
-                            _provinsi(context),
-                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
-                            _kota(context),
-                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
-                            _kecamatan(context),
-                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(35)),
-                            Text("Detail Alamat",style: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(24))),
-                            TextField(
-                              decoration: InputDecoration(
-                                  hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
-                                hintText: 'masukan alamat lengkap anda beserta kode pos'
-                              ),
-                              controller: mainAddressController,
-                              maxLines: null,
-                              keyboardType: TextInputType.multiline,
-                              focusNode: mainAddressFocus,
-                              textInputAction: TextInputAction.done,
-                              onSubmitted: (value){
-                                mainAddressFocus.unfocus();
-                                if(mainAddressController.text == ''){
-                                  return showInSnackBar("Detail Alamat Harus Diisi");
-                                }else if(_currentItemSelectedProvinsi == '' || _currentItemSelectedProvinsi == null){
-                                  return showInSnackBar("Provinsi Harus Diisi");
-                                }else if(_currentItemSelectedKota == '' || _currentItemSelectedKota == null){
-                                  return showInSnackBar("Kota Harus Diisi");
-                                }else if(_currentItemSelectedKecamatan == '' || _currentItemSelectedKecamatan == null){
-                                  return showInSnackBar("Kecamatan Harus Diisi");
-                                }
-                                else{
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
-                                  create();
-                                }
-                              },
-                            ),
-                            SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                InkWell(
-                                  child: Container(
-                                    width: double.infinity,
-                                    height: ScreenUtilQ.getInstance().setHeight(100),
-                                    decoration: BoxDecoration(
-                                        gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
-                                        borderRadius: BorderRadius.circular(6.0),
-                                        boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-                                    ),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        onTap: () {
-                                          if(mainAddressController.text == ''){
-                                            return showInSnackBar("Detail Alamat Harus Diisi");
-                                          }else if(_currentItemSelectedProvinsi == '' || _currentItemSelectedProvinsi == null){
-                                            return showInSnackBar("Provinsi Harus Diisi");
-                                          }else if(_currentItemSelectedKota == '' || _currentItemSelectedKota == null){
-                                            return showInSnackBar("Kota Harus Diisi");
-                                          }else if(_currentItemSelectedKecamatan == '' || _currentItemSelectedKecamatan == null){
-                                            return showInSnackBar("Kecamatan Harus Diisi");
-                                          }
-                                          else{
-                                            setState(() {
-                                              _isLoading = true;
-                                            });
-                                            create();
-                                          }
-                                        },
-                                        child: _isLoading?Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Center(
-                                          child: Text("Simpan",style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
-                        )
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-
-    );
-  }
 
 
   _provinsi(BuildContext context) {
@@ -475,7 +311,7 @@ class _AddAddressState extends State<AddAddress> {
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Provinsi:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
             ),
             isEmpty: _currentItemSelectedProvinsi == null,
             child: new DropdownButtonHideUnderline(
@@ -519,7 +355,7 @@ class _AddAddressState extends State<AddAddress> {
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Kota:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
             ),
             isEmpty: _currentItemSelectedKota == null,
             child: new DropdownButtonHideUnderline(
@@ -560,7 +396,7 @@ class _AddAddressState extends State<AddAddress> {
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Kecamatan:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
 
             ),
             isEmpty: _currentItemSelectedKecamatan == null,

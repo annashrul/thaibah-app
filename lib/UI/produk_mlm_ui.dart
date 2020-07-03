@@ -38,8 +38,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   bool isExpanded = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   double _height;
-//  ScrollController _scrollViewController;
-  TabController _tabController;
   double _width;
   bool isLoading = false;
   int inc = 0;
@@ -54,7 +52,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   int counterHit =0;
   Future addCart(var id, var harga, var qty, var weight) async{
     setState(() {});
-//    print(harga);
     var res = await ProductMlmSuplemenProvider().addProduct(id,harga,qty,weight);
     if(res.status == 'success'){
       countCart();
@@ -64,7 +61,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
       return showInSnackBar(res.msg);
     }
   }
-
   Future<void> countCart() async{
     var res = await ProductMlmSuplemenProvider().fetchListCart();
     if(res is ListCartModel){
@@ -79,7 +75,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
       });
     }
   }
-
   void showInSnackBar(String value) {
     FocusScope.of(context).requestFocus(new FocusNode());
     scaffoldKey.currentState?.removeCurrentSnackBar();
@@ -97,9 +92,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
       duration: Duration(seconds: 3),
     ));
   }
-
   int perpage = 10;
-
   void load() {
     print("load $perpage");
     setState(() {isLoading = false;});
@@ -107,7 +100,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     loadData(1,perpage);
     print(perpage);
   }
-
   Future<void> refresh() async {
     Timer(Duration(seconds: 1), () {
       setState(() {
@@ -117,19 +109,15 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     load();
   }
-
   Future<bool> _loadMore() async {
-    print("onLoadMore");
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    print("load $perpage");
     setState(() {
-      perpage = perpage += 2;
+      perpage = perpage += 10;
     });
     loadData(1,perpage);
     print(perpage);
     return true;
   }
-
   bool modeUpdate = false;
 
 
@@ -161,10 +149,25 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
 
   }
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     countCart();
+    loadTheme();
     print('####################### aktif ############################');
     versi = true;
     loadData(1,perpage);
@@ -189,8 +192,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: <Color>[
-                ThaibahColour.primary1,
-                ThaibahColour.primary2
+                statusLevel!='0'?warna1:ThaibahColour.primary1,
+                statusLevel!='0'?warna2:ThaibahColour.primary2
               ],
             ),
           ),
@@ -236,8 +239,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         centerTitle: false,
         elevation: 0.0,
         automaticallyImplyLeading: false,
-        title: new Text(
-            "Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+        title: new Text("Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
       ),
       body: retry==true?UserRepository().requestTimeOut((){
         setState(() {
@@ -402,7 +404,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                             flex: 2,
                                             child: Container(
                                               // padding: EdgeInsets.all(5),
-                                                decoration: BoxDecoration(color:Colors.green),
+                                                decoration: BoxDecoration(color:statusLevel!='0'?warna2:ThaibahColour.primary2),
                                                 child: Align(
                                                     alignment: Alignment.center,
                                                     child: FlatButton(
@@ -458,7 +460,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
               size: Size(100, 100), // button width and height
               child: ClipOval(
                 child: Material(
-                  color: Colors.green, // button color
+                  color: statusLevel!='0'?warna1:ThaibahColour.primary1, // button color
                   child: InkWell(
                     splashColor: Colors.green, // splash color
                     onTap: () async {

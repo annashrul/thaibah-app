@@ -148,13 +148,13 @@ class _MyProfileState extends State<MyProfile> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('$name',style: TextStyle(color: Colors.white, fontFamily: 'Rubik', fontSize: 14.0, fontWeight: FontWeight.bold)),
+                            Text('$name',style: TextStyle(color: Colors.white, fontFamily:ThaibahFont().fontQ, fontSize: 14.0, fontWeight: FontWeight.bold)),
                             GestureDetector(
                               child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     Text('$kdReferral',style: TextStyle(
-                                        fontWeight: FontWeight.bold, color: Colors.white,fontFamily: 'Rubik',
+                                        fontWeight: FontWeight.bold, color: Colors.white,fontFamily:ThaibahFont().fontQ,
                                         shadows: [Shadow(blurRadius: 5.0,color: Colors.black,offset: Offset(0.0, 1.0))]
                                     )),
                                     SizedBox(width: 5),
@@ -163,7 +163,8 @@ class _MyProfileState extends State<MyProfile> {
                               ),
                               onTap: () {
                                 Clipboard.setData(new ClipboardData(text: '$kdReferral'));
-                                scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Kode Referral Berhasil Disalin")));
+                                UserRepository().notifNoAction(scaffoldKey, context,"Kode Referral Berhasil Disalin","success");
+//                                scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Kode Referral Berhasil Disalin",style: TextStyle(fontFamily: ),)));
                               },
                             ),
                           ],
@@ -211,7 +212,7 @@ class _MyProfileState extends State<MyProfile> {
                                       Padding(
                                         padding: EdgeInsets.only(left: 0.0),
                                         child: Center(
-                                          child: Text('Bagikan Link',textAlign: TextAlign.center,style: TextStyle(fontFamily: 'Rubik',fontSize: 12.0,color: Colors.black,fontWeight: FontWeight.bold)),
+                                          child: Text('Bagikan Link',textAlign: TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0,color: Colors.black,fontWeight: FontWeight.bold)),
                                         ),
                                       ),
                                     ],
@@ -262,9 +263,9 @@ class _MyProfileState extends State<MyProfile> {
         children: <Widget>[
           SvgPicture.network(ApiService().iconUrl+'icon_'+pathImg+'.svg', height: 35,width:35),
           SizedBox(height: 5.0,),
-          Text('$titleOne',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold,fontSize: 12.0)),
+          Text('$titleOne',style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 12.0)),
           SizedBox(height: 5.0,),
-          Text('$titleTwo',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold,fontSize: 12.0)),
+          Text('$titleTwo',style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 12.0)),
         ],
       ),
     );
@@ -292,7 +293,7 @@ class _MyProfileState extends State<MyProfile> {
               Padding(
                 padding: EdgeInsets.only(left: 0.0),
                 child: Center(
-                  child: Text(title,textAlign: TextAlign.center,style: TextStyle(fontFamily: 'Rubik',fontSize: 12.0,color: Colors.black,fontWeight: FontWeight.bold)),
+                  child: Text(title,textAlign: TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0,color: Colors.black,fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -316,7 +317,7 @@ class _MyProfileState extends State<MyProfile> {
                   Container(
                     color: Colors.green,
                     child: FlatButton(
-                      child: Text("YA", style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                      child: Text("YA", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                       onPressed: () async {
                         var res = await MemberProvider().logout();
                         if(res.status == 'success'){
@@ -344,7 +345,7 @@ class _MyProfileState extends State<MyProfile> {
                   Container(
                     color:Colors.red,
                     child: FlatButton(
-                      child: Text("TIDAK", style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                      child: Text("TIDAK", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                       onPressed: () async {
                         Navigator.of(context).pop();
                       },
@@ -356,7 +357,7 @@ class _MyProfileState extends State<MyProfile> {
         ) : Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => xWidget));
       },
       child: ListTile(
-        title: Text(title,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 12.0)),
+        title: Text(title,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 12.0)),
         leading: CircleAvatar(
           backgroundColor: backgroundColor,
           child: Center(child: Icon(icon, color: iconColor)),
@@ -527,7 +528,7 @@ class _MyProfileState extends State<MyProfile> {
                     child: Column(
                         children: <Widget>[
                           SizedBox(height: 20,),
-                          Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                          Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                           SizedBox(height: 10.0,),
                           Container(
                             padding: EdgeInsets.all(10),

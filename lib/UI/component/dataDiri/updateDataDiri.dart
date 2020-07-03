@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
@@ -17,6 +18,7 @@ import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 
 class UpdateDataDiri extends StatefulWidget {
@@ -69,6 +71,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
   String codeCountry = '';
 
   Future update() async {
+    final dbHelper = DbHelper.instance;
     if(codeCountry == ''){
       setState(() {
         codeCountry = "62";
@@ -149,7 +152,16 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
     else{
       var res = await updateMemberBloc.fetchUpdateMember(nameController.text, no, dropdownValue,base64Image, base64Image2,'');
       if(res.status == 'success'){
-        print(dropdownValue);
+        final userRepository = UserRepository();
+        final id = await userRepository.getDataUser('id');
+        Map<String, dynamic> row = {
+          DbHelper.columnId   : id,
+          DbHelper.columnName : nameController.text,
+          DbHelper.columnPhone : no,
+          DbHelper.columnPicture : base64Image,
+          DbHelper.columnCover : base64Image2,
+        };
+        await dbHelper.update(row);
         setState(() {_isLoading = false;});
         Timer(Duration(seconds: 1), () {
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
@@ -536,98 +548,6 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
       color: Colors.black26.withOpacity(.2),
     ),
   );
-//  File _image;
-//
-//  getImageFile(ImageSource source) async {
-//
-//    //Clicking or Picking from Gallery
-//
-//    var image = await ImagePicker.pickImage(source: source);
-////    print(image.readAsStringSync());
-//    //Cropping the image
-//    print(image.path.substring(51,image.path.length));
-//    File croppedFile = await ImageCropper.cropImage(
-//      sourcePath: image.path,
-//      aspectRatioPresets: [
-//        CropAspectRatioPreset.square,
-//      ],
-//      androidUiSettings: AndroidUiSettings(
-//          toolbarTitle: 'Cropper',
-//          toolbarColor: Colors.deepOrange,
-//          toolbarWidgetColor: Colors.white,
-//          initAspectRatio: CropAspectRatioPreset.original,
-//          lockAspectRatio: false),
-//      iosUiSettings: IOSUiSettings(
-//        minimumAspectRatio: 1.0,
-//      ),
-//      maxWidth: 512,
-//      maxHeight: 512,
-//    );
-////
-//////    File croppedFile = await ImageCropper.cropImage(
-//////      sourcePath: image.path,
-//////      ratioX: 1.0,
-//////      ratioY: 1.0,
-//////      maxWidth: 512,
-//////      maxHeight: 512,
-//////    );
-////
-////    //Compress the image
-////    print(croppedFile.path);
-////    var rng = new Random();
-////    var l = new List.generate(12, (_) => rng.nextInt(100));
-//
-//    var result = await FlutterImageCompress.compressAndGetFile(
-//      croppedFile.path,
-//      '/data/user/0/com.thaibah/cache/${image.path.substring(51,image.path.length)}',
-//      quality: 50,
-//    );
-////    print('/data/user/0/com.thaibah/cache/$l');
-////
-//    setState(() {
-//      _image = result;
-//      print(_image.lengthSync());
-//    });
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    print(_image?.lengthSync());
-//    return Scaffold(
-//      appBar: AppBar(
-//        title: Text("Click | Pick | Crop | Compress"),
-//      ),
-//      body: Center(
-//        child: _image == null
-//            ? Text("Image")
-//            : Image.file(
-//          _image,
-//          height: 200,
-//          width: 200,
-//        ),
-//      ),
-//      floatingActionButton: Row(
-//        mainAxisAlignment: MainAxisAlignment.end,
-//        children: <Widget>[
-//          FloatingActionButton.extended(
-//            label: Text("Camera"),
-//            onPressed: () => getImageFile(ImageSource.camera),
-//            heroTag: UniqueKey(),
-//            icon: Icon(Icons.camera),
-//          ),
-//          SizedBox(
-//            width: 20,
-//          ),
-//          FloatingActionButton.extended(
-//            label: Text("Gallery"),
-//            onPressed: () => getImageFile(ImageSource.gallery),
-//            heroTag: UniqueKey(),
-//            icon: Icon(Icons.photo_library),
-//          )
-//        ],
-//      ),
-//    );
-//  }
 
 }
 
@@ -726,63 +646,24 @@ class _OtpUpdateState extends State<OtpUpdate> {
 //                _check(currentText.toString(),context);
           }
       ),
-//      bottomNavigationBar: _bottomNavBarBeli(context),
     );
   }
 
-//  Widget build_(BuildContext context) {
-//    return Scaffold(
-//        body: SafeArea(
-//          child:Center(
-//              child: Column(
-//                mainAxisSize: MainAxisSize.min,
-//                children: <Widget>[
-//                  // SizedBox(height: 50,),
-//                  Text("Masukan Kode OTP"),
-//                  Text(widget.otp),
-//                  otpInput(),
-//
-//                  // buttonOtp()
-//                ],
-//              )
-//          ),
-//        )
-//    );
-//  }
-//
-//  Widget otpInput() {
-//    return Builder(
-//      builder: (context) => Padding(
-//        padding: const EdgeInsets.all(40.0),
-//        child: Center(
-//          child: PinPut(
-//            clearButtonIcon: new Icon(Icons.backspace, size: 21, color: Color(0xFF535c68)),
-//            pasteButtonIcon: new Icon(Icons.content_paste, size: 20),
-//            isTextObscure: true,
-//            keyboardType: TextInputType.number,
-//            fieldsCount: 4,
-//            onSubmit: (String txtOtp){
-//              setState(() {
-//                isLoading = true;
-//              });
-//              _check(txtOtp, context);
-//            },
-//            actionButtonsEnabled: false,
-//
-////            clearButtonIcon: Icon(Icons.backspace, size: 30),
-//            clearInput: true,
-//            onClear: (value){
-//              print(value);
-//            },
-//          ),
-//        ),
-//      ),
-//    );
-//  }
 
   Future update() async{
+    final dbHelper = DbHelper.instance;
     var res = await updateMemberBloc.fetchUpdateMember(widget.name, widget.nohp, widget.gender,widget.profile, widget.cover,'');
     if(res.status == 'success'){
+      final userRepository = UserRepository();
+      final id = await userRepository.getDataUser('id');
+      Map<String, dynamic> row = {
+        DbHelper.columnId   : id,
+        DbHelper.columnName : widget.name,
+        DbHelper.columnPhone : widget.nohp,
+        DbHelper.columnPicture : widget.profile,
+        DbHelper.columnCover : widget.cover,
+      };
+      await dbHelper.update(row);
       setState(() {isLoading = false;});
       Timer(Duration(seconds: 3), () {
         Navigator.pop(context, showInSnackBar(res.msg));

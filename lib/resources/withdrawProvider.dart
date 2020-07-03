@@ -13,8 +13,8 @@ class WithdrawProvider {
   final userRepository = UserRepository();
 
   Future withdraw(var amount,var id_bank) async {
-    final pin = await userRepository.getPin();
-    final token = await userRepository.getToken();
+    final pin = await userRepository.getDataUser('pin');
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/withdraw/create",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
@@ -34,7 +34,7 @@ class WithdrawProvider {
   }
 
   Future<HistoryPenarikanModel> fetchHistoryPenarikan(var page, var limit, var from, var to) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'transaction/withdraw/list?page=$page&limit=$limit&datefrom=$from&dateto=$to',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/myBankModel.dart' as prefix0;
@@ -14,6 +15,7 @@ import 'package:thaibah/bloc/myBankBloc.dart';
 import 'package:thaibah/bloc/withdrawBloc.dart';
 import 'package:thaibah/config/flutterMaskedText.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 import '../saldo_ui.dart';
 
@@ -58,12 +60,27 @@ class _PenarikanState extends State<Penarikan> {
   }
 
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
     sampleData.add(new RadioModel(false, '100,000.00', 'Rp 100,000.00'));
     sampleData.add(new RadioModel(false, '200,000.00', 'Rp 200,000.00'));
     sampleData.add(new RadioModel(false, '300,000.00', 'Rp 300,000.00'));
@@ -84,7 +101,8 @@ class _PenarikanState extends State<Penarikan> {
             color: Colors.white,
             fontSize: 16.0,
             fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
+            fontFamily:ThaibahFont().fontQ
+        ),
       ),
       backgroundColor: Colors.redAccent,
       duration: Duration(seconds: 3),
@@ -96,31 +114,7 @@ class _PenarikanState extends State<Penarikan> {
     _width = MediaQuery.of(context).size.width;
     return Scaffold(
         key: scaffoldKey,
-        appBar: new AppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.keyboard_backspace,
-              color: Colors.white,
-            ),
-            onPressed: (){
-              Navigator.of(context).pop();
-            },
-          ),
-          title: new Text("Penarikan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF116240),
-                  Color(0xFF30cc23)
-                ],
-              ),
-            ),
-          ),
-
-        ),
+        appBar:UserRepository().appBarWithButton(context,'Penarikan',warna1,warna2,(){Navigator.of(context).pop();},Container()),
         body: ListView(
           children: <Widget>[
             Container(
@@ -160,7 +154,7 @@ class _PenarikanState extends State<Penarikan> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nominal",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                        Text("Nominal",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
                           controller: moneyController,
                           keyboardType: TextInputType.number,
@@ -198,7 +192,7 @@ class _PenarikanState extends State<Penarikan> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                        Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         GridView.builder(
                           padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
                           physics: NeverScrollableScrollPhysics(),
@@ -227,31 +221,16 @@ class _PenarikanState extends State<Penarikan> {
                       ],
                     ),
                   ),
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            color: Colors.green, shape: BoxShape.circle),
-                        child: IconButton(
-                          color: Colors.white,
-                          onPressed: () {
-                            if(moneyController.text == '0.00' || moneyController.text == null ||  bankCodeController == '' || bankCodeController == null){
-                              return showInSnackBar("Lengkapi Form Yang Tersedia");
-                            }
-                            else{
-//                              setState(() {
-//                                _isLoading = true;
-//                              });
-                              _isLoading = true;
-                              _pinBottomSheet(context);
-                            }
+                  UserRepository().buttonQ(context,warna1,warna2,(){
+                    if(moneyController.text == '0.00' || moneyController.text == null ||  bankCodeController == '' || bankCodeController == null){
+                      return showInSnackBar("Lengkapi Form Yang Tersedia");
+                    }
+                    else{
+                      _isLoading = true;
+                      _pinBottomSheet(context);
+                    }
+                  }, _isLoading)
 
-                          },
-                          icon: _isLoading?CircularProgressIndicator():Icon(Icons.arrow_forward),
-                        ),
-                      )
-                  ),
                 ],
               ),
             ),
@@ -311,7 +290,7 @@ class _PenarikanState extends State<Penarikan> {
                     child: Column(
                       children: <Widget>[
                         Center(
-                          child: Text('Anda Belum Mempuya Akun Bank',style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold,fontSize: 18.0),),
+                          child: Text('Anda Belum Mempuya Akun Bank',style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.red,fontWeight: FontWeight.bold,fontSize: 18.0),),
                         ),
                         SizedBox(height: 10.0,),
                         InkWell(

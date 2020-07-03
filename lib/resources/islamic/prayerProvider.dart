@@ -10,7 +10,7 @@ class PrayerProvider {
   final userRepository = UserRepository();
 
   Future<PrayerModel> fetchPrayer(var long,var lat) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'islamic/jadwalsholat?long=$long&lat=$lat',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

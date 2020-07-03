@@ -12,7 +12,7 @@ class PpobPraProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<PpobPraModel> fetchPpobPra(String type,var nohp) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     var _url;
     var spl = type.split("|");
     if(type == 'E_MONEY' && nohp==''){
@@ -38,8 +38,8 @@ class PpobPraProvider {
   }
 
   Future fetchChekoutPPOBPra(var no,var code,var price,var charge,var idpelanggan) async {
-    final token = await userRepository.getToken();
-    final pin = await userRepository.getPin();
+    final token = await userRepository.getDataUser('token');
+    final pin = await userRepository.getDataUser('pin');
 //    try{
 //      final response = await client.post(
 //          ApiService().baseUrl+'ppob/pra/checkout',

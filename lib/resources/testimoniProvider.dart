@@ -18,7 +18,7 @@ class TestimoniProvider {
 //    if(param == 1){
 //      _url = 'testi?tipe=1&page=0&limit=$limit';
 //    }
-		final token = await userRepository.getToken();
+		final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'testi?tipe=$param&page=$page&limit=$limit',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

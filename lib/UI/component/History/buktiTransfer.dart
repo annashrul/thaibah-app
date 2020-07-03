@@ -5,10 +5,12 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class BuktiTransfer extends StatefulWidget {
   final String id_deposit;
@@ -31,9 +33,20 @@ class _BuktiTransferState extends State<BuktiTransfer> {
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            content: LinearProgressIndicator(),
+          return ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 100.0),
+            child: AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                  SizedBox(height:5.0),
+                  Text("Tunggu Sebentar .....")
+                ],
+              ),
+            )
           );
+
         },
       );
     });
@@ -88,35 +101,32 @@ class _BuktiTransferState extends State<BuktiTransfer> {
     }
   }
 
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Upload Bukti Transfer", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar:UserRepository().appBarWithButton(context,'Upload Bukti Transfer',warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: Container(
         padding: EdgeInsets.all(20.0),
         child: Column(
@@ -131,7 +141,7 @@ class _BuktiTransferState extends State<BuktiTransfer> {
                   children: <Widget>[
                     SizedBox(height: ScreenUtilQ.getInstance().setHeight(30),),
                     Icon(Icons.cloud_upload),
-                    _image == null ? Text('Upload Bukti Transfer',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.red)) : Center(child: Text('$_image',textAlign:TextAlign.center,style: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,color:Colors.grey)))
+                    _image == null ? Text('Upload Bukti Transfer',style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:Colors.red)) : Center(child: Text('$_image',textAlign:TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12.0,fontWeight: FontWeight.bold,color:Colors.grey)))
                   ],
                 ),
                 onPressed: () async {
@@ -157,15 +167,41 @@ class _BuktiTransferState extends State<BuktiTransfer> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if(_image!=null){
-            upload();
-          }
-        },
-        child: Icon(Icons.save),
-        backgroundColor: Colors.green,
+      bottomNavigationBar: _bottomNavBarBeli(context)
+
+    );
+  }
+
+  Widget _bottomNavBarBeli(BuildContext context){
+    return Container(
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Container(
+              width: MediaQuery.of(context).size.width/1,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [statusLevel!='0'?warna1:ThaibahColour.primary1,statusLevel!='0'?warna2:ThaibahColour.primary2]),
+                  borderRadius: BorderRadius.circular(0.0),
+                  boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
+              ),
+              height: kBottomNavigationBarHeight,
+              child: FlatButton(
+                shape:RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(0)),
+                ),
+                color: statusLevel!='0'?warna1:ThaibahColour.primary2,
+                onPressed: (){
+                  if(_image!=null){
+                    upload();
+                  }
+                },
+                child: Text("SIMPAN", style: TextStyle(fontSize:16.0,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
+              )
+          )
+        ],
       ),
     );
   }
+
 }

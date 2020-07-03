@@ -5,6 +5,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/configModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/member/contactModel.dart' as prefix0;
@@ -14,6 +15,7 @@ import 'package:thaibah/UI/component/detailTransfer.dart';
 import 'package:thaibah/bloc/configBloc.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/flutterMaskedText.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/transferProvider.dart';
 
@@ -31,7 +33,6 @@ class _TransferUIState extends State<TransferUI> {
   var penerimaController  = TextEditingController();
   var pesanController     = TextEditingController();
   var scaffoldKey = GlobalKey<ScaffoldState>();
-//  TextEditingController tfController = TextEditingController();
   String _currentItemSelectedContact=null;
   var tfController = TextEditingController();
   final FocusNode tfFocus       = FocusNode();
@@ -167,11 +168,25 @@ class _TransferUIState extends State<TransferUI> {
   }
 
 
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    loadTheme();
     cek();
     configBloc.fetchConfigList();
   }
@@ -194,43 +209,17 @@ class _TransferUIState extends State<TransferUI> {
         resizeToAvoidBottomInset: false,
         // bottomNavigationBar: _bottomNavBar(),
         key: scaffoldKey,
-        appBar: AppBar(
-          actions: <Widget>[
-            InkWell(
-              onTap: (){_lainnyaModalBottomSheet(context);},
-              child: Container(
-                margin: EdgeInsets.only(left: 10.0,right:20.0),
-                child: Image.network(
-                  widget.qr,
-                  height: ScreenUtilQ.getInstance().setHeight(60),
-                  width: ScreenUtilQ.getInstance().setWidth(60),
-                ),
-              ),
-            )
-          ],
-          leading: IconButton(
-            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-            onPressed: (){
-              Navigator.of(context).pop();
-            },
-          ),
-          centerTitle: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF116240),
-                  Color(0xFF30cc23)
-                ],
-              ),
+        appBar: UserRepository().appBarWithButton(context, 'Transfer', warna1, warna2, (){Navigator.of(context).pop();}, InkWell(
+          onTap: (){_lainnyaModalBottomSheet(context);},
+          child: Container(
+            margin: EdgeInsets.only(left: 10.0,right:20.0),
+            child: Image.network(
+              widget.qr,
+              height: ScreenUtilQ.getInstance().setHeight(60),
+              width: ScreenUtilQ.getInstance().setWidth(60),
             ),
           ),
-          elevation: 1.0,
-          automaticallyImplyLeading: true,
-          title: new Text("Transfer", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        ),
+        )),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         body: ListView(
           children: <Widget>[
@@ -401,42 +390,32 @@ class _TransferUIState extends State<TransferUI> {
                       ],
                     ),
                   ),
-
-
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            color: Colors.green, shape: BoxShape.circle
-                        ),
-                        child: IconButton(
-                          color: Colors.white,
-                          onPressed: () {
-                            if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
-                              return showInSnackBar("Nominal Tidak Boleh Kosong");
-                            }
-                            else{
-                              if(cik == 'all'){
-                                if(penerimaController.text == ''){
-                                  return showInSnackBar("Penerima Tidak Boleh Kosong");
-                                }
-                              }
-                              if(cik=='contact'){
-                                if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
-                                  return showInSnackBar("Penerima Tidak Boleh Kosong");
-                                }
-                              }
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              sendTransferDetail();
-                            }
-                          },
-                          icon: _isLoading ? CircularProgressIndicator():Icon(Icons.arrow_forward),
-                        ),
-                      )
-                  ),
+                  UserRepository().buttonQ(
+                    context,
+                    warna1,warna2,
+                    (){
+                      if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
+                        return showInSnackBar("Nominal Tidak Boleh Kosong");
+                      }
+                      else{
+                        if(cik == 'all'){
+                          if(penerimaController.text == ''){
+                            return showInSnackBar("Penerima Tidak Boleh Kosong");
+                          }
+                        }
+                        if(cik=='contact'){
+                          if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
+                            return showInSnackBar("Penerima Tidak Boleh Kosong");
+                          }
+                        }
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        sendTransferDetail();
+                      }
+                    },
+                    _isLoading
+                  )
                 ],
               ),
             ),

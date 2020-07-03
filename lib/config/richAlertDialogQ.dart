@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
 
 class RichAlertDialogQ extends StatefulWidget {
   /// The title of the dialog is displayed in a large font at the top
@@ -170,7 +171,7 @@ class _RichAlertDialogQState extends State<RichAlertDialogQ> {
         color: _typeColor[widget.alertType],
         child: Text(
           "GOT IT",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ),
         ),
         onPressed: () {
           Navigator.pop(context);
@@ -183,7 +184,7 @@ class _RichAlertDialogQState extends State<RichAlertDialogQ> {
 Text richTitle(String title) {
   return Text(
     title,
-    style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+    style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
   );
 }
 
@@ -192,7 +193,7 @@ Text richSubtitle(String subtitle) {
     subtitle,
     textAlign: TextAlign.center,
     style: TextStyle(
-        color: Colors.grey,fontFamily: 'Rubik',fontWeight: FontWeight.bold
+        color: Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold
     ),
   );
 }

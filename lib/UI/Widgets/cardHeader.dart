@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class CardHeader extends StatefulWidget {
   final String saldo;
@@ -8,6 +10,26 @@ class CardHeader extends StatefulWidget {
 }
 
 class _CardHeaderState extends State<CardHeader> {
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadTheme();
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -15,7 +37,7 @@ class _CardHeaderState extends State<CardHeader> {
       decoration: new BoxDecoration(
         border: new Border.all(
             width: 2.0,
-            color: Colors.green
+            color: statusLevel!='0'?warna1:Colors.green
         ),
         borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
       ),
@@ -27,13 +49,13 @@ class _CardHeaderState extends State<CardHeader> {
           Center(
             child: Padding(
               padding: EdgeInsets.all(5.0),
-              child: Text("Saldo Anda",style: TextStyle(color: Colors.black, fontSize: 20.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+              child: Text("Saldo Anda",style: TextStyle(color: Colors.black, fontSize: 20.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ),
           ),
           Center(
             child: Padding(
               padding: EdgeInsets.all(5.0),
-              child: Text(widget.saldo,style: TextStyle(color: Colors.black, fontSize: 20.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+              child: Text(widget.saldo,style: TextStyle(color: Colors.black, fontSize: 20.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ),
           ),
         ],

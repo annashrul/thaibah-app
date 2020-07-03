@@ -16,6 +16,7 @@ class HistoryVoucher extends StatefulWidget {
 }
 
 class _HistoryVoucherState extends State<HistoryVoucher>{
+
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -153,7 +154,7 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
           children: <Widget>[
             new Flexible(
               child: Padding(
-                padding: EdgeInsets.only(left:8.0),
+                padding: EdgeInsets.only(left:8.0,top:10.0),
                 child: GestureDetector(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,7 +182,7 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
             ),
             new Flexible(
               child: Padding(
-                padding: EdgeInsets.only(left:8.0),
+                padding: EdgeInsets.only(left:8.0,top:10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -209,7 +210,7 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.only(left:8.0,top:10.0),
               child: IconButton(
                 icon: isLoading?CircularProgressIndicator():Icon(Icons.search),
                 tooltip: 'Increase volume by 10',

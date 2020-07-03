@@ -14,7 +14,7 @@ class PpobPascaProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<PpobPascaModel> fetchPpobPasca(var type) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'ppob/pasca/get/$type',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -28,8 +28,8 @@ class PpobPascaProvider {
   }
 
   Future fetchPpobPascaCekTagihan(var code,var no,var idpelanggan) async {
-    final token = await userRepository.getToken();
-    final pin = await userRepository.getPin();
+    final token = await userRepository.getDataUser('token');
+    final pin = await userRepository.getDataUser('pin');
     try{
       final response = await client.post(
           ApiService().baseUrl+"ppob/pasca/cektagihan",
@@ -54,7 +54,7 @@ class PpobPascaProvider {
   }
 
   Future fetchPpobPascaCheckout(var code,var orderid,var price) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     try{
       final response = await client.post(
           ApiService().baseUrl+'ppob/pasca/checkout',

@@ -23,7 +23,7 @@ class TestiSuplemen extends StatefulWidget {
   _TestiSuplemenState createState() => _TestiSuplemenState();
 }
 
-class _TestiSuplemenState extends State<TestiSuplemen>with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin {
+class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
   bool isLoading=false;
@@ -232,7 +232,7 @@ class _TestiSuplemenState extends State<TestiSuplemen>with SingleTickerProviderS
                     child: Container(
                         alignment: Alignment.center,
                         padding: EdgeInsets.all(1.0),
-                        height: 600.0,
+                        height: MediaQuery.of(context).size.height/1,
                         child: InfiniteGridView(
                           loadingWidget:Center(child: CircularProgressIndicator(strokeWidth: 10)),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
@@ -242,7 +242,7 @@ class _TestiSuplemenState extends State<TestiSuplemen>with SingleTickerProviderS
                               child: Column(
                                 children: <Widget>[
                                   Container(
-                                    height: ScreenUtilQ.getInstance().setHeight(230),
+                                    height: MediaQuery.of(context).size.height/5.9,
                                     alignment: Alignment.center,
                                     child: Center(
                                       child: _signInButton(video[index]['video'],video[index]['caption'],video[index]['rating'].toString()),
@@ -276,7 +276,7 @@ class _TestiSuplemenState extends State<TestiSuplemen>with SingleTickerProviderS
                                         },
                                         child: Center(
                                           child: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))
-                                          ):Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)) : Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+                                          ):Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)) : Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
                                         ),
                                       ),
                                     ),

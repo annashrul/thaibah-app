@@ -129,7 +129,7 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
           children: <Widget>[
             new Flexible(
               child: Padding(
-                padding: EdgeInsets.only(left:15.0),
+                padding: EdgeInsets.only(left:15.0,top:10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -153,7 +153,7 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.only(right:8.0,top:10),
               child: IconButton(
                 icon: isLoading?CircularProgressIndicator():Icon(Icons.search),
                 tooltip: 'Cari',

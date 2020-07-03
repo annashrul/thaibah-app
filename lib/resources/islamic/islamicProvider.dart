@@ -18,7 +18,7 @@ class IslamicProvider {
   final userRepository = UserRepository();
 
   Future<SuratModel> fetchSurat() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'islamic/listsurat',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -31,7 +31,7 @@ class IslamicProvider {
   }
 
   Future<AyatModel> fetchAyat(var idSurat,var param,var page,var limit) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     var url;
     if(param =='detail'){
       url = 'islamic/ayat/$idSurat?page=$page&limit=$limit';
@@ -52,7 +52,7 @@ class IslamicProvider {
   }
 
   Future fetchActionPost(var id, var param) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"islamic/myquran/$param/set",
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -71,7 +71,7 @@ class IslamicProvider {
   }
 
   Future fetchNote(var id, var note) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"islamic/myquran/note/set",
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -91,7 +91,7 @@ class IslamicProvider {
   }
 
   Future<CheckFavModel> fetchCheckFav(var param) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'islamic/myquran/$param',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -107,7 +107,7 @@ class IslamicProvider {
   }
 
   Future<CategoryDoaModel> fetchCategoryDoaHadist(var type) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'category?type=$type',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -120,7 +120,7 @@ class IslamicProvider {
   }
 
   Future<SubCategoryDoaModel> fetchSubCategoryDoaHadist(var type,var id) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'category/sub?type=$type&id=$id',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -133,7 +133,7 @@ class IslamicProvider {
   }
 
   Future<KalenderHijriahModel> fetchKalenderHijriah(var bln, var thn) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'islamic/hijriah?bln=$bln&thn=$thn',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -148,7 +148,7 @@ class IslamicProvider {
   }
 
   Future<DoaModel> fetchDoaHadist(var type, var id, var q) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     var _url = q!='' ? 'islamic/$type?q=$q' : 'islamic/$type?id=$id';
     final response = await client.get(
       ApiService().baseUrl+_url,

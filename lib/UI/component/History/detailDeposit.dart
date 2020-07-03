@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
@@ -110,7 +111,7 @@ class _DetailDepositState extends State<DetailDeposit> {
   }
 
   Future cancelDeposit() async{
-    final name = await userRepository.getName();
+    final name = await userRepository.getDataUser('name');
     var res = await DetailDepositProvider().cancelDeposit(widget.id_deposit);
     if(res.status == 'success'){
       setState(() {isLoading=false;});
@@ -121,30 +122,32 @@ class _DetailDepositState extends State<DetailDeposit> {
           )),
         );
       });
-      scaffoldKey.currentState.showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-            content: Text('Berhasil !!!! \nanda akan dialihkan ke halaman deposit',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-          )
-      );
+      UserRepository().notifNoAction(scaffoldKey, context,"Berhasil !!!! \nanda akan dialihkan ke halaman deposit","success");
+
     }else{
       setState(() {isLoading=false;});
-      scaffoldKey.currentState.showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-            content: Text(res.msg,style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-          )
-      );
+      UserRepository().notifNoAction(scaffoldKey, context,res.msg,"failed");
     }
   }
 
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
   }
 
   @override
@@ -159,33 +162,7 @@ class _DetailDepositState extends State<DetailDeposit> {
     }
     return Scaffold(
         key: scaffoldKey,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.keyboard_backspace,
-              color: Colors.white,
-            ),
-            onPressed: (){
-              Navigator.of(context).pop();
-            },
-          ),
-          automaticallyImplyLeading: true,
-          title: new Text("Riwayat Topup", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-          centerTitle: true,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF116240),
-                  Color(0xFF30cc23)
-                ],
-              ),
-            ),
-          ),
-          elevation: 0.0,
-        ),
+        appBar:UserRepository().appBarWithButton(context,'Riwayat Top Up', warna1,warna2,(){Navigator.of(context).pop();},Container()),
         body: Container(
           color: Color(0xFFf7f8fc),
           child: ListView(
@@ -238,14 +215,14 @@ class _DetailDepositState extends State<DetailDeposit> {
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topRight: Radius.circular(10)),
                 ),
-                color: Color(0xFF30cc23),
+                color: statusLevel!='0'?warna1:ThaibahColour.primary1,
                 onPressed: (){
                   setState(() {
                     isLoading = true;
                   });
                   cancelDeposit();
                 },
-                child: Text(isLoading ? "Pengecekan data ...." : "Batalkan Deposit", style: TextStyle(color: Colors.white)),
+                child: Text(isLoading ? "Pengecekan data ...." : "Batalkan Deposit", style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ)),
               )
           ),
           Container(
@@ -254,13 +231,13 @@ class _DetailDepositState extends State<DetailDeposit> {
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
                 ),
-                color: Styles.primaryColor,
+                color: statusLevel!='0'?warna2:ThaibahColour.primary2,
                 onPressed: (){
                   Navigator.of(context, rootNavigator: true).push(
                     new CupertinoPageRoute(builder: (context) => BuktiTransfer(id_deposit: widget.id_deposit)),
                   );
                 },
-                child: Text("Upload Bukti Transfer", style: TextStyle(color: Colors.white)),
+                child: Text("Upload Bukti Transfer", style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ)),
               )
           ),
         ],
@@ -301,11 +278,13 @@ class ItemCard extends StatelessWidget {
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 20.0),
+                      fontSize: 20.0,
+                    fontFamily: ThaibahFont().fontQ
+                  ),
                 ),
                 Text(
                   subtitle,
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ),
                 )
               ],
             ),
@@ -314,7 +293,7 @@ class ItemCard extends StatelessWidget {
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 20.0),
+                  fontSize: 20.0,fontFamily: ThaibahFont().fontQ),
             )
           ],
         ),
@@ -360,7 +339,7 @@ class CreditCardContainer extends StatelessWidget {
             ),
             Text(
               noRekening,
-              style: TextStyle(color: Colors.white, fontSize: 25),
+              style: TextStyle(color: Colors.white, fontSize: 25,fontFamily: ThaibahFont().fontQ),
             ),
             SizedBox(
               height: 11,
@@ -369,7 +348,7 @@ class CreditCardContainer extends StatelessWidget {
               bankName,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 19,
+                fontSize: 19,fontFamily: ThaibahFont().fontQ
               ),
             ),
             SizedBox(
@@ -379,7 +358,7 @@ class CreditCardContainer extends StatelessWidget {
               atasNama,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 19,
+                fontSize: 19,fontFamily: ThaibahFont().fontQ
               ),
             ),
 

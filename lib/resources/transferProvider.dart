@@ -12,8 +12,8 @@ class TransferProvider {
   final userRepository = UserRepository();
 
   Future<GeneralInsertId> transfer(var saldo,var referral_penerima,var pesan) async {
-    final pin = await userRepository.getPin();
-    final token = await userRepository.getToken();
+    final pin = await userRepository.getDataUser('pin');
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/transfer",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
@@ -28,7 +28,7 @@ class TransferProvider {
   }
 
   Future transferDetail(var nominal,var referral_penerima,var pesan) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/transfer/detail",
       headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
       body: {
@@ -49,8 +49,8 @@ class TransferProvider {
   }
 
   Future transferBonus(var saldo) async {
-    final pin = await userRepository.getPin();
-    final token = await userRepository.getToken();
+    final pin = await userRepository.getDataUser('pin');
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/transfer/bonus",
       headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
       body: {

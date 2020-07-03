@@ -117,12 +117,9 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DbHelper {
-
   static final _databaseName = "thaibah.db";
   static final _databaseVersion = 1;
-
   static final table = 'user';
-
   static final columnId = 'id';
   static final columnIdServer = 'id_server';
   static final columnName = 'name';
@@ -157,12 +154,14 @@ class DbHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
+    print("###################### PATH DATABASE TAIBAH $path");
     return await openDatabase(path,
         version: _databaseVersion,
         onCreate: _onCreate);
   }
 
   Future _onCreate(Database db, int version) async {
+
     await db.execute('''
           CREATE TABLE $table (
             $columnId INTEGER PRIMARY KEY AUTOINCREMENT,

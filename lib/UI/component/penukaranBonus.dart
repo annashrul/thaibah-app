@@ -84,7 +84,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
       print('cek');
       return showInSnackBar("Nominal Harus Diisi","gagal");
     }else{
-      final ktp = await userRepository.getKtp();
+      final ktp = await userRepository.getDataUser('ktp');
       print(ktp);
       if(ktp == '-'){
         scaffoldKey.currentState.showSnackBar(

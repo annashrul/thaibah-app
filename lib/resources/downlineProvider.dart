@@ -9,8 +9,8 @@ class DownlineProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<DownlineModel> fetchDownline() async{
-    final token = await userRepository.getToken();
-    final referral = await userRepository.getReff();
+    final token = await userRepository.getDataUser('token');
+    final referral = await userRepository.getDataUser('referral');
     final response = await client.get(
       ApiService().baseUrl+'member/jaringan/$referral?ismobile=ya',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -25,7 +25,7 @@ class DownlineProvider {
   }
 
   Future<DownlineModel> fetchDetailDownline(var kdReff) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/jaringan/$kdReff?ismobile=ya',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

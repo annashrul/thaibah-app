@@ -213,7 +213,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
     ProdukMlmUI(),
     About(),
     Testimoni(),
-    ProfileUI(),
+    MyProfile(),
   ]; // to store nested tabs
   final PageStorageBucket bucket = PageStorageBucket();
   Widget currentScreen =  Beranda();

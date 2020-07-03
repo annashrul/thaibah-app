@@ -3,7 +3,9 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/checkerModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
@@ -79,8 +81,8 @@ class UserRepository {
               ),
             ),
             SizedBox(height: 10.0,),
-            Text("percobaan anda sudah melebihi 1x.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-            Text("silahkan keluar aplikasi terlebih dahulu, apabila masih ada kendala silahkan hubungi admin atau klik tombol di bawah ini",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+            Text("percobaan anda sudah melebihi 1x.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+            Text("silahkan keluar aplikasi terlebih dahulu, apabila masih ada kendala silahkan hubungi admin atau klik tombol di bawah ini",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             SizedBox(height: 20.0),
             Container(
               child: Center(
@@ -101,7 +103,7 @@ class UserRepository {
                   child: Text(
                     "cara clear data".toUpperCase(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -151,7 +153,225 @@ class UserRepository {
       ),
     );
   }
+  appBarNoButton(BuildContext context, title,Color color1, Color color2){
+    var cek =  AppBar(
+      centerTitle: false,
+      elevation: 0.0,
+      title: Text(title,style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: <Color>[
+              color1 != null?color1:ThaibahColour.primary1,
+              color2 != null?color2:ThaibahColour.primary2,
+            ],
+          ),
+        ),
+      ),
+    );
+    return cek;
+  }
+  appBarWithButton(BuildContext context, title,Color color1, Color color2,Function callback,Widget action){
+    var cek =  AppBar(
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios,color: Colors.white),
+        onPressed: (){
+          callback();
+        },
+      ),
+      centerTitle: false,
+      elevation: 0.0,
+      title: Text(title,style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: <Color>[
+              color1 != null?color1:ThaibahColour.primary1,
+              color2 != null?color2:ThaibahColour.primary2,
+            ],
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        action
+      ]
+    );
+    return cek;
+  }
 
+  appBarWithTab(BuildContext context, title,Color color1, Color color2,Map<String,dynamic> lbl){
+    List<Tab> tab = new List();
+    lbl.forEach((key, value) {
+      tab.add(Tab(text: value));
+    });
+    var cek = new AppBar(
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: <Color>[
+              color1 != null?color1:ThaibahColour.primary1,
+              color2 != null?color2:ThaibahColour.primary2,
+            ],
+          ),
+        ),
+      ),
+      centerTitle: false,
+      elevation: 0.0,
+      title: Text(title, style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      bottom: TabBar(
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey[400],
+          indicatorWeight: 2,
+          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily:ThaibahFont().fontQ,fontSize: 16),
+          tabs: tab
+      ),
+      actions: <Widget>[
+        //Add the dropdown widget to the `Action` part of our appBar. it can also be among the `leading` part
+      ],
+    );
+    return cek;
+  }
+  appBarWithTabButton(BuildContext context, title,Color color1, Color color2,Map<String,dynamic> lbl,Function callback){
+    List<Tab> tab = new List();
+    lbl.forEach((key, value) {
+      tab.add(Tab(text: value));
+    });
+    var cek = new AppBar(
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios,color: Colors.white),
+        onPressed: (){
+          callback!=null?callback():Navigator.of(context).pop();
+        },
+      ),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: <Color>[
+              color1 != null?color1:ThaibahColour.primary1,
+              color2 != null?color2:ThaibahColour.primary2,
+            ],
+          ),
+        ),
+      ),
+      centerTitle: false,
+      elevation: 0.0,
+      title: Text(title, style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      bottom: TabBar(
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey[400],
+          indicatorWeight: 5 ,
+          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily:ThaibahFont().fontQ,fontSize: 16),
+          tabs: tab
+      ),
+      actions: <Widget>[
+        //Add the dropdown widget to the `Action` part of our appBar. it can also be among the `leading` part
+      ],
+    );
+    return cek;
+  }
+
+  buttonQ(BuildContext context,Color color1,Color color2,Function callback,bool isLoading){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
+    var cek = Container(
+      margin: EdgeInsets.all(16),
+      width: MediaQuery.of(context).size.width/1,
+      height: ScreenUtilQ.getInstance().setHeight(100),
+      decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [color1!=null?color1:ThaibahColour.primary1,color2!=null?color2:ThaibahColour.primary2]),
+          borderRadius: BorderRadius.circular(6.0),
+          boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap:callback,
+          child: Center(
+            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text("Simpan",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+          ),
+        ),
+      ),
+    );
+    return cek;
+  }
+  buttonLoadQ(BuildContext context,Color color1,Color color2,Function callback,bool isLoading){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
+    var cek = Container(
+      margin: EdgeInsets.all(16),
+      width: MediaQuery.of(context).size.width/1,
+      height: ScreenUtilQ.getInstance().setHeight(100),
+      decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [color1!=null?color1:ThaibahColour.primary1,color2!=null?color2:ThaibahColour.primary2]),
+          borderRadius: BorderRadius.circular(6.0),
+          boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap:callback,
+          child: Center(
+            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text("Tampilkan Lebih Banyak",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+          ),
+        ),
+      ),
+    );
+    return cek;
+  }
+  textQ(String txt,double size){
+    return Text(
+      txt,
+      style: TextStyle(
+        letterSpacing:1.0,
+        fontSize: size,
+        fontWeight: FontWeight.bold,
+        fontFamily:ThaibahFont().fontQ
+      )
+    );
+  }
+  void notifNoAction(_scaffoldKey,BuildContext context,String value,param) {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    _scaffoldKey.currentState?.removeCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text(
+        value,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
+      ),
+      backgroundColor: param=='failed' ? Colors.redAccent : ThaibahColour.primary2,
+      duration: Duration(seconds: 3),
+    ));
+    return;
+  }
+  void notifWithAction(_scaffoldKey,BuildContext context,String value,param,label,Function callback) {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    _scaffoldKey.currentState?.removeCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text(
+        value,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
+      ),
+      action: SnackBarAction(
+        textColor: Colors.white,
+        label:label,
+        onPressed:callback(),
+      ),
+      backgroundColor: param=='failed' ? Colors.redAccent : Colors.greenAccent,
+      duration: Duration(seconds: 3),
+    ));
+    return;
+  }
   Future getDeviceId() async{
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
     var settings = {
@@ -165,6 +385,7 @@ class UserRepository {
   }
 
   Future<bool> cekVersion() async {
+
     var res = await ConfigProvider().cekVersion();
     if(res is Checker){
       Checker results = res;
@@ -188,82 +409,82 @@ class UserRepository {
     }
     return false;
   }
-  Future<bool> cekStatusLogin()async{
-    final prefs = await SharedPreferences.getInstance();
-    if(prefs.getString('id') == null || prefs.getString('id') == ''){
-      return true;
-    }
-    return false;
-  }
-
-  Future<void> deleteToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove("token");
-    return;
-  }
-
-  Future<void> persistToken(String token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String ctoken = prefs.getString('token');
-    // await Future.delayed(Duration(seconds: 1));
-    if(token == ctoken){
-      return true;
-    }else{
-      return false;
-    }
-  }
-
-  Future<bool> hasToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token');
-    if(token!=null){
-      return true;
-    }else{
-      return false;
-    }
-  }
-
-  Future<String> getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token');
-    return token;
-  }
-
-  Future<int> getPin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String pin = prefs.getString('pin');
-    return int.parse(pin);
-  }
-
-  Future<String> getID() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String id = prefs.getString('id');
-    return id;
-  }
-
-  Future<String> getReff() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String reff = prefs.getString('kd_referral');
-    return reff;
-  }
-
-  Future<String> getName() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String name = prefs.getString('name');
-    return name;
-  }
-
-  Future<String> getNoHp() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String nohp = prefs.getString('nohp');
-    return nohp;
-  }
-
-  Future<String> getKtp() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String nohp = prefs.getString('ktp');
-    return nohp;
-  }
+//  Future<bool> cekStatusLogin()async{
+//    final prefs = await SharedPreferences.getInstance();
+//    if(prefs.getString('id') == null || prefs.getString('id') == ''){
+//      return true;
+//    }
+//    return false;
+//  }
+//
+//  Future<void> deleteToken() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    prefs.remove("token");
+//    return;
+//  }
+//
+//  Future<void> persistToken(String token) async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String ctoken = prefs.getString('token');
+//    // await Future.delayed(Duration(seconds: 1));
+//    if(token == ctoken){
+//      return true;
+//    }else{
+//      return false;
+//    }
+//  }
+//
+//  Future<bool> hasToken() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String token = prefs.getString('token');
+//    if(token!=null){
+//      return true;
+//    }else{
+//      return false;
+//    }
+//  }
+//
+//  Future<String> getToken() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String token = prefs.getString('token');
+//    return token;
+//  }
+//
+//  Future<int> getPin() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String pin = prefs.getString('pin');
+//    return int.parse(pin);
+//  }
+//
+//  Future<String> getID() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String id = prefs.getString('id');
+//    return id;
+//  }
+//
+//  Future<String> getReff() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String reff = prefs.getString('kd_referral');
+//    return reff;
+//  }
+//
+//  Future<String> getName() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String name = prefs.getString('name');
+//    return name;
+//  }
+//
+//  Future<String> getNoHp() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String nohp = prefs.getString('nohp');
+//    return nohp;
+//  }
+//
+//  Future<String> getKtp() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String nohp = prefs.getString('ktp');
+//    return nohp;
+//  }
 
   Future<bool> check() async {
     var connectivityResult = await (Connectivity().checkConnectivity());

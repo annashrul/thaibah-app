@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as prefix0;
 import 'package:url_launcher/url_launcher.dart';
@@ -49,7 +50,7 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
         ),
         centerTitle: false,
         elevation: 0.0,
-        title: Text(widget.title,style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+        title: Text(widget.title,style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -77,7 +78,7 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
                   style: Theme.of(context).textTheme.body1.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.black54,
-                      fontFamily: 'Rubik'
+                      fontFamily: ThaibahFont().fontQ
                   ),
                 ),
               ),
@@ -108,7 +109,7 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
                 SnackBar(
                   backgroundColor: Colors.red,
                   duration: const Duration(seconds: 5),
-                  content: Text('Tidak Ada Link Terkait',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                  content: Text('Tidak Ada Link Terkait',style: TextStyle(color:Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                 )
             );
           }
@@ -126,7 +127,7 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
             mainAxisAlignment: MainAxisAlignment.center,
 //          crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("DOWNLOAD DISINI SEKARANG", style: TextStyle(fontFamily:'Rubik',fontSize: 14, color: Colors.white,fontWeight: FontWeight.bold),),
+              Text("DOWNLOAD DISINI SEKARANG", style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: 14, color: Colors.white,fontWeight: FontWeight.bold),),
             ],
           ),
         ),
@@ -195,7 +196,7 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: Text("${widget.title}",
-          style: TextStyle(color: prefix0.Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold,fontSize: 20)
+          style: TextStyle(color: prefix0.Colors.black,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 20)
       ),
     );
   }
@@ -209,7 +210,7 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
           Text("${widget.penulis}",
             style: Theme.of(context).textTheme.body1.copyWith(
               fontWeight: FontWeight.w500,
-              color: Colors.black54,fontFamily: 'Rubik'
+              color: Colors.black54,fontFamily: ThaibahFont().fontQ
             ),
           ),
 
@@ -221,7 +222,7 @@ class _DetailPromosiUIState extends State<DetailPromosiUI> {
   Widget preview(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child:Html(data: widget.caption,linkStyle: TextStyle(color: Colors.black,fontFamily: 'Rubik'),) ,
+      child:Html(data: widget.caption,defaultTextStyle:TextStyle(color: Colors.black,fontFamily: ThaibahFont().fontQ),linkStyle: TextStyle(color: Colors.black,fontFamily: ThaibahFont().fontQ),) ,
 //        child:  Text(
 //          "${widget.caption}",
 //          style: Theme.of(context).textTheme.body1.copyWith(

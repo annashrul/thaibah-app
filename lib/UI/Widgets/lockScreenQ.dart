@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
 
 typedef void DeleteCode();
 typedef Future<bool> PassCodeVerify(List<int> passcode);
@@ -93,18 +94,18 @@ class _LockScreenQState extends State<LockScreenQ> {
                       child: AlertDialog(
                         title: Text(
                           widget.wrongPassTitle,
-                          style: TextStyle(fontFamily: "Rubik"),
+                          style: TextStyle(fontFamily:ThaibahFont().fontQ),
                         ),
                         content: Text(
                           widget.wrongPassContent,
-                          style: TextStyle(fontFamily: "Rubik"),
+                          style: TextStyle(fontFamily:ThaibahFont().fontQ),
                         ),
                         actions: <Widget>[
                           FlatButton(
                             onPressed: () => Navigator.pop(context),
                             child: Text(
                               widget.wrongPassCancelButtonText,
-                              style: TextStyle(color: Colors.blue),
+                              style: TextStyle(color: Colors.blue,fontFamily: ThaibahFont().fontQ),
                             ),
                           )
                         ],
@@ -203,7 +204,7 @@ class _LockScreenQState extends State<LockScreenQ> {
                                       color: Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      fontFamily: "Rubik"
+                                      fontFamily: ThaibahFont().fontQ
                                   ),
                                 ),
                                 SizedBox(
@@ -211,7 +212,7 @@ class _LockScreenQState extends State<LockScreenQ> {
                                 ),
                                 Text(
                                   widget.deskripsi,
-                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontFamily: "Rubik", fontSize: 10),
+                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ, fontSize: 10),
                                 ),
                                 SizedBox(
                                   height: Platform.isIOS ? 40 : 15,
@@ -310,7 +311,7 @@ class _LockScreenQState extends State<LockScreenQ> {
         widget.fingerFunction();
       },
       child: Center(
-        child: Text(widget.forgotPin,style: TextStyle(color:Colors.green,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+        child: Text(widget.forgotPin,style: TextStyle(color:Colors.green,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
       ),
     );
   }
@@ -338,7 +339,7 @@ class _LockScreenQState extends State<LockScreenQ> {
           child: Text(
             number.toString(),
             style: TextStyle(
-                fontFamily: 'Rubik',
+                fontFamily:ThaibahFont().fontQ,
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: widget.numColor),
@@ -370,7 +371,7 @@ class _LockScreenQState extends State<LockScreenQ> {
               )
             ]),
         child: Center(
-          child: Text('Ulangi',style:TextStyle(fontSize:16.0,color:widget.numColor,fontWeight:FontWeight.bold,fontFamily: 'Rubik')),
+          child: Text('Ulangi',style:TextStyle(fontSize:16.0,color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
 //          child: Icon(
 //            icon,
 //            size: 30,
@@ -410,7 +411,7 @@ class _LockScreenQState extends State<LockScreenQ> {
               )
             ]),
         child: Center(
-          child: Text('Hapus',style:TextStyle(fontSize:16.0,color:widget.numColor,fontWeight:FontWeight.bold,fontFamily: 'Rubik')),
+          child: Text('Hapus',style:TextStyle(fontSize:16.0,color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
 
 //          child: Icon(
 //            icon,

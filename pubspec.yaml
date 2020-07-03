@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  sqlite_at_runtime: ^0.0.1
   infinite_widgets: ^1.0.1
   device_info: ^0.4.1+5
   youtube_player_flutter: ^6.0.3+2
@@ -60,9 +61,12 @@ flutter:
     - family: Mirza
       fonts:
         - asset: assets/fonts/mirza/Mirza-Medium.ttf
+    - family: Rosemary
+      fonts:
+        - asset: assets/fonts/Rosemary/DroidSans-Bold.ttf
     - family: Rubik
       fonts:
-        - asset: assets/fonts/rubik/Rubik-Light.ttf
+        - asset: assets/fonts/rubik/Rubik-Bold.ttf
     - family: ArabicTwo
       fonts:
         - asset: assets/fonts/arabic-two/ArabicTwo.ttf

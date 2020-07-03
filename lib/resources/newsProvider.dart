@@ -12,7 +12,7 @@ class NewsProvider {
   final userRepository = UserRepository();
 
   Future<NewsModel> fetchNews(var page,var limit) async{
-		final token = await userRepository.getToken();
+		final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'berita?page=$page&limit=$limit',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -27,7 +27,7 @@ class NewsProvider {
   }
 
   Future<NewsDetailModel> fetchDetailNews(String id) async{
-		final token = await userRepository.getToken();
+		final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'berita/get/'+id,
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -41,7 +41,7 @@ class NewsProvider {
 
 
   Future<NewsModel> fetchHomeNews(String title) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'berita?category='+title,
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -54,7 +54,7 @@ class NewsProvider {
   }
 
   Future<DetailNewsPerCategoryModel> fetchDetailNewsPerCategory(var page,var limit,var title) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'berita?page=$page&limit=$limit&category='+title,
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

@@ -232,7 +232,7 @@ class BerandaState extends State<Beranda>{
                               children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(left: 0.0),
-                                  child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                  child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                 ),
                                 SizedBox(width: 7.0),
                                 levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
@@ -249,7 +249,7 @@ class BerandaState extends State<Beranda>{
                                         minWidth: 14,
                                         minHeight: 14,
                                       ),
-                                      child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
+                                      child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
                                   ),
                                 ):Container(child:Image.asset("${ApiService().assetsLocal}platinum.png",height:20.0,width:20.0))
                               ],
@@ -257,17 +257,17 @@ class BerandaState extends State<Beranda>{
                             levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                             ),
                             SizedBox(height: 7.0),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                             ),
                             SizedBox(height: 7.0),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                             ),
                           ],
                         ),
@@ -452,7 +452,7 @@ class BerandaState extends State<Beranda>{
                                           children: <Widget>[
                                             Padding(
                                               padding: const EdgeInsets.only(left: 0.0),
-                                              child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                              child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                             ),
                                             SizedBox(width: 7.0),
                                             levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
@@ -469,7 +469,7 @@ class BerandaState extends State<Beranda>{
                                                     minWidth: 14,
                                                     minHeight: 14,
                                                   ),
-                                                  child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
+                                                  child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
                                               ),
                                             ):Container(child:Image.asset("${ApiService().assetsLocal}platinum.png",height:20.0,width:20.0))
                                           ],
@@ -477,12 +477,12 @@ class BerandaState extends State<Beranda>{
                                         levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
                                         Padding(
                                           padding: const EdgeInsets.only(left: 0.0),
-                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                         ),
                                         SizedBox(height: 7.0),
                                         Padding(
                                           padding: const EdgeInsets.only(left: 0.0),
-                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                         ),
                                       ],
                                     ),
@@ -667,8 +667,8 @@ class BerandaState extends State<Beranda>{
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : Text("$title",style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize: 14.0,color: warna)),
-            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : param == true ? type == 'level' ? Text("Info Jenjang Karir",style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize: 12.0,color: warna)) : Text("Lihat Semua",style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize: 12.0,color: warna)) : Container(),
+            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : Text("$title",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 14.0,color: warna)),
+            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : param == true ? type == 'level' ? Text("Info Jenjang Karir",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 12.0,color: warna)) : Text("Lihat Semua",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 12.0,color: warna)) : Container(),
           ],
         ),
       ),
@@ -705,7 +705,7 @@ class BerandaState extends State<Beranda>{
           )
         ),
         SizedBox(height: 10),
-        Text(title.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontSize: 10,fontFamily: 'Rubik'),)
+        Text(title.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontSize: 10,fontFamily:ThaibahFont().fontQ),)
       ],
     );
   }
@@ -1009,7 +1009,7 @@ class BerandaState extends State<Beranda>{
                       child: Column(
                           children: <Widget>[
                             SizedBox(height: 20,),
-                            Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                            Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                             SizedBox(height: 10.0,),
                             Container(
                               padding: EdgeInsets.all(10),
@@ -1033,7 +1033,7 @@ class BerandaState extends State<Beranda>{
                   child: Column(
                       children: <Widget>[
                         SizedBox(height: 20),
-                        Text("FITUR LAINNYA", style: TextStyle(color: Colors.black,fontSize: 16,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                        Text("FITUR LAINNYA", style: TextStyle(color: Colors.black,fontSize: 16,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                         SizedBox(height: 15),
                         Divider(),
                         SizedBox(height: 30),
@@ -1076,13 +1076,13 @@ class BerandaState extends State<Beranda>{
               children: <Widget>[
                 AutoSizeTextQ(
                   'Saldo Utama',
-                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,),
+                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
                   maxLines: 2,
                 ),
                 SizedBox(height:2.0),
                 AutoSizeTextQ(
                     saldoMain,
-                    style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
               ],
@@ -1094,11 +1094,11 @@ class BerandaState extends State<Beranda>{
               children: <Widget>[
                 AutoSizeTextQ(
                     'Saldo Bonus',
-                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(saldoBonus,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(saldoBonus,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1106,9 +1106,9 @@ class BerandaState extends State<Beranda>{
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(saldoVoucher,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(saldoVoucher,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1116,9 +1116,9 @@ class BerandaState extends State<Beranda>{
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(saldoPlatinum,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(saldoPlatinum,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
           ],
@@ -1151,13 +1151,13 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               children: <Widget>[
                 AutoSizeTextQ(
                   'Saldo Utama',
-                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,),
+                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
                   maxLines: 2,
                 ),
                 SizedBox(height:2.0),
                 AutoSizeTextQ(
                     widget.saldoMain,
-                    style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
               ],
@@ -1169,11 +1169,11 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               children: <Widget>[
                 AutoSizeTextQ(
                     'Saldo Bonus',
-                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1181,9 +1181,9 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1191,9 +1191,9 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
           ],
@@ -1228,13 +1228,13 @@ class _CardSaldoState extends State<CardSaldo> {
               children: <Widget>[
                 AutoSizeTextQ(
                   'Saldo Utama',
-                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold,),
+                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
                   maxLines: 2,
                 ),
                 SizedBox(height:2.0),
                 AutoSizeTextQ(
                     widget.saldoMain,
-                    style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
               ],
@@ -1246,11 +1246,11 @@ class _CardSaldoState extends State<CardSaldo> {
               children: <Widget>[
                 AutoSizeTextQ(
                     'Saldo Bonus',
-                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1258,9 +1258,9 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1268,9 +1268,9 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily: 'Rubik',fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
           ],
@@ -1309,7 +1309,7 @@ class _CardEmoneyState extends State<CardEmoney> {
                 width: ScreenUtilQ.getInstance().setWidth(60),
               ),
               SizedBox(height: 5.0),
-              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ],
           )),
         ),
@@ -1358,7 +1358,7 @@ class _WrapperIconState extends State<WrapperIcon> {
           ),
         ),
         SizedBox(height: 5.0),
-        Text(widget.title, style: TextStyle(fontWeight:FontWeight.bold,color:Colors.black,fontSize: 10,fontFamily: 'Rubik')),
+        Text(widget.title, style: TextStyle(fontWeight:FontWeight.bold,color:Colors.black,fontSize: 10,fontFamily:ThaibahFont().fontQ)),
       ],
     );
   }

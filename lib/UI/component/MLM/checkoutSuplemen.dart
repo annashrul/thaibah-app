@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/MLM/checkoutToDetailModel.dart';
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart' as prefix4;
@@ -138,23 +139,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     await ongkirBloc.fetchOngkirList(kec_pengirim,"$cekKec","${widget.berat}",_currentItemSelectedKurir);
   }
 
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    scaffoldKey.currentState?.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
   String alamat = '';
   bool cekColor = true;
   String _radioValue2 = 'saldo';
@@ -216,12 +201,27 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     });
   }
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
 
   @override
   void initState() {
     super.initState();
     pilih();
+    loadTheme();
     _handleRadioValueChange2(_radioValue2);
     totQty   = widget.totQty;
     totBayar = widget.total;
@@ -243,7 +243,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       child: InputDecorator(
         decoration: const InputDecoration(
           labelText: 'Pilih Alamat',
-          labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize:20),
+          labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily:'Rosemary',fontSize:20),
         ),
         isEmpty: dropdownValue == null,
         child: new DropdownButtonHideUnderline(
@@ -261,7 +261,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             items: <String>['Saya', 'Lainnya'].map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Text(value,style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontSize: 12.0),),
+                child: Text(value,style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize: 12.0),),
               );
             }).toList(),
           ),
@@ -276,8 +276,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Alamat Pengiriman:", style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Rubik'),),
-          Text(widget.address, style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 12,color:Colors.grey)),
+          Text("Alamat Pengiriman:", style: TextStyle(fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),),
+          Text(widget.address, style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 12,color:Colors.grey)),
 
         ],
       ),
@@ -305,7 +305,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             return new InputDecorator(
               decoration: const InputDecoration(
                   labelText: 'Provinsi:',
-                  labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
+                  labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily:'Rosemary',fontSize: 20)
               ),
               isEmpty: _currentItemSelectedProvinsi == null,
               child: new DropdownButtonHideUnderline(
@@ -326,7 +326,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                     String cek = "${items.id.toString()}|${items.name}";
                     return new DropdownMenuItem<String>(
                       value: "${cek}",
-                      child: Text(items.name,style: TextStyle(fontFamily: 'Rubik',fontSize: 12.0),),
+                      child: Text(items.name,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0),),
                     );
                   }).toList()
                   ,
@@ -352,7 +352,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Kota:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize: 20)
             ),
             isEmpty: _currentItemSelectedKota == null,
             child: new DropdownButtonHideUnderline(
@@ -372,7 +372,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   String cek = "${items.id}|${items.name}";
                   return new DropdownMenuItem<String>(
                     value: "$cek",
-                    child: new Text(items.name,style: TextStyle(fontFamily: 'Rubik',fontSize: 12)),
+                    child: new Text(items.name,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12)),
                   );
                 }).toList()
                 ,
@@ -391,7 +391,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Kecamatan:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize: 20)
             ),
             isEmpty: _currentItemSelectedKecamatan == null,
             child: new DropdownButtonHideUnderline(
@@ -409,7 +409,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   String cek = "${items.subdistrictId}|${items.subdistrictName}";
                   return new DropdownMenuItem<String>(
                     value: "$cek",
-                    child: new Text(items.subdistrictName,style: TextStyle(fontFamily: 'Rubik',fontSize: 12)),
+                    child: new Text(items.subdistrictName,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12)),
                   );
                 }).toList(),
               ),
@@ -427,7 +427,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             return new InputDecorator(
               decoration: const InputDecoration(
                 labelText: 'Kurir',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize:20),
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize:20),
               ),
               isEmpty: _currentItemSelectedKurir == null,
               child: new DropdownButtonHideUnderline(
@@ -447,7 +447,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   items: snapshot.data.result.kurir.map((prefix4.Kurir items){
                     return new DropdownMenuItem<String>(
                       value: "${items.kurir}",
-                      child: Text("${items.kurir}",style:TextStyle(fontFamily: 'Rubik',fontSize: 12.0)),
+                      child: Text("${items.kurir}",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0)),
                     );
                   }).toList(),
                 ),
@@ -473,7 +473,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             return InputDecorator(
               decoration: const InputDecoration(
                 labelText: 'Jenis Layanan',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize:20),
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize:20),
 
               ),
               isEmpty: _currentItemSelectedJasa == null,
@@ -493,7 +493,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                     jasper = "${items.description}|${items.cost}";
                     return new DropdownMenuItem<String>(
                       value: "$jasper",
-                      child: Text("${snapshot.data.result.kurir} - ${items.description} | ${formatter.format(items.cost)} | ${items.estimasi} (hari)",style:TextStyle(fontFamily: 'Rubik',fontSize: 12.0)),
+                      child: Text("${snapshot.data.result.kurir} - ${items.description} | ${formatter.format(items.cost)} | ${items.estimasi} (hari)",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0)),
                     );
                   }).toList(),
                 ),
@@ -521,7 +521,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text("Total Tagihan", style: TextStyle(color: Colors.black54),),
-              Text("Rp ${_currentItemSelectedKurir=='COD'?widget.total: formatter.format(total==0?widget.total:total)}",style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+              Text("Rp ${_currentItemSelectedKurir=='COD'?widget.total: formatter.format(total==0?widget.total:total)}",style:TextStyle(color:Colors.red,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
             ],
           ),
           Container(
@@ -530,23 +530,22 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
                 ),
-                color: Colors.green,
+                color: statusLevel!='0'?warna1:ThaibahColour.primary2,
                 onPressed: (){
                   if(dropdownValue == 'Saya'){
                     if(_currentItemSelectedKurir==null){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan pilih kurir')));
-
+                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Kurir', 'failed');
                     }
                     else if(_currentItemSelectedKurir != 'COD'){
                       if(_currentItemSelectedJasa == null){
-                        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan pilih jasa layanan')));
+                        UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Jasa Layanan', 'failed');
                       }else{
                         _lainnyaModalBottomSheet(context);
                       }
                     }
                     else if(_currentItemSelectedKurir == 'COD'){
                       if(vouncher.text == ''){
-                        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan masukan kode voucher')));
+                        UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Masukan Kode Voucher Anda', 'failed');
                       }else{
                         _lainnyaModalBottomSheet(context);
                       }
@@ -555,25 +554,25 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   }
                   if(dropdownValue == 'Lainnya'){
                     if(_currentItemSelectedProvinsi == null){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan pilih provinsi')));
+                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Provinsi', 'failed');
                     }else if(_currentItemSelectedKota == null){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan pilih kota')));
+                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Kota', 'failed');
                     }else if(_currentItemSelectedKecamatan == null){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan pilih kecamatan')));
+                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Kecamatan', 'failed');
                     }else if(_currentItemSelectedKurir==null){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan pilih kurir')));
+                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Kurir', 'failed');
                     }else if(_currentItemSelectedJasa == null){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan pilih jasa layanan')));
+                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Jasa Layanan', 'failed');
                     }else if(otherAddress.text == ''){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan isi alamat lengkap anda')));
+                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Isi Alamat Lengkap Anda', 'failed');
                     }else if(kodePos.text == ''){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('silahkan isi kode pos')));
+                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Isi Kode Pos', 'failed');
                     }else{
                       _lainnyaModalBottomSheet(context);
                     }
                   }
                 },
-                child: Text("Bayar", style: TextStyle(color: Colors.white)),
+                child: Text("Bayar", style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 14.0)),
               )
           )
         ],
@@ -592,8 +591,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
 
   _callBackPin(BuildContext context,bool isTrue) async{
     final dbHelper = DbHelper.instance;
-
-//    setState(() {Navigator.of(context).pop();});
     var sendAddress; var sendVoucher; var sendKurir; var sendOngkir;
     if(dropdownValue == 'Lainnya'){
       sendAddress = "${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}";
@@ -639,7 +636,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 alertType: RichAlertType.SUCCESS,
                 actions: <Widget>[
                   FlatButton(
-                    child: Text("Lihat Riwayat"),
+                    child: Text("Lihat Riwayat",style:TextStyle(fontWeight:FontWeight.bold,fontFamily: ThaibahFont().fontQ)),
                     onPressed: (){
                       Navigator.push(
                         context,
@@ -655,7 +652,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                     },
                   ),
                   FlatButton(
-                    child: Text("Kembali"),
+                    child: Text("Kembali",style:TextStyle(fontWeight:FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
                     onPressed: (){
                       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
                     },
@@ -668,13 +665,14 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       else{
         setState(() {Navigator.of(context).pop();});
         setState(() {Navigator.of(context).pop();});
-        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result.msg)));
+        UserRepository().notifNoAction(scaffoldKey, context,result.msg,"failed");
+//        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result.msg)));
       }
     }else{
       setState(() {Navigator.of(context).pop();});
       setState(() {Navigator.of(context).pop();});
       General result = res;
-      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result.msg)));
+      UserRepository().notifNoAction(scaffoldKey, context,result.msg,"failed");
     }
 
   }
@@ -687,32 +685,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       key: scaffoldKey,
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: (){
-            Navigator.of(context).pop();
-          },
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Pengiriman", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar:UserRepository().appBarWithButton(context,"Form Pengiriman",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       bottomNavigationBar: _bottomNavBarBeli(context),
-      // drawer: _drawer(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Container(
         color: Colors.white,
@@ -724,7 +698,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               margin: EdgeInsets.only(top:20.0,bottom:10.0),
               color: Colors.white,
               padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
-              child:Text('Daftar Produk', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+              child:Text('Daftar Produk', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
             ),
             ProdukCheckoutSuplemen(),
             Container(
@@ -733,7 +707,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Informasi Pengiriman', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                  Text('Informasi Pengiriman', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -758,9 +732,9 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   RichText(
                     text: TextSpan(
                         text: 'Voucher',
-                        style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.black,fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
                         children: <TextSpan>[
-                          TextSpan(text: ' ( masukan kode voucher yang telah anda dapatkan )',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' ( masukan kode voucher yang telah anda dapatkan )',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         ]
                     ),
                   ),
@@ -789,13 +763,14 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   RichText(
                     text: TextSpan(
                         text: 'Detail Alamat',
-                        style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.black,fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
                         children: <TextSpan>[
-                          TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         ]
                     ),
                   ),
                   TextField(
+                    style: TextStyle(fontFamily: ThaibahFont().fontQ),
                     controller: otherAddress,
                     decoration: InputDecoration(
                         hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
@@ -811,13 +786,14 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   RichText(
                     text: TextSpan(
                         text: 'Kode Pos',
-                        style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.black,fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
                         children: <TextSpan>[
-                          TextSpan(text: ' ( contoh : 4207081 )',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' ( contoh : 4207081 )',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         ]
                     ),
                   ),
                   TextField(
+                    style: TextStyle(fontFamily: ThaibahFont().fontQ),
                     controller: kodePos,
                     decoration: InputDecoration(
                         hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
@@ -830,8 +806,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                     },
                   ),
                   SizedBox(height:10.0),
-                  Text("Alamat Pengiriman :", style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Rubik')),
-                  Text("${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}", style: TextStyle(color:Colors.grey,fontSize:11.0,fontWeight: FontWeight.bold, fontFamily: 'Rubik'))
+                  Text("Alamat Pengiriman :", style: TextStyle(fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ)),
+                  Text("${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}", style: TextStyle(color:Colors.grey,fontSize:11.0,fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ))
                 ],
               ),
             ):Text(''),
@@ -841,7 +817,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Gunakan Metode Pembayaran Dari ?', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                  Text('Gunakan Metode Pembayaran Dari ?', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -866,10 +842,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                               groupValue: _radioValue2,
                               onChanged: _handleRadioValueChange2,
                             ),
-                            Text('Saldo Utama',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                            Text('Saldo Utama',style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoMain",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                        Text("$saldoMain",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
 
                       ],
                     ),
@@ -891,10 +867,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                               groupValue: _radioValue2,
                               onChanged: _handleRadioValueChange2,
                             ),
-                            new Text('Saldo Voucher',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                            new Text('Saldo Voucher',style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoVoucher",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                        Text("$saldoVoucher",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                       ],
                     ),
                   ) : Container(),
@@ -915,10 +891,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                               groupValue: _radioValue2,
                               onChanged: _handleRadioValueChange2,
                             ),
-                            new Text('Saldo Platinum',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                            new Text('Saldo Platinum',style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoPlatinum",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                        Text("$saldoPlatinum",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
 
                       ],
                     ),
@@ -944,8 +920,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Text('Saldo Gabungan',style: new TextStyle(fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
-                                Text('gabungan saldo platinum & utama',style: new TextStyle(color:Colors.green,fontStyle: FontStyle.italic,fontSize: 10.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
+                                Text('Saldo Gabungan',style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                Text('gabungan saldo platinum & utama',style: new TextStyle(color:Colors.green,fontStyle: FontStyle.italic,fontSize: 10.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                               ],
                             )
 
@@ -955,8 +931,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text("$saldoPlatinum",textAlign:TextAlign.right,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold)),
-                            Text("$saldoGabungan",textAlign:TextAlign.left,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                            Text("$saldoPlatinum",textAlign:TextAlign.right,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                            Text("$saldoGabungan",textAlign:TextAlign.left,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                           ],
                         )
 
@@ -972,7 +948,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Ringkasan Belanja', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                  Text('Ringkasan Belanja', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -993,8 +969,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('Total Harga (${totQty.toString()} Barang)', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-              Text("Rp ${formatter.format(totBayar)}",style: TextStyle(color: Colors.red, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+              Text('Total Harga (${totQty.toString()} Barang)', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+              Text("Rp ${formatter.format(totBayar)}",style: TextStyle(color: Colors.red, fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
             ],
           ),
           SizedBox(height: 0.0),
@@ -1003,8 +979,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('Total Ongkos Kirim', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-              Text('Rp ${totOngkir==0?0:formatter.format(totOngkir)}', style: TextStyle(color: Colors.red,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+              Text('Total Ongkos Kirim', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+              Text('Rp ${totOngkir==0?0:formatter.format(totOngkir)}', style: TextStyle(color: Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
             ],
           ),
         ],
@@ -1030,13 +1006,13 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text("Apakah alamat anda sudah benar ?", style:TextStyle(color:Colors.green,fontFamily: 'Rubik',fontSize: 16.0,fontWeight: FontWeight.bold)),
+                Text("Apakah alamat anda sudah benar ?", style:TextStyle(color:Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 16.0,fontWeight: FontWeight.bold)),
                 Divider(),
-                Text("Alamat Anda :", style:TextStyle(color:Colors.black,fontFamily: 'Rubik',fontSize: 14.0,fontWeight: FontWeight.bold)),
+                Text("Alamat Anda :", style:TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize: 14.0,fontWeight: FontWeight.bold)),
                 SizedBox(height:10.0),
-                Text("$addr", style:TextStyle(color:Colors.grey,fontFamily: 'Rubik',fontSize: 14.0,fontWeight: FontWeight.bold)),
+                Text("$addr", style:TextStyle(color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontSize: 14.0,fontWeight: FontWeight.bold)),
                 Divider(),
-                Text("* Apabila alamat anda salah akan menghambat proses pengiriman *", style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontSize: 14.0,fontWeight: FontWeight.bold)),
+                Text("* Apabila alamat anda salah akan menghambat proses pengiriman *", style:TextStyle(color:Colors.red,fontFamily:ThaibahFont().fontQ,fontSize: 14.0,fontWeight: FontWeight.bold)),
                 SizedBox(height:20.0),
 
                 Row(
@@ -1051,7 +1027,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                             onTap: (){
                               Navigator.of(context).pop();
                             },
-                            child: Text("Kembali",style:TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                            child: Text("Kembali",style:TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ),
                         )
                     ),
@@ -1064,7 +1040,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                             onTap: (){
                               _pinBottomSheet(context);
                             },
-                            child: Text("Lanjut",style:TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                            child: Text("Lanjut",style:TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ),
                         )
                     ),

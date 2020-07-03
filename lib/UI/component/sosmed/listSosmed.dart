@@ -10,6 +10,7 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ListSosmed extends StatefulWidget {
@@ -37,11 +38,26 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
     });
     _bloc.fetchListSosmed(1,perpage,'kosong');
   }
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
     if(mounted){
       _bloc.fetchListSosmed(1,10,'kosong');
     }
@@ -130,8 +146,8 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                             }
                                           },
                                           text: removeAllHtmlTags(caption),
-                                          style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
-                                          linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                                          style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                                          linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                                         ),
                                       ),
                                     ),
@@ -185,7 +201,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                     children: <Widget>[
                                       Icon(FontAwesomeIcons.penAlt,color: Colors.grey,size: 12.0),
                                       SizedBox(width: 5.0),
-                                      Text(snapshot.data.result.data[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+                                      Text(snapshot.data.result.data[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
                                     ],
                                   )
                               ),
@@ -198,7 +214,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                     children: <Widget>[
                                       Icon(FontAwesomeIcons.comment,color: Colors.grey,size: 12.0),
                                       SizedBox(width: 5.0),
-                                      Text(snapshot.data.result.data[index].comments+' komentar',style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+                                      Text(snapshot.data.result.data[index].comments+' komentar',style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
                                     ],
                                   )
                               ),
@@ -211,7 +227,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                     children: <Widget>[
                                       Icon(FontAwesomeIcons.clock,color: Colors.grey,size: 12.0),
                                       SizedBox(width: 5.0),
-                                      Text("${snapshot.data.result.data[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+                                      Text("${snapshot.data.result.data[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
                                     ],
                                   )
                               ),
@@ -225,24 +241,28 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                 );
               }
           ),
-          snapshot.data.result.count == int.parse(snapshot.data.result.perpage) ? Container(
-            padding: EdgeInsets.only(left:15.0,right:15.0),
-            child: InkWell(
-              onTap: (){
-                setState(() {isLoading1 = true;});
-                load();
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(width: 1.0,color:ThaibahColour.primary1),
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                ),
-                padding: EdgeInsets.all(15.0),
-                width: double.infinity,
-                child: Center(child: isLoading1 ? CircularProgressIndicator(strokeWidth: 10,valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : Text("Tampilkan Lebih Banyak",style: TextStyle(color:ThaibahColour.primary1,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),)),
-              ),
-            ),
-          ):Container()
+          snapshot.data.result.count == int.parse(snapshot.data.result.perpage) ? UserRepository().buttonLoadQ(context, warna1, warna2,(){
+            setState(() {isLoading1 = true;});
+            load();
+          }, isLoading1):Container()
+//          snapshot.data.result.count == int.parse(snapshot.data.result.perpage) ? Container(
+//            padding: EdgeInsets.only(left:15.0,right:15.0),
+//            child: InkWell(
+//              onTap: (){
+//                setState(() {isLoading1 = true;});
+//                load();
+//              },
+//              child: Container(
+//                decoration: BoxDecoration(
+//                  border: Border.all(width: 1.0,color:ThaibahColour.primary1),
+//                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+//                ),
+//                padding: EdgeInsets.all(15.0),
+//                width: double.infinity,
+//                child: Center(child: isLoading1 ? CircularProgressIndicator(strokeWidth: 10,valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : Text("Tampilkan Lebih Banyak",style: TextStyle(color:ThaibahColour.primary1,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),)),
+//              ),
+//            ),
+//          ):Container()
         ],
       ),
     );

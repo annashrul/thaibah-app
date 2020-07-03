@@ -12,7 +12,7 @@ class MyBankProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<MyBankModel> fetchMyBank() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/bank/list',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -26,7 +26,7 @@ class MyBankProvider {
 
 
   Future fetchCreateMyBank(var bankname,var bankcode,var acc_no, var acc_name) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"member/bank/create",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -48,7 +48,7 @@ class MyBankProvider {
   }
 
   Future fetchDeleteMyBank(var id) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"member/bank/delete",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},

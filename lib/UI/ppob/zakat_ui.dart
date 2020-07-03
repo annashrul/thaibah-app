@@ -43,7 +43,7 @@ class _ZakatUIState extends State<ZakatUI>{
 
   Future cekTagihan() async{
     final userRepository = UserRepository();
-    final nohp = await userRepository.getNoHp();
+    final nohp = await userRepository.getDataUser('phone');
     var res = await PpobPascaProvider().fetchPpobPascaCekTagihan(_currentItemSelectedLayanan, nohp, 0);
     if(res is PpobPascaCekTagihanModel){
       PpobPascaCekTagihanModel results = res;

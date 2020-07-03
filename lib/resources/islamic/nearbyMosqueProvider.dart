@@ -10,7 +10,7 @@ class NearbyMosqueProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<NearbyMosqueModel> fetchNearbyMosque(var lat, var lng) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'islamic/nearbymosque?lat=$lat&lng=$lng',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

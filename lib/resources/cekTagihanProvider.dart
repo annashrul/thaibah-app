@@ -11,7 +11,7 @@ class CekTagihanProvider {
   final userRepository = UserRepository();
 
   Future<CekTagihanModel> fetchCekTagihan(String code,String no, String idpelanggan) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"ppob/pasca/cektagihan",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {

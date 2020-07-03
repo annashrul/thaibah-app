@@ -49,40 +49,24 @@ class PinScreenState extends State<PinScreen> {
         Timer(Duration(seconds: 4), () {
           Navigator.of(context).push(new MaterialPageRoute(builder: (context) => ResendAuth(otp:results.result.otp))).whenComplete(cekPin);
         });
-        return showInSnackBar("Cek OTP Yang Kami Kirim Ke No WhatsApp Anda",Colors.green);
+        UserRepository().notifNoAction(_scaffoldKey, context,"Cek OTP Yang Kami Kirim Ke No WhatsApp Anda","success");
       }else{
         setState(() {
           isLoading = true;
         });
-        return showInSnackBar(results.msg,Colors.green);
+        UserRepository().notifNoAction(_scaffoldKey, context, results.msg,"success");
       }
     }else{
       setState(() {
         isLoading = true;
       });
       General results = res;
-      return showInSnackBar(results.msg,Colors.red);
+      UserRepository().notifNoAction(_scaffoldKey, context, results.msg,"failed");
     }
 
   }
 
-  void showInSnackBar(String value,background){
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: background,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
 
   @override
   void initState() {

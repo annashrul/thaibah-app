@@ -9,7 +9,7 @@ class PlnProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<PlnModel> fetchPln() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'ppob/pasca/get/PLN',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

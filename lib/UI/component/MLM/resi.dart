@@ -2,8 +2,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/MLM/resiModel.dart';
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class Resi extends StatefulWidget {
   final String resi, kurir;
@@ -23,12 +25,25 @@ class _ResiState extends State<Resi> {
   String kurirLocal = '';
 
 
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  Future loadTheme() async{
+    final userRepository = UserRepository();
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-
+    loadTheme();
     resiLocal = widget.resi;
     kurirLocal = widget.kurir;
     resiBloc.fetchResi(resiLocal, kurirLocal);
@@ -46,28 +61,7 @@ class _ResiState extends State<Resi> {
 
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Lacak Resi", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar:UserRepository().appBarWithButton(context, 'Lacak Resi',warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: Stack(
         children: <Widget>[
           _buildTimeline(),
@@ -114,7 +108,7 @@ class _ResiState extends State<Resi> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text('Service Code', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.summary.serviceCode, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text(snapshot.data.result.ongkir.summary.courierName, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
                             ],
                           ),
                           Divider(),
@@ -122,7 +116,7 @@ class _ResiState extends State<Resi> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text('Pembeli', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.details.receiverName, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text(snapshot.data.result.ongkir.deliveryStatus.podReceiver, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
                             ],
                           ),
                           Divider(),
@@ -147,7 +141,7 @@ class _ResiState extends State<Resi> {
             }
             return Container(
               child: Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
               ),
             );
           }
@@ -178,7 +172,7 @@ class _ResiState extends State<Resi> {
                       child: new Container(
                         height: 12.0,
                         width: 12.0,
-                        decoration: new BoxDecoration(shape: BoxShape.circle, color: Colors.green),
+                        decoration: new BoxDecoration(shape: BoxShape.circle, color:statusLevel!='0'?warna1:ThaibahColour.primary2),
                       ),
                     ),
                     new Expanded(

@@ -9,7 +9,7 @@ class ListAvailableBankProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<ListAvailableBankModel> fetchListAvailableBank() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'transaction/deposit/availablebank',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

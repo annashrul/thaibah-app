@@ -68,48 +68,22 @@ class _TestimoniState extends State<Testimoni> with SingleTickerProviderStateMix
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    Map<String, dynamic> row = {
+      'Produk':'Produk',
+      'Bisnis':'Bisnis',
+    };
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
           length: 2,
           child: Scaffold(
             key: scaffoldKey,
-            appBar: new AppBar(
-              flexibleSpace: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: <Color>[
-                      statusLevel!='0'?warna1:Color(0xFF116240),
-                      statusLevel!='0'?warna2:Color(0xFF30cc23)
-                    ],
-                  ),
-                ),
-              ),
-              centerTitle: true,
-              elevation: 0.0,
-              title: Text('Testimoni', style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-              bottom: TabBar(
-                  indicatorColor: Colors.white,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.grey[400],
-                  indicatorWeight: 2,
-                  labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily: 'Rubik',fontSize: 16),
-                  tabs: <Widget>[
-                    Tab(text: "Produk",),
-                    Tab(text: "Bisnis"),
-                  ]
-              ),
-              actions: <Widget>[
-                //Add the dropdown widget to the `Action` part of our appBar. it can also be among the `leading` part
-              ],
-            ),
+            appBar: UserRepository().appBarWithTab(context, 'Testimoni', warna1, warna2,row),
             body: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: <Widget>[
-//                  TestiSuplemen(),
-                  IndexTesti(),
+                  TestiSuplemen(),
+//                  IndexTesti(),
                   TestiKavling(),
                 ]
             ),
@@ -131,9 +105,7 @@ class _IndexTestiState extends State<IndexTesti>with SingleTickerProviderStateMi
   bool isLoading=false;
   bool isLoading1=false;
   TabController _tabController;
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
+
   bool isLoadingShare = false;
   int cek = 0;
   int perpage=10;
@@ -203,7 +175,9 @@ class _IndexTestiState extends State<IndexTesti>with SingleTickerProviderStateMi
       print(e);
     }
   }
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
   Future loadTheme() async{
     final levelStatus = await userRepository.getDataUser('statusLevel');
     final color1 = await userRepository.getDataUser('warna1');

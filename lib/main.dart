@@ -146,8 +146,28 @@ class SplashState extends State<Splash> {
             }
           }
         }
-      }else{
-
+      }
+      else{
+        if(statusExitApp == '0'){
+          setState(() {isLoading=false;});
+          print("####################### CHECKING EXIT APP ################################");
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
+        }else{
+          if(statusOnBoarding == ''||statusOnBoarding=='0'){
+            setState(() {isLoading=false;});
+            print("####################### CHECKING STATUS ONBOARDING ################################");
+            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
+          }else{
+            if(statusLogin=='1'||statusLogin!='0'){
+              setState(() {isLoading=false;});
+              print("####################### CHECKING STATUS LOGIN ################################");
+              Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
+            }else{
+              setState(() {isLoading=false;});
+              Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new LoginPhone()));
+            }
+          }
+        }
       }
     }else{
       setState(() {isLoading=false;});

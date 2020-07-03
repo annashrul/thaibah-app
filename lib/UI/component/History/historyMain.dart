@@ -159,7 +159,7 @@ class _HistoryMainState extends State<HistoryMain>{
           children: <Widget>[
             new Flexible(
               child: Padding(
-                padding: EdgeInsets.only(left:8.0),
+                padding: EdgeInsets.only(left:8.0,top:10.0),
                 child: GestureDetector(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,7 +187,7 @@ class _HistoryMainState extends State<HistoryMain>{
             ),
             new Flexible(
               child: Padding(
-                padding: EdgeInsets.only(left:8.0),
+                padding: EdgeInsets.only(left:8.0,top:10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -215,7 +215,7 @@ class _HistoryMainState extends State<HistoryMain>{
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.only(left:8.0,top:10.0),
               child: IconButton(
                 icon: isLoading?CircularProgressIndicator():Icon(Icons.search),
                 tooltip: 'Increase volume by 10',

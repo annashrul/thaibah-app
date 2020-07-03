@@ -7,10 +7,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class DetailTopUp extends StatefulWidget {
   final String amount,raw_amount,unique,bank_name,atas_nama,no_rekening,picture,id_deposit,bank_code;
@@ -98,30 +100,28 @@ class _DetailTopUpState extends State<DetailTopUp> {
     }
   }
 
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    scaffoldKey.currentState?.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
+
+
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
   }
-
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
   }
 
   @override
@@ -131,30 +131,9 @@ class _DetailTopUpState extends State<DetailTopUp> {
     final key = new GlobalKey<ScaffoldState>();
     return Scaffold(
         key: key,
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-              onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-              }
-          ),
-          centerTitle: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF116240),
-                  Color(0xFF30cc23)
-                ],
-              ),
-            ),
-          ),
-          elevation: 1.0,
-          automaticallyImplyLeading: true,
-          title: new Text("Transaksi Berhasil", style: TextStyle(fontSize:16,color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        ),
+        appBar: UserRepository().appBarWithButton(context, 'Transaksi Berhasil',warna1,warna2,(){
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+        }, Container()),
         resizeToAvoidBottomInset: false,
 
         body: Scrollbar(
@@ -171,7 +150,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
                     'Silahkan transfer tepat sebesar',
-                    style: TextStyle(fontFamily:"Rubik",fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -179,7 +158,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
                   padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 8.0),
                   child: Text(
                     widget.amount,
-                    style: TextStyle(fontFamily:"Rubik",fontWeight: FontWeight.bold, fontSize: 30),
+                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 30),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -188,7 +167,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
                   padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
                   child: Text(
                     'Pembayaran dapat dilakukan ke rekening berikut :',
-                    style: TextStyle(fontFamily:"Rubik",fontWeight: FontWeight.bold, fontSize: 14),
+                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -248,11 +227,11 @@ class _DetailTopUpState extends State<DetailTopUp> {
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                     child: Container(
-                      color: Colors.green,
+                      color:statusLevel!='0'?warna1:ThaibahColour.primary2,
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                       child: Text(
                         'VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT',
-                        style: TextStyle(fontSize: 14,fontFamily: 'Rubik',color:Colors.white,fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 14,fontFamily:ThaibahFont().fontQ,color:Colors.white,fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                     )
@@ -265,11 +244,11 @@ class _DetailTopUpState extends State<DetailTopUp> {
                       child: RichText(
                         text: TextSpan(
                             text: 'Anda Dapat Melakukan Transfer Menggunakan ATM, Mobile Banking atau SMS Banking Dengan Memasukan Kode Bank',
-                            style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.black),
+                            style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black),
                             children: <TextSpan>[
-                              TextSpan(text: ' ${widget.bank_name} ${widget.bank_code}',style: TextStyle(color: Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                              TextSpan(text: ' Di Depan No Rekening Atas Nama',style: TextStyle(fontSize: 12,fontFamily: 'Rubik')),
-                              TextSpan(text: ' ${widget.atas_nama}',style: TextStyle(color: Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                              TextSpan(text: ' ${widget.bank_name} ${widget.bank_code}',style: TextStyle(color:statusLevel!='0'?warna1:ThaibahColour.primary2, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                              TextSpan(text: ' Di Depan No Rekening Atas Nama',style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ)),
+                              TextSpan(text: ' ${widget.atas_nama}',style: TextStyle(color: statusLevel!='0'?warna1:ThaibahColour.primary2, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                             ]
                         ),
                       ),
@@ -282,7 +261,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
                       child: Text(
                         'mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi',
-                        style: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
+                        style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ),
                         textAlign: TextAlign.left,
                       ),
                     )
@@ -294,7 +273,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                       child: Text(
                         'Pastikan anda transfer sebelum tanggal $hari-$bulan-$tahun 23:00 WIB atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini atau di halaman riwayat topup',
-                        style: TextStyle(fontSize: 12,fontFamily: 'Rubik'),
+                        style: TextStyle(fontSize: 12,fontFamily: ThaibahFont().fontQ),
                         textAlign: TextAlign.left,
                       ),
                     )
@@ -315,7 +294,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
           Container(
             width: MediaQuery.of(context).size.width/1,
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
+                gradient: LinearGradient(colors: [statusLevel!='0'?warna1:ThaibahColour.primary1,statusLevel!='0'?warna2:ThaibahColour.primary2]),
                 borderRadius: BorderRadius.circular(0.0),
                 boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
               ),
@@ -324,13 +303,13 @@ class _DetailTopUpState extends State<DetailTopUp> {
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(0)),
                 ),
-                color: Colors.green,
+                color: statusLevel!='0'?warna1:ThaibahColour.primary2,
                 onPressed: (){
                   Navigator.of(context, rootNavigator: true).push(
                     new CupertinoPageRoute(builder: (context) => BuktiTransfer(id_deposit: widget.id_deposit)),
                   );
                 },
-                child: Text("Saya Sudah Transfer", style: TextStyle(color: Colors.white)),
+                child: Text("SAYA SUDAH TRANSFER", style: TextStyle(fontSize:16.0,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
               )
           )
         ],

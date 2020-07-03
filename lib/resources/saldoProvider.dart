@@ -11,8 +11,8 @@ class SaldoProvider {
   final userRepository = UserRepository();
 
   Future<SaldoResponse> fetchSaldo(String saldo,String pin) async {
-		final pin = await userRepository.getPin();
-		final token = await userRepository.getToken();
+		final pin = await userRepository.getDataUser('pin');
+		final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/deposit",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {

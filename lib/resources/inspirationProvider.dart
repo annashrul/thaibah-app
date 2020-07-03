@@ -10,7 +10,7 @@ class InspirationProvider {
   final userRepository = UserRepository();
 
   Future<InspirationModel> fetchInspiration(var page, var limit) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'info/inspiration?page=$page&limit=$limit',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}

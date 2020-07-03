@@ -10,7 +10,7 @@ class DetailDepositProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future<DetailDepositModel> fetchDetailDeposit(var id_bank,var amount) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/deposit/create",
         headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
@@ -23,7 +23,7 @@ class DetailDepositProvider {
   }
 
   Future<General> fetchUploadBuktiTransfer(var id_deposit, var bukti) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/deposit/bukti",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
@@ -35,8 +35,8 @@ class DetailDepositProvider {
   }
 
   Future<General> cancelDeposit(var id_deposit) async {
-    final token = await userRepository.getToken();
-    final name = await userRepository.getName();
+    final token = await userRepository.getDataUser('token');
+    final name = await userRepository.getDataUser('name');
     return await client.post(ApiService().baseUrl+"transaction/deposit/approve",
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {

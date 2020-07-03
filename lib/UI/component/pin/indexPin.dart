@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
@@ -43,25 +44,31 @@ class _PinState extends State<Pin> {
   }
   bool _isLoading = false;
   Future _check(var txtPin, BuildContext context) async {
-    final name = await userRepository.getName();
+    final dbHelper = DbHelper.instance;
+    final name = await userRepository.getDataUser('name');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var res = await updatePinMemberBloc.fetchUpdatePinMember(txtPin);
     if(res is General){
       General result = res;
 //      print(result.result);
       if(result.status == 'success'){
+        final userRepository = UserRepository();
+        final id = await userRepository.getDataUser('id');
+        Map<String, dynamic> row = {
+          DbHelper.columnId   : id,
+          DbHelper.columnPin :txtPin
+        };
+        await dbHelper.update(row);
         setState(() {_isLoading  = false;});
         if(widget.param == 'beranda'){
-          prefs.setBool('isPin', true);
+//          prefs.setBool('isPin', true);
           Timer(Duration(seconds: 3), () {
-            prefs.setString('pin', txtPin);
             Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
               builder: (BuildContext context) => DashboardThreePage()
             ), (Route<dynamic> route) => false);
           });
         }else{
           Timer(Duration(seconds: 3), () {
-            prefs.setString('pin', txtPin);
             Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
                 builder: (BuildContext context) => widget.param=='topup' ? SaldoUI(saldo: widget.saldo,name: name) : DashboardThreePage()
             ), (Route<dynamic> route) => false);

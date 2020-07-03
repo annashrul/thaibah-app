@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/MLM/detailHistoryPembelianSuplemen.dart';
 import 'package:thaibah/Model/MLM/resiModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -15,6 +16,7 @@ import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/MLM/resi.dart';
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/historyPembelianProvider.dart';
 
 class DetailHistorySuplemen extends StatefulWidget {
@@ -36,44 +38,78 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
   final formatter = new NumberFormat("#,###");
 
   Future cekResi(var resi, var kurir) async{
-//    var res = await resiBloc.fetchResi(resi, kurir);
+    setState(() {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 100.0),
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height:5.0),
+                    Text("Tunggu Sebentar .....")
+                  ],
+                ),
+              )
+          );
+
+        },
+      );
+    });
     var res = await HistoryPembelianProvider().fetchResi(resi, kurir);
     if(res is ResiModel){
       ResiModel results = res;
       if(results.status == 'success'){
-        setState(() {
-          isLoading = false;
-        });
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Resi(resi:resi,kurir: kurir),
-          ),
+        setState(() {Navigator.pop(context);});
+        Navigator.of(context, rootNavigator: true).push(
+          new CupertinoPageRoute(
+              builder: (context) => Resi(resi:resi,kurir: kurir)
+          )
         );
       }else{
-        setState(() {
-          isLoading = false;
-        });
-        return scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(results.msg)));
+        setState(() {Navigator.pop(context);});
+        UserRepository().notifNoAction(scaffoldKey, context, results.msg,"success");
       }
     }else{
-      setState(() {
-        isLoading = false;
-      });
+      setState(() {Navigator.pop(context);});
       General results = res;
-      return scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(results.msg)));
+      UserRepository().notifNoAction(scaffoldKey, context, results.msg,"failed");
     }
 
   }
 
   Future confirm() async {
+    setState(() {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 100.0),
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height:5.0),
+                    Text("Tunggu Sebentar .....")
+                  ],
+                ),
+              )
+          );
+
+        },
+      );
+    });
     var res = await HistoryPembelianProvider().fetchConfirm(widget.id);
     if(res is General){
+      setState(() {Navigator.pop(context);});
       General results = res;
       if(results.status == 'success'){
-        setState(() {
-          _isLoading = false;
-        });
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -93,22 +129,33 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
             }
         );
       }else{
-        setState(() {
-          _isLoading = false;
-        });
-        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));
-
+        setState(() {Navigator.pop(context);});
+        UserRepository().notifNoAction(scaffoldKey, context, results.msg,"failed");
       }
     }
   }
 
 
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  Future loadTheme() async{
+    final userRepository = UserRepository();
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
     detailHistoryPembelianSuplemenBloc.fetchDetailHistoryPemblianSuplemenList(widget.id);
   }
 
@@ -124,35 +171,42 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () {
-            if(widget.param == 'checkout'){
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-            }else{
-              Navigator.of(context).pop();
-            }
-
-          },
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Detail Pesanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar: UserRepository().appBarWithButton(context, 'Detail Pesanan',warna1,warna2,(){
+        if(widget.param == 'checkout'){
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+        }else{
+          Navigator.of(context).pop();
+        }
+      }, Container()),
+//      appBar: AppBar(
+//        leading: IconButton(
+//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+//          onPressed: () {
+//            if(widget.param == 'checkout'){
+//              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+//            }else{
+//              Navigator.of(context).pop();
+//            }
+//
+//          },
+//        ),
+//        centerTitle: false,
+//        flexibleSpace: Container(
+//          decoration: BoxDecoration(
+//            gradient: LinearGradient(
+//              begin: Alignment.centerLeft,
+//              end: Alignment.centerRight,
+//              colors: <Color>[
+//                Color(0xFF116240),
+//                Color(0xFF30cc23)
+//              ],
+//            ),
+//          ),
+//        ),
+//        elevation: 1.0,
+//        automaticallyImplyLeading: true,
+//        title: new Text("Detail Pesanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//      ),
       body: StreamBuilder(
           stream: detailHistoryPembelianSuplemenBloc.getResult,
           builder: (context,AsyncSnapshot<DetailHistoryPembelianSuplemenModel> snapshot){
@@ -177,8 +231,8 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Status', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text("Pesanan "+snapshot.data.result.detail.statusText,style: TextStyle(color: Colors.black, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                              Text('Status', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text("Pesanan "+snapshot.data.result.detail.statusText,style: TextStyle(color: Colors.black, fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                             ],
                           ),
 
@@ -187,8 +241,8 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Tanggal Pembelian', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.detail.createdAt, style: TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text('Tanggal Pembelian', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text(snapshot.data.result.detail.createdAt, style: TextStyle(fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                             ],
                           ),
                           SizedBox(height: 0.0),
@@ -197,8 +251,8 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('No Invoice', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.detail.kdTrx, style: TextStyle(color: Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text('No Invoice', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text(snapshot.data.result.detail.kdTrx, style: TextStyle(color: Colors.black,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                             ],
                           ),
                         ],
@@ -215,7 +269,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('Daftar Produk', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                          Text('Daftar Produk', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -226,7 +280,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('Detail Pengiriman', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                          Text('Detail Pengiriman', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -240,24 +294,24 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Nama Toko', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text('Thaibah', style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                              Text('Nama Toko', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text('Thaibah', style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Kurir Pengiriman', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text('${snapshot.data.result.pembayaran.kurir}-${snapshot.data.result.pembayaran.layanan}', style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                              Text('Kurir Pengiriman', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:  ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text('${snapshot.data.result.pembayaran.kurir}-${snapshot.data.result.pembayaran.layanan}', style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('No.Resi', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.pembayaran.resi == null ? 'Belum Ada No.Resi':snapshot.data.result.pembayaran.resi, style: TextStyle(color:Colors.black87,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                              Text('No.Resi', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text(snapshot.data.result.pembayaran.resi == null ? 'Belum Ada No.Resi':snapshot.data.result.pembayaran.resi, style: TextStyle(color:Colors.black87,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                             ],
                           ),
                           snapshot.data.result.pembayaran.resi != null ? GestureDetector(
@@ -268,16 +322,16 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                             child:Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                                Text('Salin No.Resi', style: TextStyle(color:Colors.green,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                                Text('', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                Text('Salin No.Resi', style: TextStyle(color:Colors.green,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ) : Container(),
 
                           Divider(),
-                          Text('alamat Pengiriman : ', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                          Text('alamat Pengiriman : ', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           SizedBox(height: 5.0,),
-                          Text(snapshot.data.result.pembayaran.alamatPengiriman, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                          Text(snapshot.data.result.pembayaran.alamatPengiriman, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                         ],
                       ),
                     ),
@@ -288,7 +342,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('Informasi Pembayaran', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                          Text('Informasi Pembayaran', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -300,8 +354,8 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text("Metode Pembayaran ",style: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.pembayaran.metode, style: TextStyle(color: Colors.black, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text("Metode Pembayaran ",style: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text(snapshot.data.result.pembayaran.metode, style: TextStyle(color: Colors.black, fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                             ],
                           ),
                           Divider(),
@@ -309,16 +363,16 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Total Harga (${snapshot.data.result.pembayaran.jmlItem} barang)', style: TextStyle(color: Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text("Rp ${formatter.format(rawPrice)}", style: TextStyle(color: Colors.redAccent,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                              Text('Total Harga (${snapshot.data.result.pembayaran.jmlItem} barang)', style: TextStyle(color: Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text("Rp ${formatter.format(rawPrice)}", style: TextStyle(color: Colors.redAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                             ],
                           ),
                           SizedBox(height: 5.0),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Total Ongkos Kirim (${snapshot.data.result.pembayaran.weight})', style: TextStyle(color: Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text('Rp ${formatter.format(rawOngkir)}', style: TextStyle(color: Colors.redAccent,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                              Text('Total Ongkos Kirim (${snapshot.data.result.pembayaran.weight})', style: TextStyle(color: Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text('Rp ${formatter.format(rawOngkir)}', style: TextStyle(color: Colors.redAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ],
@@ -337,8 +391,8 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text("Total Pembayaran",style: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text("Rp ${formatter.format(total)}", style: TextStyle(color: Colors.redAccent, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text("Total Pembayaran",style: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text("Rp ${formatter.format(total)}", style: TextStyle(color: Colors.redAccent, fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                             ],
                           ),
                         ],
@@ -369,20 +423,20 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topRight: Radius.circular(10)),
                 ),
-                color: Color(0xFF116240),
+                color: statusLevel!='0'?warna1:ThaibahColour.primary1,
                 onPressed: (){
                   if(resi == 'kosong'){
                     setState(() {
                       _isLoading = false;
                     });
-                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('maaf no resi belum ada')));
+                    UserRepository().notifNoAction(scaffoldKey, context, "Maaf, No Resi Belum Ada","failed");
                   }
                   else{
                     if(status != 4){
                       AlertQ(
                         style: AlertStyle(
-                            titleStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
-                            descStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik')
+                            titleStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
+                            descStyle: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ)
                         ),
                         context: context,
                         type: AlertType.warning,
@@ -390,12 +444,12 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                         desc: "Apakah Barang Sudah Sampai ??",
                         buttons: [
                           DialogButton(
-                            child: Text("BELUM",style: TextStyle(color: Colors.white, fontSize: 20)),
+                            child: Text("BELUM",style: TextStyle(color: Colors.white, fontSize: 20,fontFamily:  ThaibahFont().fontQ)),
                             onPressed: () => Navigator.of(context).pop(false),
                             color: Color.fromRGBO(0, 179, 134, 1.0),
                           ),
                           DialogButton(
-                            child: Text("SUDAH",style: TextStyle(color: Colors.white, fontSize: 20)),
+                            child: Text("SUDAH",style: TextStyle(color: Colors.white, fontSize: 20,fontFamily:  ThaibahFont().fontQ)),
                             onPressed: () async {
                               setState(() {
                                 _isLoading = false;
@@ -410,13 +464,14 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                         ],
                       ).show();
                     }else{
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Barang Sudah Sudah Diterima, Terimakasih ...')));
+                      UserRepository().notifNoAction(scaffoldKey, context, 'Barang Sudah Sudah Diterima, Terimakasih ...', 'success');
+//                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Barang Sudah Sudah Diterima, Terimakasih ...')));
                     }
 
 
                   }
                 },
-                child:_isLoading?Text('Pengecekan data ...', style: TextStyle(color: Colors.white)):Text("Selesai", style: TextStyle(color: Colors.white)),
+                child:Text("SELESAI", style: TextStyle(color: Colors.white,fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
 
               )
           ),
@@ -426,17 +481,18 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
                 ),
-                color: Colors.green,
+                color:statusLevel!='0'?warna2:ThaibahColour.primary2,
                 onPressed: (){
                   if(resi == 'kosong' || resi.substring(0,3) == 'COD'){
                     setState(() {
                       isLoading = false;
                     });
                     if(resi == 'kosong'){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('maaf no resi belum ada')));
+                      UserRepository().notifNoAction(scaffoldKey, context, "Maaf, No Resi Belum Ada","failed");
                     }
                     if(resi.substring(0,3) == 'COD'){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Barang telah dikirim')));
+                      UserRepository().notifNoAction(scaffoldKey, context, "Barang Telah Dikirim, Terimakasih","success");
+//                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Barang telah dikirim')));
                     }
                   }else{
                     setState(() {
@@ -446,7 +502,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                     cekResi(resi,kurir);
                   }
                 },
-                child:isLoading?Text('Pengecekan data ...', style: TextStyle(color: Colors.white)):Text("Lacak Resi", style: TextStyle(color: Colors.white)),
+                child:Text("LACAK RESI", style: TextStyle(color: Colors.white,fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
               )
           )
         ],
@@ -515,12 +571,12 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                               children: [
                                 Container(
                                   padding: const EdgeInsets.all(0.0),
-                                  child: new Text(snapshot.data.result.pembelian[i].title,style: new TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black),),
+                                  child: new Text(snapshot.data.result.pembelian[i].title,style: new TextStyle(fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: Colors.black),),
                                 ),
                                 SizedBox(height: 5.0),
-                                Text('${snapshot.data.result.pembelian[i].qty} Barang (${snapshot.data.result.pembelian[i].weight} Gram)',style: TextStyle(fontSize: 10,fontFamily: 'Rubik',color:Colors.grey,fontWeight: FontWeight.bold),),
+                                Text('${snapshot.data.result.pembelian[i].qty} Barang (${snapshot.data.result.pembelian[i].weight} Gram)',style: TextStyle(fontSize: 10,fontFamily: ThaibahFont().fontQ,color:Colors.grey,fontWeight: FontWeight.bold),),
                                 SizedBox(height: 5.0),
-                                Text(snapshot.data.result.pembelian[i].price,style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.redAccent,fontWeight: FontWeight.bold),)
+                                Text(snapshot.data.result.pembelian[i].price,style: TextStyle(fontSize: 12,fontFamily: ThaibahFont().fontQ,color: Colors.redAccent,fontWeight: FontWeight.bold),)
                               ],
                               crossAxisAlignment: CrossAxisAlignment.start,
                             ),
@@ -549,10 +605,10 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('$textLeft',style: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+        Text('$textLeft',style: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
         SizedBox(width: ukuran),
         Flexible(
-          child: Text('$textRight', style: TextStyle(color: Colors.black, fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+          child: Text('$textRight', style: TextStyle(color: Colors.black, fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))
         ),
         SizedBox(width: 2.0),
         isTrue ? GestureDetector(

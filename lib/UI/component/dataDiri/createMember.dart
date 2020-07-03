@@ -13,6 +13,7 @@ import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/Widgets/responsive_ui.dart';
+import 'package:thaibah/UI/component/myProfile.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
@@ -733,7 +734,7 @@ class _OtpPageStatefulState extends State<OtpPage> {
                   FlatButton(
                     child: Text("Kembali"),
                     onPressed: (){
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => ProfileUI()), (Route<dynamic> route) => false);
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MyProfile()), (Route<dynamic> route) => false);
                     },
                   ),
                 ],

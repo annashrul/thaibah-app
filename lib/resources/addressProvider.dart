@@ -14,7 +14,7 @@ class AddressProvider {
   Client client = Client();
   final userRepository = UserRepository();
   Future cekAlamat() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.post(
         ApiService().baseUrl+'transaction/checkout/detail',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -33,7 +33,7 @@ class AddressProvider {
   }
 
   Future<AddressModel> fetchAlamat() async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/addr/list',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -50,7 +50,7 @@ class AddressProvider {
   }
 
   Future<GetAddressModel> fetchGetAddress(var id) async{
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'id',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
@@ -63,7 +63,7 @@ class AddressProvider {
   }
 
   Future fetchDeleteAddress(var id) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"member/addr/delete",
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -82,7 +82,7 @@ class AddressProvider {
   }
 
   Future fetchUpdateMyBank(var title,var name,var main_address,var kd_prov,var kd_kota, var kd_kec, var no_hp, var id) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"member/addr/update",
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
@@ -109,7 +109,7 @@ class AddressProvider {
 
 
   Future fetchCreateAddress(var title,var name,var main_address,var kd_prov,var kd_kota, var kd_kec, var no_hp) async {
-    final token = await userRepository.getToken();
+    final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"member/addr/create",
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
