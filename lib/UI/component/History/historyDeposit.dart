@@ -4,12 +4,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/depositManual/historyDepositModel.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/detailDeposit.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/dateRangePickerQ.dart' as DateRagePicker;
+import 'package:thaibah/config/user_repo.dart';
 
 class HistoryDeposit extends StatefulWidget {
   @override
@@ -79,10 +81,29 @@ class _HistoryDepositState extends State<HistoryDeposit> {
     return true;
   }
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
   @override
   void initState() {
     super.initState();
-    load();
+//    load();
+    loadTheme();
+    DateTime today = new DateTime.now();
+    DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
+    historyDepositBloc.fetchHistoryDeposit(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
+
   }
   @override
   void dispose() {
@@ -92,31 +113,7 @@ class _HistoryDepositState extends State<HistoryDeposit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        automaticallyImplyLeading: true,
-        title: new Text("Riwayat Topup", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 0.0,
-      ),
+      appBar: UserRepository().appBarWithButton(context,"Riwayat Top Up",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Row(
@@ -129,9 +126,10 @@ class _HistoryDepositState extends State<HistoryDeposit> {
                       autofocus: false,
                       style: Theme.of(context).textTheme.body1.copyWith(
                         fontSize: 12.0,
+                        fontFamily: ThaibahFont().fontQ
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Periode',
+                        hintText: 'Periode',hintStyle: TextStyle(fontFamily: ThaibahFont().fontQ)
                       ),
                       controller: dateController,
                       onTap: (){
@@ -300,15 +298,15 @@ class _HistoryDepositState extends State<HistoryDeposit> {
                                 title: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
-                                    Text("${snapshot.data.result.data[index].bankName}",style: TextStyle(fontFamily:'Rubik',color: Colors.grey, fontWeight: FontWeight.bold),),
-                                    Text("$cek",style: TextStyle(fontSize:12.0,fontFamily:'Rubik',color:warna, fontWeight: FontWeight.bold),),
+                                    Text("${snapshot.data.result.data[index].bankName}",style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontWeight: FontWeight.bold),),
+                                    Text("$cek",style: TextStyle(fontSize:12.0,fontFamily:ThaibahFont().fontQ,color:warna, fontWeight: FontWeight.bold),),
                                   ],
                                 ),
                                 subtitle: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
-                                    Text(snapshot.data.result.data[index].amount, style: TextStyle(fontFamily:'Rubik',color: Colors.red)),
-                                    Text("${DateFormat.yMd().add_jm().format(snapshot.data.result.data[index].createdAt.toLocal())}",style: TextStyle(fontSize:12.0,fontFamily:'Rubik',color: Colors.grey, fontWeight: FontWeight.bold),),
+                                    Text(snapshot.data.result.data[index].amount, style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.red)),
+                                    Text("${DateFormat.yMd().add_jm().format(snapshot.data.result.data[index].createdAt.toLocal())}",style: TextStyle(fontSize:12.0,fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontWeight: FontWeight.bold),),
                                   ],
                                 ),
                               ),

@@ -54,6 +54,7 @@ class _IndexHistoryState extends State<IndexHistory> {
             key: scaffoldKey,
             appBar:UserRepository().appBarWithTabButton(context,"Riwayat Pembelian",warna1,warna2, row,(){Navigator.of(context).pop();}),
             body: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
                 children: <Widget>[
                   HistorySuplemen(),
                   HistoryPPOB(),

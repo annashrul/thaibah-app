@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
@@ -49,11 +50,26 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
   String base64Image;
   String base64Image2;
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
 
   @override
   void initState() {
     super.initState();
+    loadTheme();
     nameController.text = widget.name;
     nohpController.text = widget.nohp;
     dropdownValue = widget.gender;
@@ -140,13 +156,13 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
           );
         }else{
           setState(() {_isLoading = false;});
-          return showInSnackBar(result.msg,'gagal');
+          UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
         }
       }
       else{
         General results = res;
         setState(() {_isLoading = false;});
-        return showInSnackBar(results.msg,'gagal');
+        UserRepository().notifNoAction(_scaffoldKey, context,res.msg,"failed");
       }
     }
     else{
@@ -166,11 +182,15 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
         Timer(Duration(seconds: 1), () {
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
         });
-        return showInSnackBar(res.msg,'sukses');
+        UserRepository().notifNoAction(_scaffoldKey, context,res.msg,"success");
+
+//        return showInSnackBar(res.msg,'sukses');
 
       }else{
         setState(() {_isLoading = false;});
-        return showInSnackBar(res.msg,'gagal');
+        UserRepository().notifNoAction(_scaffoldKey, context,res.msg,"failed");
+
+//        return showInSnackBar(res.msg,'gagal');
       }
     }
 
@@ -264,23 +284,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
-  void showInSnackBar(String value,String param) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: param=='sukses'?Colors.green:Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
 
 
 
@@ -292,28 +296,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Data Diri", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar: UserRepository().appBarWithButton(context,"Data Diri",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
       body: _form(),
@@ -350,11 +333,12 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text("Nama",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                    Text("Nama",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                     TextFormField(
+                      style: TextStyle(fontFamily: ThaibahFont().fontQ),
                       controller: nameController,
                       decoration: InputDecoration(
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
                       ),
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.next,
@@ -373,7 +357,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text("No WhatsApp  (Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan) ",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                    Text("No WhatsApp  (Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan) ",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                     Row(
                       children: <Widget>[
                         Container(
@@ -402,7 +386,8 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                             keyboardType: TextInputType.number,
                             focusNode: nohpFocus,
                             textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                            style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                            decoration: InputDecoration(hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontSize: 12.0)),
                           ),
                         ),
 
@@ -417,7 +402,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                 child: InputDecorator(
                   decoration: const InputDecoration(
                     labelText: 'Gender',
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize:20),
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rosemary",fontSize:20),
                   ),
                   isEmpty: dropdownValue == null,
                   child: new DropdownButtonHideUnderline(
@@ -431,7 +416,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                       items: <String>['pilih','male', 'female'].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value,style: TextStyle(fontFamily: ThaibahFont().fontQ),),
                         );
                       }).toList(),
                     ),
@@ -453,7 +438,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                           children: <Widget>[
                             SizedBox(height: ScreenUtilQ.getInstance().setHeight(30),),
                             Icon(Icons.cloud_upload),
-                            _image == null || _image == "" ? Text('pilih photo profile',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.red)) : Text('photo profile sudah dipilih',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.green))
+                            _image == null || _image == "" ? Text('pilih photo profile',style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:Colors.red)) : Text('photo profile sudah dipilih',style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:Colors.green))
                           ],
                         ),
                         onPressed: () => getImageFile(ImageSource.gallery),
@@ -478,7 +463,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                           children: <Widget>[
                             SizedBox(height: ScreenUtilQ.getInstance().setHeight(30),),
                             Icon(Icons.cloud_upload),
-                            _image2 == null || _image2 == "" ? Text('pilih photo cover',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.red)) : Text('photo cover sudah dipilih',style: TextStyle(fontWeight: FontWeight.bold,color:Colors.green))
+                            _image2 == null || _image2 == "" ? Text('pilih photo cover',style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:Colors.red)) : Text('photo cover sudah dipilih',style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:Colors.green))
                           ],
                         ),
                         onPressed: () => getImageFile2(ImageSource.gallery),
@@ -500,32 +485,49 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                   ],
                 ),
               ),
+              UserRepository().buttonQ(context,warna1,warna2,(){
+                if (nameController.text == "") {
+                  UserRepository().notifNoAction(_scaffoldKey, context,"Nama Harus Diisi","failed");
+//                          return showInSnackBar("Nama Harus Disi",'gagal');
+                }
+                else if(nohpController.text == ""){
+                  UserRepository().notifNoAction(_scaffoldKey, context,"No Handphone Harus Disi","failed");
 
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    margin: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                        color: Colors.green, shape: BoxShape.circle
-                    ),
-                    child: IconButton(
-                      color: Colors.white,
-                      onPressed: () {
-                        if (nameController.text == "") {
-                          return showInSnackBar("Nama Harus Disi",'gagal');
-                        }
-                        else if(nohpController.text == ""){
-                          return showInSnackBar("No Handphone Harus Disi",'gagal');
-                        }
-                        else {
-                          setState(() {_isLoading = true;});
-                          update();
-                        }
-                      },
-                      icon: _isLoading?Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Icon(Icons.arrow_forward),
-                    ),
-                  )
-              ),
+//                          return showInSnackBar("No Handphone Harus Disi",'gagal');
+                }
+                else {
+                  setState(() {_isLoading = true;});
+                  update();
+                }
+              }, _isLoading)
+//              Align(
+//                  alignment: Alignment.centerRight,
+//                  child: Container(
+//                    margin: EdgeInsets.all(16),
+//                    decoration: BoxDecoration(
+//                        color: Colors.green, shape: BoxShape.circle
+//                    ),
+//                    child: IconButton(
+//                      color: Colors.white,
+//                      onPressed: () {
+//                        if (nameController.text == "") {
+//                          UserRepository().notifNoAction(_scaffoldKey, context,"Nama Harus Diisi","failed");
+////                          return showInSnackBar("Nama Harus Disi",'gagal');
+//                        }
+//                        else if(nohpController.text == ""){
+//                          UserRepository().notifNoAction(_scaffoldKey, context,"No Handphone Harus Disi","failed");
+//
+////                          return showInSnackBar("No Handphone Harus Disi",'gagal');
+//                        }
+//                        else {
+//                          setState(() {_isLoading = true;});
+//                          update();
+//                        }
+//                      },
+//                      icon: _isLoading?Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Icon(Icons.arrow_forward),
+//                    ),
+//                  )
+//              ),
             ],
           ),
         ),
@@ -581,7 +583,7 @@ class _OtpUpdateState extends State<OtpUpdate> {
             color: Colors.white,
             fontSize: 16.0,
             fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
+            fontFamily:ThaibahFont().fontQ),
       ),
       backgroundColor: Colors.redAccent,
       duration: Duration(seconds: 3),

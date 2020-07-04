@@ -10,6 +10,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
@@ -38,7 +39,7 @@ class _MyFeedState extends State<MyFeed> {
   String base64Image;
   File tmpFile;
   String fileName;
-  final user_repository = UserRepository();
+  final userRepository = UserRepository();
 
 
   Future sendFeed(caption,img) async{
@@ -154,11 +155,25 @@ class _MyFeedState extends State<MyFeed> {
     ));
   }
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _bloc.fetchListSosmed(1, perpage,'ada');
+    loadTheme();
 
   }
 
@@ -177,59 +192,33 @@ class _MyFeedState extends State<MyFeed> {
           if (snapshot.hasData) {
             return Scaffold(
                 key: _scaffoldKey,
-                appBar: AppBar(
-                  leading: IconButton(
-                    icon: Icon(
-                      Icons.keyboard_backspace,
-                      color: Colors.white,
+                appBar:UserRepository().appBarWithButton(context,"Postingan Saya",warna1,warna2,(){Navigator.of(context).pop();}, new Stack(
+                  children: <Widget>[
+                    new IconButton(
+                        icon: Icon(Icons.notifications_none),
+                        onPressed: () {
+                          deleteCountInbox();
+                          print('tap');
+                          Navigator.of(context, rootNavigator: true).push(
+                            new CupertinoPageRoute(builder: (context) => InboxSosmed()),
+                          ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
+                        }
                     ),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  backgroundColor: Colors.white,
-                  elevation: 0.0,
-                  title: Text('Riwayat Postingan ', style: TextStyle(fontFamily:'Rubik',color:Colors.white,fontWeight: FontWeight.bold)),
-                  flexibleSpace: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: <Color>[
-                          Color(0xFF116240),
-                          Color(0xFF30cc23)
-                        ],
-                      ),
-                    ),
-                  ),
-                  actions: <Widget>[
-                    new Stack(
-                      children: <Widget>[
-                        new IconButton(
-                            icon: Icon(Icons.notifications_none),
-                            onPressed: () {
-                              deleteCountInbox();
-                              print('tap');
-                              Navigator.of(context, rootNavigator: true).push(
-                                new CupertinoPageRoute(builder: (context) => InboxSosmed()),
-                              ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
-                            }
+                    new Positioned(
+                      right: 11,
+                      top: 11,
+                      child: new Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: new BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                        new Positioned(
-                          right: 11,
-                          top: 11,
-                          child: new Container(
-                            padding: EdgeInsets.all(2),
-                            decoration: new BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
-                            child: Text('${snapshot.data.result.notif}', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
-                          ),
-                        )
-                      ],
-                    ),
+                        constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
+                        child: Text('${snapshot.data.result.notif}', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+                      ),
+                    )
                   ],
-                ),
+                ),),
                 body: buildContent(snapshot, context),
                 floatingActionButton: new FloatingActionButton(
                     elevation: 0.0,
@@ -299,8 +288,8 @@ class _MyFeedState extends State<MyFeed> {
                                                 }
                                               },
                                               text: caption,
-                                              style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
-                                              linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                                              style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                                              linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                                             ),
 //
 //                                            child: Html(
@@ -357,7 +346,7 @@ class _MyFeedState extends State<MyFeed> {
                                         children: <Widget>[
                                           Icon(FontAwesomeIcons.penAlt,color: Colors.grey,size: 12.0),
                                           SizedBox(width: 5.0),
-                                          Text(snapshot.data.result.data[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+                                          Text(snapshot.data.result.data[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
                                         ],
                                       )
                                   ),
@@ -370,7 +359,7 @@ class _MyFeedState extends State<MyFeed> {
                                         children: <Widget>[
                                           Icon(FontAwesomeIcons.comment,color: Colors.grey,size: 12.0),
                                           SizedBox(width: 5.0),
-                                          Text(snapshot.data.result.data[index].comments+" komentar",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+                                          Text(snapshot.data.result.data[index].comments+" komentar",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
                                         ],
                                       )
                                   ),
@@ -383,7 +372,7 @@ class _MyFeedState extends State<MyFeed> {
                                         children: <Widget>[
                                           Icon(FontAwesomeIcons.clock,color: Colors.grey,size: 12.0),
                                           SizedBox(width: 5.0),
-                                          Text("${snapshot.data.result.data[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:'Rubik',fontWeight:FontWeight.bold)),
+                                          Text("${snapshot.data.result.data[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
                                         ],
                                       )
                                   ),
@@ -401,7 +390,7 @@ class _MyFeedState extends State<MyFeed> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: Text("Anda Yakin Akan Menghapus Data Ini ???"),
+                            content: Text("Anda Yakin Akan Menghapus Data Ini ???",style: TextStyle(fontFamily: ThaibahFont().fontQ),),
                             actions: <Widget>[
                               FlatButton(
                                 child: Text("Cancel", style: TextStyle(color: Colors.black)),
@@ -410,7 +399,7 @@ class _MyFeedState extends State<MyFeed> {
                                 },
                               ),
                               FlatButton(
-                                child: Text("Delete", style: TextStyle(color: Colors.red),),
+                                child: Text("Delete", style: TextStyle(color: Colors.red,fontFamily: ThaibahFont().fontQ),),
                                 onPressed: () async {
                                   setState(() {
                                     isLoading = true;
@@ -434,7 +423,7 @@ class _MyFeedState extends State<MyFeed> {
           onLoadMore: _loadMore,
         ),
       ),
-    ) : Container(child:Center(child:Text("Data Tida Tersedia",style:TextStyle(fontWeight:FontWeight.bold,fontFamily: 'Rubik'))));
+    ) : Container(child:Center(child:Text("Data Tida Tersedia",style:TextStyle(fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ))));
   }
   Widget slideLeftBackground() {
     return Container(
@@ -452,6 +441,7 @@ class _MyFeedState extends State<MyFeed> {
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
+                fontFamily: ThaibahFont().fontQ
               ),
               textAlign: TextAlign.right,
             ),
@@ -466,53 +456,33 @@ class _MyFeedState extends State<MyFeed> {
   }
   Widget _loading(){
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
+      appBar:UserRepository().appBarWithButton(context,"Postingan Saya",warna1,warna2,(){Navigator.of(context).pop();}, new Stack(
+        children: <Widget>[
+          new IconButton(
+              icon: Icon(Icons.notifications_none),
+              onPressed: () {
+                deleteCountInbox();
+                print('tap');
+                Navigator.of(context, rootNavigator: true).push(
+                  new CupertinoPageRoute(builder: (context) => InboxSosmed()),
+                ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
+              }
           ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0.0,
-        title: Text('Riwayat Postingan ', style: TextStyle(fontFamily:'Rubik',color:Colors.white,fontWeight: FontWeight.bold)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        actions: <Widget>[
-          new Stack(
-            children: <Widget>[
-              new IconButton(
-                  icon: Icon(Icons.notifications_none),
-                  onPressed: () {}
+          new Positioned(
+            right: 11,
+            top: 11,
+            child: new Container(
+              padding: EdgeInsets.all(2),
+              decoration: new BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(6),
               ),
-              new Positioned(
-                right: 11,
-                top: 11,
-                child: new Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: new BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
-                  child: Text(' ', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
-                ),
-              )
-            ],
-          ),
+              constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
+              child: Text('', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+            ),
+          )
         ],
-      ),
+      ),),
       body: ListView.builder(
           primary: true,
           shrinkWrap: true,
@@ -719,7 +689,7 @@ class _BottomWidgetState extends State<BottomWidget> {
                                 Container(
                                   child: Row(
                                     children: <Widget>[
-                                      Text("Upload Gambar",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                      Text("Upload Gambar",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                       SizedBox(width: 10.0),
                                       Icon(Icons.backup,color: Colors.white,)
                                     ],
@@ -758,7 +728,7 @@ class _BottomWidgetState extends State<BottomWidget> {
                     },
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(10.0, 22.0, 10.0, 22.0),
-                      child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),),
+                      child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),),
                     ),
                   )
               )
@@ -767,7 +737,7 @@ class _BottomWidgetState extends State<BottomWidget> {
           Padding(
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
             child: TextFormField(
-              style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+              style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
               controller: captionController,
               textInputAction: TextInputAction.newline,
               keyboardType: TextInputType.multiline,
@@ -776,7 +746,7 @@ class _BottomWidgetState extends State<BottomWidget> {
               autofocus: true,
 
               decoration: new InputDecoration(
-                hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                 border: InputBorder.none,
                 hintText: "Buat Caption Status ...",
               ),

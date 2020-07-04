@@ -9,6 +9,8 @@ import 'package:thaibah/UI/component/bank/indexBank.dart';
 import 'package:thaibah/UI/component/dataDiri/updateDataDiri.dart';
 import 'package:thaibah/UI/component/pin/indexPin.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
+import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class IndexMember extends StatefulWidget {
   final String id;
@@ -23,10 +25,25 @@ class _IndexMemberState extends State<IndexMember> {
   bool hasError = false;
   String currentText = "";
 
-  
+
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
+    loadTheme();
     onTapRecognizer = TapGestureRecognizer()
       ..onTap = () {
         Navigator.pop(context);
@@ -46,28 +63,7 @@ class _IndexMemberState extends State<IndexMember> {
       key: scaffoldKey,
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Atur Akun Anda", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar:UserRepository().appBarWithButton(context,"Pengaturam",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Container(
           margin: EdgeInsets.only(top:10),
           color: Colors.white,
@@ -95,9 +91,9 @@ class _IndexMemberState extends State<IndexMember> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text("Data Diri", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 16.0),),
+                                    Text("Data Diri", style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 16.0),),
                                     SizedBox(height:10.0),
-                                    Text("Klik Disini Untuk Mengubah Data Diri Anda", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12)),
+                                    Text("Klik Disini Untuk Mengubah Data Diri Anda", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.normal, fontSize: 12)),
                                   ],),
                                 Icon(Icons.arrow_right)
                               ],
@@ -116,9 +112,9 @@ class _IndexMemberState extends State<IndexMember> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text("Keamanan", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 16.0),),
+                                    Text("Keamanan", style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 16.0),),
                                     SizedBox(height:10.0),
-                                    Text("Klik Disini Untuk Mengubah PIN Anda", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12)),
+                                    Text("Klik Disini Untuk Mengubah PIN Anda", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.normal, fontSize: 12)),
                                   ],
                                 ),
                                 Icon(Icons.arrow_right)
@@ -138,9 +134,9 @@ class _IndexMemberState extends State<IndexMember> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text("Daftar Alamat", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 16.0),),
+                                    Text("Daftar Alamat", style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 16.0),),
                                     SizedBox(height:10.0),
-                                    Text("Klik Disini Untuk Mengubah Alamat Anda", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12)),
+                                    Text("Klik Disini Untuk Mengubah Alamat Anda", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.normal, fontSize: 12)),
                                   ],
                                 ),
                                 Icon(Icons.arrow_right)
@@ -160,9 +156,9 @@ class _IndexMemberState extends State<IndexMember> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text("Akun Bank", style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 16.0),),
+                                    Text("Akun Bank", style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 16.0),),
                                     SizedBox(height:10.0),
-                                    Text("Klik Disini Untuk Mengatur Akun Bank Anda", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12)),
+                                    Text("Klik Disini Untuk Mengatur Akun Bank Anda", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.normal, fontSize: 12)),
                                   ],
                                 ),
                                 Icon(Icons.arrow_right)

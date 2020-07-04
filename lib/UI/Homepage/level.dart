@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/royalti/levelModel.dart';
 import 'package:thaibah/bloc/royalti/royaltiBloc.dart';
+import 'package:thaibah/Constants/constants.dart';
 
 class Level extends StatefulWidget {
   final Function(String param) onItemInteraction;
@@ -115,7 +116,7 @@ class _ChoiceChipState extends State<ChoiceChip> {
           ),
           Text(
             widget.text,
-            style: TextStyle(color: Colors.white, fontSize: 12),
+            style: TextStyle(color: Colors.white, fontSize: 12,fontFamily:ThaibahFont().fontQ),
             softWrap: true,
           )
         ],

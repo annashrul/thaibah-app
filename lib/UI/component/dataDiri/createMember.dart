@@ -21,6 +21,8 @@ import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/config/user_repo.dart';
 Future<Response> post(String url,var body)async{
   return await http
       .post(Uri.encodeFull(url), body: body, headers: {"Accept":"application/json"})
@@ -224,12 +226,27 @@ class _CreateMemberState extends State<CreateMember> {
     });
   }
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
   }
 
   @override
@@ -261,34 +278,11 @@ class _CreateMemberState extends State<CreateMember> {
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        elevation: 0.0,
-        title: Text("Tambah Jaringan",style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-      ),
+      appBar: UserRepository().appBarWithButton(context, "Tambah Jaringan",warna1,warna2,(){Navigator.pop(context);},Container()),
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
       body: _form(),
-      bottomNavigationBar: _bottomNavBarBeli(context),
+//      bottomNavigationBar: _bottomNavBarBeli(context),
 
     );
   }
@@ -384,11 +378,12 @@ class _CreateMemberState extends State<CreateMember> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text("Nama",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                    Text("Nama",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                     TextFormField(
+                      style: TextStyle(fontFamily: ThaibahFont().fontQ),
                       controller: nameController,
                       decoration: InputDecoration(
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
                       ),
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.next,
@@ -409,9 +404,9 @@ class _CreateMemberState extends State<CreateMember> {
                     RichText(
                       text: TextSpan(
                         text: 'No WhatsApp ',
-                        style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+                        style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
                         children: <TextSpan>[
-                          TextSpan(text: '( Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                          TextSpan(text: '( Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan )', style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -437,6 +432,7 @@ class _CreateMemberState extends State<CreateMember> {
                           width: MediaQuery.of(context).size.width/1.5-18.0,
                           child: TextFormField(
                             maxLength: 15,
+                            style: TextStyle(fontFamily: ThaibahFont().fontQ),
                             controller: noHpController,
                             keyboardType: TextInputType.number,
                             focusNode: nohpFocus,
@@ -447,7 +443,7 @@ class _CreateMemberState extends State<CreateMember> {
                               WhitelistingTextInputFormatter.digitsOnly
                             ],
                             textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                            decoration: InputDecoration(hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontSize: 12.0)),
                           ),
                         ),
 
@@ -465,21 +461,22 @@ class _CreateMemberState extends State<CreateMember> {
                     RichText(
                       text: TextSpan(
                         text: 'PIN ',
-                        style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+                        style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
 //                        style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
                         children: <TextSpan>[
-                          TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                          TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
                     TextFormField(
                       obscureText: _secureText,
                       maxLength: 6,
+                      style: TextStyle(fontFamily: ThaibahFont().fontQ),
                       maxLengthEnforced: true,
                       controller: pinController,
                       decoration: InputDecoration(
                         suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
                       ),
                       keyboardType: TextInputType.number,
                       focusNode: pinFocus,
@@ -499,7 +496,7 @@ class _CreateMemberState extends State<CreateMember> {
                     RichText(
                       text: TextSpan(
                         text: 'Konfirmasi PIN ',
-                        style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+                        style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
 //                        style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtil.getInstance().setSp(26)),
                         children: <TextSpan>[
 //                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
@@ -507,13 +504,14 @@ class _CreateMemberState extends State<CreateMember> {
                       ),
                     ),
                     TextFormField(
+                      style: TextStyle(fontFamily: ThaibahFont().fontQ),
                       obscureText: _secureText,
                       maxLength: 6,
                       maxLengthEnforced: true,
                       controller: confirmPinController,
                       decoration: InputDecoration(
                         suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
                       ),
                       keyboardType: TextInputType.number,
                       focusNode: confirmPinFocus,
@@ -530,18 +528,46 @@ class _CreateMemberState extends State<CreateMember> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text("Kode Refferal",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                    Text("Kode Refferal",style: TextStyle(color:Colors.black,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                     TextFormField(
                       readOnly: true,
                       enableInteractiveSelection: false, // will disable paste operation
                       enabled: false,
                       controller: reffController..text = widget.kdReff,
-                      decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                      decoration: InputDecoration(hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontSize: 12.0)),
                       keyboardType: TextInputType.text,
                     ),
                   ],
                 ),
               ),
+              UserRepository().buttonQ(context,warna1,warna2,(){
+                if (nameController.text == "") {
+//                  return showInSnackBar("Nama Harus Disi");
+                  UserRepository().notifNoAction(_scaffoldKey, context,"Nama Harus Diisi","failed");
+                }else if(noHpController.text == ""){
+//                  return showInSnackBar("No Handphone Harus Disi");
+                  UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Harus Diisi","failed");
+                }else if(reffController.text == ""){
+                  UserRepository().notifNoAction(_scaffoldKey, context,"Kode Referral Harus Diisi","failed");
+//                  return showInSnackBar("Kode Referral Harus Disi");
+                }
+//                else if(pinController.text == ""){
+//                  return showInSnackBar("PIN Harus Diisi");
+//                }else if(_image == null || _image == ""){
+//                  return showInSnackBar("Silahkan Upload Photo KTP");
+//                }
+                else {
+                  if(pinController.text != confirmPinController.text){
+                    pinController.clear();
+                    confirmPinController.clear();
+                    UserRepository().notifNoAction(_scaffoldKey, context,"PIN Yang Anda Masuka Tidak Sesuai","failed");
+//                    return showInSnackBar("PIN Yang Anda Masukan Tidak Sesuai");
+                  }else{
+                    setState(() {_isLoading = true;});
+                    create();
+                  }
+                }
+              }, _isLoading)
 //              Padding(
 //                padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 8),
 //                child: Column(
@@ -701,9 +727,20 @@ class _OtpPageStatefulState extends State<OtpPage> {
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            content: LinearProgressIndicator(),
+          return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 100.0),
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height:5.0),
+                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                  ],
+                ),
+              )
           );
+
         },
       );
     });
@@ -732,7 +769,7 @@ class _OtpPageStatefulState extends State<OtpPage> {
                 alertType: RichAlertType.SUCCESS,
                 actions: <Widget>[
                   FlatButton(
-                    child: Text("Kembali"),
+                    child: Text("Kembali",style: TextStyle(fontFamily: ThaibahFont().fontQ),),
                     onPressed: (){
                       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MyProfile()), (Route<dynamic> route) => false);
                     },

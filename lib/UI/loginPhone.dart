@@ -104,7 +104,7 @@ class _LoginPhoneState extends State<LoginPhone> {
     final checkConection = await userRepository.check();
     if(checkConection == false){
       setState(() {_isLoading = false;});
-      return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
+      UserRepository().notifNoAction(_scaffoldKey, context,"Anda Tidak Terhubung Dengan Internet","failed");
     }else{
       if(typeOtp==false){_radioValue2 = null;}
       else{_radioValue2 = _radioValue2;}
@@ -119,39 +119,58 @@ class _LoginPhoneState extends State<LoginPhone> {
             alreadyLogin = false;
             _noHpController.clear();
           });
-
-
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SecondScreen(
-            otp: result.result.otp.toString(),
-            id:result.result.id.toString(),
-            name: result.result.name.toString(),
-            address: result.result.address.toString(),
-            email: result.result.email.toString(),
-            picture: result.result.picture.toString(),
-            cover: result.result.cover.toString(),
-            socketid: result.result.socketid.toString(),
-            kdReferral: result.result.kdReferral.toString(),
-            kdUnique: result.result.kdUnique.toString(),
-            token: result.result.token.toString(),
-            pin: result.result.pin.toString(),
-            noHp: result.result.noHp.toString(),
-            ktp: result.result.ktp.toString(),
-            levelStatus:result.result.levelStatus.toString(),
-            warna1:result.result.tema.warna1,
-            warna2:result.result.tema.warna2,
-          )), (Route<dynamic> route) => false);
+          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+              new CupertinoPageRoute(builder: (BuildContext context)=>SecondScreen(
+                otp: result.result.otp.toString(),
+                id:result.result.id.toString(),
+                name: result.result.name.toString(),
+                address: result.result.address.toString(),
+                email: result.result.email.toString(),
+                picture: result.result.picture.toString(),
+                cover: result.result.cover.toString(),
+                socketid: result.result.socketid.toString(),
+                kdReferral: result.result.kdReferral.toString(),
+                kdUnique: result.result.kdUnique.toString(),
+                token: result.result.token.toString(),
+                pin: result.result.pin.toString(),
+                noHp: result.result.noHp.toString(),
+                ktp: result.result.ktp.toString(),
+                levelStatus:result.result.levelStatus.toString(),
+                warna1:result.result.tema.warna1,
+                warna2:result.result.tema.warna2,
+              )), (Route<dynamic> route) => false
+          );
+//          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SecondScreen(
+//            otp: result.result.otp.toString(),
+//            id:result.result.id.toString(),
+//            name: result.result.name.toString(),
+//            address: result.result.address.toString(),
+//            email: result.result.email.toString(),
+//            picture: result.result.picture.toString(),
+//            cover: result.result.cover.toString(),
+//            socketid: result.result.socketid.toString(),
+//            kdReferral: result.result.kdReferral.toString(),
+//            kdUnique: result.result.kdUnique.toString(),
+//            token: result.result.token.toString(),
+//            pin: result.result.pin.toString(),
+//            noHp: result.result.noHp.toString(),
+//            ktp: result.result.ktp.toString(),
+//            levelStatus:result.result.levelStatus.toString(),
+//            warna1:result.result.tema.warna1,
+//            warna2:result.result.tema.warna2,
+//          )), (Route<dynamic> route) => false);
         }
         else{
           print("######### STATUS ${result.status}");
           setState(() {_isLoading = false;});
-          return showInSnackBar("No Handphone Tidak Terdaftar");
+          UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Tidak Terdaftar","failed");
         }
 
       }
       else{
         General results = res;
         setState(() {_isLoading = false;});
-        return showInSnackBar("No Handphone Tidak Terdaftar");
+        UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Tidak Terdaftar","failed");
       }
     }
     print(_radioValue2);
@@ -270,9 +289,9 @@ class _LoginPhoneState extends State<LoginPhone> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text("Masuk",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(45),fontFamily: "Rubik",letterSpacing: .6,fontWeight: FontWeight.bold)),
+                          Text("Masuk",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(45),fontFamily:ThaibahFont().fontQ,letterSpacing: .6,fontWeight: FontWeight.bold)),
                           SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
-                          Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Telah Anda Daftarkan)",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
+                          Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Telah Anda Daftarkan)",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26))),
                           Row(
                             children: <Widget>[
                               Container(
@@ -297,6 +316,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                               Container(
                                 width: MediaQuery.of(context).size.width/1.7-30.0,
                                 child: TextFormField(
+                                  style: TextStyle(fontFamily: ThaibahFont().fontQ),
                                   maxLength: 15,
                                   controller: _noHpController,
                                   keyboardType: TextInputType.number,
@@ -308,7 +328,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                                   onFieldSubmitted: (value){
                                     _noHpFocus.unfocus();
                                     if(_noHpController.text == ''){
-                                      return showInSnackBar("No Handphone Tidak Terdaftar");
+                                      UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Tidak Terdaftar","failed");
                                     }
                                     else{
                                       setState(() {
@@ -324,7 +344,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                             ],
                           ),
                           SizedBox(height:typeOtp==true?5.0:0.0),
-                          typeOtp==true?Text("Kirim OTP via ?",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))):Text(''),
+                          typeOtp==true?Text("Kirim OTP via ?",style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26))):Text(''),
                           SizedBox(height:typeOtp==true?5.0:0.0),
                           typeOtp==true?Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -346,7 +366,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                                           groupValue: _radioValue2,
                                           onChanged: _handleRadioValueChange2,
                                         ),
-                                        Text("WahtsApp",textAlign:TextAlign.center,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                                        Text("WahtsApp",textAlign:TextAlign.center,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                                       ],
                                     ),
                                   ],
@@ -371,7 +391,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                                           groupValue: _radioValue2,
                                           onChanged: _handleRadioValueChange2,
                                         ),
-                                        Text("SMS",textAlign:TextAlign.center,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: "Rubik",fontWeight: FontWeight.bold))
+                                        Text("SMS",textAlign:TextAlign.center,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                                       ],
                                     ),
 
@@ -388,7 +408,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                   SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("*Pastikan Handphone Anda Terkoneksi Dengan Internet*",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,color:Colors.red)),
+                    child: Text("*Pastikan Handphone Anda Terkoneksi Dengan Internet*",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,color:Colors.red)),
                   ),
 
                   SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
@@ -411,10 +431,10 @@ class _LoginPhoneState extends State<LoginPhone> {
                                 final checkConnection = await userRepository.check();
                                 if(checkConnection == false){
                                   setState(() {_isLoading = false;});
-                                  return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
+                                  UserRepository().notifNoAction(_scaffoldKey, context, "Anda Tidak Terhubung Dengan Internet","failed");
                                 }else{
                                   if(_noHpController.text == ''){
-                                    return showInSnackBar("Anda Belum Memasukan No WhatsApp");
+                                    UserRepository().notifNoAction(_scaffoldKey, context, "Anda Belum Memasukan No WhatsApp","failed");
                                   }else{
                                     setState(() {
                                       _isLoading = true;
@@ -424,8 +444,8 @@ class _LoginPhoneState extends State<LoginPhone> {
                                 }
 
                               },
-                              child: _isLoading?Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Center(
-                                child: Text("Masuk",style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+                              child: _isLoading?Center(child: CircularProgressIndicator(strokeWidth:10,valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Center(
+                                child: Text("Masuk",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
                               ),
                             ),
                           ),
@@ -438,28 +458,11 @@ class _LoginPhoneState extends State<LoginPhone> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       horizontalLine(),
-                      Text("Atau",style: TextStyle(fontSize: 16.0, fontFamily: "Rubik", fontWeight: FontWeight.bold)),
+                      Text("Atau",style: TextStyle(fontSize: 16.0, fontFamily:ThaibahFont().fontQ, fontWeight: FontWeight.bold)),
                       horizontalLine()
                     ],
                   ),
                   SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
-//                  Row(
-//                    mainAxisAlignment: MainAxisAlignment.center,
-//                    children: <Widget>[
-//                      Text("Buat Akun ? ",style: TextStyle(fontFamily: "Rubik"),),
-//                      InkWell(
-//                        onTap: () {
-//                          Navigator.push(
-//                            context,
-//                            MaterialPageRoute(
-//                              builder: (context) => Regist(),
-//                            ),
-//                          );
-//                        },
-//                        child: Text("Daftar disini",style: TextStyle(color: Color(0xFF5d74e3),fontFamily: "Poppins-Bold")),
-//                      )
-//                    ],
-//                  )
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -488,7 +491,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                                 );
                               },
                               child: Center(
-                                child: Text("Daftar",style: TextStyle(color: Colors.green,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+                                child: Text("Daftar",style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
                               ),
                             ),
                           ),
@@ -507,23 +510,7 @@ class _LoginPhoneState extends State<LoginPhone> {
     );
   }
 
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
 
   Widget horizontalLine() => Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -663,11 +650,11 @@ class _SecondScreenState extends State<SecondScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text("Terjadi Kesalahan!"),
-            content: new Text("Kode OTP Tidak Sesuai"),
+            title: new Text("Terjadi Kesalahan!",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
+            content: new Text("Kode OTP Tidak Sesuai",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
             actions: <Widget>[
               new FlatButton(
-                child: new Text("Close"),
+                child: new Text("Close",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
                 onPressed: () {
                   setState(() {
                     isLoading = false;

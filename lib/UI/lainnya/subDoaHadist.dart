@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/subCategoryDoaModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
@@ -9,6 +10,7 @@ import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/lainnya/listDoaHadist.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class SubDoaHadist extends StatefulWidget {
   final String id,title,param;
@@ -26,6 +28,20 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
@@ -33,6 +49,7 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
     super.initState();
     idLocal = widget.id;
     param = widget.param;
+    loadTheme();
     if(param == 'hadis'){
       title = 'Hadits';
       subCategoryDoaHadistBloc.fetchSubCategoryDoaHadist('hadis',idLocal);
@@ -47,30 +64,7 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:  AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        elevation: 0.0,
-        title: Text('${title.toUpperCase()}',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-      ),
+      appBar:UserRepository().appBarWithButton(context,"${title.toUpperCase()}",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Flexible(
@@ -83,6 +77,7 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
                           padding: EdgeInsets.only(top:10.0,bottom: 10.0,left:10.0,right:10.0),
                           child: TextFormField(
                             decoration: new InputDecoration(
+                              labelStyle: TextStyle(fontFamily: ThaibahFont().fontQ),
                               labelText: "Cari hadits disini ......",
                               fillColor: Colors.grey,
                               border: new OutlineInputBorder(
@@ -104,7 +99,7 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
                             autofocus: false,
                             keyboardType: TextInputType.text,
                             style: new TextStyle(
-                              fontFamily: "Rubik",
+                              fontFamily: ThaibahFont().fontQ,
                             ),
 //                                focusNode: searchFocus,
                             onFieldSubmitted: (value){
@@ -217,7 +212,7 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
 //                      SizedBox(width: 10.0),
                         Flexible(
                           child: new Text("${snapshot.data.result[index].title}",
-                              style: TextStyle(fontFamily: "Rubik",color: Colors.black,fontSize: 16.0,fontWeight: FontWeight.bold),
+                              style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontSize: 16.0,fontWeight: FontWeight.bold),
                               overflow: TextOverflow.clip),
                         ),
 //                        Icon(Icons.arrow_forward_ios,size: 15.0)
@@ -237,7 +232,7 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
     }else{
       return Container(
         child: Center(
-          child: Text('Data Tidak Ada',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+          child: Text('Data Tidak Ada',style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
         ),
       );
     }

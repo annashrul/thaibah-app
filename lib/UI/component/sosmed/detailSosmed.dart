@@ -13,6 +13,7 @@ import 'package:thaibah/Model/sosmed/listDetailSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/config/autoSizeTextQ.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -53,12 +54,14 @@ class _DetailSosmedState extends State<DetailSosmed> {
         setState(() {isLoading = false;});
       }else{
         setState(() {isLoading = false;});
-        return showInSnackBar(results.msg);
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+//        return showInSnackBar(results.msg);
       }
     }else{
       General results = res;
       setState(() {isLoading = false;});
-      return showInSnackBar(results.msg);
+      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+//      return showInSnackBar(results.msg);
     }
   }
 
@@ -73,7 +76,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       GagalHitProvider().fetchRequest('like or unlike','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-      return showInSnackBar("terjadi kesalah jaringan");
+      UserRepository().notifNoAction(_scaffoldKey, context,"Terjadi Kesalahan","failed");
+//      return showInSnackBar("terjadi kesalah jaringan");
     }else{
       if(res is General){
         General results = res;
@@ -86,7 +90,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
           setState(() {
             isLoadingLikeOrUnLike = false;
           });
-          return showInSnackBar(results.msg);
+          UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+//          return showInSnackBar(results.msg);
         }
       }
       else{
@@ -94,29 +99,15 @@ class _DetailSosmedState extends State<DetailSosmed> {
         setState(() {
           isLoadingLikeOrUnLike = false;
         });
-        return showInSnackBar(results.msg);
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+//        return showInSnackBar(results.msg);
       }
     }
 
 
   }
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
+
 
   Future<void> refresh() async{
     Timer(Duration(seconds: 1), () {
@@ -156,11 +147,26 @@ class _DetailSosmedState extends State<DetailSosmed> {
     );
   }
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     load();
+    loadTheme();
   }
 
   @override
@@ -174,35 +180,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: (){
-            Navigator.pop(context, () {
-              setState(() {});
-            });
-          },
-        ),
-        automaticallyImplyLeading: true,
-        title: new Text("Detail Postingan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 0.0,
-      ),
+      appBar:UserRepository().appBarWithButton(context,"Detail Postingan",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Scrollbar(
           child: RefreshIndicator(
             child: StreamBuilder(
@@ -245,8 +223,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          new Text("${snapshot.data.result.penulis}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                          new Text("${snapshot.data.result.createdAt}",style: TextStyle(fontSize:10.0,color:Colors.grey,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                          new Text("${snapshot.data.result.penulis}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                          new Text("${snapshot.data.result.createdAt}",style: TextStyle(fontSize:10.0,color:Colors.grey,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                         ],
                                       )
                                     ],
@@ -283,8 +261,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                           }
                                         },
                                         text: snapshot.data.result.caption,
-                                        style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
-                                        linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                                        style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                                        linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                                       ),
                                       SizedBox(height: 10.0),
                                       Container(
@@ -345,12 +323,12 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                             _blocDetail.fetchListDetailSosmed(widget.id); //you get details from screen2 here
                                           });
                                         },
-                                        child:int.parse(snapshot.data.result.likes) != 0 ? Text("$sukai",style: TextStyle(decoration: TextDecoration.underline,fontFamily: 'Rubik',fontWeight: FontWeight.bold,fontSize: 10.0)) : Text("$sukai",style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold,fontSize: 10.0),),
+                                        child:int.parse(snapshot.data.result.likes) != 0 ? Text("$sukai",style: TextStyle(decoration: TextDecoration.underline,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 10.0)) : Text("$sukai",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 10.0),),
                                       ),
                                       new SizedBox(width: 16.0),
                                       new Icon(FontAwesomeIcons.comment),
                                       new SizedBox(width: 10.0),
-                                      Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontSize:10.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                                      Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontSize:10.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
 
 
                                     ],
@@ -422,7 +400,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
               Container(
 //                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
                 child: TextFormField(
-                  style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                  style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
                   controller: captionController,
                   textInputAction: TextInputAction.newline,
                   keyboardType: TextInputType.multiline,
@@ -436,7 +414,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                     }
                   },
                   decoration: new InputDecoration(
-                    hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                    hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                     border: InputBorder.none,
                     hintText: "Tambahkan Komentar...",
                   ),
@@ -462,7 +440,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                     },
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(10.0, 22.0, 10.0, 22.0),
-                      child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),),
+                      child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),),
                     ),
                   )
               )
@@ -507,7 +485,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
 //                          Html(data:snapshot.data.result.comment[index].name,defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                           AutoSizeTextQ(
                             snapshot.data.result.comment[index].name,
-                            style: TextStyle(color:Colors.grey,fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                            style: TextStyle(color:Colors.grey,fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
 
                           ),
                           Linkify(
@@ -519,8 +497,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
                               }
                             },
                             text: snapshot.data.result.comment[index].caption,
-                            style: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
-                            linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                            style: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                            linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                           ),
 
 //                          Html(data: snapshot.data.result.comment[index].caption,defaultTextStyle: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
@@ -528,7 +506,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                       ),
                     ),
                     new SizedBox(width: 10.0),
-                    Text("${snapshot.data.result.comment[index].createdAt}",style: TextStyle(fontFamily: 'Rubik',color: Colors.grey,fontSize: 8.0)),
+                    Text("${snapshot.data.result.comment[index].createdAt}",style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey,fontSize: 8.0)),
                   ],
                 ),
               ),

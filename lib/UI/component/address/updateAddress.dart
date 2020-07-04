@@ -12,6 +12,9 @@ import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
 import 'package:thaibah/Model/kotaModel.dart' as prefix1;
 import 'package:thaibah/Model/kecamatanModel.dart' as prefix2;
+import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/Constants/constants.dart';
+
 class UpdateAddress extends StatefulWidget {
   final String main_address,kd_prov,kd_kota,kd_kec,id;
   UpdateAddress({this.main_address,this.kd_prov,this.kd_kota,this.kd_kec,this.id});
@@ -74,24 +77,41 @@ class _UpdateAddressState extends State<UpdateAddress> {
         Timer(Duration(seconds: 3), () {
           Navigator.of(context).pop();
         });
-        return showInSnackBar(result.msg,'sukses');
+        UserRepository().notifNoAction(_scaffoldKey, context, result.msg,"success");
+//        return showInSnackBar(result.msg,'sukses');
       }else{
         setState(() {_isLoading = false;});
-        return showInSnackBar(result.msg,'gagal');
+        UserRepository().notifNoAction(_scaffoldKey, context, result.msg,"failed");
+//        return showInSnackBar(result.msg,'gagal');
       }
     }else{
       General results = res;
       setState(() {_isLoading = false;});
-      return showInSnackBar(results.msg,'gagal');
+      UserRepository().notifNoAction(_scaffoldKey, context, results.msg,"success");
+//      return showInSnackBar(results.msg,'gagal');
     }
   }
 
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
 
   @override
   void initState() {
     super.initState();
+    loadTheme();
     provinsiBloc.fetchProvinsiist();
 //    kotaBloc.fetchKotaList(widget.kd_prov);
 //    kecamatanBloc.fetchKecamatanList(widget.kd_kota);
@@ -115,23 +135,6 @@ class _UpdateAddressState extends State<UpdateAddress> {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
-  void showInSnackBar(String value,String param) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: param=='sukses'?Colors.green:Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
 
   @override
   Widget horizontalLine() => Padding(
@@ -149,28 +152,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
         key: _scaffoldKey,
         backgroundColor: Colors.white,
         resizeToAvoidBottomPadding: true,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          centerTitle: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF116240),
-                  Color(0xFF30cc23)
-                ],
-              ),
-            ),
-          ),
-          elevation: 1.0,
-          automaticallyImplyLeading: true,
-          title: new Text("Ubah Alamat", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        ),
+        appBar:UserRepository().appBarWithButton(context,"Ubah Alamat",warna1,warna2,(){Navigator.pop(context);},Container()),
         body: ListView(
           children: <Widget>[
             Container(
@@ -195,9 +177,8 @@ class _UpdateAddressState extends State<UpdateAddress> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 0),
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -231,15 +212,16 @@ class _UpdateAddressState extends State<UpdateAddress> {
                         RichText(
                           text: TextSpan(
                               text: 'Alamat',
-                              style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Color(0xFF116240),fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
                               children: <TextSpan>[
-                                TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.grey,fontSize: 10,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                                TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.grey,fontSize: 10,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                               ]
                           ),
                         ),
                         TextField(
+                          style: TextStyle(fontFamily:  ThaibahFont().fontQ),
                           decoration: InputDecoration(
-                              hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
+                              hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ)
                           ),
                           controller: mainAddressController,
                           maxLines: null,
@@ -252,13 +234,19 @@ class _UpdateAddressState extends State<UpdateAddress> {
                           onSubmitted: (value){
                             mainAddressFocus.unfocus();
                             if(mainAddressController.text == ''){
-                              return showInSnackBar("Detail Alamat Harus Diisi",'gagal');
+                              UserRepository().notifNoAction(_scaffoldKey, context,"Detail Alamat Harus Diisi","failed");
+//                              return showInSnackBar("Detail Alamat Harus Diisi",'gagal');
                             }else if(_currentItemSelectedProvinsi == '' || _currentItemSelectedProvinsi == null){
-                              return showInSnackBar("Provinsi Harus Diisi",'gagal');
+                              UserRepository().notifNoAction(_scaffoldKey, context,"Silahkan Pilih Provinsi","failed");
+//                              return showInSnackBar("Provinsi Harus Diisi",'gagal');
                             }else if(_currentItemSelectedKota == '' || _currentItemSelectedKota == null){
-                              return showInSnackBar("Kota Harus Diisi",'gagal');
+//                              return showInSnackBar("Kota Harus Diisi",'gagal');
+                              UserRepository().notifNoAction(_scaffoldKey, context,"Silahkan Pilih Kota","failed");
+
                             }else if(_currentItemSelectedKecamatan == '' || _currentItemSelectedKecamatan == null){
-                              return showInSnackBar("Kecamatan Harus Diisi",'gagal');
+//                              return showInSnackBar("Kecamatan Harus Diisi",'gagal');
+                              UserRepository().notifNoAction(_scaffoldKey, context,"Silahkan Pilih Kecamatan","failed");
+
                             }
                             else{
                               setState(() {
@@ -276,41 +264,65 @@ class _UpdateAddressState extends State<UpdateAddress> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Alamat Pengiriman :", style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Rubik')),
-                        Text("${mainAddressController.text}$tKecamatan$tKota$tProvinsi", style: TextStyle(color:Colors.grey,fontSize:11.0,fontWeight: FontWeight.bold, fontFamily: 'Rubik'))
+                        Text("Alamat Pengiriman :", style: TextStyle(fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ)),
+                        Text("${mainAddressController.text}$tKecamatan$tKota$tProvinsi", style: TextStyle(color:Colors.grey,fontSize:11.0,fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ))
                       ],
                     ),
                   ),
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            color: Colors.green, shape: BoxShape.circle
-                        ),
-                        child: IconButton(
-                          color: Colors.white,
-                          onPressed: () {
-                            if(mainAddressController.text == ''){
-                              return showInSnackBar("Detail Alamat Harus Diisi",'gagal');
-                            }else if(_currentItemSelectedProvinsi == '' || _currentItemSelectedProvinsi == null){
-                              return showInSnackBar("Provinsi Harus Diisi",'gagal');
-                            }else if(_currentItemSelectedKota == '' || _currentItemSelectedKota == null){
-                              return showInSnackBar("Kota Harus Diisi",'gagal');
-                            }else if(_currentItemSelectedKecamatan == '' || _currentItemSelectedKecamatan == null){
-                              return showInSnackBar("Kecamatan Harus Diisi",'gagal');
-                            }
-                            else{
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              update();
-                            }
-                          },
-                          icon: _isLoading ? CircularProgressIndicator():Icon(Icons.arrow_forward),
-                        ),
-                      )
-                  ),
+                  UserRepository().buttonQ(context,warna1,warna2,(){
+                    mainAddressFocus.unfocus();
+                    if(mainAddressController.text == ''){
+                      UserRepository().notifNoAction(_scaffoldKey, context,"Detail Alamat Harus Diisi","failed");
+//                              return showInSnackBar("Detail Alamat Harus Diisi",'gagal');
+                    }else if(_currentItemSelectedProvinsi == '' || _currentItemSelectedProvinsi == null){
+                      UserRepository().notifNoAction(_scaffoldKey, context,"Silahkan Pilih Provinsi","failed");
+//                              return showInSnackBar("Provinsi Harus Diisi",'gagal');
+                    }else if(_currentItemSelectedKota == '' || _currentItemSelectedKota == null){
+//                              return showInSnackBar("Kota Harus Diisi",'gagal');
+                      UserRepository().notifNoAction(_scaffoldKey, context,"Silahkan Pilih Kota","failed");
+
+                    }else if(_currentItemSelectedKecamatan == '' || _currentItemSelectedKecamatan == null){
+//                              return showInSnackBar("Kecamatan Harus Diisi",'gagal');
+                      UserRepository().notifNoAction(_scaffoldKey, context,"Silahkan Pilih Kecamatan","failed");
+
+                    }
+                    else{
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      update();
+                    }
+                  }, _isLoading)
+//                  Align(
+//                      alignment: Alignment.centerRight,
+//                      child: Container(
+//                        margin: EdgeInsets.all(16),
+//                        decoration: BoxDecoration(
+//                            color: Colors.green, shape: BoxShape.circle
+//                        ),
+//                        child: IconButton(
+//                          color: Colors.white,
+//                          onPressed: () {
+//                            if(mainAddressController.text == ''){
+//                              return showInSnackBar("Detail Alamat Harus Diisi",'gagal');
+//                            }else if(_currentItemSelectedProvinsi == '' || _currentItemSelectedProvinsi == null){
+//                              return showInSnackBar("Provinsi Harus Diisi",'gagal');
+//                            }else if(_currentItemSelectedKota == '' || _currentItemSelectedKota == null){
+//                              return showInSnackBar("Kota Harus Diisi",'gagal');
+//                            }else if(_currentItemSelectedKecamatan == '' || _currentItemSelectedKecamatan == null){
+//                              return showInSnackBar("Kecamatan Harus Diisi",'gagal');
+//                            }
+//                            else{
+//                              setState(() {
+//                                _isLoading = true;
+//                              });
+//                              update();
+//                            }
+//                          },
+//                          icon: _isLoading ? CircularProgressIndicator():Icon(Icons.arrow_forward),
+//                        ),
+//                      )
+//                  ),
                 ],
               ),
             ),
@@ -328,7 +340,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Provinsi:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize: 20)
             ),
             isEmpty: _currentItemSelectedProvinsi == null,
             child: new DropdownButtonHideUnderline(
@@ -351,7 +363,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
                   String cek = "${items.id.toString()}|${items.name}";
                   return new DropdownMenuItem<String>(
                     value: "$cek",
-                    child: Text(items.name,style: TextStyle(fontSize: 12),),
+                    child: Text(items.name,style: TextStyle(fontSize: 12,fontFamily: ThaibahFont().fontQ),),
                   );
                 }).toList(),
               ),
@@ -372,7 +384,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Kota:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize: 20)
             ),
             isEmpty: _currentItemSelectedKota == null,
             child: new DropdownButtonHideUnderline(
@@ -394,7 +406,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
                   String cek = "${items.id}|${items.name}";
                   return new DropdownMenuItem<String>(
                     value: "$cek",
-                    child: new Text(items.name,style: TextStyle(fontFamily: 'Rubik',fontSize: 12)),
+                    child: new Text(items.name,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12)),
                   );
                 }).toList()
                 ,
@@ -413,7 +425,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Kecamatan:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Color(0xFF116240),fontFamily: "Rubik",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize: 20)
 
             ),
             isEmpty: _currentItemSelectedKecamatan == null,
@@ -433,7 +445,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
                   String cek = "${items.subdistrictId}|${items.subdistrictName}";
                   return new DropdownMenuItem<String>(
                     value: "$cek",
-                    child: new Text(items.subdistrictName,style: TextStyle(fontFamily: 'Rubik',fontSize: 12)),
+                    child: new Text(items.subdistrictName,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12)),
                   );
                 }).toList(),
               ),

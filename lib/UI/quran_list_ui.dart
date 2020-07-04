@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
 
 import 'package:thaibah/Model/suratModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
@@ -11,6 +12,7 @@ import 'package:thaibah/UI/component/islamic/myQuran.dart';
 import 'package:thaibah/UI/quran_read_ui.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:unicorndial/unicorndial.dart';
 
 
@@ -34,7 +36,7 @@ class QuranListUIState extends State<QuranListUI> {
   bool isLoading = false;
   List colors = [Color(0xFF3f51b5), Color(0xFF116240), Colors.green, Colors.blue];
   Random random = new Random();
-  Widget appBarTitle = Text('Daftar Surat',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold));
+  Widget appBarTitle = Text('Daftar Surat',style: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
   Icon actionIcon = new Icon(Icons.search, color: Colors.white,);
   final key = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
@@ -95,12 +97,27 @@ class QuranListUIState extends State<QuranListUI> {
   }
 
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
 
   @override
   void initState() {
     super.initState();
     _IsSearching = false;
+    loadTheme();
     refresh();
     audioPlayer = new AudioPlayer();
   }
@@ -180,7 +197,7 @@ class QuranListUIState extends State<QuranListUI> {
           childButtons: childButtons
       ),
       bottomNavigationBar: !isLoaded ? null: controls(),
-      appBar: buildBar(context),
+      appBar:buildBar(context),
 //      body: PlayerWidget(url: "http://ia802609.us.archive.org/13/items/quraninindonesia/010Yunus.mp3",),
       body: StreamBuilder(
         stream: suratBloc.allSurat,
@@ -224,7 +241,7 @@ class QuranListUIState extends State<QuranListUI> {
           ),
 
           Container(width: 100.0,),
-          Text(currentPlaying,style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik',fontSize: 14.0),)
+          Text(currentPlaying,style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 14.0),)
 
         ],
       ),
@@ -257,11 +274,11 @@ class QuranListUIState extends State<QuranListUI> {
                           shape: BoxShape.circle,
                           color: colors[random.nextInt(4)],
                         ),
-                        child: new Text(snapshot.data.result[index].suratArab, style: new TextStyle(fontFamily: 'Rubik',color: Colors.white, fontSize: 11.0,fontWeight: FontWeight.bold)),
+                        child: new Text(snapshot.data.result[index].suratArab, style: new TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.white, fontSize: 11.0,fontWeight: FontWeight.bold)),
                       ),
-                      title: Text(snapshot.data.result[index].suratIndonesia+' - '+snapshot.data.result[index].arti, style: TextStyle(fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                      title: Text(snapshot.data.result[index].suratIndonesia+' - '+snapshot.data.result[index].arti, style: TextStyle(fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                       subtitle:
-                      Text("Terdiri dari "+snapshot.data.result[index].jumlahAyat.toString()+" ayat", style: TextStyle(fontFamily: 'Rubik'),),
+                      Text("Terdiri dari "+snapshot.data.result[index].jumlahAyat.toString()+" ayat", style: TextStyle(fontFamily:ThaibahFont().fontQ),),
                       trailing: InkWell(
                         onTap: () => load(index,snapshot.data.result[index].suratAudio,snapshot.data.result[index].suratIndonesia,snapshot.data.result[index].suratArab),
                         child: Icon(Icons.play_circle_outline),
@@ -297,8 +314,9 @@ class QuranListUIState extends State<QuranListUI> {
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
+                statusLevel!='0'?warna1:ThaibahColour.primary1,
+                statusLevel!='0'?warna2:ThaibahColour.primary2,
+//                Color(0xFF30cc23)
               ],
             ),
           ),
@@ -311,10 +329,11 @@ class QuranListUIState extends State<QuranListUI> {
               if (this.actionIcon.icon == Icons.search) {
                 this.actionIcon = new Icon(Icons.close, color: Colors.white,);
                 this.appBarTitle = new TextFormField(
+
                   controller: _searchQuery,
                   autofocus: true,
                   style: new TextStyle(
-                    color: Colors.white,
+                    color: Colors.white,fontFamily: ThaibahFont().fontQ
                   ),
                   decoration: new InputDecoration(
                       focusedBorder: UnderlineInputBorder(
@@ -323,7 +342,7 @@ class QuranListUIState extends State<QuranListUI> {
                       focusColor: Colors.white,
 //                      prefixIcon: new Icon(Icons.search, color: Colors.white),
                       hintText: "Tulis Sesuatu Disini ...",
-                      hintStyle: new TextStyle(color: Colors.white)
+                      hintStyle: new TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ)
                   ),
                   onFieldSubmitted: (value){
                     setState(() {
@@ -353,7 +372,7 @@ class QuranListUIState extends State<QuranListUI> {
   void _handleSearchEnd() {
     setState(() {
       this.actionIcon = new Icon(Icons.search, color: Colors.white,);
-      this.appBarTitle = Text('Daftar Surat',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold));
+      this.appBarTitle = Text('Daftar Surat',style: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
 //      new Text("Daftar Surat", style: new TextStyle(color: Colors.white),);
       _IsSearching = false;
       _searchQuery.clear();

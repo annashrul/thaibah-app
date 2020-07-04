@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/historyModel.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
@@ -156,15 +157,15 @@ class _HistoryPlatinumState extends State<HistoryPlatinum> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                      Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
                       TextFormField(
                         autofocus: false,
                         style: Theme.of(context).textTheme.body1.copyWith(
-                          fontSize: 12.0,
+                          fontSize: 12.0,fontFamily:  ThaibahFont().fontQ
                         ),
                         decoration: InputDecoration(
                             hintText: 'Bulan Ini ...',
-                            hintStyle: TextStyle(color:Colors.grey,fontFamily: 'Rubik')
+                            hintStyle: TextStyle(color:Colors.grey,fontFamily: ThaibahFont().fontQ)
                         ),
                         controller: dateController,
                         onTap: (){
@@ -183,15 +184,15 @@ class _HistoryPlatinumState extends State<HistoryPlatinum> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('Cari',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                    Text('Cari',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
                     TextFormField(
                         autofocus: false,
                         style: Theme.of(context).textTheme.body1.copyWith(
-                          fontSize: 12.0,
+                          fontSize: 12.0,fontFamily:  ThaibahFont().fontQ
                         ),
                         decoration: InputDecoration(
                             hintText: 'Tulis Disini ...',
-                            hintStyle: TextStyle(color:Colors.grey,fontFamily: 'Rubik')
+                            hintStyle: TextStyle(color:Colors.grey,fontFamily: ThaibahFont().fontQ)
                         ),
                         controller: searchController,
                         focusNode: searchFocus,
@@ -273,8 +274,8 @@ class _HistoryPlatinumState extends State<HistoryPlatinum> {
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: <Widget>[
-                                            Text(hm, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold )),
-                                            Text(ymd, style: TextStyle(fontSize: 10),)
+                                            Text(hm, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold,fontFamily:  ThaibahFont().fontQ)),
+                                            Text(ymd, style: TextStyle(fontSize: 10,fontFamily:  ThaibahFont().fontQ),)
                                           ],
                                         ),
                                       ),
@@ -286,7 +287,7 @@ class _HistoryPlatinumState extends State<HistoryPlatinum> {
                                         // mainAxisAlignment: MainAxisAlignment.start,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          Container(child: Text(snapshot.data.result.data[index].note, style: TextStyle(fontSize: 10)),
+                                          Container(child: Text(snapshot.data.result.data[index].note, style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: 10)),
                                           ),
                                         ],
                                       ),
@@ -299,7 +300,7 @@ class _HistoryPlatinumState extends State<HistoryPlatinum> {
                                             Row(
                                               children: <Widget>[
                                                 Icon(Icons.add,size: 12,),
-                                                Text(snapshot.data.result.data[index].trxIn, style: TextStyle(color:Colors.green,fontSize: 10, fontWeight: FontWeight.bold)),
+                                                Text(snapshot.data.result.data[index].trxIn, style: TextStyle(fontFamily: ThaibahFont().fontQ,color:Colors.green,fontSize: 10, fontWeight: FontWeight.bold)),
                                               ],
                                             ),
                                             Row(
@@ -307,7 +308,7 @@ class _HistoryPlatinumState extends State<HistoryPlatinum> {
                                                 Icon(const IconData(0xe15b, fontFamily: 'MaterialIcons'),
                                                   color: Colors.black,size: 12,
                                                 ),
-                                                Text(snapshot.data.result.data[index].trxOut, style: TextStyle(color:Colors.red,fontSize: 10, fontWeight: FontWeight.bold)),
+                                                Text(snapshot.data.result.data[index].trxOut, style: TextStyle(fontFamily: ThaibahFont().fontQ,color:Colors.red,fontSize: 10, fontWeight: FontWeight.bold)),
                                               ],
                                             ),
                                           ],

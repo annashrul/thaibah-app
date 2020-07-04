@@ -150,8 +150,8 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
                   visible: true,
                   child: Column(
                     children: <Widget>[
-                      Text(snapshot.data.result[index].memberName, textAlign: TextAlign.center,style: TextStyle(fontSize:12.0,color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                      Text(snapshot.data.result[index].level, textAlign: TextAlign.center,style: TextStyle(fontSize:12.0,color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik'))
+                      Text(snapshot.data.result[index].memberName, textAlign: TextAlign.center,style: TextStyle(fontSize:12.0,color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                      Text(snapshot.data.result[index].level, textAlign: TextAlign.center,style: TextStyle(fontSize:12.0,color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
                     ],
                   ),
                 ),
@@ -165,7 +165,7 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
       return Container(
         margin: EdgeInsets.symmetric(vertical: 16.0),
         child: Center(
-          child: isLoading?Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Text('tidak ada data',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+          child: isLoading?Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Text('tidak ada data',style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
         ),
       );
     }

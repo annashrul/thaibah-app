@@ -162,7 +162,7 @@ class _DetailTransferState extends State<DetailTransfer> {
                                     ),
                                     Text(
                                       "Lanjutkan",
-                                      style: TextStyle(color: Colors.white),
+                                      style: TextStyle(fontWeight:FontWeight.bold,color: Colors.white,fontFamily: ThaibahFont().fontQ),
                                     )
                                   ],
                                 ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/categoryDoaModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
@@ -12,6 +13,7 @@ import 'package:thaibah/UI/lainnya/listDoaHadist.dart';
 import 'package:thaibah/UI/lainnya/subDoaHadist.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class DoaHarian extends StatefulWidget {
   final String param;
@@ -45,6 +47,20 @@ class _DoaHarianState extends State<DoaHarian> {
   }
 
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
@@ -53,6 +69,7 @@ class _DoaHarianState extends State<DoaHarian> {
     paramLocal = widget.param;
     title = paramLocal=="doa"?"DO'A":"HADITS";
     categoryDoaBloc.fetchCategoryDoa('$paramLocal');
+    loadTheme();
   }
 
 
@@ -63,30 +80,7 @@ class _DoaHarianState extends State<DoaHarian> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:  AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        elevation: 0.0,
-        title: Text('KATEGORI $title',style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-      ),
+      appBar:UserRepository().appBarWithButton(context,"Kategori $title",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Flexible(
@@ -98,7 +92,9 @@ class _DoaHarianState extends State<DoaHarian> {
                         child: new Column(
                             children : [
                               new TextFormField(
+
                                 decoration: new InputDecoration(
+                                  labelStyle: TextStyle(fontFamily: ThaibahFont().fontQ),
                                   labelText: "Cari Do`a Disini ......",
                                   fillColor: Colors.grey,
                                   border: new OutlineInputBorder(
@@ -120,7 +116,7 @@ class _DoaHarianState extends State<DoaHarian> {
                                 autofocus: false,
                                 keyboardType: TextInputType.text,
                                 style: new TextStyle(
-                                  fontFamily: "Rubik",
+                                  fontFamily: ThaibahFont().fontQ,
                                 ),
                                 focusNode: searchFocus,
                                 onFieldSubmitted: (value){
@@ -187,7 +183,7 @@ class _DoaHarianState extends State<DoaHarian> {
           ),
         ],
       ),
-      bottomNavigationBar: _bottomNavBarBeli(context),
+//      bottomNavigationBar: _bottomNavBarBeli(context),
     );
   }
   Widget vwPulsa(AsyncSnapshot<CategoryDoaModel> snapshot, BuildContext context){
@@ -219,7 +215,7 @@ class _DoaHarianState extends State<DoaHarian> {
                 child: GridTile(
                     header: Text(snapshot.data.result[index].title,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize:11.0,color: Colors.black, fontFamily: "Rubik",fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize:11.0,color: Colors.black, fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
                     ),
 //                      footer: Text(
 //                          "${snapshot.data.result[index].countcontent} Do'a",
@@ -258,42 +254,42 @@ class _DoaHarianState extends State<DoaHarian> {
     }else{
       return Container(
         child: Center(
-          child: Text('Data Tidak Ada',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+          child: Text('Data Tidak Ada',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
         ),
       );
     }
 
   }
-  Widget _bottomNavBarBeli(BuildContext context){
-    return Container(
-
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-
-          Container(
-              width: MediaQuery.of(context).size.width/1,
-              height: kBottomNavigationBarHeight,
-              child: FlatButton(
-                shape:RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10) ),
-                ),
-                color: Colors.green,
-                onPressed: (){
-                  Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => SubDoaHadist(
-                        id: 0.toString(),
-                        title:'Semua $title',
-                        param:widget.param
-                    )),
-                  );
-                },
-                child: Text("Lihat Semua $title".toUpperCase(), style: TextStyle(fontFamily:'Rubik',fontWeight:FontWeight.bold,color: Colors.white)),
-              )
-          )
-        ],
-      ),
-    );
-  }
+//  Widget _bottomNavBarBeli(BuildContext context){
+//    return Container(
+//
+//      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+//      child: Row(
+//        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//        children: <Widget>[
+//
+//          Container(
+//              width: MediaQuery.of(context).size.width/1,
+//              height: kBottomNavigationBarHeight,
+//              child: FlatButton(
+//                shape:RoundedRectangleBorder(
+//                  borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10) ),
+//                ),
+//                color: Colors.green,
+//                onPressed: (){
+//                  Navigator.of(context, rootNavigator: true).push(
+//                    new CupertinoPageRoute(builder: (context) => SubDoaHadist(
+//                        id: 0.toString(),
+//                        title:'Semua $title',
+//                        param:widget.param
+//                    )),
+//                  );
+//                },
+//                child: Text("Lihat Semua $title".toUpperCase(), style: TextStyle(fontFamily:'Rubik',fontWeight:FontWeight.bold,color: Colors.white)),
+//              )
+//          )
+//        ],
+//      ),
+//    );
+//  }
 }

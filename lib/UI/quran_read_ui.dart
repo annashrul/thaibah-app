@@ -4,10 +4,12 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/islamic/ayatModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/islamic/islamicProvider.dart';
 
 import 'Widgets/loadMoreQ.dart';
@@ -127,7 +129,20 @@ class QuranReadUIState extends State<QuranReadUI> {
     return true;
   }
 
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
@@ -136,6 +151,7 @@ class QuranReadUIState extends State<QuranReadUI> {
     id    = widget.id;
     param = widget.param;
     ayatBloc.fetchAyatList(int.parse(id),param,1,perpage);
+    loadTheme();
   }
 
   Duration duration;
@@ -211,27 +227,28 @@ class QuranReadUIState extends State<QuranReadUI> {
   Widget build(BuildContext context) {
     return  Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: (){
-            Navigator.of(context).pop();
-          },
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        title: Text(param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param',style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar: UserRepository().appBarWithButton(context, param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param', warna1,warna2,(){Navigator.pop(context);},Container()),
+//      appBar: AppBar(
+//        leading: IconButton(
+//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+//          onPressed: (){
+//            Navigator.of(context).pop();
+//          },
+//        ),
+//        flexibleSpace: Container(
+//          decoration: BoxDecoration(
+//            gradient: LinearGradient(
+//              begin: Alignment.centerLeft,
+//              end: Alignment.centerRight,
+//              colors: <Color>[
+//                Color(0xFF116240),
+//                Color(0xFF30cc23)
+//              ],
+//            ),
+//          ),
+//        ),
+//        title: Text(param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param',style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+//      ),
       body: StreamBuilder(
         stream: ayatBloc.allAyat,
         builder: (context, AsyncSnapshot<AyatModel> snapshot) {
@@ -254,7 +271,7 @@ class QuranReadUIState extends State<QuranReadUI> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              param == 'detail' ? Text("Total Ayat : ${widget.total}", style: TextStyle(color: Colors.black54),):Text("Total Pencarian : ${snapshot.data.result.data.length}", style: TextStyle(color: Colors.black54,fontFamily: 'Rubik'),),
+                              param == 'detail' ? Text("Total Ayat : ${widget.total}", style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black54),):Text("Total Pencarian : ${snapshot.data.result.data.length}", style: TextStyle(color: Colors.black54,fontFamily:ThaibahFont().fontQ),),
                             ],
                           ),
 
@@ -299,7 +316,7 @@ class QuranReadUIState extends State<QuranReadUI> {
                             textDirection: TextDirection.rtl,
                             child: Align(
                               alignment: Alignment.topRight,
-                              child: Text(snapshot.data.result.data[index].arabic, style: TextStyle(fontSize: 20, fontFamily: 'Rubik')),
+                              child: Text(snapshot.data.result.data[index].arabic, style: TextStyle(fontSize: 20, fontFamily:ThaibahFont().fontQ)),
                             ),
                           ),
                         ),
@@ -307,14 +324,14 @@ class QuranReadUIState extends State<QuranReadUI> {
                       Container(
                         padding: EdgeInsets.only(left:16.0,bottom:10.0, right:16.0),
                         child: Html(
-                          defaultTextStyle: TextStyle(fontFamily: 'Rubik',fontSize: 12,color:Colors.black),
+                          defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12,color:Colors.black),
                           data: tampung.replaceAll(r'\', r' '),
                         ),
                       ),
                       Container(
                         padding: EdgeInsets.only(left:13.0,bottom:10.0, right:16.0),
                         child: Html(
-                          defaultTextStyle: TextStyle(fontFamily: 'Rubik',fontSize: 12,color:Colors.black),
+                          defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12,color:Colors.black),
                           data: snapshot.data.result.data[index].surahAyat.replaceAll(r'\', r' '),
                         ),
                       ),

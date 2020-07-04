@@ -8,6 +8,8 @@ import 'package:thaibah/Model/myBankModel.dart';
 import 'package:thaibah/UI/Widgets/listBank.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
+import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/config/user_repo.dart';
 class Bank extends StatefulWidget {
   @override
   _BankState createState() => _BankState();
@@ -38,16 +40,18 @@ class _BankState extends State<Bank> {
           accNameController.clear();
           accNoController.clear();
         });
-        return showInSnackBar('Data Bank Berhasil Ditambahkan','sukses');
+        UserRepository().notifNoAction(_scaffoldKey, context,"Data Bank Berhasil Ditambahkan","success");
+//        return showInSnackBar('Data Bank Berhasil Ditambahkan','sukses');
       }else{
         setState(() {_isLoading = false;});
-
-        return showInSnackBar(result.msg,'gagal');
+        UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
+//        return showInSnackBar(result.msg,'gagal');
       }
     }else{
       General results = res;
       setState(() {_isLoading = false;});
-      return showInSnackBar(results.msg,'gagal');
+      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+//      return showInSnackBar(results.msg,'gagal');
     }
   }
 
@@ -59,24 +63,45 @@ class _BankState extends State<Bank> {
         setState(() {
           _isLoading = false;
         });
-        return showInSnackBar('Data Bank Anda Berhasil Dihapus','sukses');
+        UserRepository().notifNoAction(_scaffoldKey, context,"Data Bank Berhasil Dihapus","success");
+
+//        return showInSnackBar('Data Bank Anda Berhasil Dihapus','sukses');
       }else{
         setState(() {_isLoading = false;});
-        return showInSnackBar(result.msg,'gagal');
+        UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
+
+//        return showInSnackBar(result.msg,'gagal');
       }
     }else{
       General results = res;
       setState(() {_isLoading = false;});
-      return showInSnackBar(results.msg,'gagal');
+      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+
+//      return showInSnackBar(results.msg,'gagal');
     }
   }
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   
 
   @override
   void initState() {
     super.initState();
+    loadTheme();
     accNoController = TextEditingController();
     accNameController = TextEditingController();
     myBankBloc.fetchMyBankList();
@@ -88,29 +113,12 @@ class _BankState extends State<Bank> {
     accNameController.dispose();
     super.dispose();
   }
-  void showInSnackBar(String value, String param) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: param == 'sukses' ? Colors.green:Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _buildAppBar(),
+      appBar: UserRepository().appBarWithButton(context,"Daftar Bank",warna1,warna2,(){Navigator.pop(context);},_buildAddCardButton()),
       body: StreamBuilder(
         stream: myBankBloc.allBank,
         builder: (context, AsyncSnapshot<MyBankModel> snapshot) {
@@ -195,7 +203,7 @@ class _BankState extends State<Bank> {
             padding: const EdgeInsets.symmetric(vertical: 18.0),
             child: Text(
               'Pilih dan Geser Untuk Menghapus Data Bank Anda',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,fontFamily: 'Rubik'),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,fontFamily:ThaibahFont().fontQ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -241,11 +249,11 @@ class _BankState extends State<Bank> {
                               ),
                             ),
                             title: Text(
-                              snapshot.data.result[index].accName,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                              snapshot.data.result[index].accName,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),
                             ),
                             subtitle: Row(
                               children: <Widget>[
-                                Text(snapshot.data.result[index].accNo, style: TextStyle(color: Colors.black))
+                                Text(snapshot.data.result[index].accNo, style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black))
                               ],
                             ),
                         ),
@@ -257,16 +265,16 @@ class _BankState extends State<Bank> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: Text("Anda Yakin Akan Menghapus Data Ini ???"),
+                            content: Text("Anda Yakin Akan Menghapus Data Ini ???",style:TextStyle(fontFamily:ThaibahFont().fontQ)),
                             actions: <Widget>[
                               FlatButton(
-                                child: Text("Cancel", style: TextStyle(color: Colors.black)),
+                                child: Text("Cancel", style: TextStyle(color: Colors.black,fontFamily: ThaibahFont().fontQ)),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                               ),
                               FlatButton(
-                                child: Text("Delete", style: TextStyle(color: Colors.red),),
+                                child: Text("Delete", style: TextStyle(color: Colors.red,fontFamily: ThaibahFont().fontQ),),
                                 onPressed: () async {
                                   setState(() {
                                     _isLoading = true;
@@ -291,7 +299,7 @@ class _BankState extends State<Bank> {
         children: <Widget>[
           (!_addNewCard) ? Text('') : _buildNewCard(),
           Container(
-              child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily: 'Rubik'),))
+              child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily:ThaibahFont().fontQ)))
           ),
         ],
       );
@@ -319,17 +327,22 @@ class _BankState extends State<Bank> {
         ListBank(callback: getBank),
         SizedBox(height: height),
         TextField(
+          style: TextStyle(fontFamily:ThaibahFont().fontQ,),
           controller: accNoController,
           decoration: InputDecoration(
             labelText: 'No Rekening',
+            labelStyle: TextStyle(fontFamily:ThaibahFont().fontQ)
           ),
           keyboardType: TextInputType.number,
         ),
         SizedBox(height: height),
         TextField(
+          style: TextStyle(fontFamily: ThaibahFont().fontQ),
           controller: accNameController,
           decoration: InputDecoration(
             labelText: 'Atas Nama',
+              labelStyle: TextStyle(fontFamily:ThaibahFont().fontQ)
+
           ),
           keyboardType: TextInputType.text,
         ),
@@ -348,19 +361,22 @@ class _BankState extends State<Bank> {
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('BATAL', style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+                child: Text('BATAL', style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ)),
               ),
               color: Colors.white,
             ),
             MaterialButton(
               onPressed: () {
                 if(bankCodeController == '' || bankCodeController == null){
-                  return showInSnackBar("No Rekening Harus Disi",'gagal');
+                  UserRepository().notifNoAction(_scaffoldKey, context,"No Rekening Harus Diisi","failed");
+//                  return showInSnackBar("No Rekening Harus Disi",'gagal');
                 }
                 else if(accNoController.text == ""){
-                  return showInSnackBar("No Rekening Harus Disi",'gagal');
+                  UserRepository().notifNoAction(_scaffoldKey, context,"No Rekening Harus Diisi","failed");
+//                  return showInSnackBar("No Rekening Harus Disi",'gagal');
                 }else if(accNameController.text == ""){
-                  return showInSnackBar("Atas Nama Harus Disi",'gagal');
+                  UserRepository().notifNoAction(_scaffoldKey, context,"Atas Nama Harus Diisi","failed");
+//                  return showInSnackBar("Atas Nama Harus Disi",'gagal');
                 }
                 else {
                   setState(() {_isLoading = true;});
@@ -370,7 +386,7 @@ class _BankState extends State<Bank> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: _isLoading?Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Center(
-                  child: Text("Daftar",style: TextStyle(color: Colors.white,fontFamily: "Rubik",fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+                  child: Text("Daftar",style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
                 ),
               ),
               color: Color(0xFF116240),
@@ -410,7 +426,7 @@ class _BankState extends State<Bank> {
               " Delete",
               style: TextStyle(
                 color: Colors.white,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w700,fontFamily: ThaibahFont().fontQ
               ),
               textAlign: TextAlign.right,
             ),
@@ -424,35 +440,4 @@ class _BankState extends State<Bank> {
     );
   }
 
-  Widget _buildAppBar() {
-
-    return AppBar(
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_backspace,
-          color: Colors.white,
-        ),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-      centerTitle: true,
-      backgroundColor: Colors.white,
-      elevation: 0.0,
-      title: Text('Daftar Bank ', style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold)),
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: <Color>[
-              Color(0xFF116240),
-              Color(0xFF30cc23)
-            ],
-          ),
-        ),
-      ),
-      actions: <Widget>[
-        _buildAddCardButton()
-      ],
-    );
-  }
 }

@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/doaModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class ListDoaHadist extends StatefulWidget {
   final String type,id,title,search;
@@ -58,6 +60,20 @@ class _ListDoaHadistState extends State<ListDoaHadist> {
   }
 
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -73,6 +89,7 @@ class _ListDoaHadistState extends State<ListDoaHadist> {
       titleApp = '${title.toUpperCase()}';
       doaBloc.fetchDoa(typeLocal, idLocal, '');
     }
+    loadTheme();
 
   }
 
@@ -80,30 +97,7 @@ class _ListDoaHadistState extends State<ListDoaHadist> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: (){
-            Navigator.of(context).pop();
-          },
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("$titleApp", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar:UserRepository().appBarWithButton(context, titleApp,warna1,warna2,(){Navigator.pop(context);},Container()),
       body: StreamBuilder(
         stream:doaBloc.getResult,
         builder: (context, AsyncSnapshot<DoaModel> snapshot) {
@@ -149,7 +143,7 @@ class _ListDoaHadistState extends State<ListDoaHadist> {
                           textDirection: TextDirection.rtl,
                           child: Align(
                             alignment: Alignment.topRight,
-                            child: Text(snapshot.data.result[index].arabic, style: TextStyle(fontSize: 22, fontFamily: 'Rubik'),),
+                            child: Text(snapshot.data.result[index].arabic, style: TextStyle(fontSize: 22, fontFamily:ThaibahFont().fontQ),),
                           ),
                         ),
                       ),
@@ -159,7 +153,7 @@ class _ListDoaHadistState extends State<ListDoaHadist> {
                       child: Align(
                         alignment: Alignment.topLeft,
                         child: Html(
-                          defaultTextStyle: TextStyle(fontFamily: 'Rubik',fontSize: 12,color:Colors.grey,fontStyle: FontStyle.italic),
+                          defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12,color:Colors.grey,fontStyle: FontStyle.italic),
                           data: snapshot.data.result[index].latin.replaceAll(r'\', r' '),
                         ),
                       ),
@@ -169,7 +163,7 @@ class _ListDoaHadistState extends State<ListDoaHadist> {
                       child: Align(
                         alignment: Alignment.topLeft,
                         child: Html(
-                          defaultTextStyle: TextStyle(fontFamily: 'Rubik',fontSize: 12,color:Colors.black),
+                          defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12,color:Colors.black),
                           data: snapshot.data.result[index].terjemahan.replaceAll(r'\', r' '),
                         ),
                       ),
@@ -186,7 +180,7 @@ class _ListDoaHadistState extends State<ListDoaHadist> {
     }else{
       return Container(
         child: Center(
-          child: Text('Data Tidak Ada',style:TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+          child: Text('Data Tidak Ada',style:TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ)),
         ),
       );
     }

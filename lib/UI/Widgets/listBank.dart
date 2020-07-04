@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/bankModel.dart';
 import 'package:thaibah/bloc/bankBloc.dart';
+import 'package:thaibah/Constants/constants.dart';
 
 class ListBank extends StatefulWidget {
   final Function(String val) callback;
@@ -30,7 +31,7 @@ class _ListBankState extends State<ListBank> {
           if(snapshot.hasError) print(snapshot.error);
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
-              labelText: 'Bank',
+              labelText: 'Bank',labelStyle: TextStyle(fontFamily: 'Rosemary')
             ),
             isEmpty: BankCodeController == null,
             child: new DropdownButtonHideUnderline(
@@ -51,7 +52,7 @@ class _ListBankState extends State<ListBank> {
                   }
                   return new DropdownMenuItem<String>(
                       value: items.code + " | "+ items.name,
-                      child: Text(name,style: TextStyle(fontSize: 12,fontFamily: 'Rubik'),maxLines: 2,softWrap: true,overflow: TextOverflow.ellipsis,)
+                      child: Text(name,style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ),maxLines: 2,softWrap: true,overflow: TextOverflow.ellipsis,)
                   );
                 }).toList(),
               ),

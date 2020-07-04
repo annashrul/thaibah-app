@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/prayerBloc.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 enum PlayerState { stopped, playing, paused }
 typedef void OnError(Exception exception);
@@ -106,11 +108,26 @@ class _PrayerListState extends State<PrayerList> {
   }
 
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
   }
 
   @override
@@ -121,27 +138,7 @@ class _PrayerListState extends State<PrayerList> {
 //    prayerBloc.fetchPrayerList(userLocation.longitude==null?'':userLocation.longitude,userLocation.latitude==null?'':userLocation.latitude);
     prayerBloc.fetchPrayerList(widget.lng, widget.lat);
     return Scaffold(
-      appBar: new AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: (){
-            Navigator.of(context).pop();
-          },
-        ),
-        title: Text("Jadwal Sholat ",style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-      ),
+      appBar:UserRepository().appBarWithButton(context,"Jadwal Sholat",warna1,warna2,(){Navigator.pop(context);},Container()),
 //      body: buildContent('Dzuhur', '12:00')
       body: StreamBuilder(
           stream: prayerBloc.allPrayer,
@@ -217,7 +214,7 @@ class _PrayerListState extends State<PrayerList> {
               child: ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                   title: Text(
-                    nama,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                    nama,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                   ),
                   // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
 
@@ -227,7 +224,7 @@ class _PrayerListState extends State<PrayerList> {
                       children: <Widget>[
                         Icon(Icons.access_time, color: Colors.black, size: 20.0,),
                         SizedBox(width: 5.0),
-                        Text(waktu, style: TextStyle(color: Colors.green,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                        Text(waktu, style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                       ],
                     ),
                   ),

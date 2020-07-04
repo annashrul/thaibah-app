@@ -4,6 +4,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/regist_pin_ui.dart' as prefix1;
@@ -86,7 +87,8 @@ class _RegistState extends State<Regist> {
     final checkConnection = await userRepository.check();
     if(checkConnection == false){
       setState(() {_isLoading = false;});
-      return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
+      UserRepository().notifNoAction(_scaffoldKey, context,"Anda Tidak Terhubungan Dengan Internet","failed");
+//      return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
     }else{
       var res = await MemberProvider().resendOtp(no,reffController.text,"register");
       if(res is ResendOtp){
@@ -111,13 +113,16 @@ class _RegistState extends State<Regist> {
           );
         }else{
           setState(() {_isLoading = false;});
-          return showInSnackBar(result.msg);
+          UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
+//          return showInSnackBar(result.msg);
         }
       }
       else{
         General results = res;
         setState(() {_isLoading = false;});
-        return showInSnackBar(results.msg);
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+
+//        return showInSnackBar(results.msg);
       }
     }
 
@@ -170,28 +175,29 @@ class _RegistState extends State<Regist> {
       }
     });
   }
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
   _fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadTheme();
+  }
   @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
@@ -200,32 +206,11 @@ class _RegistState extends State<Regist> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Form Pendaftaran", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar:UserRepository().appBarWithButton(context, "Form Pendaftaran",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: ListView(
           children: <Widget>[
             Container(
-              padding:EdgeInsets.all(10.0),
+              padding:EdgeInsets.only(left:10.0,right:10.0),
               decoration: BoxDecoration(
                   boxShadow: [
                     new BoxShadow(
@@ -247,11 +232,11 @@ class _RegistState extends State<Regist> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 0),
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Lengkapi Form Dibawah Ini ..",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(40))),
+                        Text("Lengkapi Form Dibawah Ini ..",style: TextStyle(fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(40))),
                       ],
                     ),
                   ),
@@ -265,12 +250,13 @@ class _RegistState extends State<Regist> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 0),
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nama",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
+                        Text("Nama",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26))),
                         TextFormField(
+                          style: TextStyle(fontFamily:ThaibahFont().fontQ),
                           maxLength: 60,
                           autofocus: false,
                           controller: nameController,
@@ -293,9 +279,9 @@ class _RegistState extends State<Regist> {
                         RichText(
                           text: TextSpan(
                             text: 'No WhatsApp ',
-                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtilQ.getInstance().setSp(26)),
+                            style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(26)),
                             children: <TextSpan>[
-                              TextSpan(text: '( Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                              TextSpan(text: '( Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan )', style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
@@ -320,6 +306,7 @@ class _RegistState extends State<Regist> {
                             Container(
                               width: MediaQuery.of(context).size.width/1.5-18.0,
                               child: TextFormField(
+                                style: TextStyle(fontFamily:ThaibahFont().fontQ),
                                 maxLength: 15,
                                 controller: noHpController,
                                 keyboardType: TextInputType.number,
@@ -348,13 +335,14 @@ class _RegistState extends State<Regist> {
                         RichText(
                           text: TextSpan(
                             text: 'PIN ',
-                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtilQ.getInstance().setSp(26)),
+                            style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(26)),
                             children: <TextSpan>[
-                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
+                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
                         TextFormField(
+                          style: TextStyle(fontFamily:ThaibahFont().fontQ),
                           obscureText: _secureText,
                           maxLength: 6,
                           maxLengthEnforced: true,
@@ -380,14 +368,15 @@ class _RegistState extends State<Regist> {
                       children: <Widget>[
                         RichText(
                           text: TextSpan(
-                            text: 'Konfirmasi PIN ',
-                            style: TextStyle(color:Colors.black,fontFamily: "Rubik",fontSize:ScreenUtilQ.getInstance().setSp(26)),
+                            text: 'Konfirmasi PIN',
+                            style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(26)),
                             children: <TextSpan>[
 //                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
                         TextFormField(
+                          style: TextStyle(fontFamily:ThaibahFont().fontQ),
                           obscureText: _secureText,
                           maxLength: 6,
                           maxLengthEnforced: true,
@@ -411,8 +400,9 @@ class _RegistState extends State<Regist> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Kode Referral",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtilQ.getInstance().setSp(26))),
+                        Text("Kode Referral",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26))),
                         TextFormField(
+                          style: TextStyle(fontFamily:ThaibahFont().fontQ),
                           maxLength: 15,
                           maxLengthEnforced: true,
                           textCapitalization: TextCapitalization.sentences,
@@ -434,73 +424,56 @@ class _RegistState extends State<Regist> {
                       ],
                     ),
                   ),
-//                  Padding(
-//                    padding: EdgeInsets.only(left:16.0,right:16.0,top:16.0,bottom:0.0),
-//                    child: Column(
-//                      crossAxisAlignment: CrossAxisAlignment.start,
-//                      children: <Widget>[
-//                        Text("Silahkan Upload atau Ambil Photo KTP",style: TextStyle(fontFamily: "Rubik",fontSize: ScreenUtil.getInstance().setSp(26))),
-//                        Container(
-//                          width: double.infinity,
-//                          margin: EdgeInsets.only(top:10.0),
-//                          child: OutlineButton(
-//                            borderSide: BorderSide(color: Colors.grey,width: 1.0),
-//                            child: Column(
-//                              crossAxisAlignment: CrossAxisAlignment.center,
-//                              children: <Widget>[
-//                                Row(
-//                                  mainAxisAlignment: MainAxisAlignment.center,
-//                                  children: <Widget>[
-//                                    Radio(
-//                                      value: 'camera',
-//                                      groupValue: _radioValue2,
-//                                      onChanged: _handleRadioValueChange2,
-//                                    ),
-//
-//                                    new Text('Kamera',style: new TextStyle(fontSize: 11.0,fontFamily: "Rubik")),
-//                                    Radio(
-//                                      value: 'gallery',
-//                                      groupValue: _radioValue2,
-//                                      onChanged: _handleRadioValueChange2,
-//                                    ),
-//
-//                                    new Text('Galeri',style: new TextStyle(fontSize: 11.0,fontFamily: "Rubik")),
-//                                  ],
-//                                ),
-//                                SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
-//                                _radioValue2 == 'camera' ? Icon(Icons.camera_alt) : Icon(Icons.folder),
-//                                _image == null ? _radioValue2 == 'camera' ? Text('Ambil Photo',style:TextStyle(fontFamily: "Rubik")) : Text('Upload Photo',style:TextStyle(fontFamily: "Rubik")) : Text('$_image',style:TextStyle(fontFamily: "Rubik")),
-//                                SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
-//                              ],
-//                            ),
-//                            onPressed: () async {
-//                              try{
-//                                var image = await ImagePicker.pickImage(
-//                                  source: _radioValue2 == 'camera' ? ImageSource.camera : ImageSource.gallery,
-//                                  maxHeight: 600, maxWidth: 600,
-//                                );
-//                                setState(() {_image = image;});
-//                              }catch(e){
-//                                print(e);
-//                              }
-//                            },
-//                          )
-//                        ),
-//                      ],
-//                    ),
-//                  ),
-//                  Flexible(
-//                      child: _image == null ? new Center(child: Text('')): Container(
-//                        padding: EdgeInsets.only(left:16.0,right:16.0),
-//                        child: new Image.file(_image,fit: BoxFit.fill,filterQuality: FilterQuality.high,),
-//                      )
-//                  ),
+                  UserRepository().buttonQ(context, warna1,warna2,()async{
+                    final checkConnection = await userRepository.check();
+                    if(checkConnection == false){
+                      setState(() {_isLoading = false;});
+                      UserRepository().notifNoAction(_scaffoldKey, context,"Anda Tidak Terhubung Dengan Internet","failed");
+//                    return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
+                    }else{
+                      if (nameController.text == "") {
+                        UserRepository().notifNoAction(_scaffoldKey, context,"Nama Harurs Diisi","failed");
+//                      return showInSnackBar("Nama Harus Disi");
+                      }else if(noHpController.text == ""){
+                        UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Harus Diisi","failed");
+//                      return showInSnackBar("No Handphone Harus Disi");
+                      }else if(reffController.text == ""){
+                        UserRepository().notifNoAction(_scaffoldKey, context,"Kode Referral Harus Diisi","failed");
+//                      return showInSnackBar("Kode Referral Harus Disi");
+                      }
+//                    else if(pinController.text == ""){
+//                      return showInSnackBar("PIN Harus Disi");
+//                    }else if(_image == null){
+//                      return showInSnackBar("Silahkan Upload Photo KTP");
+//                    }
+                      else {
+//                      if(pinController.text.length < 6){
+//                        return showInSnackBar("PIN Yang Anda Masukan Kurang Dari 6 Digit");
+//                      }else{
+//                        setState(() {_isLoading = true;});
+//                        create();
+//                      }
+                        if(pinController.text != confirmPinController.text){
+                          pinController.clear();
+                          confirmPinController.clear();
+                          UserRepository().notifNoAction(_scaffoldKey, context,"PIN Yang Anda Masuka Tidak Sesuai","failed");
+//                        return showInSnackBar("PIN Yang Anda Masukan Tidak Sesuai");
+                        }else{
+                          setState(() {_isLoading = true;});
+                          create();
+                        }
+
+                      }
+
+                    }
+                  }, _isLoading)
+
                 ],
               ),
             ),
           ],
         ),
-      bottomNavigationBar: _bottomNavBarBeli(context),
+//      bottomNavigationBar: _bottomNavBarBeli(context),
     );
   }
 
@@ -524,14 +497,18 @@ class _RegistState extends State<Regist> {
                   final checkConnection = await userRepository.check();
                   if(checkConnection == false){
                     setState(() {_isLoading = false;});
-                    return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
+                    UserRepository().notifNoAction(_scaffoldKey, context,"Anda Tidak Terhubung Dengan Internet","failed");
+//                    return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
                   }else{
                     if (nameController.text == "") {
-                      return showInSnackBar("Nama Harus Disi");
+                      UserRepository().notifNoAction(_scaffoldKey, context,"Nama Harurs Diisi","failed");
+//                      return showInSnackBar("Nama Harus Disi");
                     }else if(noHpController.text == ""){
-                      return showInSnackBar("No Handphone Harus Disi");
+                      UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Harus Diisi","failed");
+//                      return showInSnackBar("No Handphone Harus Disi");
                     }else if(reffController.text == ""){
-                      return showInSnackBar("Kode Referral Harus Disi");
+                      UserRepository().notifNoAction(_scaffoldKey, context,"Kode Referral Harus Diisi","failed");
+//                      return showInSnackBar("Kode Referral Harus Disi");
                     }
 //                    else if(pinController.text == ""){
 //                      return showInSnackBar("PIN Harus Disi");
@@ -548,7 +525,8 @@ class _RegistState extends State<Regist> {
                       if(pinController.text != confirmPinController.text){
                         pinController.clear();
                         confirmPinController.clear();
-                        return showInSnackBar("PIN Yang Anda Masukan Tidak Sesuai");
+                        UserRepository().notifNoAction(_scaffoldKey, context,"PIN Yang Anda Masuka Tidak Sesuai","failed");
+//                        return showInSnackBar("PIN Yang Anda Masukan Tidak Sesuai");
                       }else{
                         setState(() {_isLoading = true;});
                         create();

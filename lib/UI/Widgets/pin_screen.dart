@@ -7,6 +7,7 @@ import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/component/pin/resendAuth.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/memberProvider.dart';
+import 'package:thaibah/Constants/constants.dart';
 
 class PinScreen extends StatefulWidget {
   final Function(BuildContext context, bool isTrue) callback;
@@ -33,14 +34,32 @@ class PinScreenState extends State<PinScreen> {
 
   Future biometrics() async {
     setState(() {
-      isLoading = true;
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 100.0),
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height:5.0),
+                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                  ],
+                ),
+              )
+          );
+
+        },
+      );
     });
 //    print("################## STATUS LOADING $isLoading ###########################");
     var res= await MemberProvider().forgotPin();
     if(res is ResendOtp){
-      setState(() {
-        isLoading = true;
-      });
+      setState(() {Navigator.pop(context);});
+
       ResendOtp results = res;
       if(results.status == 'success'){
         setState(() {
@@ -57,9 +76,8 @@ class PinScreenState extends State<PinScreen> {
         UserRepository().notifNoAction(_scaffoldKey, context, results.msg,"success");
       }
     }else{
-      setState(() {
-        isLoading = true;
-      });
+      setState(() {Navigator.pop(context);});
+
       General results = res;
       UserRepository().notifNoAction(_scaffoldKey, context, results.msg,"failed");
     }
@@ -85,7 +103,7 @@ class PinScreenState extends State<PinScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: isLoading? Container(child: Center(child: CircularProgressIndicator()),):LockScreenQ(
+      body: LockScreenQ(
         showFingerPass: true,
         forgotPin: 'Lupa Pin ? Klik Disini',
         fingerFunction: biometrics,

@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/nearbyMosqueModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/nearbyMosqueBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MasjidTerdekat extends StatefulWidget {
@@ -19,6 +21,20 @@ class MasjidTerdekat extends StatefulWidget {
 class _MasjidTerdekatState extends State<MasjidTerdekat> {
 
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
   @override
   void initState() {
@@ -26,35 +42,13 @@ class _MasjidTerdekatState extends State<MasjidTerdekat> {
     super.initState();
     print('latitude = ${widget.lat}, longitude = ${widget.lng}');
     nearbyMosqueBloc.fetchCariSurat(widget.lat,widget.lng);
+    loadTheme();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        centerTitle: false,
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Masjid Terdekat", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-      ),
+      appBar:UserRepository().appBarWithButton(context,"Masjid Terdekat",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: StreamBuilder(
         stream: nearbyMosqueBloc.getResult,
         builder: (context, AsyncSnapshot<NearbyMosqueModel> snapshot) {
@@ -147,14 +141,14 @@ class _MasjidTerdekatState extends State<MasjidTerdekat> {
                             ),
                           ),
                           title: Text(
-                            snapshot.data.result[index].name,style: TextStyle(fontFamily:'Rubik',color: Colors.black, fontWeight: FontWeight.bold),
+                            snapshot.data.result[index].name,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),
                           ),
                           subtitle: Row(
                             children: <Widget>[
-                              Text(snapshot.data.result[index].address, style: TextStyle(fontFamily:'Rubik',color: Colors.grey,fontSize: 11.0,fontWeight:FontWeight.bold))
+                              Text(snapshot.data.result[index].address, style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey,fontSize: 11.0,fontWeight:FontWeight.bold))
                             ],
                           ),
-                          trailing: Text(snapshot.data.result[index].distance,style: TextStyle(fontFamily:'Rubik',color: Colors.black,fontSize: 11.0,fontWeight:FontWeight.bold),),
+                          trailing: Text(snapshot.data.result[index].distance,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontSize: 11.0,fontWeight:FontWeight.bold),),
                         ),
                       ),
                     ),
@@ -166,9 +160,10 @@ class _MasjidTerdekatState extends State<MasjidTerdekat> {
       );
     }else{
       return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Container(
-              child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily: 'Rubik'),))
+              child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily:ThaibahFont().fontQ),))
           ),
         ],
       );

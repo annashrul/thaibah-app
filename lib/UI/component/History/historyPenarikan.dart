@@ -9,6 +9,7 @@ import 'package:thaibah/bloc/withdrawBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 //import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:thaibah/config/dateRangePickerQ.dart' as DateRagePicker;
+import 'package:thaibah/Constants/constants.dart';
 
 class HistoryPenarikan extends StatefulWidget {
   @override
@@ -89,11 +90,25 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
   }
 
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
 
   @override
   void initState() {
     super.initState();
+    loadTheme();
     DateTime today = new DateTime.now();
     DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
     historyPenarikanBloc.fetchHistoryPenarikan(1, perpage,fiftyDaysAgo,'${tahun}-${toBulan}-${toHari}');
@@ -108,49 +123,26 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        automaticallyImplyLeading: true,
-        title: new Text("Riwayat Penarikan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 0.0,
-      ),
+      appBar:UserRepository().appBarWithButton(context,"Riwayat Penarikan",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Row(
             children: <Widget>[
               new Flexible(
                 child: Padding(
-                  padding: EdgeInsets.only(left:15.0),
+                  padding: EdgeInsets.only(left:15.0,top:10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                      Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
                       TextFormField(
                         autofocus: false,
                         style: Theme.of(context).textTheme.body1.copyWith(
-                          fontSize: 12.0,
+                          fontSize: 12.0,fontFamily: ThaibahFont().fontQ
                         ),
                         decoration: InputDecoration(
                           hintText: 'Bulan Ini ...',
+                          hintStyle: TextStyle(fontFamily: ThaibahFont().fontQ)
                         ),
                         controller: dateController,
                         onTap: (){
@@ -163,7 +155,7 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.only(right:8.0,top:10.0),
                 child: IconButton(
                   icon: Icon(Icons.search),
                   tooltip: 'Cari',
@@ -283,21 +275,21 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
                                       RichText(
                                         text: TextSpan(
                                             text: '${snapshot.data.result.data[index].accHolderName}',
-                                            style: TextStyle(fontSize: 12,fontFamily: 'Rubik',color: Colors.black,fontWeight: FontWeight.bold),
+                                            style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
                                             children: <TextSpan>[
-                                              TextSpan(text: ' (${snapshot.data.result.data[index].accNumber})',style: TextStyle(color: Colors.grey, fontSize: 10,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                              TextSpan(text: ' (${snapshot.data.result.data[index].accNumber})',style: TextStyle(color: Colors.grey, fontSize: 10,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                             ]
                                         ),
                                       ),
 //                                      Text("${snapshot.data.result.data[index].accHolderName} (${snapshot.data.result.data[index].accNumber}) ",style: TextStyle(fontFamily:'Rubik',color: Colors.grey, fontWeight: FontWeight.bold),),
-                                      Text("$cek",style: TextStyle(fontSize:12.0,fontFamily:'Rubik',color:warna, fontWeight: FontWeight.bold),),
+                                      Text("$cek",style: TextStyle(fontSize:12.0,fontFamily:ThaibahFont().fontQ,color:warna, fontWeight: FontWeight.bold),),
                                     ],
                                   ),
                                   subtitle: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      Text("Rp ${formatter.format(int.parse(snapshot.data.result.data[index].amount))}", style: TextStyle(fontFamily:'Rubik',color: Colors.red, fontWeight: FontWeight.bold)),
-                                      Text("${DateFormat.yMd().add_jm().format(snapshot.data.result.data[index].createdAt.toLocal())}",style: TextStyle(fontSize:12.0,fontFamily:'Rubik',color: Colors.grey, fontWeight: FontWeight.bold),),
+                                      Text("Rp ${formatter.format(int.parse(snapshot.data.result.data[index].amount))}", style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.red, fontWeight: FontWeight.bold)),
+                                      Text("${DateFormat.yMd().add_jm().format(snapshot.data.result.data[index].createdAt.toLocal())}",style: TextStyle(fontSize:12.0,fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontWeight: FontWeight.bold),),
                                     ],
                                   ),
                                 ),

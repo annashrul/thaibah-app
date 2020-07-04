@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/royalti/levelModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/royalti/royaltiBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class InfoRoyaltiLevel extends StatefulWidget {
   @override
@@ -21,41 +23,30 @@ class _InfoRoyaltiLevelState extends State<InfoRoyaltiLevel> {
   final primary = Color(0xff696b9e);
   final secondary = Color(0xfff29a94);
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
   @override
   void initState() {
     super.initState();
     royaltiLevelBloc.fetchLevelList();
+    loadTheme();
   }
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: (){
-            Navigator.of(context).pop();
-          },
-        ),
-        automaticallyImplyLeading: true,
-        title: new Text("Info Jenjang Karir", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 0.0,
-      ),
+      appBar:UserRepository().appBarWithButton(context,"Info Jenjang Karir",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -148,7 +139,7 @@ class _InfoRoyaltiLevelState extends State<InfoRoyaltiLevel> {
                       Text(
                         snapshot.data.result.data[index].name,
                         style: TextStyle(
-                            fontFamily: 'Rubik',
+                            fontFamily:ThaibahFont().fontQ,
                             color: primary,
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
@@ -157,7 +148,7 @@ class _InfoRoyaltiLevelState extends State<InfoRoyaltiLevel> {
                         height: 6,
                       ),
                       Divider(),
-                      Text('Jumlah Kaki',style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                      Text('Jumlah Kaki',style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                       Row(
                         children: <Widget>[
                           generateStart(snapshot.data.result.data[index].kaki),
@@ -171,7 +162,7 @@ class _InfoRoyaltiLevelState extends State<InfoRoyaltiLevel> {
                           Flexible(
                               child: Text(
                                   "Nilai Omset per kaki sebesar : "+snapshot.data.result.data[index].omset,
-                                  style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: primary, fontSize: 11, letterSpacing: .3)
+                                  style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: primary, fontSize: 11, letterSpacing: .3)
                               ),
                           )
                         ],
@@ -182,7 +173,7 @@ class _InfoRoyaltiLevelState extends State<InfoRoyaltiLevel> {
                       Row(
                         children: <Widget>[
                           Flexible(
-                            child: Text("Mendapatkan Royalti Sebesar : " +snapshot.data.result.data[index].royalti.toString()+" % x Omset Nasional", style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: primary, fontSize: 11, letterSpacing: .3))
+                            child: Text("Mendapatkan Royalti Sebesar : " +snapshot.data.result.data[index].royalti.toString()+" % x Omset Nasional", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: primary, fontSize: 11, letterSpacing: .3))
                           ),
                         ],
                       ),

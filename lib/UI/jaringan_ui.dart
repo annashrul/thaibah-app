@@ -14,7 +14,8 @@ import 'package:thaibah/config/api.dart';
 import 'Homepage/index.dart';
 import 'Widgets/pin_screen.dart';
 
-
+import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/config/user_repo.dart';
 class JaringanUI extends StatefulWidget {
   final String name;
   final String kdReferral;
@@ -45,12 +46,27 @@ class _JaringanUIState extends State<JaringanUI> {
     ).whenComplete(get);
   }
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
     kdReferral = widget.kdReferral;
 //    name = widget.name;
 //    downlineBloc.fetchDownlineList();
@@ -68,30 +84,7 @@ class _JaringanUIState extends State<JaringanUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        elevation: 0.0,
-        title: Text("Jaringan Member $name",style: TextStyle(color: Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-      ),
+      appBar:UserRepository().appBarWithButton(context, "Jaringan Member",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: StreamBuilder(
           stream: detailDownlineBloc.allDetailDownline,
           builder: (context, AsyncSnapshot<DownlineModel> snapshot) {
@@ -153,9 +146,9 @@ class _JaringanUIState extends State<JaringanUI> {
                       child: RichText(
                         text: TextSpan(
                           text: '${snapshot.data.result[index].downlineName}',
-                          style: TextStyle(fontSize:11.0,color: Colors.black, fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                          style: TextStyle(fontSize:11.0,color: Colors.black, fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                           children: <TextSpan>[
-                            TextSpan(text: ' ( ${snapshot.data.result[index].downlineReferral} )', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily: 'Rubik',fontSize: 11.0)),
+                            TextSpan(text: ' ( ${snapshot.data.result[index].downlineReferral} )', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 11.0)),
                           ],
                         ),
                       ),
@@ -178,9 +171,9 @@ class _JaringanUIState extends State<JaringanUI> {
                               RichText(
                                 text: TextSpan(
                                   text: 'Jumlah Downline :',
-                                  style: TextStyle(fontSize:11.0,color: Colors.grey, fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                                  style: TextStyle(fontSize:11.0,color: Colors.grey, fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                                   children: <TextSpan>[
-                                    TextSpan(text: ' ${snapshot.data.result[index].downline} Orang', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily: 'Rubik',fontSize: 11.0)),
+                                    TextSpan(text: ' ${snapshot.data.result[index].downline} Orang', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 11.0)),
                                   ],
                                 ),
                               ),
@@ -192,9 +185,9 @@ class _JaringanUIState extends State<JaringanUI> {
                               RichText(
                                 text: TextSpan(
                                   text: 'Jumlah Omset :',
-                                  style: TextStyle(fontSize:11.0,color: Colors.grey, fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                                  style: TextStyle(fontSize:11.0,color: Colors.grey, fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                                   children: <TextSpan>[
-                                    TextSpan(text: ' Rp ${formatter.format(int.parse(snapshot.data.result[index].downlineOmset))}', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily: 'Rubik',fontSize: 11.0)),
+                                    TextSpan(text: ' Rp ${formatter.format(int.parse(snapshot.data.result[index].downlineOmset))}', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 11.0)),
                                   ],
                                 ),
                               ),
@@ -206,9 +199,9 @@ class _JaringanUIState extends State<JaringanUI> {
                               RichText(
                                 text: TextSpan(
                                   text: 'Jumlah STP : ',
-                                  style: TextStyle(fontSize:11.0,color: Colors.grey, fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                                  style: TextStyle(fontSize:11.0,color: Colors.grey, fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                                   children: <TextSpan>[
-                                    TextSpan(text: '${snapshot.data.result[index].downlineStp}', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily: 'Rubik',fontSize: 11.0)),
+                                    TextSpan(text: '${snapshot.data.result[index].downlineStp}', style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 11.0)),
                                   ],
                                 ),
                               ),

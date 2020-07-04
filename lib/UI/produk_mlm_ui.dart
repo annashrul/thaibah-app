@@ -55,10 +55,13 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     var res = await ProductMlmSuplemenProvider().addProduct(id,harga,qty,weight);
     if(res.status == 'success'){
       countCart();
-      return showInSnackBar("Produk Berhasil Dimasukan Ke Keranjang");
+      UserRepository().notifNoAction(scaffoldKey, context,"Produk Berhasil Dimasukan Ke Keranjang","success");
+//      return showInSnackBar("Produk Berhasil Dimasukan Ke Keranjang");
     }else{
       Navigator.pop(context);
-      return showInSnackBar(res.msg);
+      UserRepository().notifNoAction(scaffoldKey, context,res.msg,"failed");
+
+//      return showInSnackBar(res.msg);
     }
   }
   Future<void> countCart() async{
@@ -75,23 +78,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
       });
     }
   }
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    scaffoldKey.currentState?.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: Colors.green,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
   int perpage = 10;
   void load() {
     print("load $perpage");

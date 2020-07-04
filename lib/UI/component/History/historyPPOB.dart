@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/historyPPOBModel.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
@@ -129,14 +130,15 @@ class _HistoryPPOBState extends State<HistoryPPOB> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                    Text('Periode',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
                     TextFormField(
                       autofocus: false,
                       style: Theme.of(context).textTheme.body1.copyWith(
-                        fontSize: 12.0,
+                        fontSize: 12.0,fontFamily: ThaibahFont().fontQ
                       ),
                       decoration: InputDecoration(
                         hintText: 'Bulan Ini ...',
+                        hintStyle: TextStyle(fontFamily: ThaibahFont().fontQ)
                       ),
                       controller: dateController,
                       onTap: (){
@@ -240,7 +242,7 @@ class _HistoryPPOBState extends State<HistoryPPOB> {
         ),
 
       ],
-    ) : Container(child:Center(child:Text("Data Tidak Tersedia",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),)));
+    ) : Container(child:Center(child:Text("Data Tidak Tersedia",style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),)));
   }
 
 
@@ -291,19 +293,19 @@ class _HistoryPPOBState extends State<HistoryPPOB> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(item, style: TextStyle(fontSize: 10.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-            Text(charge, style: TextStyle(fontSize: 10.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color:statColor))
+            Text(item, style: TextStyle(fontSize: 10.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+            Text(charge, style: TextStyle(fontSize: 10.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:statColor))
           ],
         ),
         SizedBox(
           height: 20.0,
-          child: Text(kdTrx,style: TextStyle(color: Colors.green,fontFamily: 'Rubik',fontSize: 10,fontWeight: FontWeight.bold)),
+          child: Text(kdTrx,style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 10,fontWeight: FontWeight.bold)),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(dateString,style: TextStyle(color: Colors.grey, fontSize: 10.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-            Text(type, style: TextStyle(color: Colors.grey, fontSize: 10.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+            Text(dateString,style: TextStyle(color: Colors.grey, fontSize: 10.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+            Text(type, style: TextStyle(color: Colors.grey, fontSize: 10.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
           ],
         ),
       ],

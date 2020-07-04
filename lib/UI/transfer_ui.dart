@@ -109,33 +109,20 @@ class _TransferUIState extends State<TransferUI> {
           _isLoading = false;
           penerimaController.text = '';
         });
-        return showInSnackBar(results.msg);
+        UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
+//        return showInSnackBar(results.msg);
       }
     }else{
       General results = res;
       setState(() {
         _isLoading = false;
       });
-      return showInSnackBar(results.msg);
+      UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
+
+//      return showInSnackBar(results.msg);
     }
   }
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    scaffoldKey.currentState?.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
   void _lainnyaModalBottomSheet(context){
     showModalBottomSheet(
         context: context,
@@ -152,7 +139,7 @@ class _TransferUIState extends State<TransferUI> {
                 child: Column(
                     children: <Widget>[
                       SizedBox(height: 20,),
-                      Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                      Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                       SizedBox(height: 10.0,),
                       Container(
                         height:MediaQuery.of(context).size.height/2,
@@ -251,11 +238,12 @@ class _TransferUIState extends State<TransferUI> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nominal",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                        Text("Nominal",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
+                          style: TextStyle(fontFamily: ThaibahFont().fontQ),
                           controller: moneyMaskedTextController,
                           decoration: InputDecoration(
-                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
                             prefixText: 'Rp.',
                           ),
                           keyboardType: TextInputType.number,
@@ -292,8 +280,9 @@ class _TransferUIState extends State<TransferUI> {
                               return snapshot.hasData ?  snapshot.data.result.transfer == 'all' ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text("Penerima",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                                  Text("Penerima",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                                   TextFormField(
+                                    style: TextStyle(fontFamily: ThaibahFont().fontQ),
                                     textCapitalization: TextCapitalization.sentences,
                                     onChanged: (value) {
                                       if (penerimaController.text != value.toUpperCase())
@@ -350,9 +339,10 @@ class _TransferUIState extends State<TransferUI> {
                       children: <Widget>[
                         Text("Pesan",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                         TextFormField(
+                          style: TextStyle(fontFamily: ThaibahFont().fontQ),
                           controller: pesanController,
                           decoration: InputDecoration(
-                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
                           ),
                           maxLines: null,
                           keyboardType: TextInputType.text,
@@ -366,17 +356,21 @@ class _TransferUIState extends State<TransferUI> {
 //                              });
 //                              sendTransferDetail();
                             if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
-                              return showInSnackBar("Nominal Tidak Boleh Kosong");
+                              UserRepository().notifNoAction(scaffoldKey, context,"Nominal Tidak Boleh Kosong","failed");
+//                              return showInSnackBar("Nominal Tidak Boleh Kosong");
                             }
                             else{
                               if(cik == 'all'){
                                 if(penerimaController.text == ''){
-                                  return showInSnackBar("Penerima Semua Tidak Boleh Kosong");
+                                  UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
+//                                  return showInSnackBar("Penerima Semua Tidak Boleh Kosong");
                                 }
                               }
                               if(cik=='contact'){
                                 if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
-                                  return showInSnackBar("Penerima Contact Tidak Boleh Kosong");
+                                  UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
+
+//                                  return showInSnackBar("Penerima Contact Tidak Boleh Kosong");
                                 }
                               }
                               setState(() {
@@ -395,17 +389,21 @@ class _TransferUIState extends State<TransferUI> {
                     warna1,warna2,
                     (){
                       if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
-                        return showInSnackBar("Nominal Tidak Boleh Kosong");
+                        UserRepository().notifNoAction(scaffoldKey, context,"Nominal Tidak Boleh Kosong","failed");
+//                        return showInSnackBar("Nominal Tidak Boleh Kosong");
                       }
                       else{
                         if(cik == 'all'){
                           if(penerimaController.text == ''){
-                            return showInSnackBar("Penerima Tidak Boleh Kosong");
+                            UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
+//                            return showInSnackBar("Penerima Tidak Boleh Kosong");
                           }
                         }
                         if(cik=='contact'){
                           if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
-                            return showInSnackBar("Penerima Tidak Boleh Kosong");
+                            UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
+
+//                            return showInSnackBar("Penerima Tidak Boleh Kosong");
                           }
                         }
                         setState(() {

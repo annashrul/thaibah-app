@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
@@ -45,23 +46,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
   bool _isLoading = false;
 
 
-  showInSnackBar(String title,String param) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    scaffoldKey.currentState?.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        title,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: param == 'success' ? Colors.green : Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
   int selectedRadioTile;
   int selectedRadio;
   setSelectedRadioTile(int val) {
@@ -82,33 +67,36 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
   Future save() async{
     if(moneyController.text == null || moneyController.text == '0.00'){
       print('cek');
-      return showInSnackBar("Nominal Harus Diisi","gagal");
+      UserRepository().notifNoAction(scaffoldKey, context,"Nominal Harus Diisi","failed");
     }else{
       final ktp = await userRepository.getDataUser('ktp');
       print(ktp);
       if(ktp == '-'){
-        scaffoldKey.currentState.showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 5),
-              content: Text('Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-              action: SnackBarAction(
-                textColor: Colors.green,
-                label: 'Upload KTP',
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => UpdateKtp(saldo: widget.saldo,saldoBonus: widget.saldoBonus)),
-                  );
-                },
-              ),
-            )
-        );
+        UserRepository().notifWithAction(scaffoldKey, context, 'Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi','failed',"UPLOAD KTP",(){
+          Navigator.of(context, rootNavigator: true).push(
+            new CupertinoPageRoute(builder: (context) => UpdateKtp(saldo: widget.saldo,saldoBonus: widget.saldoBonus)),
+          );
+        });
+
       }else{
         _pinBottomSheet(context);
       }
     }
   }
 
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
 
 
   @override
@@ -121,7 +109,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
     sampleData.add(new RadioModel(false, '400,000.00', 'Rp 400,000.00'));
     sampleData.add(new RadioModel(false, '500,000.00', 'Rp 500,000.00'));
     sampleData.add(new RadioModel(false, '1,000,000.00', 'Rp 1,000,000.00'));
-
+    loadTheme();
   }
 
 
@@ -133,29 +121,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
     _width = MediaQuery.of(context).size.width;
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: false,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-        elevation: 1.0,
-        automaticallyImplyLeading: true,
-        title: new Text("Penukaran Bonus", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-
-      ),
+      appBar:UserRepository().appBarWithButton(context,"Penukaran Bonus",warna1,warna2,(){Navigator.pop(context);},Container()),
       resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
@@ -213,8 +179,8 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                                 ],
                               ),
                             ),
-                            title: Text("Saldo Utama", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black,fontFamily: 'Rubik')),
-                            subtitle: Text(widget.saldo, style: TextStyle(fontSize: 11.0,color: Colors.black,fontFamily: 'Rubik')),
+                            title: Text("Saldo Utama", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
+                            subtitle: Text(widget.saldo, style: TextStyle(fontSize: 11.0,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
                           ),
                         ),
 
@@ -234,8 +200,8 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                                 ],
                               ),
                             ),
-                            title: Text("Saldo Bonus", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black,fontFamily: 'Rubik')),
-                            subtitle: Text(widget.saldoBonus, style: TextStyle(fontSize: 11.0,color: Colors.black,fontFamily: 'Rubik')),
+                            title: Text("Saldo Bonus", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
+                            subtitle: Text(widget.saldoBonus, style: TextStyle(fontSize: 11.0,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
                           ),
                         ),
                       ],
@@ -247,14 +213,14 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text("Nominal",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                      Text("Nominal",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                       TextFormField(
                         controller: moneyController,
                         keyboardType: TextInputType.number,
                         maxLines: 1,
                         autofocus: false,
                         decoration: InputDecoration(
-                          hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                          hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
                           prefixText: 'Rp.',
                         ),
                         inputFormatters: <TextInputFormatter>[
@@ -280,7 +246,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                      Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                       GridView.builder(
                         padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
                         physics: NeverScrollableScrollPhysics(),
@@ -309,20 +275,23 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                     ],
                   ),
                 ),
-                Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      margin: EdgeInsets.all(16),
-                      decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle),
-                      child: IconButton(
-                        color: Colors.white,
-                        onPressed: () async {
-                          save();
-                        },
-                        icon: Icon(Icons.arrow_forward),
-                      ),
-                    )
-                ),
+                UserRepository().buttonQ(context,warna1,warna2,(){
+                  save();
+                }, false)
+//                Align(
+//                    alignment: Alignment.centerRight,
+//                    child: Container(
+//                      margin: EdgeInsets.all(16),
+//                      decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle),
+//                      child: IconButton(
+//                        color: Colors.white,
+//                        onPressed: () async {
+//                          save();
+//                        },
+//                        icon: Icon(Icons.arrow_forward),
+//                      ),
+//                    )
+//                ),
               ],
             ),
           )
@@ -349,9 +318,20 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
           barrierDismissible: false,
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
-              content: LinearProgressIndicator(),
+            return ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 100.0),
+                child: AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                      SizedBox(height:5.0),
+                      Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                )
             );
+
           },
         );
       });
@@ -373,7 +353,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                   actions: <Widget>[
                     FlatButton(
                       color: Colors.green,
-                      child: Text("Kembali", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold)),
+                      child: Text("Kembali", style: TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.white,fontWeight: FontWeight.bold)),
                       onPressed: (){
                         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
                       },
@@ -384,15 +364,19 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
           );
         }
         else{
+          setState(() {Navigator.of(context).pop();});
 //          Navigator.of(context).pop();
 //          setState(() {Navigator.of(context).pop();});
-          return showInSnackBar(results.msg, 'gagal');
+          UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
+//          return showInSnackBar(results.msg, 'gagal');
         }
       }else{
         setState(() {Navigator.of(context).pop();});
         General results = res;
-        setState(() {Navigator.pop(context);});
-        return showInSnackBar(results.msg, 'gagal');
+//        setState(() {Navigator.pop(context);});
+        UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
+
+//        return showInSnackBar(results.msg, 'gagal');
       }
     }
     else{
@@ -401,11 +385,11 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text("Pin Salah!"),
-            content: new Text("Masukan pin yang sesuai."),
+            title: new Text("Pin Salah!",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
+            content: new Text("Masukan pin yang sesuai.",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
             actions: <Widget>[
               new FlatButton(
-                child: new Text("Close"),
+                child: new Text("Close",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

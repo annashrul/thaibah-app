@@ -159,9 +159,10 @@ class _PenarikanState extends State<Penarikan> {
                           controller: moneyController,
                           keyboardType: TextInputType.number,
                           maxLines: 1,
+                          style: TextStyle(fontFamily: ThaibahFont().fontQ),
                           autofocus: false,
                           decoration: InputDecoration(
-                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                            hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontSize: 12.0),
                             prefixText: 'Rp.',
                           ),
                           inputFormatters: <TextInputFormatter>[
@@ -172,7 +173,8 @@ class _PenarikanState extends State<Penarikan> {
                           onFieldSubmitted: (value){
                             saldoFocus.unfocus();
                             if(moneyController.text == '0.00' || moneyController.text == null || bankCodeController == '' || bankCodeController == null){
-                              return showInSnackBar("Lengkapi Form Yang Tersedia");
+                              UserRepository().notifNoAction(scaffoldKey, context,"Lengkapi Form Yang SUdah Tersedia","failed");
+//                              return showInSnackBar("Lengkapi Form Yang Tersedia");
                             }
                             else{
                               setState(() {
@@ -258,7 +260,7 @@ class _PenarikanState extends State<Penarikan> {
             if(snapshot.data.result.length > 0){
               return InputDecorator(
                 decoration: const InputDecoration(
-                  labelStyle: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+                  labelStyle: TextStyle(color:Colors.black,fontFamily:'Rosemary',fontWeight: FontWeight.bold),
                   labelText: 'Bank',
                 ),
                 isEmpty: bankCodeController == null,
@@ -275,7 +277,7 @@ class _PenarikanState extends State<Penarikan> {
                       return new DropdownMenuItem<String>(
                           value: items.id,
 
-                          child: Text(items.bankname!=''?items.bankname:'kosong',style: TextStyle(fontSize: 12,fontFamily: 'Rubik'),maxLines: 2,softWrap: true,overflow: TextOverflow.ellipsis,)
+                          child: Text(items.bankname!=''?items.bankname:'kosong',style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ),maxLines: 2,softWrap: true,overflow: TextOverflow.ellipsis,)
                       );
                     }).toList(),
                   ),
@@ -343,9 +345,20 @@ class _PenarikanState extends State<Penarikan> {
           barrierDismissible: false,
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
-              content: LinearProgressIndicator(),
+            return ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 100.0),
+                child: AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                      SizedBox(height:5.0),
+                      Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                )
             );
+
           },
         );
       });
@@ -366,7 +379,7 @@ class _PenarikanState extends State<Penarikan> {
                 alertType: RichAlertType.SUCCESS,
                 actions: <Widget>[
                   FlatButton(
-                    child: Text("Kembali"),
+                    child: Text("Kembali",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
                     onPressed: (){
                       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
                     },
@@ -391,11 +404,11 @@ class _PenarikanState extends State<Penarikan> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text("Pin Salah!"),
-            content: new Text("Masukan pin yang sesuai."),
+            title: new Text("Pin Salah!",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
+            content: new Text("Masukan pin yang sesuai.",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
             actions: <Widget>[
               FlatButton(
-                child: new Text("Close"),
+                child: new Text("Close",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
