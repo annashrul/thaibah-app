@@ -1,7 +1,7 @@
 name: thaibah
 description: A new Flutter project.
 
-version: 1.2.2+25
+version: 1.2.4+27
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -58,9 +58,7 @@ flutter:
 
 
   fonts:
-    - family: Mirza
-      fonts:
-        - asset: assets/fonts/mirza/Mirza-Medium.ttf
+
     - family: Rosemary
       fonts:
         - asset: assets/fonts/Rosemary/DroidSans-Bold.ttf
@@ -70,9 +68,4 @@ flutter:
     - family: ArabicTwo
       fonts:
         - asset: assets/fonts/arabic-two/ArabicTwo.ttf
-    - family: NeoSans
-      fonts:
-        - asset: assets/fonts/OpenSans-Regular.ttf
-    - family: NeoSansBold
-      fonts:
-        - asset: assets/fonts/OpenSans-Bold.ttf
+

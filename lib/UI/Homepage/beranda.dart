@@ -115,41 +115,51 @@ class BerandaState extends State<Beranda>{
 
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    try{
-      var jsonString = await http.get(
-          ApiService().baseUrl+'info?id='+id,
-          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-      ).timeout(Duration(seconds: ApiService().timerActivity));
-      if (jsonString.statusCode == 200) {
-        setState(() {
-          isLoading = false;retry = false;
-          warna1 = color1==''?ThaibahColour.primary1:hexToColors(color1);
-          warna2 = color2==''?ThaibahColour.primary2:hexToColors(color2);
-          statusLevel = levelStatus;
-        });
-        final jsonResponse = json.decode(jsonString.body);
-        info = new Info.fromJson(jsonResponse);
-        _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
-        _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
-        _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);_saldoPlatinum=(info.result.saldoPlatinum);
-        print("LEVEL PLATINUM ${info.result.levelPlatinum}");
-      } else {
+    if(id == null || id == '') {
+      print('####################### DATA SQLITE KOSONG ########################');
+      setState(() {
+        isLoading = false; modeUpdate = true;
+      });
+      GagalHitProvider().fetchRequest('home','kondisi = ID SQLITE KOSONG, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+    }else{
+      try{
+        var jsonString = await http.get(
+            ApiService().baseUrl+'info?id='+id,
+            headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+        ).timeout(Duration(seconds: ApiService().timerActivity));
+        if (jsonString.statusCode == 200) {
+          setState(() {
+            isLoading = false;retry = false;
+            warna1 = color1==''?ThaibahColour.primary1:hexToColors(color1);
+            warna2 = color2==''?ThaibahColour.primary2:hexToColors(color2);
+            statusLevel = levelStatus;
+          });
+          final jsonResponse = json.decode(jsonString.body);
+          info = new Info.fromJson(jsonResponse);
+          _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
+          _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
+          _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);_saldoPlatinum=(info.result.saldoPlatinum);
+          print("LEVEL PLATINUM ${info.result.levelPlatinum}");
+        } else {
 
-        throw Exception('Failed to load info');
+          throw Exception('Failed to load info');
+        }
+      } on TimeoutException catch(e){
+        print('timeout: $e');
+        setState(() {
+          isLoading = false;retry = true;
+        });
+        GagalHitProvider().fetchRequest('home','kondisi = timeout $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      } on Error catch (e) {
+        print('Error: $e');
+        setState(() {
+          isLoading = false;retry = true;
+        });
+        GagalHitProvider().fetchRequest('home','kondisi = error $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
       }
-    } on TimeoutException catch(e){
-      print('timeout: $e');
-      setState(() {
-        isLoading = false;retry = true;
-      });
-      GagalHitProvider().fetchRequest('home','kondisi = timeout $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-    } on Error catch (e) {
-      print('Error: $e');
-      setState(() {
-        isLoading = false;retry = true;
-      });
-      GagalHitProvider().fetchRequest('home','kondisi = error $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }
+
+
 
 
   }
@@ -187,7 +197,7 @@ class BerandaState extends State<Beranda>{
   Widget buildContent(BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
-    return isLoading ? _loading() :Column(
+    return modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() :Column(
       children: <Widget>[
         Container(
           padding:EdgeInsets.only(top:30.0,left:10.0,right:10.0,bottom:10.0),
@@ -251,7 +261,8 @@ class BerandaState extends State<Beranda>{
                                       ),
                                       child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
                                   ),
-                                ):Container(child:Image.asset("${ApiService().assetsLocal}platinum.png",height:20.0,width:20.0))
+                                ):(levelPlatinumRaw == 1 ? Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)) :
+                                Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
                               ],
                             ),
                             levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),

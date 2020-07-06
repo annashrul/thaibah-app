@@ -119,11 +119,11 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     if(pin == null || pin == '') {
-      print('pin kosong');
+      print('#################### DATA SQLITE KOSONG #####################');
       setState(() {
         modeUpdate = true;
       });
-      GagalHitProvider().fetchRequest('index','kondisi = pin kosong, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      GagalHitProvider().fetchRequest('index','kondisi = DATA SQLITE KOSONG, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }
   }
   // Our first view
@@ -388,78 +388,6 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
           ),
         ),
       ),
-//      body: UpdatePage(),
-//      body: Container(
-//        color: const Color(0xffF4F7FA),
-//        child: WillPopScope(
-//          onWillPop: onWillPop,
-//          child: PageView(
-//            physics: NeverScrollableScrollPhysics(),
-//            onPageChanged: (index) {
-//              indexcontroller.add(index);
-//            },
-//            controller: pageController,
-//            children: <Widget>[
-//              Beranda(lat:latitude,lng:longitude),
-//              ProdukMlmUI(),
-//              About(),
-//              Testimoni(),
-//              ProfileUI(),
-//            ],
-//          ),
-//        ),
-//      ),
-//
-//      bottomNavigationBar: StreamBuilder<Object>(
-//          initialData: 0,
-//          stream: indexcontroller.stream,
-//          builder: (context, snapshot) {
-//            int cIndex = snapshot.data;
-//            return FancyBottomNavigation(
-//              currentIndex: cIndex,
-//              items: <FancyBottomNavigationItem>[
-//                FancyBottomNavigationItem(icon: Icon(Icons.home), title: Text('Home',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),),
-//                FancyBottomNavigationItem(icon: Icon(Icons.shopping_basket), title: Text('Produk',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'))),
-//                FancyBottomNavigationItem(icon: Icon(Icons.account_balance), title: Text('Tentang',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'))),
-//                FancyBottomNavigationItem(icon: Icon(Icons.videocam), title: Text('Testimoni',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),),
-//                FancyBottomNavigationItem(icon: Icon(Icons.account_circle), title: Text('Profile',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'))),
-//              ],
-//              onItemSelected: (int value) {
-//                indexcontroller.add(value);
-//                Future.delayed(Duration(milliseconds: 100), () {
-//                  pageController.jumpToPage(value);
-//                });
-////              pageController.jumpToPage(value);
-//              },
-//            );
-//          }
-//      ),
-//        bottomNavigationBar: CurvedNavigationBarQ(
-//          key: _bottomNavigationKey,
-//          index: 0,
-//          height: 50.0,
-//          items: <Widget>[
-//            Icon(Icons.home, size: 30,color:Colors.white),
-//            Icon(Icons.shopping_basket, size: 30,color:Colors.white),
-//            Icon(Icons.account_balance, size: 30,color:Colors.white),
-//            Icon(Icons.videocam, size: 30,color:Colors.white),
-//            Icon(Icons.account_circle, size: 30,color:Colors.white),
-//          ],
-//          color: Color(0xFF30cc23),
-//          buttonBackgroundColor: Color(0xFF30cc23),
-//          backgroundColor: Colors.white,
-//          animationCurve: Curves.easeInOut,
-//          animationDuration: Duration(milliseconds: 600),
-//          onTap: (index) {
-//            setState(() {
-//              _page = index;
-//            });
-//          },
-//        ),
-//        body: WillPopScope(
-//            child: moves(_page),
-//            onWillPop: onWillPop
-//        )
     );
   }
   Widget modeUpdateBuild(){
@@ -481,16 +409,13 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
                     child: InkWell(
                       splashColor: Colors.green, // splash color
                       onTap: () async {
-                        SharedPreferences prefs = await SharedPreferences.getInstance();
-                        prefs.clear();
-                        prefs.commit();
                         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
                       }, // button pressed
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Icon(Icons.power_settings_new,color: Colors.white,), // icon
-                          Text("Keluar",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold)), // text
+                          Text("Keluar",style:TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.white,fontWeight: FontWeight.bold)), // text
                         ],
                       ),
                     ),
@@ -498,8 +423,8 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
                 ),
               ),
               SizedBox(height: 10.0,),
-              Text("anda baru saja mengupgdate aplikasi thaibah.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-              Text("tekan tombol keluar untuk melanjutkan proses pemakaian aplikasi thaibah",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+              Text("anda baru saja mengupgdate aplikasi thaibah.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              Text("tekan tombol keluar untuk melanjutkan proses pemakaian aplikasi thaibah",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ],
           ),
         ),
@@ -519,7 +444,7 @@ class _UpdatePageState extends State<UpdatePage> {
   static const snackBarDuration = Duration(seconds: 3);
 
   final snackBar = SnackBar(
-    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
     duration: snackBarDuration,
   );
 
@@ -578,13 +503,13 @@ class _UpdatePageState extends State<UpdatePage> {
                   SizedBox(height: 20.0),
                   Container(
                     child: Center(
-                      child: Text("Silahkan Perbaharui Aplikasi Anda Ke Versi ${ApiService().versionCode} !!".toUpperCase(), textAlign: TextAlign.center, style:TextStyle(color:Colors.red,fontSize:14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                      child: Text("Silahkan Perbaharui Aplikasi Anda Ke Versi ${ApiService().versionCode} !!".toUpperCase(), textAlign: TextAlign.center, style:TextStyle(color:Colors.red,fontSize:14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                     ),
                   ),
                   SizedBox(height: 20.0),
                   Container(
                     child: Center(
-                      child: Text("Tekan Tombol Dibawah Ini Untuk Memperbaharui Aplikasi ...".toUpperCase(),  textAlign: TextAlign.center,style:TextStyle(color:Colors.red,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                      child: Text("Tekan Tombol Dibawah Ini Untuk Memperbaharui Aplikasi ...".toUpperCase(),  textAlign: TextAlign.center,style:TextStyle(color:Colors.red,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                     ),
                   ),
                   SizedBox(height: 20.0),
@@ -604,7 +529,7 @@ class _UpdatePageState extends State<UpdatePage> {
                         child: Text(
                           "Perbaharui Aplikasi Sekarang".toUpperCase(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

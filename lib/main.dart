@@ -106,6 +106,8 @@ class SplashState extends State<Splash> {
     }
   }
 
+
+
   Future checkFirstSeen() async {
     final checker = await Prefix1.ConfigProvider().cekVersion();
     final userRepository = UserRepository();
@@ -122,13 +124,11 @@ class SplashState extends State<Splash> {
         print("####################### SERVER VERSI ${checker.result.versionCode} & LOCAL VERSI ${ApiService().versionCode} ################################");
         if(checker.result.versionCode != ApiService().versionCode){
           print("####################### CHECKING VERSION COIDE ################################");
-//          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => UpdatePage()), (Route<dynamic> route) => false);
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
               new CupertinoPageRoute(builder: (BuildContext context)=>UpdatePage()), (Route<dynamic> route) => false
           );
         }else if(checker.result.statusMember == 0){
           print("####################### CHECKING STATUS MEMBER ${checker.result.statusMember} ################################");
-//          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
               new CupertinoPageRoute(builder: (BuildContext context)=>LoginPhone()), (Route<dynamic> route) => false
           );
@@ -136,7 +136,6 @@ class SplashState extends State<Splash> {
           if(statusExitApp == '0'){
             setState(() {isLoading=false;});
             print("####################### CHECKING EXIT APP ################################");
-//            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
             Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                 new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
             );
@@ -147,7 +146,6 @@ class SplashState extends State<Splash> {
               Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                   new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
               );
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
             }
             else{
               if(statusOnBoarding == ''||statusOnBoarding=='0'){
@@ -156,7 +154,6 @@ class SplashState extends State<Splash> {
                 Navigator.of(context, rootNavigator: true).pushReplacement(
                     new CupertinoPageRoute(builder: (context) => IntroScreen())
                 );
-//          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
               }else{
                 if(statusLogin=='1'||statusLogin!='0'){
                   setState(() {isLoading=false;});
@@ -164,7 +161,6 @@ class SplashState extends State<Splash> {
                   Navigator.of(context, rootNavigator: true).pushReplacement(
                       new CupertinoPageRoute(builder: (context) => DashboardThreePage())
                   );
-//            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
                 }else{
                   setState(() {isLoading=false;});
                   Navigator.of(context, rootNavigator: true).pushReplacement(
@@ -183,7 +179,6 @@ class SplashState extends State<Splash> {
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
               new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
           );
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
         }
         else{
           if(statusOnBoarding == ''||statusOnBoarding=='0'){
@@ -192,7 +187,6 @@ class SplashState extends State<Splash> {
             Navigator.of(context, rootNavigator: true).pushReplacement(
                 new CupertinoPageRoute(builder: (context) => IntroScreen())
             );
-//          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
           }else{
             if(statusLogin=='1'||statusLogin!='0'){
               setState(() {isLoading=false;});
@@ -200,7 +194,6 @@ class SplashState extends State<Splash> {
               Navigator.of(context, rootNavigator: true).pushReplacement(
                   new CupertinoPageRoute(builder: (context) => DashboardThreePage())
               );
-//            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
             }else{
               setState(() {isLoading=false;});
               Navigator.of(context, rootNavigator: true).pushReplacement(
@@ -210,7 +203,8 @@ class SplashState extends State<Splash> {
           }
         }
       }
-    }else{
+    }
+    else{
       setState(() {isLoading=false;});
       print("####################### ELSE CHECKER ################################");
       print(checker);
@@ -220,7 +214,6 @@ class SplashState extends State<Splash> {
         Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
           new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
         );
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false);
       }
       else{
         if(statusOnBoarding == ''||statusOnBoarding=='0'){
@@ -229,7 +222,6 @@ class SplashState extends State<Splash> {
           Navigator.of(context, rootNavigator: true).pushReplacement(
               new CupertinoPageRoute(builder: (context) => IntroScreen())
           );
-//          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new IntroScreen()));
         }else{
           if(statusLogin=='1'||statusLogin!='0'){
             setState(() {isLoading=false;});
@@ -237,7 +229,6 @@ class SplashState extends State<Splash> {
             Navigator.of(context, rootNavigator: true).pushReplacement(
                 new CupertinoPageRoute(builder: (context) => DashboardThreePage())
             );
-//            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new DashboardThreePage()));
           }else{
             setState(() {isLoading=false;});
             Navigator.of(context, rootNavigator: true).pushReplacement(
@@ -248,8 +239,11 @@ class SplashState extends State<Splash> {
       }
 
     }
-
-
+//
+//    setState(() {isLoading=false;});
+//    Navigator.of(context, rootNavigator: true).pushReplacement(
+//      new CupertinoPageRoute(builder: (context) => DashboardThreePage())
+//    );
 
   }
 

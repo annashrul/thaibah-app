@@ -233,33 +233,34 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                         alignment: Alignment.center,
                         padding: EdgeInsets.all(1.0),
                         height: MediaQuery.of(context).size.height/1,
-                        child: InfiniteGridView(
-                          loadingWidget:Center(child: CircularProgressIndicator(strokeWidth: 10)),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.all(1.0),
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    height: MediaQuery.of(context).size.height/5.9,
-                                    alignment: Alignment.center,
-                                    child: Center(
-                                      child: _signInButton(video[index]['video'],video[index]['caption'],video[index]['rating'].toString()),
-                                    ),
-                                    decoration:
-                                    BoxDecoration(
-                                      color: Colors.black.withOpacity(0.9),
-                                      image: new DecorationImage(
-                                        fit: BoxFit.cover,
-                                        colorFilter:
-                                        ColorFilter.mode(Colors.black.withOpacity(0.2),
-                                            BlendMode.dstATop),
-                                        image: new NetworkImage(
-                                          video[index]['thumbnail'],
+                        child: Scrollbar(
+                          child: InfiniteGridView(
+                            loadingWidget:Center(child: CircularProgressIndicator(strokeWidth: 10)),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: EdgeInsets.all(1.0),
+                                child: Column(
+                                  children: <Widget>[
+                                    Container(
+                                      height: MediaQuery.of(context).size.height/5.9,
+                                      alignment: Alignment.center,
+                                      child: Center(
+                                        child: _signInButton(video[index]['video'],video[index]['caption'],video[index]['rating'].toString()),
+                                      ),
+                                      decoration:
+                                      BoxDecoration(
+                                        color: Colors.black.withOpacity(0.9),
+                                        image: new DecorationImage(
+                                          fit: BoxFit.cover,
+                                          colorFilter:
+                                          ColorFilter.mode(Colors.black.withOpacity(0.2),
+                                              BlendMode.dstATop),
+                                          image: new NetworkImage(
+                                            video[index]['thumbnail'],
+                                          ),
                                         ),
                                       ),
-                                    ),
 //                                    decoration: BoxDecoration(
 //                                        color: Color.fromRGBO(255, 255, 255, 0.19),
 //                                        image: DecorationImage(
@@ -267,41 +268,42 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
 //                                          fit: BoxFit.cover,
 //                                        )
 //                                    ),
-                                  ),
-
-                                  Container(
-                                    width: MediaQuery.of(context).size.width/1,
-                                    height: ScreenUtilQ.getInstance().setHeight(60),
-                                    decoration: BoxDecoration(
-                                        gradient: LinearGradient(colors: [statusLevel!='0'?warna1:Color(0xFF116240),statusLevel!='0'?warna2:Color(0xFF30CC23)]),
-                                        borderRadius: BorderRadius.circular(0.0),
-                                        boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
                                     ),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        onTap: () async {
-                                          setState(() {
-                                            isLoadingShare = true;
-                                          });
+
+                                    Container(
+                                      width: MediaQuery.of(context).size.width/1,
+                                      height: ScreenUtilQ.getInstance().setHeight(60),
+                                      decoration: BoxDecoration(
+                                          gradient: LinearGradient(colors: [statusLevel!='0'?warna1:Color(0xFF116240),statusLevel!='0'?warna2:Color(0xFF30CC23)]),
+                                          borderRadius: BorderRadius.circular(0.0),
+                                          boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            setState(() {
+                                              isLoadingShare = true;
+                                            });
 //
-                                          share(video[index]['video'],index);
-                                        },
-                                        child: Center(
-                                          child: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))
-                                          ):Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)) : Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+                                            share(video[index]['video'],index);
+                                          },
+                                          child: Center(
+                                            child: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))
+                                            ):Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)) : Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
 
-                              ),
-                            );
-                          },
-                          itemCount: video.length,
-                          hasNext: video.length >= perpage,
-                          nextData: this.loadNextData,
+                                ),
+                              );
+                            },
+                            itemCount: video.length,
+                            hasNext: video.length >= perpage,
+                            nextData: this.loadNextData,
+                          )
                         )
                     ),
                     onRefresh: refresh
