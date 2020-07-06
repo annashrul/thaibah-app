@@ -319,8 +319,33 @@ class _MyProfileState extends State<MyProfile> {
                     child: FlatButton(
                       child: Text("YA", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                       onPressed: () async {
+                        setState(() {
+                          showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ConstrainedBox(
+                                  constraints: BoxConstraints(maxHeight: 100.0),
+                                  child: AlertDialog(
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                                        SizedBox(height:5.0),
+                                        Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                                      ],
+                                    ),
+                                  )
+                              );
+
+                            },
+                          );
+                        });
                         var res = await MemberProvider().logout();
                         if(res.status == 'success'){
+                          setState(() {
+                            Navigator.pop(context);
+                          });
                           final dbHelper = DbHelper.instance;
                           final id = await userRepository.getDataUser('id');
                           final statusLogin = await userRepository.getDataUser('status');
@@ -337,6 +362,11 @@ class _MyProfileState extends State<MyProfile> {
                           final rowsAffected = await dbHelper.update(row);
                           print(rowsAffected);
                           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => xWidget), (Route<dynamic> route) => false);
+                        }else{
+                          setState(() {
+                            Navigator.pop(context);
+                          });
+                          UserRepository().notifNoAction(scaffoldKey, context, res.msg,"failed");
                         }
                       },
                     ),

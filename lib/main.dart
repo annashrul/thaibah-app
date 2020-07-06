@@ -293,7 +293,7 @@ class SplashState extends State<Splash> {
                         ),
                       ),
                       SizedBox(height: 20.0,),
-                      Text('Versi '+ApiService().versionCode,style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),)
+                      Text('Pengecekan Versi ...',style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),)
                     ],
                   ),
                 ),

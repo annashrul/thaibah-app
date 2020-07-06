@@ -337,7 +337,7 @@ class _TransferUIState extends State<TransferUI> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Pesan",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                        Text("Pesan",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
                           style: TextStyle(fontFamily: ThaibahFont().fontQ),
                           controller: pesanController,

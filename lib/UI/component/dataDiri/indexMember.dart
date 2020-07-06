@@ -63,7 +63,7 @@ class _IndexMemberState extends State<IndexMember> {
       key: scaffoldKey,
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      appBar:UserRepository().appBarWithButton(context,"Pengaturam",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar:UserRepository().appBarWithButton(context,"Pengaturan",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Container(
           margin: EdgeInsets.only(top:10),
           color: Colors.white,

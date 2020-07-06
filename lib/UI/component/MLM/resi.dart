@@ -91,40 +91,40 @@ class _ResiState extends State<Resi> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('No.Resi', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.resi, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text('No.Resi', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text(snapshot.data.result.resi, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Tanggal Pengiriman', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.details.waybillDate+' '+snapshot.data.result.ongkir.details.waybillTime, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text('Tanggal Pengiriman', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text(snapshot.data.result.ongkir.details.waybillDate+' '+snapshot.data.result.ongkir.details.waybillTime, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Service Code', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.summary.courierName, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text('Service Code', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text(snapshot.data.result.ongkir.summary.courierName, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Pembeli', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.deliveryStatus.podReceiver, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text('Pembeli', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text(snapshot.data.result.ongkir.deliveryStatus.podReceiver, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Status', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.deliveryStatus.status, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold))
+                              Text('Status', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                              Text(snapshot.data.result.ongkir.deliveryStatus.status, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                             ],
                           ),
                           SizedBox(height: 20.0),
@@ -181,11 +181,11 @@ class _ResiState extends State<Resi> {
                         children: <Widget>[
                           new Text(
                             DateFormat.yMd().format(snapshot.data.result.ongkir.manifest[index].manifestDate.toUtc()),
-                            style: new TextStyle(fontSize: 12.0),
+                            style: new TextStyle(fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
                           ),
                           new Text(
                             snapshot.data.result.ongkir.manifest[index].manifestDescription.toLowerCase(),
-                            style: new TextStyle(fontSize: 12.0, color: Colors.grey),
+                            style: new TextStyle(fontSize: 12.0, color: Colors.grey,fontFamily: ThaibahFont().fontQ),
                           )
                         ],
                       ),
@@ -194,7 +194,7 @@ class _ResiState extends State<Resi> {
                       padding: const EdgeInsets.only(right: 16.0),
                       child: new Text(
                         snapshot.data.result.ongkir.manifest[index].manifestTime,
-                        style: new TextStyle(fontSize: 12.0, color: Colors.grey),
+                        style: new TextStyle(fontSize: 12.0, color: Colors.grey,fontFamily: ThaibahFont().fontQ),
                       ),
                     ),
                   ],

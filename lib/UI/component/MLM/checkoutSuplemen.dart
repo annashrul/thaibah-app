@@ -590,6 +590,28 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   _callBackPin(BuildContext context,bool isTrue) async{
+    setState(() {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 100.0),
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height:5.0),
+                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                  ],
+                ),
+              )
+          );
+
+        },
+      );
+    });
     final dbHelper = DbHelper.instance;
     var sendAddress; var sendVoucher; var sendKurir; var sendOngkir;
     if(dropdownValue == 'Lainnya'){
@@ -613,8 +635,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     var res = await ProductMlmProvider().fetchCheckoutCart(widget.total,sendKurir,sendOngkir,sendAddress,addressType,sendVoucher,_radioValue2);
     print("######################## STATUS CHECKOUT ${res.status}");
     if(res is CheckoutToDetailModel){
+      setState(() {Navigator.of(context).pop();});
       CheckoutToDetailModel result = res;
       if(result.status=="success"){
+        setState(() {Navigator.of(context).pop();});
         final userRepo = UserRepository();
         final id = await userRepo.getDataUser("id");
         final statusLevel = await userRepo.getDataUser("statusLevel");

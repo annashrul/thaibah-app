@@ -9,6 +9,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:location/location.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/beranda.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
@@ -83,7 +84,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
   static const snackBarDuration = Duration(seconds: 3);
 
   final snackBar = SnackBar(
-    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
     duration: snackBarDuration,
   );
 
@@ -95,6 +96,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
         backButtonPressTime == null || currentTime.difference(backButtonPressTime) > snackBarDuration;
     if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
       backButtonPressTime = currentTime;
+//      UserRepository().notifNoAction(_scaffoldKey, context, value, param)
       scaffoldKey.currentState.showSnackBar(snackBar);
       return false;
     }

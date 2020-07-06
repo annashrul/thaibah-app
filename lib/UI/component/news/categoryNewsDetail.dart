@@ -1,6 +1,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/detailNewsPerCategoryModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/detail_berita_ui.dart';
@@ -158,7 +159,7 @@ class _CategoryNewsDetailState extends State<CategoryNewsDetail> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(tit,style: TextStyle(color:Colors.black, fontSize: 14,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                              Text(tit,style: TextStyle(color:Colors.black, fontSize: 14,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
                             ],
                           )
                         )

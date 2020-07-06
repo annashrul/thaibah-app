@@ -68,7 +68,7 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     print("load $perpage");
     setState(() {
-      perpage = perpage += 4;
+      perpage = perpage += 10;
     });
     promosiListBloc.fetchAllPromosiList(1,perpage);
     print(perpage);

@@ -149,7 +149,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
 
   loadNextData() {
     perpage = perpage+=10;
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(Duration(seconds: 3), () {
       loadTestimoni('');
       setState(() {});
     });
@@ -247,13 +247,26 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                                     child: Center(
                                       child: _signInButton(video[index]['video'],video[index]['caption'],video[index]['rating'].toString()),
                                     ),
-                                    decoration: BoxDecoration(
-                                        color: Color.fromRGBO(255, 255, 255, 0.19),
-                                        image: DecorationImage(
-                                          image: NetworkImage('https://backpackerjakarta.com/wp-content/uploads/2016/09/Gumuk-Pasir-Parangkusumo.png'),
-                                          fit: BoxFit.cover,
-                                        )
+                                    decoration:
+                                    BoxDecoration(
+                                      color: Colors.black.withOpacity(0.9),
+                                      image: new DecorationImage(
+                                        fit: BoxFit.cover,
+                                        colorFilter:
+                                        ColorFilter.mode(Colors.black.withOpacity(0.2),
+                                            BlendMode.dstATop),
+                                        image: new NetworkImage(
+                                          video[index]['thumbnail'],
+                                        ),
+                                      ),
                                     ),
+//                                    decoration: BoxDecoration(
+//                                        color: Color.fromRGBO(255, 255, 255, 0.19),
+//                                        image: DecorationImage(
+//                                          image: NetworkImage(video[index]['thumbnail']),
+//                                          fit: BoxFit.cover,
+//                                        )
+//                                    ),
                                   ),
 
                                   Container(

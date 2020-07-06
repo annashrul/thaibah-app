@@ -677,6 +677,9 @@ class BerandaState extends State<Beranda>{
   /* STRUKTUR WIDGET FITUR LAINNYA */
   Widget moreStructure(var iconUrl,var page,String title){
     return Column(
+//      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+//      mainAxisSize:MainAxisSize.min ,
       children: <Widget>[
         InkWell(
           onTap: () {
@@ -1031,6 +1034,7 @@ class BerandaState extends State<Beranda>{
                 Container(
                   color: Colors.white,
                   child: Column(
+
                       children: <Widget>[
                         SizedBox(height: 20),
                         Text("FITUR LAINNYA", style: TextStyle(color: Colors.black,fontSize: 16,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),

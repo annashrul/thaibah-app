@@ -71,7 +71,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
     }else{
       final ktp = await userRepository.getDataUser('ktp');
       print(ktp);
-      if(ktp == '-'){
+      if(ktp == '-' || ktp == ''){
         UserRepository().notifWithAction(scaffoldKey, context, 'Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi','failed',"UPLOAD KTP",(){
           Navigator.of(context, rootNavigator: true).push(
             new CupertinoPageRoute(builder: (context) => UpdateKtp(saldo: widget.saldo,saldoBonus: widget.saldoBonus)),
@@ -215,6 +215,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                     children: <Widget>[
                       Text("Nominal",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                       TextFormField(
+                        style: TextStyle(fontFamily: ThaibahFont().fontQ),
                         controller: moneyController,
                         keyboardType: TextInputType.number,
                         maxLines: 1,
@@ -343,6 +344,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
         GeneralInsertId results = res;
         setState(() {Navigator.of(context).pop();});
         if(results.status=="success"){
+          setState(() {Navigator.of(context).pop();});
           showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -364,6 +366,8 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
           );
         }
         else{
+          print("###################### KADIEU ##################");
+          setState(() {Navigator.of(context).pop();});
           setState(() {Navigator.of(context).pop();});
 //          Navigator.of(context).pop();
 //          setState(() {Navigator.of(context).pop();});
@@ -371,6 +375,9 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
 //          return showInSnackBar(results.msg, 'gagal');
         }
       }else{
+        print("###################### KADIEU 2 ##################");
+        setState(() {Navigator.of(context).pop();});
+
         setState(() {Navigator.of(context).pop();});
         General results = res;
 //        setState(() {Navigator.pop(context);});

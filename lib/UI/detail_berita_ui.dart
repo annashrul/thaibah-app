@@ -121,7 +121,7 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                                         borderRadius: BorderRadius.circular(8),
                                         image: DecorationImage(
                                           image: imageProvider,
-                                          fit: BoxFit.fitHeight,
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
                                     ),
@@ -137,26 +137,26 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                               children: <Widget>[
                                 Text(
                                   snapshot.data.result.category,
-                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: 'Rubik',fontWeight: FontWeight.w500,fontSize: 16),
+                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.w500,fontSize: 16),
                                 ),
                                 Text(
                                   snapshot.data.result.createdAt,
-                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: 'Rubik',fontWeight: FontWeight.w500,fontSize: 16),
+                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.w500,fontSize: 16),
                                 )
                               ],
                             ),
                           ),
                           Container(
                               margin: EdgeInsets.only(bottom: 10.0),
-                              child: Text(snapshot.data.result.title,style: TextStyle(fontFamily: 'Rubik',color: Colors.black,fontWeight: FontWeight.bold),)
+                              child: Text(snapshot.data.result.title,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),)
                           ),
                           Container(
                               margin: EdgeInsets.only(bottom: 10.0),
-                              child: Text(snapshot.data.result.penulis,style: TextStyle(fontFamily: 'Rubik',color: Color(0xFFB1B1B1),fontWeight: FontWeight.bold),)
+                              child: Text(snapshot.data.result.penulis,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Color(0xFFB1B1B1),fontWeight: FontWeight.bold),)
                           ),
                           Padding(
                               padding: const EdgeInsets.only(right: 0),
-                              child: Html(data:removeAllHtmlTags(snapshot.data.result.caption))
+                              child: Html(data:removeAllHtmlTags(snapshot.data.result.caption),defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),)
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 30, bottom: 10),
@@ -227,8 +227,8 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                             padding: const EdgeInsets.only(top: 30, bottom: 10),
                             child: RichText(
                               text: TextSpan(children: [
-                                TextSpan(text: "Berita ",style: AppTheme.TextTheme.titleRegularBlack),
-                                TextSpan(text: "Lainnya",style: AppTheme.TextTheme.titleRegularOrange),
+                                TextSpan(text: "Berita ",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
+                                TextSpan(text: "Lainnya",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
                               ]),
                             ),
                           ),
@@ -336,7 +336,7 @@ class _ToggleButtonState extends State<ToggleButton> {
                 alignment: Alignment.center,
                 child: Text(
                   snapshot.data.result[index].title,
-                  style: AppTheme.TextTheme.regularTextWhite,
+                  style: TextStyle(fontFamily: ThaibahFont().fontQ),
                 ),
               ),
               decoration: BoxDecoration(

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/detailNewsPerCategoryModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
@@ -114,7 +115,7 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                   padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
                   child: new Text(
                     localTitle,
-                    style: new TextStyle(fontSize: 20.0,color: mainColor,fontWeight: FontWeight.bold,fontFamily: 'Rubik'),
+                    style: new TextStyle(fontSize: 20.0,color: mainColor,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -268,13 +269,13 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                                       padding: const EdgeInsets.all(2.0),
                                       child: new Text(
                                         title,
-                                        style: new TextStyle(fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold,color: Colors.black),
+                                        style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: Colors.black),
                                       ),
                                     ),
 
                                     new Padding(padding: const EdgeInsets.all(0.0)),
-                                    Html(data:caption),
-                                    Text(snapshot.data.result.data[i].createdAt,style: TextStyle(fontSize: 12,fontFamily: 'Rubik',),)
+                                    Html(data:caption,defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),),
+                                    Text(snapshot.data.result.data[i].createdAt,style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ),)
                                   ],
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
@@ -305,7 +306,7 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
     }
     else{
       return Container(
-          child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily: 'Rubik'),))
+          child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily:ThaibahFont().fontQ),))
       );
     }
 

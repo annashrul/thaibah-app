@@ -10,7 +10,7 @@ class ApiService {
 // final String versionCode = '1.2.7';
  final String username    = 'netindo';
  final String password    = 'admin1234!@';
- final bool showCode      = true;
+ final bool showCode      = false;
  final int timerActivity  = 20;
  final bool isActivity    = false;
  final String deviceId    = '6a4c55fd-d96d-427f-8634-d2c4b9d96d69';
