@@ -192,7 +192,13 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
               GestureDetector(
                 onTap: (){
                   if(total!=0){
-                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => Keranjang())).whenComplete(countCart);
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => Keranjang()
+                      ),
+                    ).whenComplete(countCart);
+//                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => Keranjang())).whenComplete(countCart);
                   }
                 },
                 child: Container(

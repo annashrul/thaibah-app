@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/Model/checkerMemberModel.dart';
 import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
@@ -106,6 +107,38 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   Color warna2;
   String statusLevel ='0';
 
+
+//  Future<void> checker() async{
+//    var cekMember = await ConfigProvider().checkerMember();
+//    if(cekMember is CheckerMember){
+//      CheckerMember ceking = cekMember;
+//      if(ceking.status == 'success'){
+//        print("######################### STATUS CODE CHECK MEMBER ${ceking.status} ###########################");
+//        if(ceking.result.statusMember == 0){
+//          final dbHelper = DbHelper.instance;
+//          final id = await userRepository.getDataUser("id");
+//          Map<String, dynamic> row = {
+//            DbHelper.columnId    : id,
+//            DbHelper.columnStatus  : ceking.result.statusMember,
+//          };
+//          await dbHelper.update(row);
+//
+//          print("####################### STATUS MEMBER = ${ceking.result.statusMember} ################################");
+//          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+//              new CupertinoPageRoute(builder: (BuildContext context)=>LoginPhone()), (Route<dynamic> route) => false
+//          );
+//        }
+//      }else{
+//        GagalHitProvider().fetchRequest('home','kondisi = STATUS FAILED');
+//        print("######################### STATUS CODE CHECK MEMBER ${ceking.status} ###########################");
+//      }
+//    }else{
+//      GagalHitProvider().fetchRequest('home','kondisi = ERROR');
+//      print("######################### CHECK MEMBER ERROR  ###########################");
+//    }
+//    loadData();
+//  }
+
   Future<void> loadData() async {
     final token = await userRepository.getDataUser('token');
     final id = await userRepository.getDataUser('idServer');
@@ -115,53 +148,62 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
 
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    if(id == null || id == '') {
-      print('####################### DATA SQLITE KOSONG ########################');
+    if (id == null || id == '') {
+      print(
+          '####################### DATA SQLITE KOSONG ########################');
       setState(() {
-        isLoading = false; modeUpdate = true;
+        isLoading = false;
+        modeUpdate = true;
       });
-      GagalHitProvider().fetchRequest('home','kondisi = ID SQLITE KOSONG, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-    }else{
-      try{
+      GagalHitProvider().fetchRequest('home',
+          'kondisi = ID SQLITE KOSONG, brand = ${androidInfo
+              .brand}, device = ${androidInfo.device}, model = ${androidInfo
+              .model}');
+    }
+    else {
+      var ceking = await userRepository.checker();
+      print("###################### CEK MEMBER DI BERANDA = $ceking #######################");
+      // ceking = true ? tidak aktif : aktif
+      if (ceking == true) {
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(new CupertinoPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+      } else {
         var jsonString = await http.get(
-            ApiService().baseUrl+'info?id='+id,
-            headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-        ).timeout(Duration(seconds: ApiService().timerActivity));
+            ApiService().baseUrl + 'info?id=' + id,
+            headers: {
+              'Authorization': token,
+              'username': ApiService().username,
+              'password': ApiService().password
+            }
+        );
         if (jsonString.statusCode == 200) {
           setState(() {
-            isLoading = false;retry = false;
-            warna1 = color1==''?ThaibahColour.primary1:hexToColors(color1);
-            warna2 = color2==''?ThaibahColour.primary2:hexToColors(color2);
+            isLoading = false;
+            retry = false;
+            warna1 = color1 == '' ? ThaibahColour.primary1 : hexToColors(color1);
+            warna2 = color2 == '' ? ThaibahColour.primary2 : hexToColors(color2);
             statusLevel = levelStatus;
           });
           final jsonResponse = json.decode(jsonString.body);
           info = new Info.fromJson(jsonResponse);
-          _level=(info.result.level);_name=(info.result.name);_nohp=(info.result.noHp);_kdRefferal=(info.result.kdReferral);_picture= (info.result.picture);
-          _qr= (info.result.qr);_saldo= (info.result.saldo);_saldoMain=(info.result.saldoMain);_saldoBonus=(info.result.saldoBonus);_saldoVoucher=(info.result.saldoVoucher);
-          _levelPlatinum=(info.result.levelPlatinum);levelPlatinumRaw=(info.result.levelPlatinumRaw);_saldoPlatinum=(info.result.saldoPlatinum);
+          _level = (info.result.level);
+          _name = (info.result.name);
+          _nohp = (info.result.noHp);
+          _kdRefferal = (info.result.kdReferral);
+          _picture = (info.result.picture);
+          _qr = (info.result.qr);
+          _saldo = (info.result.saldo);
+          _saldoMain = (info.result.saldoMain);
+          _saldoBonus = (info.result.saldoBonus);
+          _saldoVoucher = (info.result.saldoVoucher);
+          _levelPlatinum = (info.result.levelPlatinum);
+          levelPlatinumRaw = (info.result.levelPlatinumRaw);
+          _saldoPlatinum = (info.result.saldoPlatinum);
           print("LEVEL PLATINUM ${info.result.levelPlatinum}");
         } else {
-
           throw Exception('Failed to load info');
         }
-      } on TimeoutException catch(e){
-        print('timeout: $e');
-        setState(() {
-          isLoading = false;retry = true;
-        });
-        GagalHitProvider().fetchRequest('home','kondisi = timeout $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-      } on Error catch (e) {
-        print('Error: $e');
-        setState(() {
-          isLoading = false;retry = true;
-        });
-        GagalHitProvider().fetchRequest('home','kondisi = error $e, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
       }
     }
-
-
-
-
   }
   DateTime dt = DateTime.now();
   PrayerModel prayerModel;
@@ -175,8 +217,8 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-
     loadData();
+//    checker();
     isLoading = true;
     versi = true;
     latitude  = widget.lat;
@@ -291,17 +333,17 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                             levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
                             ),
                             SizedBox(height: 7.0),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
                             ),
                             SizedBox(height: 7.0),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
                             ),
                           ],
                         ),

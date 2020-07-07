@@ -1,15 +1,18 @@
 import 'dart:async';
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/Model/checkerMemberModel.dart';
 import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
 
 
 class UserRepository {
@@ -503,7 +506,7 @@ class UserRepository {
     String cover='';
     String socketId='';
     String kdUnique='';
-    String token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjMTdiMi04MGYxLTQwOTEtYjYzNC05NDM4NTUzNGE3YjAiLCJpYXQiOjE1OTM3NzI3MjMsImV4cCI6MTU5NjM2NDcyM30.KfdXn8SbnkpV9xAcGX7vj-9QxK_y-YeXoEdVEsHDGvE';
+    String token='';
     String phone='';
     String pin='';
     String referral='';
@@ -561,4 +564,30 @@ class UserRepository {
     if(param=='warna1'){return warna1;}
     if(param=='warna2'){return warna2;}
   }
+
+
+  Future<bool> checker() async{
+    final userRepository = UserRepository();
+    var cekMember = await ConfigProvider().checkerMember();
+    if(cekMember is CheckerMember){
+      CheckerMember ceking = cekMember;
+      if(ceking.status == 'success'){
+        print("######################### STATUS CODE CHECK MEMBER ${ceking.status} ###########################");
+        if(ceking.result.statusMember == 0){
+          final dbHelper = DbHelper.instance;
+          await dbHelper.deleteAll();
+          return true;
+        }
+      }else{
+        GagalHitProvider().fetchRequest('home','kondisi = STATUS FAILED');
+        print("######################### STATUS CODE CHECK MEMBER ${ceking.status} ###########################");
+      }
+    }else{
+      GagalHitProvider().fetchRequest('home','kondisi = ERROR');
+      print("######################### CHECK MEMBER ERROR  ###########################");
+    }
+    return false;
+  }
+
 }
+

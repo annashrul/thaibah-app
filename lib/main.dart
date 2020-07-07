@@ -112,8 +112,6 @@ class SplashState extends State<Splash> {
 
   Future checkFirstSeen() async {
     final checkVersion = await ConfigProvider().cekVersion();
-
-
 //    final checker = await ConfigProvider().cekVersion();
     final userRepository = UserRepository();
     final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
@@ -164,7 +162,7 @@ class SplashState extends State<Splash> {
                     new CupertinoPageRoute(builder: (context) => IntroScreen())
                 );
               }else{
-                if(statusLogin=='1'||statusLogin!='0'){
+                if(statusLogin=='1'){
                   setState(() {isLoading=false;});
                   print("####################### CHECKING STATUS LOGIN ################################");
                   Navigator.of(context, rootNavigator: true).pushReplacement(
@@ -197,7 +195,7 @@ class SplashState extends State<Splash> {
                 new CupertinoPageRoute(builder: (context) => IntroScreen())
             );
           }else{
-            if(statusLogin=='1'||statusLogin!='0'){
+            if(statusLogin=='1'){
               setState(() {isLoading=false;});
               print("####################### CHECKING STATUS LOGIN ################################");
               Navigator.of(context, rootNavigator: true).pushReplacement(

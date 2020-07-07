@@ -218,9 +218,12 @@ class DbHelper {
     Database db = await instance.database;
     return await db.delete(table, where: '$columnIdServer = ?', whereArgs: [id]);
   }
-  Future<int> deleteAll() async {
+  Future deleteAll() async {
     Database db = await instance.database;
-    return await db.delete(table, where: '$columnIdServer');
+//    return await db.delete(table, where: '$columnIdServer');
+//    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
+    return await db.execute("DELETE from $table");
   }
+
 
 }

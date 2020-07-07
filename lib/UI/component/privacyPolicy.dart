@@ -45,7 +45,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
           child: Center(
             child: ListView(
               children: <Widget>[
-                Html(data: widget.privasi,defaultTextStyle: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),)
+                Html(data: widget.privasi,defaultTextStyle: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ),)
               ],
             ),
           ),

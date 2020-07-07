@@ -134,17 +134,18 @@ class _DetailSosmedState extends State<DetailSosmed> {
       setState(() {
         isLoadingShare = false;
       });
+      await WcFlutterShare.share(
+        sharePopupTitle: 'Thaibah Share Sosial Media',
+        bytesOfFile:bytes,
+        subject: '',
+        text: '$caption',
+        fileName: 'share.png',
+        mimeType: 'image/png',
+
+      );
 
     });
-    await WcFlutterShare.share(
-      sharePopupTitle: 'Thaibah Share Sosial Media',
-      bytesOfFile:bytes,
-      subject: '',
-      text: '$caption',
-      fileName: 'share.png',
-      mimeType: 'image/png',
 
-    );
   }
 
   Color warna1;
@@ -261,8 +262,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                           }
                                         },
                                         text: snapshot.data.result.caption,
-                                        style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-                                        linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                                        style: TextStyle(fontFamily:ThaibahFont().fontQ),
+                                        linkStyle: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ),
                                       ),
                                       SizedBox(height: 10.0),
                                       Container(

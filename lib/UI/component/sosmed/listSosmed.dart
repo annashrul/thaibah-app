@@ -146,8 +146,8 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                             }
                                           },
                                           text: removeAllHtmlTags(caption),
-                                          style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
-                                          linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                                          style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:ThaibahFont().fontQ),
+                                          linkStyle: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ),
                                         ),
                                       ),
                                     ),

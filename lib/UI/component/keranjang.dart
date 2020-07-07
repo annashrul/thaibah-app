@@ -60,25 +60,20 @@ class _KeranjangState extends State<Keranjang> {
       GetDetailChekoutSuplemenModel results = test;
       setState(() {Navigator.pop(context);});
       if(test.status == 'success'){
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CheckOutSuplemen(
-              total:total,
-              berat: newBerat,
-              totQty:jumlahQty,
-              saldoVoucher:results.result.saldoVoucher,
-              saldoMain: results.result.saldoMain,
-              address: results.result.address,
-              kdKec: results.result.kdKec,
-              kecPengirim: results.result.kecPengirim,
-              masaVoucher: results.result.masaVoucher,
-              showPlatinum: results.result.platinumShow,
-              saldoPlatinum: results.result.saldoPlatinum,
-              saldoGabungan: results.result.saldoGabunganUtama,
-            ),
-          ),
-        );
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => CheckOutSuplemen(
+                total:total,
+                berat: newBerat,
+                totQty:jumlahQty,
+                saldoVoucher:results.result.saldoVoucher,
+                saldoMain: results.result.saldoMain,
+                address: results.result.address,
+                kdKec: results.result.kdKec,
+                kecPengirim: results.result.kecPengirim,
+                masaVoucher: results.result.masaVoucher,
+                showPlatinum: results.result.platinumShow,
+                saldoPlatinum: results.result.saldoPlatinum,
+                saldoGabungan: results.result.saldoGabunganUtama,
+              )));
       }else{
         UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
       }
@@ -89,12 +84,7 @@ class _KeranjangState extends State<Keranjang> {
       if(results.msg == 'Alamat kosong.'){
         setState(() {isLoading  = false;});
         UserRepository().notifWithAction(scaffoldKey, context, 'Silahkan isi  alamat lengkap untuk pengiriman barang ke tempat anda', 'failed','BUAT ALAMAT',(){
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddAddress(),
-            ),
-          );
+          Navigator.push(context, CupertinoPageRoute(builder: (context) =>  AddAddress()));
         });
       }else{
         UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");

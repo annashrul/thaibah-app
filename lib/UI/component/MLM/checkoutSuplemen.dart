@@ -581,12 +581,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   Future<void> _pinBottomSheet(context) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PinScreen(callback: _callBackPin),
-      ),
-    );
+    Navigator.push(context, CupertinoPageRoute(builder: (context) =>   PinScreen(callback: _callBackPin)));
   }
 
   _callBackPin(BuildContext context,bool isTrue) async{
@@ -663,23 +658,18 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   FlatButton(
                     child: Text("Lihat Riwayat",style:TextStyle(fontWeight:FontWeight.bold,fontFamily: ThaibahFont().fontQ)),
                     onPressed: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailHistorySuplemen(
-                              id: result.result.id.toString(),
-                              resi: 'kosong',
-                              status: 0,
-                              param:'checkout'
-                          ),
-                        ),
-                      );
+                      Navigator.push(context, CupertinoPageRoute(builder: (context) =>   DetailHistorySuplemen(
+                          id: result.result.id.toString(),
+                          resi: 'kosong',
+                          status: 0,
+                          param:'checkout'
+                      )));
                     },
                   ),
                   FlatButton(
                     child: Text("Kembali",style:TextStyle(fontWeight:FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
                     onPressed: (){
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                      Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
                     },
                   ),
                 ],

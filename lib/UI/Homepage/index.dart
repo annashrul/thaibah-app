@@ -10,6 +10,8 @@ import 'package:location/location.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/Model/checkerMemberModel.dart';
+import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/UI/Homepage/beranda.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
@@ -25,6 +27,7 @@ import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:unicorndial/unicorndial.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -120,6 +123,7 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
       GagalHitProvider().fetchRequest('index','kondisi = DATA SQLITE KOSONG, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }
   }
+
   // Our first view
   @override
   void initState() {
@@ -514,7 +518,7 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
 
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     // TODO: implement didChangeAppLifecycleState
     super.didChangeAppLifecycleState(state);
 
@@ -526,10 +530,25 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
     }
     if(state == AppLifecycleState.resumed){
       print("########################### RESUME ######################");
+      final userRepository = UserRepository();
+      var token = await userRepository.getDataUser('token');
+      print("##################### TOKEN MODE UPDATE = $token ##############################");
+      final checkVersion = await ConfigProvider().cekVersion();
+      if(checkVersion is Checker) {
+        Checker checker = checkVersion;
+        if(checker.result.versionCode==ApiService().versionCode){
+          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+              new CupertinoPageRoute(builder: (BuildContext context)=>DashboardThreePage()), (Route<dynamic> route) => false
+          );
+        }else{
+          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+              new CupertinoPageRoute(builder: (BuildContext context)=>UpdatePage()), (Route<dynamic> route) => false
+          );
+        }
+      }else{
+        UserRepository().notifNoAction(scaffoldKey, context, "Terjadi Kesalahan DI Server","failed");
+      }
 
-      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-          new CupertinoPageRoute(builder: (BuildContext context)=>LoginPhone()), (Route<dynamic> route) => false
-      );
     }
   }
   
