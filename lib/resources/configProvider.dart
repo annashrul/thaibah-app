@@ -16,6 +16,7 @@ class ConfigProvider {
       ApiService().baseUrl+'info/config',
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
+    print("#################### RESPON CONFIG PROVIDER $response ################################");
     if (response.statusCode == 200) {
       return compute(configModelFromJson,response.body);
     } else {
@@ -25,6 +26,7 @@ class ConfigProvider {
 
   Future cekVersion() async{
     try{
+//      final token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjMTdiMi04MGYxLTQwOTEtYjYzNC05NDM4NTUzNGE3YjAiLCJpYXQiOjE1OTM3NzI3MjMsImV4cCI6MTU5NjM2NDcyM30.KfdXn8SbnkpV9xAcGX7vj-9QxK_y-YeXoEdVEsHDGvE";
       final token = await userRepository.getDataUser('token');
       final response = await client.get(
           ApiService().baseUrl+'info/checker',

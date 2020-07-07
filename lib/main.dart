@@ -18,6 +18,8 @@ import 'package:thaibah/config/api.dart';
 import 'package:http/http.dart' show Client, Response;
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/configProvider.dart' as Prefix1;
+import 'package:thaibah/resources/configProvider.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/location_service.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -109,7 +111,10 @@ class SplashState extends State<Splash> {
 
 
   Future checkFirstSeen() async {
-    final checker = await Prefix1.ConfigProvider().cekVersion();
+    final checkVersion = await ConfigProvider().cekVersion();
+
+
+//    final checker = await ConfigProvider().cekVersion();
     final userRepository = UserRepository();
     final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
     final statusLogin = await userRepository.getDataUser('status');
@@ -117,13 +122,17 @@ class SplashState extends State<Splash> {
     print("STATUS LOGIN = $statusLogin");
     print("STATUS ON BOARDING = $statusOnBoarding");
     print("STATUS EXIT APP = $statusExitApp");
-    if(checker is Checker){
+    if(checkVersion is Checker){
+      Checker checker = checkVersion;
+//      var Checker result = res;
       setState(() {isLoading=false;});
+//      GagalHitProvider().fetchRequest('main',"SERVER VERSI ${result.result.versionCode} & LOCAL VERSI ${ApiService().versionCode}");
       print("####################### CHECKING STATUS CHECKER ${checker.status} ################################");
       if(checker.status == 'success'){
+//        GagalHitProvider().fetchRequest('main',"SERVER VERSI ${checker.result.versionCode} & LOCAL VERSI ${ApiService().versionCode}");
         print("####################### SERVER VERSI ${checker.result.versionCode} & LOCAL VERSI ${ApiService().versionCode} ################################");
         if(checker.result.versionCode != ApiService().versionCode){
-          print("####################### CHECKING VERSION COIDE ################################");
+          print("####################### CHECKING VERSION CODE ################################");
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
               new CupertinoPageRoute(builder: (BuildContext context)=>UpdatePage()), (Route<dynamic> route) => false
           );
@@ -207,7 +216,7 @@ class SplashState extends State<Splash> {
     else{
       setState(() {isLoading=false;});
       print("####################### ELSE CHECKER ################################");
-      print(checker);
+      print(checkVersion);
       if(statusExitApp == '0'){
         setState(() {isLoading=false;});
         print("####################### CHECKING EXIT APP ################################");
@@ -318,45 +327,64 @@ class _IntroScreenState extends State<IntroScreen> {
   Future load() async{
     Client client = Client();
     final response = await client.get(ApiService().baseUrl+'info/onboarding');
+    print("##################### RESPONSE ONBOARDING STATUS CODE ${response.statusCode} #####################");
     if(response.statusCode == 200){
       final jsonResponse = json.decode(response.body);
       if(response.body.isNotEmpty){
         Prefix2.OnboardingModel onboardingModel = Prefix2.OnboardingModel.fromJson(jsonResponse);
-        onboardingModel.result.map((Prefix2.Result items){
-          setState(() {
-            wrapOnboarding.add(PageViewModel(
-              pageColor: Colors.white,
-              bubbleBackgroundColor: Colors.indigo,
-              title: Container(),
-              body: Column(
-                children: <Widget>[
-                  Text(items.title,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Color(0xFF116240),fontWeight: FontWeight.bold)),
-                  Text(items.description,style: TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                ],
-              ),
-              mainImage: Image.network(
-                items.picture,
-                width: 285.0,
-                alignment: Alignment.center,
-              ),
-              textStyle: TextStyle(color: Colors.black,fontFamily:ThaibahFont().fontQ,),
-            ));
-          });
+        print("##################### RESPONSE ONBOARDING ${onboardingModel.result.length} #####################");
+        if(onboardingModel.result.length != 0){
+          onboardingModel.result.map((Prefix2.Result items){
+            setState(() {
+              wrapOnboarding.add(PageViewModel(
+                pageColor: Colors.white,
+                bubbleBackgroundColor: Colors.indigo,
+                title: Container(),
+                body: Column(
+                  children: <Widget>[
+                    Text(items.title,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Color(0xFF116240),fontWeight: FontWeight.bold)),
+                    Text(items.description,style: TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                mainImage: Image.network(
+                  items.picture,
+                  width: 285.0,
+                  alignment: Alignment.center,
+                ),
+                textStyle: TextStyle(color: Colors.black,fontFamily:ThaibahFont().fontQ,),
+              ));
+            });
 
-        }).toList();
-        setState(() {
-          isLoading = false;
-        });
+          }).toList();
+          setState(() {
+            isLoading = false;
+          });
+        }
+        else{
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => LoginPhone(),
+            ), //MaterialPageRoute
+          );
+        }
+
+      }
+      else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => LoginPhone(),
+          ), //MaterialPageRoute
+        );
       }
     }else {
+      print("##################### ELSE RESPONSE ONBOARDING STATUS CODE ${response.statusCode} #####################");
+
       throw Exception('Failed to load info');
     }
   }
-  @override
-  void initState(){
-    load();
-    isLoading = true;
-  }
+
   SharedPreferences preferences;
   Future<Null> go() async {
 //    preferences = await SharedPreferences.getInstance();
@@ -371,6 +399,13 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    load();
+    isLoading = true;
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -503,7 +503,7 @@ class UserRepository {
     String cover='';
     String socketId='';
     String kdUnique='';
-    String token='';
+    String token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjMTdiMi04MGYxLTQwOTEtYjYzNC05NDM4NTUzNGE3YjAiLCJpYXQiOjE1OTM3NzI3MjMsImV4cCI6MTU5NjM2NDcyM30.KfdXn8SbnkpV9xAcGX7vj-9QxK_y-YeXoEdVEsHDGvE';
     String phone='';
     String pin='';
     String referral='';
@@ -561,7 +561,4 @@ class UserRepository {
     if(param=='warna1'){return warna1;}
     if(param=='warna2'){return warna2;}
   }
-
-
-
 }

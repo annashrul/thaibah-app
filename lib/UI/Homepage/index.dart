@@ -39,7 +39,7 @@ class DashboardThreePage extends StatefulWidget {
   _DashboardThreePageState createState() => _DashboardThreePageState();
 }
 
-class _DashboardThreePageState extends State<DashboardThreePage> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin  {
+class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBindingObserver, SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin  {
   @override
   bool get wantKeepAlive => true;
   final TextStyle whiteText = TextStyle(color: Colors.white);
@@ -71,12 +71,6 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
     await audioPlayer.play('https://thaibah.com/assets/adzan_.mp3');
   }
 
-  @override
-  void dispose() {
-    indexcontroller.close();
-    super.dispose();
-
-  }
   PageController pageController = PageController(initialPage: 0);
   StreamController<int> indexcontroller = StreamController<int>.broadcast();
   int index = 0;
@@ -129,6 +123,7 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
   // Our first view
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     checkModeUpdate();
     cekPath();
     location.onLocationChanged().listen((value) {
@@ -207,6 +202,32 @@ class _DashboardThreePageState extends State<DashboardThreePage> with SingleTick
     });
 
 
+  }
+
+
+  @override
+  void dispose() {
+    indexcontroller.close();
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+
+    if(state == AppLifecycleState.inactive){
+      print("########################### IN ACTIVE ######################");
+    }
+    if(state == AppLifecycleState.paused){
+      print("########################### PAUSED ######################");
+    }
+    if(state == AppLifecycleState.resumed){
+      print("########################### RESUME ######################");
+
+    }
   }
 
   int currentTab = 0; // to keep track of active tab index
@@ -439,7 +460,7 @@ class UpdatePage extends StatefulWidget {
   _UpdatePageState createState() => _UpdatePageState();
 }
 
-class _UpdatePageState extends State<UpdatePage> {
+class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   static const snackBarDuration = Duration(seconds: 3);
 
@@ -480,14 +501,43 @@ class _UpdatePageState extends State<UpdatePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 //    cekStatusLogin();
   }
+//  WidgetsBinding.instance.addObserver(this);
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
 
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+
+    if(state == AppLifecycleState.inactive){
+      print("########################### IN ACTIVE ######################");
+    }
+    if(state == AppLifecycleState.paused){
+      print("########################### PAUSED ######################");
+    }
+    if(state == AppLifecycleState.resumed){
+      print("########################### RESUME ######################");
+
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+          new CupertinoPageRoute(builder: (BuildContext context)=>LoginPhone()), (Route<dynamic> route) => false
+      );
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      body: WillPopScope(
+      body:  WillPopScope(
           child: Container(
             padding: EdgeInsets.all(20.0),
             child: Center(

@@ -634,6 +634,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
 
     var res = await ProductMlmProvider().fetchCheckoutCart(widget.total,sendKurir,sendOngkir,sendAddress,addressType,sendVoucher,_radioValue2);
     print("######################## STATUS CHECKOUT ${res.status}");
+    setState(() {Navigator.of(context).pop();});
     if(res is CheckoutToDetailModel){
       setState(() {Navigator.of(context).pop();});
       CheckoutToDetailModel result = res;
@@ -687,12 +688,14 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         );
       }
       else{
+
         setState(() {Navigator.of(context).pop();});
         setState(() {Navigator.of(context).pop();});
         UserRepository().notifNoAction(scaffoldKey, context,result.msg,"failed");
 //        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result.msg)));
       }
-    }else{
+    }
+    else{
       setState(() {Navigator.of(context).pop();});
       setState(() {Navigator.of(context).pop();});
       General result = res;

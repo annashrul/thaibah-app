@@ -62,7 +62,7 @@ class Beranda extends StatefulWidget {
   BerandaState createState()=>BerandaState();
 }
 
-class BerandaState extends State<Beranda>{
+class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   final TextStyle whiteText = TextStyle(color: Colors.white);
   final userRepository = UserRepository();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
@@ -174,6 +174,8 @@ class BerandaState extends State<Beranda>{
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     loadData();
     isLoading = true;
     versi = true;
@@ -184,8 +186,29 @@ class BerandaState extends State<Beranda>{
   @override
   void dispose(){
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    print("########################## DISPOSE #######################");
   }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+    if(state == AppLifecycleState.inactive){
+      print("########################### IN ACTIVE ######################");
+    }
+    if(state == AppLifecycleState.paused){
+      print("########################### PAUSED ######################");
+    }
+    if(state == AppLifecycleState.resumed){
+      print("########################### RESUME ######################");
 
+    }
+//    List<AppLifecycleState> cik = [];
+    if(state == AppLifecycleState.detached){
+      print("########################### detached ######################");
+
+    }
+  }
   int counterRTO=0;
 
   @override
