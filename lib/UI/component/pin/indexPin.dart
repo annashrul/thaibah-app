@@ -4,13 +4,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/generalModel.dart';
+import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
+import 'package:thaibah/UI/component/dataDiri/indexMember.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/memberProvider.dart';
 
 
 class Pin extends StatefulWidget {
@@ -46,98 +51,102 @@ class _PinState extends State<Pin> {
   Future _check(var txtPin, BuildContext context) async {
     final dbHelper = DbHelper.instance;
     final name = await userRepository.getDataUser('name');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var res = await updatePinMemberBloc.fetchUpdatePinMember(txtPin);
-    if(res is General){
-      General result = res;
-//      print(result.result);
-      if(result.status == 'success'){
-        final userRepository = UserRepository();
-        final id = await userRepository.getDataUser('id');
-        Map<String, dynamic> row = {
-          DbHelper.columnId   : id,
-          DbHelper.columnPin :txtPin
-        };
-        await dbHelper.update(row);
-        setState(() {_isLoading  = false;});
-        if(widget.param == 'beranda'){
-//          prefs.setBool('isPin', true);
+    if(widget.param == 'profile'){
+      setState(() {
+        showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) {
+            return ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 100.0),
+                child: AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                      SizedBox(height:5.0),
+                      Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                )
+            );
+
+          },
+        );
+      });
+
+      var res = await MemberProvider().forgotPin();
+      if(res is ResendOtp){
+        setState(() {Navigator.pop(context);});
+        ResendOtp result = res;
+        if(result.status=='success'){
           Timer(Duration(seconds: 3), () {
-            Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
-              builder: (BuildContext context) => DashboardThreePage()
-            ), (Route<dynamic> route) => false);
+            Navigator.of(context, rootNavigator: true).push(
+              new CupertinoPageRoute(builder: (context) => OtpUpdate(pin:txtPin,otp:result.result.otp)),
+            );
           });
+//          print(result.result.otp);
+          UserRepository().notifNoAction(_scaffoldKey, context,result.msg,'success');
         }else{
-          Timer(Duration(seconds: 3), () {
-            Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
-                builder: (BuildContext context) => widget.param=='topup' ? SaldoUI(saldo: widget.saldo,name: name) : DashboardThreePage()
-            ), (Route<dynamic> route) => false);
-          });
+          UserRepository().notifNoAction(_scaffoldKey, context,result.msg,'failed');
         }
-        String note = widget.param == 'topup' ? 'Pembuatan PIN Berhasil Dilakukan, Anda Akan Diarahkan Kehalaman Topup Saldo' : 'Pembuatan PIN Berhasil Dilakukan, Anda Akan Diarahkan Kehalaman Beranda';
-        return showInSnackBar(note,Colors.green);
       }else{
-        setState(() {_isLoading = false;});
-        return showInSnackBar(result.msg,Colors.redAccent);
+        setState(() {Navigator.pop(context);});
+        General result = res;
+        UserRepository().notifNoAction(_scaffoldKey, context,result.msg,'failed');
       }
+
+      print('####################### PARAMETER PROFILE #####################');
     }else{
-      General results = res;
-      setState(() {_isLoading = false;});
-      return showInSnackBar(results.msg,Colors.redAccent);
+      var res = await updatePinMemberBloc.fetchUpdatePinMember(txtPin);
+      if(res is General){
+        General result = res;
+        if(result.status == 'success'){
+          final userRepository = UserRepository();
+          final id = await userRepository.getDataUser('id');
+          Map<String, dynamic> row = {
+            DbHelper.columnId   : id,
+            DbHelper.columnPin :txtPin
+          };
+          await dbHelper.update(row);
+          setState(() {_isLoading  = false;});
+          if(widget.param == 'beranda'){
+            Timer(Duration(seconds: 3), () {
+              Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
+                  builder: (BuildContext context) => DashboardThreePage()
+              ), (Route<dynamic> route) => false);
+            });
+          }else{
+            Timer(Duration(seconds: 3), () {
+              Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
+                  builder: (BuildContext context) => widget.param=='topup' ? SaldoUI(saldo: widget.saldo,name: name) : DashboardThreePage()
+              ), (Route<dynamic> route) => false);
+            });
+          }
+          String note = widget.param == 'topup' ? 'Pembuatan PIN Berhasil Dilakukan, Anda Akan Diarahkan Kehalaman Topup Saldo' : 'Pembuatan PIN Berhasil Dilakukan, Anda Akan Diarahkan Kehalaman Beranda';
+          UserRepository().notifNoAction(_scaffoldKey, context,note,'success');
+        }else{
+          setState(() {_isLoading = false;});
+          UserRepository().notifNoAction(_scaffoldKey, context,result.msg,'failed');
+        }
+      }
+      else{
+        General results = res;
+        setState(() {_isLoading = false;});
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,'failed');
+      }
     }
 
-  }
-  void showInSnackBar(String value,background) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: background,
-      duration: Duration(seconds: 3),
-    ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-//      appBar: AppBar(
-//        leading: IconButton(
-//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-//          onPressed: () => Navigator.of(context).pop(),
-//        ),
-//        centerTitle: false,
-//        flexibleSpace: Container(
-//          decoration: BoxDecoration(
-//            gradient: LinearGradient(
-//              begin: Alignment.centerLeft,
-//              end: Alignment.centerRight,
-//              colors: <Color>[
-//                Color(0xFF116240),
-//                Color(0xFF30cc23)
-//              ],
-//            ),
-//          ),
-//        ),
-//        elevation: 1.0,
-//        automaticallyImplyLeading: true,
-//        title: new Text("Ubah PIN", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-//      ),
       key: _scaffoldKey,
       body: Container(
 
         child: LockScreenQ(
-//            showFingerPass: true,
-//            forgotPin: 'Lupa Pin ? Klik Disini',
-//            fingerFunction: biometrics,
-            title: "Keamanan",
+            title: "Keamanan update",
             passLength: 6,
             bgImage: "assets/images/bg.jpg",
             borderColor: Colors.black,
@@ -160,75 +169,127 @@ class _PinState extends State<Pin> {
               return true;
             },
             onSuccess: () {
-//              print(currentText[0]);
-//              if(currentText[0] == 0 || currentText[0] == '0'){
-//                return showInSnackBar("Mohon Maaf, PIN Tidak Boleh Diawali Oleh Angka 0",Colors.redAccent);
-//              }else{
-//
-//              }
               _check(currentText.toString(),context);
-//              if(currentText)
-
             }
         ),
       )
-//      body: GestureDetector(
-//        onTap: () {
-//          FocusScope.of(context).requestFocus(new FocusNode());
-//        },
-//        child: Container(
-//          height: MediaQuery.of(context).size.height,
-//          width: MediaQuery.of(context).size.width,
-//          child: ListView(
-//            children: <Widget>[
-//              SizedBox(height: 30),
-//              Image.asset(
-//                'assets/images/verify.png',
-//                height: MediaQuery.of(context).size.height / 3,
-//                fit: BoxFit.fitHeight,
-//              ),
-//              SizedBox(height: 8),
-//              Padding(
-//                padding: const EdgeInsets.symmetric(vertical: 8.0),
-//                child: Text(
-//                  'Masukan Pin',
-//                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: 'Rubik'),
-//                  textAlign: TextAlign.center,
-//                ),
-//              ),
-//              SizedBox(
-//                height: 20,
-//              ),
-//              Padding(
-//                  padding:
-//                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
-//                  child: Builder(
-//                    builder: (context) => Padding(
-//                      padding: const EdgeInsets.all(5.0),
-//                      child: Center(
-//                        child: PinPut(
-//                          fieldsCount: 6,
-//                          isTextObscure: true,
-//                          onSubmit: (String txtPin){
-//                            setState(() {
-//                              _isLoading=true;
-//                            });
-//                            _check(txtPin, context);
-//                          },
-//                          actionButtonsEnabled: false,
-//                          clearInput: true,
-//                        ),
-//                      ),
-//                    ),
-//                  )
-//              ),
-//
-//            ],
-//          ),
-//        ),
-//      ),
     );
   }
 }
+
+
+class OtpUpdate extends StatefulWidget {
+  final String pin,otp;
+  OtpUpdate({this.pin,this.otp});
+  @override
+  _OtpUpdateState createState() => _OtpUpdateState();
+}
+
+class _OtpUpdateState extends State<OtpUpdate> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  var onTapRecognizer;
+  bool hasError = false;
+  String currentText = "";
+  final userRepository = UserRepository();
+
+  Future _check(var otp, BuildContext context) async{
+    setState(() {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 100.0),
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height:5.0),
+                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                  ],
+                ),
+              )
+          );
+
+        },
+      );
+    });
+    final dbHelper = DbHelper.instance;
+    var res = await updatePinMemberBloc.fetchUpdatePinMember(widget.pin);
+    if(res is General){
+      General result = res;
+      if(result.status == 'success'){
+        final userRepository = UserRepository();
+        final id = await userRepository.getDataUser('id');
+        final idServer = await userRepository.getDataUser('idServer');
+        Map<String, dynamic> row = {
+          DbHelper.columnId   : id,
+          DbHelper.columnPin :widget.pin
+        };
+        await dbHelper.update(row);
+        setState(() {Navigator.pop(context);});
+        Timer(Duration(seconds: 3), () {
+          Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
+              builder: (BuildContext context) => IndexMember(id:idServer)
+          ), (Route<dynamic> route) => false);
+        });
+        UserRepository().notifNoAction(_scaffoldKey, context,'Anda Akan Dialihkan Kehalaman Pengaturan','success');
+      }else{
+        setState(() {Navigator.pop(context);});
+        UserRepository().notifNoAction(_scaffoldKey, context,result.msg,'failed');
+      }
+    }
+    else{
+      General results = res;
+      setState(() {Navigator.pop(context);});
+      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,'failed');
+    }
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("#################### INI PIN YANG MAU DIUPDATE ${widget.pin} ##########################");
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        key: _scaffoldKey,
+        body: Container(
+
+          child: LockScreenQ(
+              title: "Keamanan",
+              passLength: 4,
+              bgImage: "assets/images/bg.jpg",
+              borderColor: Colors.black,
+              showWrongPassDialog: true,
+              wrongPassContent: "Kode OTP Tidak Sesuai",
+              wrongPassTitle: "Opps!",
+              wrongPassCancelButtonText: "Batal",
+              deskripsi: 'Masukan Kode OTP Yang Telah Kami Kirim Melalui Pesan WhatsApp ${ApiService().showCode == true ? widget.otp : ""}',
+              passCodeVerify: (passcode) async{
+                var concatenate = StringBuffer();
+                passcode.forEach((item){
+                  concatenate.write(item);
+                });
+                setState(() {
+                  currentText = concatenate.toString();
+                });
+                if(currentText != widget.otp){
+                  return false;
+                }
+                return true;
+              },
+              onSuccess: () {
+                _check(currentText.toString(),context);
+              }
+          ),
+        )
+    );
+  }
+
+}
+
 
 

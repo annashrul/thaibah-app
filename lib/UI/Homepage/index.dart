@@ -533,21 +533,21 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
       final userRepository = UserRepository();
       var token = await userRepository.getDataUser('token');
       print("##################### TOKEN MODE UPDATE = $token ##############################");
-      final checkVersion = await ConfigProvider().cekVersion();
-      if(checkVersion is Checker) {
-        Checker checker = checkVersion;
-        if(checker.result.versionCode==ApiService().versionCode){
-          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-              new CupertinoPageRoute(builder: (BuildContext context)=>DashboardThreePage()), (Route<dynamic> route) => false
-          );
-        }else{
-          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-              new CupertinoPageRoute(builder: (BuildContext context)=>UpdatePage()), (Route<dynamic> route) => false
-          );
-        }
-      }else{
-        UserRepository().notifNoAction(scaffoldKey, context, "Terjadi Kesalahan DI Server","failed");
-      }
+//      final checkVersion = await ConfigProvider().cekVersion();
+//      if(checkVersion is Checker) {
+//        Checker checker = checkVersion;
+//        if(checker.result.versionCode==ApiService().versionCode){
+//          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+//              new CupertinoPageRoute(builder: (BuildContext context)=>DashboardThreePage()), (Route<dynamic> route) => false
+//          );
+//        }else{
+//          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+//              new CupertinoPageRoute(builder: (BuildContext context)=>UpdatePage()), (Route<dynamic> route) => false
+//          );
+//        }
+//      }else{
+//        UserRepository().notifNoAction(scaffoldKey, context, "Terjadi Kesalahan DI Server","failed");
+//      }
 
     }
   }
