@@ -226,7 +226,7 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
       print("########################### IN ACTIVE ######################");
     }
     if(state == AppLifecycleState.paused){
-      print("########################### PAUSED ######################");
+      print("########################### PAUSED INDEX ######################");
     }
     if(state == AppLifecycleState.resumed){
       print("########################### RESUME ######################");
@@ -526,7 +526,7 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
       print("########################### IN ACTIVE ######################");
     }
     if(state == AppLifecycleState.paused){
-      print("########################### PAUSED ######################");
+      print("########################### PAUSED INDEX ######################");
     }
     if(state == AppLifecycleState.resumed){
       print("########################### RESUME ######################");

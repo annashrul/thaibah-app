@@ -135,7 +135,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
 
     if(widget.nohp != nohpController.text){
       setState(() {_isLoading = false;});
-      var res = await MemberProvider().resendOtp(no,'-',"update");
+      var res = await MemberProvider().resendOtp(no,'-',"update",'whatsapp');
       if(res is ResendOtp){
         ResendOtp result = res;
         print(result.status);
@@ -143,7 +143,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
           setState(() {_isLoading = false;});
           Navigator.push(
             context,
-            MaterialPageRoute(
+            CupertinoPageRoute(
               builder: (context) => OtpUpdate(
                 otp: result.result.otp,
                 name:nameController.text,
@@ -162,7 +162,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
       else{
         General results = res;
         setState(() {_isLoading = false;});
-        UserRepository().notifNoAction(_scaffoldKey, context,res.msg,"failed");
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
       }
     }
     else{

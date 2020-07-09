@@ -101,7 +101,7 @@ class _MyProfileState extends State<MyProfile> {
                   child: Container(
                     width: 400.0,
                     height: 400.0,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color:  statusLevel!='0'?warna2.withOpacity(0.5):ThaibahColour.primary1.withOpacity(0.5)),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color:  statusLevel!='0'?warna2.withOpacity(0.5):ThaibahColour.primary2.withOpacity(0.5)),
                   ),
                 ),
                 Positioned(

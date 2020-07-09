@@ -146,7 +146,7 @@ class _PinState extends State<Pin> {
       body: Container(
 
         child: LockScreenQ(
-            title: "Keamanan update",
+            title: "Keamanan",
             passLength: 6,
             bgImage: "assets/images/bg.jpg",
             borderColor: Colors.black,

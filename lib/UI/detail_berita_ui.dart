@@ -328,7 +328,7 @@ class _ToggleButtonState extends State<ToggleButton> {
           padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
           child: InkWell(
             onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailNewsPerCategory(title: snapshot.data.result[index].title)));
+              Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) => DetailNewsPerCategory(title: snapshot.data.result[index].title)));
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20),

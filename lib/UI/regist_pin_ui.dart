@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/registPinUIModel.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
@@ -9,6 +11,7 @@ import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 Future<Response> post(String url,var body)async{
   return await http
@@ -79,9 +82,20 @@ class _SecondScreenStatefulState extends State<SecondScreen> {
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            content: LinearProgressIndicator(),
+          return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 100.0),
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height:5.0),
+                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                  ],
+                ),
+              )
           );
+
         },
       );
     });
@@ -104,7 +118,6 @@ class _SecondScreenStatefulState extends State<SecondScreen> {
         setState(() {
           _isLoading = false;
         });
-
         print("#####################################################BERHASIL#######################################");
         showDialog(
             context: context,
@@ -119,7 +132,7 @@ class _SecondScreenStatefulState extends State<SecondScreen> {
                         color: Color(0xFF00e676),
                         child: Text("Masuk"),
                         onPressed: (){
-                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+                          Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
                         },
                       ),
                     ],
@@ -128,6 +141,7 @@ class _SecondScreenStatefulState extends State<SecondScreen> {
               );
             }
         );
+
       }else{
         setState(() {_isLoading = false;});
         scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result.msg)));
@@ -150,75 +164,6 @@ class _SecondScreenStatefulState extends State<SecondScreen> {
 
   @override
   Widget build(BuildContext context) {
-//    return Scaffold(
-//      key: scaffoldKey,
-//      appBar: AppBar(
-//        leading: IconButton(
-//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-//          onPressed: () => Navigator.of(context).pop(),
-//        ),
-//        centerTitle: false,
-//        flexibleSpace: Container(
-//          decoration: BoxDecoration(
-//            gradient: LinearGradient(
-//              begin: Alignment.centerLeft,
-//              end: Alignment.centerRight,
-//              colors: <Color>[
-//                Color(0xFF116240),
-//                Color(0xFF30cc23)
-//              ],
-//            ),
-//          ),
-//        ),
-//        elevation: 1.0,
-//        automaticallyImplyLeading: true,
-//        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-//      ),
-//      body: GestureDetector(
-//        onTap: () {
-//          FocusScope.of(context).requestFocus(new FocusNode());
-//        },
-//        child: Container(
-//          height: MediaQuery.of(context).size.height,
-//          width: MediaQuery.of(context).size.width,
-//          child: ListView(
-//            children: <Widget>[
-//              SizedBox(height: 30),
-//              Image.asset(
-//                'assets/images/verify.png',
-//                height: MediaQuery.of(context).size.height / 4,
-//                fit: BoxFit.fitHeight,
-//              ),
-//              SizedBox(height: 8),
-//              Padding(
-//                padding: const EdgeInsets.symmetric(vertical: 8.0),
-//                child: Text(
-//                  'Masukan Kode OTP',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-//                ),
-//              ),
-//              Padding(
-//                padding: const EdgeInsets.symmetric(vertical: 0.0,horizontal: 10.0),
-//                child: Text(
-//                  'Masukan kode OTP yang telah kami kirim melalui pesan ke no whatsApp anda',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily: 'Rubik'),textAlign: TextAlign.center,
-//                ),
-//              ),
-//              Padding(
-//                  padding:
-//                  const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30),
-//                  child: Builder(
-//                    builder: (context) => Padding(
-//                      padding: const EdgeInsets.all(5.0),
-//                      child: Center(
-//                        child: otpInput(),
-//                      ),
-//                    ),
-//                  )
-//              ),
-//            ],
-//          ),
-//        ),
-//      ),
-//    );
     return Scaffold(
         key: _scaffoldKey,
         body: Container(
@@ -250,40 +195,11 @@ class _SecondScreenStatefulState extends State<SecondScreen> {
                 setState(() {
                   _isLoading = true;
                 });
-
                 create();
-//                _check(currentText.toString(),context);
               }
           ),
         )
     );
   }
-  // receive data from the FirstScreen as a parameter
 
-
-//  Widget otpInput() {
-//    return Builder(
-//      builder: (context) => Padding(
-//        padding: const EdgeInsets.all(40.0),
-//        child: Center(
-//          child: PinPut(
-//            fieldsCount: 4,
-//            onSubmit: (String txtOtp) => _check(txtOtp, context),
-//            actionButtonsEnabled: false,
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-
-//  Future _check(String txtOtp,  BuildContext context) {
-//    if (widget.otp == txtOtp) {
-//      print(widget.otp);
-//      create();
-//    } else {
-//      setState(() {_isLoading = false;});
-//      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('kode otp tidak sesuai')));
-//      print(widget.otp);
-//    }
-//  }
 }

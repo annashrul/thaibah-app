@@ -50,7 +50,7 @@ class MemberProvider {
     });
   }
 
-  Future resendOtp(var nohp,var referral,var type) async {
+  Future resendOtp(var nohp,var referral,var type,var provider) async {
     var cek;
     if(type == 'update'){
       cek = '';
@@ -62,6 +62,7 @@ class MemberProvider {
           "nohp":"$nohp",
           "type":"$type",
           "referral":"$cek",
+          "provider":provider
         }).then((Response response) {
       var results;
       if(response.statusCode == 200){

@@ -305,41 +305,43 @@ class SingleCartProductState extends State<SingleCartProduct> {
   Future delete(id) async{
     var res = await ProductMlmSuplemenProvider().deleteProduct(id);
     if(res.status == 'success'){
+
       listCartBloc.fetchListCart();
+
     }else{
-      print('pindah');
+      print("#################### GAGAL MENGHAPUS DATA PRODUCT ###########################");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-      return Card(
+      return  Card(
         color: widget.warna,
         elevation: 0.0,
         child: Row(
           children: <Widget>[
             const SizedBox(width: 10.0),
             Container(
-                height: 80.0,
-                width: 100,
-                child: CachedNetworkImage(
-                  imageUrl: widget.CartProdPicture,
-                  placeholder: (context, url) => Center(
-                    child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-                  ),
-                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                  imageBuilder: (context, imageProvider) => Container(
-                    decoration: BoxDecoration(
-                      borderRadius: new BorderRadius.circular(10.0),
-                      color: Colors.transparent,
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.fill,
-                      ),
-                      boxShadow: [new BoxShadow(color:Colors.transparent,blurRadius: 5.0,offset: new Offset(2.0, 5.0))],
+              height: 80.0,
+              width: 100,
+              child: CachedNetworkImage(
+                imageUrl: widget.CartProdPicture,
+                placeholder: (context, url) => Center(
+                  child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
+                ),
+                errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    borderRadius: new BorderRadius.circular(10.0),
+                    color: Colors.transparent,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.fill,
                     ),
+                    boxShadow: [new BoxShadow(color:Colors.transparent,blurRadius: 5.0,offset: new Offset(2.0, 5.0))],
                   ),
                 ),
+              ),
 //
 //                child: Image.network(
 //                  widget.CartProdPicture,
@@ -378,32 +380,32 @@ class SingleCartProductState extends State<SingleCartProduct> {
                 InkWell(
                   onTap: (){
                     showDialog(
-                      context: context,
-                      builder: (BuildContext context){
-                        return AlertDialog(
-                          content: Text("Anda Yakin Akan Menghapus produk Ini ???",style: TextStyle(fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text("Batal", style: TextStyle(color: Colors.black,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            FlatButton(
-                              child: Text("Hapus", style: TextStyle(color: Colors.red,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-                              onPressed: () async {
-                                setState(() {});
-                                delete(widget.CardProdId);
+                        context: context,
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                            content: Text("Anda Yakin Akan Menghapus produk Ini ???",style: TextStyle(fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text("Batal", style: TextStyle(color: Colors.black,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: Text("Hapus", style: TextStyle(color: Colors.red,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                                onPressed: () async {
+                                  setState(() {});
+                                  delete(widget.CardProdId);
 //                                setState(() {
 //                                  _isLoading = true;
 //                                });
 //                                delete(id);
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      }
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        }
                     );
                   },
                   child: Icon(Icons.cancel,color: Colors.redAccent,),

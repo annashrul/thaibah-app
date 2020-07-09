@@ -32,17 +32,17 @@ class _JaringanUIState extends State<JaringanUI> {
   final formatter = new NumberFormat("#,###");
   String kdReferral = '';
   String name = '';
+  bool isLoading=false;
   Future<void> get() async{
+
     detailDownlineBloc.fetchDetailDownlineList(kdReferral);
+    print("########################## ISLOADING $isLoading ###############################");
   }
 
-  void pindah(kdReferral,name) async{
-    setState(() {
-      name = name;
-    });
-    print(name);
+  void pindah(kdReferral,nama) async{
+    print("####################### PINDAH = $nama ###########################");
     Navigator.of(context, rootNavigator: true).push(
-      new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral:kdReferral,name: name,)),
+      new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral:kdReferral,name: nama,)),
     ).whenComplete(get);
   }
 
@@ -68,6 +68,10 @@ class _JaringanUIState extends State<JaringanUI> {
     super.initState();
     loadTheme();
     kdReferral = widget.kdReferral;
+    isLoading=true;
+//    name = widget.name;
+//    print("################# IEU REFERRAL AKTIF $kdReferral #####################");
+//    print("################# IEU NAMA AKTIF $name #####################");
 //    name = widget.name;
 //    downlineBloc.fetchDownlineList();
     get();
@@ -84,7 +88,9 @@ class _JaringanUIState extends State<JaringanUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context, "Jaringan Member",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar:UserRepository().appBarWithButton(context,"Jaringan Member ${widget.name}",warna1,warna2,(){
+        Navigator.of(context).pop(true);
+      },Container()),
       body: StreamBuilder(
           stream: detailDownlineBloc.allDetailDownline,
           builder: (context, AsyncSnapshot<DownlineModel> snapshot) {
@@ -103,8 +109,9 @@ class _JaringanUIState extends State<JaringanUI> {
   Widget buildContent(AsyncSnapshot<DownlineModel> snapshot, BuildContext context) {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
-    if(snapshot.data.result.length > 0){
-      return Container(
+    print("########################## LENGTH = ${snapshot.data.result.length}");
+    return snapshot.data.result.length > 0 ?
+      Container(
         child: ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
@@ -139,7 +146,8 @@ class _JaringanUIState extends State<JaringanUI> {
 
                     title: InkWell(
                       onTap: (){
-                        pindah(snapshot.data.result[index].downlineReferralRaw,snapshot.data.result[index].name);
+                        print("################### DOWNLINE NAME = ${snapshot.data.result[index].downlineName}");
+                        pindah(snapshot.data.result[index].downlineReferralRaw,snapshot.data.result[index].downlineName);
 
 //                        Navigator.push(context,MaterialPageRoute(builder: (context) => DetailDownline(kdReff: snapshot.data.result[index].downlineReferralRaw,downlineNmae: snapshot.data.result[index].downlineName)));
                       },
@@ -158,7 +166,8 @@ class _JaringanUIState extends State<JaringanUI> {
 
                     subtitle: InkWell(
                       onTap: (){
-                        pindah(snapshot.data.result[index].downlineReferralRaw,snapshot.data.result[index].name);
+                        print("################### DOWNLINE NAME = ${snapshot.data.result[index].downlineName}");
+                        pindah(snapshot.data.result[index].downlineReferralRaw,snapshot.data.result[index].downlineName);
 //                        Navigator.push(context,MaterialPageRoute(builder: (context) => DetailDownline(kdReff: snapshot.data.result[index].downlineReferralRaw,downlineNmae: snapshot.data.result[index].downlineName)));
                       },
 
@@ -215,7 +224,8 @@ class _JaringanUIState extends State<JaringanUI> {
 //                        Navigator.of(context, rootNavigator: true).push(
 //                          new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral:snapshot.data.result[index].downlineReferralRaw)),
 //                        ).whenComplete(get);
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => CreateMember(kdReff: snapshot.data.result[index].downlineReferral,)));
+                        Navigator.push(context,MaterialPageRoute(builder: (context) => CreateMember(
+                          kdReff: snapshot.data.result[index].downlineReferral,nama:snapshot.data.result[index].downlineName))).whenComplete(() => get());
                       },
                       child: Icon(Icons.group_add, color: Colors.black, size: 30.0),
                     )
@@ -224,12 +234,10 @@ class _JaringanUIState extends State<JaringanUI> {
             );
           },
         ),
-      );
-    }else{
-      return Container(
-          child: Center(child:Text("Tidak Ada Data",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily: 'Rubik'),))
-      );
-    }
+      ):Container(child: Center(child:Text("Tidak Ada Data",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily: 'Rubik'),)));
+//    }else{
+//      return ;
+//    }
 
   }
 

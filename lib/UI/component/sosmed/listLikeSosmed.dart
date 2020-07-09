@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/sosmed/listLikeSosmedModel.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 class ListLikeSosmed extends StatefulWidget {
   final String id;
@@ -13,11 +15,25 @@ class ListLikeSosmed extends StatefulWidget {
 class _ListLikeSosmedState extends State<ListLikeSosmed> {
 
   final _bloc = LikeSosmedBloc();
-
+  Color warna1;
+  Color warna2;
+  String statusLevel ='0';
+  final userRepository = UserRepository();
+  Future loadTheme() async{
+    final levelStatus = await userRepository.getDataUser('statusLevel');
+    final color1 = await userRepository.getDataUser('warna1');
+    final color2 = await userRepository.getDataUser('warna2');
+    setState(() {
+      warna1 = hexToColors(color1);
+      warna2 = hexToColors(color2);
+      statusLevel = levelStatus;
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
     _bloc.fetchListLikeSosmed(widget.id);
   }
 
@@ -31,31 +47,7 @@ class _ListLikeSosmedState extends State<ListLikeSosmed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0.0,
-        title: Text('Daftar Orang Yang Menyukai ', style: TextStyle(fontFamily:'Rubik',color:Colors.white,fontWeight: FontWeight.bold)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-
-      ),
+      appBar: UserRepository().appBarWithButton(context, "Daftar Orang Yang Menykaui Status Anda",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: StreamBuilder(
         stream: _bloc.getResult,
         builder: (context, AsyncSnapshot<ListLikeSosmedModel> snapshot){

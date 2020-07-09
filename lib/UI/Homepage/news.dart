@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:thaibah/Constants/constants.dart';
@@ -59,11 +60,10 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: (){
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DetailBeritaUI(id: snapshot.data.result.data[index].id, category: snapshot.data.result.data[index].category)
-                ),
+              Navigator.of(context, rootNavigator: true).push(
+                new CupertinoPageRoute(
+                  builder: (context) => DetailBeritaUI(id: snapshot.data.result.data[index].id, category: snapshot.data.result.data[index].category)
+                )
               );
             },
             child: Column(

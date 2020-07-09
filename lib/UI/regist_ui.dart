@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,11 +8,14 @@ import 'package:flutter/services.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
+import 'package:thaibah/Model/typeOtpModel.dart';
 import 'package:thaibah/UI/regist_pin_ui.dart' as prefix1;
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:http/http.dart' as http;
 
 class Regist extends StatefulWidget {
   Regist() : super();
@@ -64,6 +68,28 @@ class _RegistState extends State<Regist> {
 
 
   Future create() async {
+    setState(() {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 100.0),
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height:5.0),
+                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                  ],
+                ),
+              )
+          );
+
+        },
+      );
+    });
     if(codeCountry == ''){
       setState(() {
         codeCountry = "62";
@@ -86,18 +112,19 @@ class _RegistState extends State<Regist> {
     String no = "${codeCountry}${replaced}";
     final checkConnection = await userRepository.check();
     if(checkConnection == false){
-      setState(() {_isLoading = false;});
+      setState(() {Navigator.pop(context);});
       UserRepository().notifNoAction(_scaffoldKey, context,"Anda Tidak Terhubungan Dengan Internet","failed");
 //      return showInSnackBar("Anda Tidak Terhubung Dengan Internet");
     }else{
-      var res = await MemberProvider().resendOtp(no,reffController.text,"register");
+      print("######################## TYPPE OTP $_valType ###########################");
+      var res = await MemberProvider().resendOtp(no,reffController.text,"register",_valType);
       if(res is ResendOtp){
         ResendOtp result = res;
         if(result.status == 'success'){
-          setState(() {_isLoading = false;});
+          setState(() {Navigator.pop(context);});
           Navigator.push(
             context,
-            MaterialPageRoute(
+            CupertinoPageRoute(
               builder: (context) =>
               prefix1.SecondScreen(
                 pin:pinController.text,
@@ -112,14 +139,14 @@ class _RegistState extends State<Regist> {
             ),
           );
         }else{
-          setState(() {_isLoading = false;});
+          setState(() {Navigator.pop(context);});
           UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
 //          return showInSnackBar(result.msg);
         }
       }
       else{
         General results = res;
-        setState(() {_isLoading = false;});
+        setState(() {Navigator.pop(context);});
         UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
 
 //        return showInSnackBar(results.msg);
@@ -192,10 +219,39 @@ class _RegistState extends State<Regist> {
       statusLevel = levelStatus;
     });
   }
+
+  bool typeOtp = true;
+  TypeOtpModel typeOtpModel;
+  String _valType='whatsapp' ;  //Ini untuk menyimpan value data friend
+  List _type = ["whatsapp", "sms"];  //Array My Friend
+  Future<void> loadData() async {
+
+    try{
+      var jsonString = await http.get(
+          ApiService().baseUrl+'info/typeotp'
+      ).timeout(Duration(seconds: ApiService().timerActivity));
+      if (jsonString.statusCode == 200) {
+
+        final jsonResponse = json.decode(jsonString.body);
+        typeOtpModel = new TypeOtpModel.fromJson(jsonResponse);
+        setState(() {
+          Navigator.pop(context);
+          typeOtp=typeOtpModel.result.typeOtp;
+        });
+      } else {
+        throw Exception('Failed to load info');
+      }
+    } on TimeoutException catch(e){
+      print('timeout: $e');
+    } on Error catch (e) {
+      print('Error: $e');
+    }
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadTheme();
     loadTheme();
   }
   @override
@@ -424,6 +480,36 @@ class _RegistState extends State<Regist> {
                       ],
                     ),
                   ),
+
+                  typeOtp==true? Padding(
+                    padding: EdgeInsets.only(left:16.0,right:16.0,top:16.0,bottom:0.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text("Kirim OTP Via ?", style: TextStyle(fontFamily: ThaibahFont().fontQ),),
+                        SizedBox(height:10.0),
+                        DropdownButton(
+                          isDense: true,
+                          isExpanded: true,
+                          hint: Text("Kirim OTP Via ?",style: TextStyle(fontFamily: 'Rubik'),),
+                          value: _valType,
+                          items: _type.map((value) {
+                            return DropdownMenuItem(
+                              child: Text(value,style: TextStyle(fontFamily: 'Rubik')),
+                              value: value,
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _valType = value;
+                            });
+                          },
+                        )
+                      ],
+                    ),
+                  ):Container(),
+                  SizedBox(height: 20.0),
                   UserRepository().buttonQ(context, warna1,warna2,()async{
                     final checkConnection = await userRepository.check();
                     if(checkConnection == false){
@@ -466,7 +552,7 @@ class _RegistState extends State<Regist> {
                       }
 
                     }
-                  }, _isLoading)
+                  }, false)
 
                 ],
               ),

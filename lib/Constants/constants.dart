@@ -97,7 +97,7 @@ class ThaibahColour{
   static Color primary2 = Color(0xFF30cc23);
 }
 class ThaibahFont{
-  final fontQ = 'Rosemary';
+  final fontQ = 'Rubik';
 }
 
 

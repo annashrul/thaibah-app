@@ -117,6 +117,8 @@ class SplashState extends State<Splash> {
     final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
     final statusLogin = await userRepository.getDataUser('status');
     final statusExitApp = await userRepository.getDataUser('statusExitApp');
+    var ceking = await userRepository.checker();
+
     print("STATUS LOGIN = $statusLogin");
     print("STATUS ON BOARDING = $statusOnBoarding");
     print("STATUS EXIT APP = $statusExitApp");
@@ -134,58 +136,6 @@ class SplashState extends State<Splash> {
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
               new CupertinoPageRoute(builder: (BuildContext context)=>UpdatePage()), (Route<dynamic> route) => false
           );
-        }else if(checker.result.statusMember == 0){
-          print("####################### CHECKING STATUS MEMBER ${checker.result.statusMember} ################################");
-          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-              new CupertinoPageRoute(builder: (BuildContext context)=>LoginPhone()), (Route<dynamic> route) => false
-          );
-        }else{
-          if(statusExitApp == '0'){
-            setState(() {isLoading=false;});
-            print("####################### CHECKING EXIT APP ################################");
-            Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
-            );
-          }else{
-            if(statusExitApp == '0'){
-              setState(() {isLoading=false;});
-              print("####################### CHECKING EXIT APP ################################");
-              Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                  new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
-              );
-            }
-            else{
-              if(statusOnBoarding == ''||statusOnBoarding=='0'){
-                setState(() {isLoading=false;});
-                print("####################### CHECKING STATUS ONBOARDING ################################");
-                Navigator.of(context, rootNavigator: true).pushReplacement(
-                    new CupertinoPageRoute(builder: (context) => IntroScreen())
-                );
-              }else{
-                if(statusLogin=='1'){
-                  setState(() {isLoading=false;});
-                  print("####################### CHECKING STATUS LOGIN ################################");
-                  Navigator.of(context, rootNavigator: true).pushReplacement(
-                      new CupertinoPageRoute(builder: (context) => DashboardThreePage())
-                  );
-                }else{
-                  setState(() {isLoading=false;});
-                  Navigator.of(context, rootNavigator: true).pushReplacement(
-                      new CupertinoPageRoute(builder: (context) => LoginPhone())
-                  );
-                }
-              }
-            }
-          }
-        }
-      }
-      else{
-        if(statusExitApp == '0'){
-          setState(() {isLoading=false;});
-          print("####################### CHECKING EXIT APP ################################");
-          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-              new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
-          );
         }
         else{
           if(statusOnBoarding == ''||statusOnBoarding=='0'){
@@ -198,8 +148,8 @@ class SplashState extends State<Splash> {
             if(statusLogin=='1'){
               setState(() {isLoading=false;});
               print("####################### CHECKING STATUS LOGIN ################################");
-              Navigator.of(context, rootNavigator: true).pushReplacement(
-                  new CupertinoPageRoute(builder: (context) => DashboardThreePage())
+              Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                  new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
               );
             }else{
               setState(() {isLoading=false;});
@@ -210,18 +160,6 @@ class SplashState extends State<Splash> {
           }
         }
       }
-    }
-    else{
-      setState(() {isLoading=false;});
-      print("####################### ELSE CHECKER ################################");
-      print(checkVersion);
-      if(statusExitApp == '0'){
-        setState(() {isLoading=false;});
-        print("####################### CHECKING EXIT APP ################################");
-        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-          new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
-        );
-      }
       else{
         if(statusOnBoarding == ''||statusOnBoarding=='0'){
           setState(() {isLoading=false;});
@@ -230,7 +168,7 @@ class SplashState extends State<Splash> {
               new CupertinoPageRoute(builder: (context) => IntroScreen())
           );
         }else{
-          if(statusLogin=='1'||statusLogin!='0'){
+          if(statusLogin=='1'){
             setState(() {isLoading=false;});
             print("####################### CHECKING STATUS LOGIN ################################");
             Navigator.of(context, rootNavigator: true).pushReplacement(
@@ -244,7 +182,31 @@ class SplashState extends State<Splash> {
           }
         }
       }
-
+    }
+    else{
+      setState(() {isLoading=false;});
+      print("####################### ELSE CHECKER ################################");
+      print(checkVersion);
+      if(statusOnBoarding == ''||statusOnBoarding=='0'){
+        setState(() {isLoading=false;});
+        print("####################### CHECKING STATUS ONBOARDING ################################");
+        Navigator.of(context, rootNavigator: true).pushReplacement(
+            new CupertinoPageRoute(builder: (context) => IntroScreen())
+        );
+      }else{
+        if(statusLogin=='1'){
+          setState(() {isLoading=false;});
+          print("####################### CHECKING STATUS LOGIN ################################");
+          Navigator.of(context, rootNavigator: true).pushReplacement(
+              new CupertinoPageRoute(builder: (context) => DashboardThreePage())
+          );
+        }else{
+          setState(() {isLoading=false;});
+          Navigator.of(context, rootNavigator: true).pushReplacement(
+              new CupertinoPageRoute(builder: (context) => LoginPhone())
+          );
+        }
+      }
     }
 //
 //    setState(() {isLoading=false;});

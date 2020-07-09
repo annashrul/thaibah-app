@@ -108,36 +108,6 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   String statusLevel ='0';
 
 
-//  Future<void> checker() async{
-//    var cekMember = await ConfigProvider().checkerMember();
-//    if(cekMember is CheckerMember){
-//      CheckerMember ceking = cekMember;
-//      if(ceking.status == 'success'){
-//        print("######################### STATUS CODE CHECK MEMBER ${ceking.status} ###########################");
-//        if(ceking.result.statusMember == 0){
-//          final dbHelper = DbHelper.instance;
-//          final id = await userRepository.getDataUser("id");
-//          Map<String, dynamic> row = {
-//            DbHelper.columnId    : id,
-//            DbHelper.columnStatus  : ceking.result.statusMember,
-//          };
-//          await dbHelper.update(row);
-//
-//          print("####################### STATUS MEMBER = ${ceking.result.statusMember} ################################");
-//          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-//              new CupertinoPageRoute(builder: (BuildContext context)=>LoginPhone()), (Route<dynamic> route) => false
-//          );
-//        }
-//      }else{
-//        GagalHitProvider().fetchRequest('home','kondisi = STATUS FAILED');
-//        print("######################### STATUS CODE CHECK MEMBER ${ceking.status} ###########################");
-//      }
-//    }else{
-//      GagalHitProvider().fetchRequest('home','kondisi = ERROR');
-//      print("######################### CHECK MEMBER ERROR  ###########################");
-//    }
-//    loadData();
-//  }
 
   Future<void> loadData() async {
     final token = await userRepository.getDataUser('token');
@@ -307,7 +277,16 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                               children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(left: 0.0),
-                                  child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                  child: Row(
+                                    mainAxisAlignment:MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Container(
+                                        width:100.0,
+                                        child: Text('Nama',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                                      ),
+                                      Text(": "+_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                    ],
+                                  )
                                 ),
                                 SizedBox(width: 7.0),
                                 levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
@@ -333,17 +312,48 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                             levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width:100.0,
+                                    child: Text('Kode Referral',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                                  ),
+                                  Text(": "+_kdRefferal,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                ],
+                              )
                             ),
                             SizedBox(height: 7.0),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                              child:Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width:100.0,
+                                    child: Text('Membership',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                                  ),
+                                  Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+
+                                ],
+                              )
+//                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
                             ),
                             SizedBox(height: 7.0),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
-                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                              child:Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width:100.0,
+                                    child: Text('Level Royalti',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                                  ),
+                                  Text(": "+_level,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+
+                                ],
+                              )
+//                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Royalti : $_level',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
                             ),
                           ],
                         ),

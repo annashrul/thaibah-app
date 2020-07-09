@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +14,9 @@ import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/Widgets/responsive_ui.dart';
+import 'package:thaibah/UI/component/detailDownline.dart';
 import 'package:thaibah/UI/component/myProfile.dart';
+import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
@@ -41,8 +44,9 @@ Future<Response> post(String url,var body)async{
 enum SingingCharacter { lafayette, jefferson }
 
 class CreateMember extends StatefulWidget {
-  CreateMember({this.kdReff}) : super();
+  CreateMember({this.kdReff,this.nama}) : super();
   final String kdReff;
+  final String nama;
   @override
   _CreateMemberState createState() => _CreateMemberState();
 }
@@ -140,24 +144,8 @@ class _CreateMemberState extends State<CreateMember> {
       print("nu kahiji lain 0");
     }
     String no = "${codeCountry}${replaced}";
-    print(no);
-//    if(codeCountry == ''){
-//      setState(() {
-//        codeCountry = "62";
-//      });
-//    }
-//    String rplc = noHpController.text[0];
-//    String replaced = '';
-//    if(rplc == '0'){
-//      print("nu kahiji 0");
-//      print("####################${noHpController.text.substring(1,noHpController.text.length)}####################");
-//      replaced = "${noHpController.text.substring(1,noHpController.text.length)}";
-//    }else{
-//      replaced = "${noHpController.text}";
-//      print("nu kahiji lain 0");
-//    }
-//    String no = "${codeCountry}${replaced}";
-    var res = await MemberProvider().resendOtp(no,reffController.text,"register");
+
+    var res = await MemberProvider().resendOtp(no,reffController.text,"register",'whatsapp');
     if(res is ResendOtp){
       ResendOtp result = res;
       print(result.result.otp);
@@ -168,6 +156,7 @@ class _CreateMemberState extends State<CreateMember> {
           context,
           MaterialPageRoute(
             builder: (context) => OtpPage(
+              namaOld:widget.nama,
               pin:pinController.text,
               name:nameController.text,
               isMobile:"ya",
@@ -692,10 +681,11 @@ class _CreateMemberState extends State<CreateMember> {
 
 
 class OtpPage extends StatefulWidget {
-  final String pin,name,isMobile,noHp,kdReferral/*,ktp*/,otp,statusOtp;
+  final String namaOld,pin,name,isMobile,noHp,kdReferral/*,ktp*/,otp,statusOtp;
   OtpPage({
     Key key,
     @required
+    this.namaOld,
     this.pin,
     this.name,
     this.isMobile,
@@ -772,6 +762,9 @@ class _OtpPageStatefulState extends State<OtpPage> {
                     child: Text("Kembali",style: TextStyle(fontFamily: ThaibahFont().fontQ),),
                     onPressed: (){
                       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MyProfile()), (Route<dynamic> route) => false);
+
+
+//                      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => JaringanUI(name:widget.namaOld,kdReferral: widget.kdReferral)), (Route<dynamic> route) => false);
                     },
                   ),
                 ],

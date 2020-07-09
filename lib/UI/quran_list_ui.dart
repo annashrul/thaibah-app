@@ -303,7 +303,7 @@ class QuranListUIState extends State<QuranListUI> {
   Widget buildBar(BuildContext context) {
     return new AppBar(
         leading: IconButton(
-          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios,color: Colors.white),
           onPressed: (){
             Navigator.of(context).pop();
           },

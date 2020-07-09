@@ -243,7 +243,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       child: InputDecorator(
         decoration: const InputDecoration(
           labelText: 'Pilih Alamat',
-          labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily:'Rosemary',fontSize:20),
+          labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily:'Rubik',fontSize:20),
         ),
         isEmpty: dropdownValue == null,
         child: new DropdownButtonHideUnderline(
@@ -305,7 +305,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             return new InputDecorator(
               decoration: const InputDecoration(
                   labelText: 'Provinsi:',
-                  labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily:'Rosemary',fontSize: 20)
+                  labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily:'Rubik',fontSize: 20)
               ),
               isEmpty: _currentItemSelectedProvinsi == null,
               child: new DropdownButtonHideUnderline(
@@ -352,7 +352,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Kota:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
             ),
             isEmpty: _currentItemSelectedKota == null,
             child: new DropdownButtonHideUnderline(
@@ -391,7 +391,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
           return snapshot.hasData ? new InputDecorator(
             decoration: const InputDecoration(
                 labelText: 'Kecamatan:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize: 20)
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
             ),
             isEmpty: _currentItemSelectedKecamatan == null,
             child: new DropdownButtonHideUnderline(
@@ -427,7 +427,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             return new InputDecorator(
               decoration: const InputDecoration(
                 labelText: 'Kurir',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize:20),
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize:20),
               ),
               isEmpty: _currentItemSelectedKurir == null,
               child: new DropdownButtonHideUnderline(
@@ -473,7 +473,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             return InputDecorator(
               decoration: const InputDecoration(
                 labelText: 'Jenis Layanan',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rosemary",fontSize:20),
+                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize:20),
 
               ),
               isEmpty: _currentItemSelectedJasa == null,

@@ -64,7 +64,7 @@ flutter:
         - asset: assets/fonts/Rosemary/DroidSans-Bold.ttf
     - family: Rubik
       fonts:
-        - asset: assets/fonts/rubik/Rubik-Bold.ttf
+        - asset: assets/fonts/Rubik/Rubik-Light.ttf
     - family: ArabicTwo
       fonts:
         - asset: assets/fonts/arabic-two/ArabicTwo.ttf

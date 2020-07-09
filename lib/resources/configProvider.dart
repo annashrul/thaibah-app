@@ -32,7 +32,7 @@ class ConfigProvider {
       final response = await client.get(
           ApiService().baseUrl+'info/checker',
           headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-      ).timeout(Duration(seconds: ApiService().timerActivity));
+      );
       print(response.statusCode);
       if (response.statusCode == 200) {
         return compute(checkerFromJson,response.body);
@@ -51,7 +51,7 @@ class ConfigProvider {
       final response = await client.get(
           ApiService().baseUrl+'info/checkmember',
           headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-      ).timeout(Duration(seconds: ApiService().timerActivity));
+      );
       print(response.statusCode);
       if (response.statusCode == 200) {
         return compute(checkerMemberFromJson,response.body);

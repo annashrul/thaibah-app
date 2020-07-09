@@ -276,7 +276,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                     buildProduk(snapshot, context),
                     Container(
                       color: Colors.white,
-                      padding:EdgeInsets.only(top: 0.0, bottom: 10.0, left: 15.0, right: 15.0),
+                      padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 15.0, right: 15.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -287,7 +287,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
 
                     Container(
                       decoration: BoxDecoration(color: Colors.white),
-                      padding:EdgeInsets.only(top: 20.0, bottom: 20.0, left: 15.0, right: 15.0),
+                      padding:EdgeInsets.only(top: 10.0, bottom: 20.0, left: 15.0, right: 15.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -317,7 +317,8 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                           snapshot.data.result.pembayaran.resi != null ? GestureDetector(
                             onTap: () {
                               Clipboard.setData(new ClipboardData(text: snapshot.data.result.pembayaran.resi));
-                              scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("No.Resi Berhasil Disalin")));
+                              UserRepository().notifNoAction(scaffoldKey, context, "No Resi Berhasil Disalin","success");
+//                              scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("No.Resi Berhasil Disalin")));
                             },
                             child:Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

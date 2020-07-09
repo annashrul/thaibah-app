@@ -106,13 +106,6 @@ class _MasjidTerdekatState extends State<MasjidTerdekat> {
                   return GestureDetector(
                     onTap: () async{
                       MapUtils.openMap(snapshot.data.result[index].lat,snapshot.data.result[index].lng);
-
-//                      var mapSchema = 'geo:${snapshot.data.result[index].lat},${snapshot.data.result[index].lat}';
-//                      if (await canLaunch(mapSchema)) {
-//                        await launch(mapSchema);
-//                      } else {
-//                        throw 'Could not launch $mapSchema';
-//                      }
                       String url = 'https://www.google.com/maps/search/${Uri.encodeFull("${snapshot.data.result[index].name}, ${snapshot.data.result[index].address}, ${snapshot.data.result[index].city}, ${snapshot.data.result[index].state}, ${snapshot.data.result[index].country}")}';
                       print(url);
                       if (await canLaunch(url)) {

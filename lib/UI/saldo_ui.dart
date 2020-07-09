@@ -133,7 +133,7 @@ class _SaldoUIState extends State<SaldoUI> {
     var height = width / _aspectRatio;
     return Scaffold(
         key: scaffoldKey,
-        appBar: UserRepository().appBarWithButton(context, 'Top Up', warna1, warna1, (){
+        appBar: UserRepository().appBarWithButton(context, 'Top Up', warna1, warna2, (){
           Navigator.of(context).pop();
         },Container()),
         body: ListView(

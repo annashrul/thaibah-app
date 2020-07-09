@@ -47,10 +47,9 @@ class _LoginPhoneState extends State<LoginPhone> {
   List<UserLocalModel> contactList;
   bool typeOtp = true;
   TypeOtpModel typeOtpModel;
+  String _valType ='whatsapp';  //Ini untuk menyimpan value data friend
+  List _type = ["whatsapp", "sms"];  //Array My Friend
   Future<void> loadData() async {
-
-
-
     try{
       var jsonString = await http.get(
           ApiService().baseUrl+'info/typeotp'
@@ -73,7 +72,28 @@ class _LoginPhoneState extends State<LoginPhone> {
   UserLocalModel userLocalModel;
 
   Future login() async{
+    setState(() {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 100.0),
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height:5.0),
+                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                  ],
+                ),
+              )
+          );
 
+        },
+      );
+    });
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     print("ID = ${androidInfo.id}");
@@ -103,19 +123,19 @@ class _LoginPhoneState extends State<LoginPhone> {
     String onesignalUserId = status.subscriptionStatus.userId;
     final checkConection = await userRepository.check();
     if(checkConection == false){
-      setState(() {_isLoading = false;});
+      setState(() {Navigator.pop(context);});
       UserRepository().notifNoAction(_scaffoldKey, context,"Anda Tidak Terhubung Dengan Internet","failed");
     }else{
-      if(typeOtp==false){_radioValue2 = null;}
-      else{_radioValue2 = _radioValue2;}
-      var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId,_radioValue2,"${androidInfo.brand} ${androidInfo.device}");
+      if(typeOtp==false){_valType = null;}
+      else{_valType = _valType;}
+      var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId,_valType,"${androidInfo.brand} ${androidInfo.device}");
       print("RESPONSE $res");
-
+      print("################### TYPE OTP $_valType ########################");
       if(res is AuthModel){
         AuthModel result = res;
         if(result.status == 'success'){
           setState(() {
-            _isLoading = false;
+            Navigator.pop(context);
             alreadyLogin = false;
             _noHpController.clear();
           });
@@ -140,36 +160,17 @@ class _LoginPhoneState extends State<LoginPhone> {
                 warna2:result.result.tema.warna2,
               )), (Route<dynamic> route) => false
           );
-//          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SecondScreen(
-//            otp: result.result.otp.toString(),
-//            id:result.result.id.toString(),
-//            name: result.result.name.toString(),
-//            address: result.result.address.toString(),
-//            email: result.result.email.toString(),
-//            picture: result.result.picture.toString(),
-//            cover: result.result.cover.toString(),
-//            socketid: result.result.socketid.toString(),
-//            kdReferral: result.result.kdReferral.toString(),
-//            kdUnique: result.result.kdUnique.toString(),
-//            token: result.result.token.toString(),
-//            pin: result.result.pin.toString(),
-//            noHp: result.result.noHp.toString(),
-//            ktp: result.result.ktp.toString(),
-//            levelStatus:result.result.levelStatus.toString(),
-//            warna1:result.result.tema.warna1,
-//            warna2:result.result.tema.warna2,
-//          )), (Route<dynamic> route) => false);
         }
         else{
           print("######### STATUS ${result.status}");
-          setState(() {_isLoading = false;});
+          setState(() {Navigator.pop(context);});
           UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Tidak Terdaftar","failed");
         }
 
       }
       else{
         General results = res;
-        setState(() {_isLoading = false;});
+        setState(() {Navigator.pop(context);});
         UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Tidak Terdaftar","failed");
       }
     }
@@ -275,7 +276,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                   SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
                   Container(
                     width: double.infinity,
-                    height: ScreenUtilQ.getInstance().setHeight(typeOtp==true?460:320),
+                    height: ScreenUtilQ.getInstance().setHeight(typeOtp==true?350:320),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(0.0),
@@ -346,61 +347,23 @@ class _LoginPhoneState extends State<LoginPhone> {
                           SizedBox(height:typeOtp==true?5.0:0.0),
                           typeOtp==true?Text("Kirim OTP via ?",style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26))):Text(''),
                           SizedBox(height:typeOtp==true?5.0:0.0),
-                          typeOtp==true?Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                width:MediaQuery.of(context).size.width/2.5,
-                                padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.green,width: 3.0),
-                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          value: 'whatsapp',
-                                          groupValue: _radioValue2,
-                                          onChanged: _handleRadioValueChange2,
-                                        ),
-                                        Text("WahtsApp",textAlign:TextAlign.center,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: 20.0),
-                              Container(
-                                width:MediaQuery.of(context).size.width/3,
-                                padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.green,width: 3.0),
-                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          value: 'sms',
-                                          groupValue: _radioValue2,
-                                          onChanged: _handleRadioValueChange2,
-                                        ),
-                                        Text("SMS",textAlign:TextAlign.center,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
-                                      ],
-                                    ),
-
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ):Container()
-
+                          typeOtp==true?DropdownButton(
+                            isDense: true,
+                            isExpanded: true,
+                            hint: Text("Pilih",style: TextStyle(fontFamily: 'Rubik'),),
+                            value: _valType,
+                            items: _type.map((value) {
+                              return DropdownMenuItem(
+                                child: Text(value,style: TextStyle(fontFamily: 'Rubik')),
+                                value: value,
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _valType = value;
+                              });
+                            },
+                          ):Container(),
                         ],
                       ),
                     ),
@@ -444,7 +407,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                                 }
 
                               },
-                              child: _isLoading?Center(child: CircularProgressIndicator(strokeWidth:10,valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Center(
+                              child:Center(
                                 child: Text("Masuk",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
                               ),
                             ),
