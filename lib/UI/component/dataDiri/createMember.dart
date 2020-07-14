@@ -762,8 +762,6 @@ class _OtpPageStatefulState extends State<OtpPage> {
                     child: Text("Kembali",style: TextStyle(fontFamily: ThaibahFont().fontQ),),
                     onPressed: (){
                       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MyProfile()), (Route<dynamic> route) => false);
-
-
 //                      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => JaringanUI(name:widget.namaOld,kdReferral: widget.kdReferral)), (Route<dynamic> route) => false);
                     },
                   ),

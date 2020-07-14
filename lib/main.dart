@@ -117,7 +117,7 @@ class SplashState extends State<Splash> {
     final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
     final statusLogin = await userRepository.getDataUser('status');
     final statusExitApp = await userRepository.getDataUser('statusExitApp');
-    var ceking = await userRepository.checker();
+//    var ceking = await userRepository.checker();
 
     print("STATUS LOGIN = $statusLogin");
     print("STATUS ON BOARDING = $statusOnBoarding");

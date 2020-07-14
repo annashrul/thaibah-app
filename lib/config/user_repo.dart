@@ -567,7 +567,6 @@ class UserRepository {
 
 
   Future<bool> checker() async{
-    final userRepository = UserRepository();
     var cekMember = await ConfigProvider().checkerMember();
     if(cekMember is CheckerMember){
       CheckerMember ceking = cekMember;

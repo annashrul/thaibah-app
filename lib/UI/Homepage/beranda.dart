@@ -272,26 +272,88 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
+//                            Row(
+//                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                              children: <Widget>[
+//                                Padding(
+//                                  padding: const EdgeInsets.only(left: 0.0),
+//                                  child: Row(
+//                                    mainAxisAlignment:MainAxisAlignment.start,
+//                                    children: <Widget>[
+//                                      Container(
+//                                        width:100.0,
+//                                        child: Text('Nama',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+//                                      ),
+//                                      Text(": "+_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+//                                    ],
+//                                  )
+//                                ),
+//                                SizedBox(width: 7.0),
+//                                levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
+//                                  onTap: (){
+//                                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
+//                                  },
+//                                  child: Container(
+//                                      padding: EdgeInsets.all(5),
+//                                      decoration: new BoxDecoration(
+//                                        color: Colors.red,
+//                                        borderRadius: BorderRadius.circular(6),
+//                                      ),
+//                                      constraints: BoxConstraints(
+//                                        minWidth: 14,
+//                                        minHeight: 14,
+//                                      ),
+//                                      child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
+//                                  ),
+//                                ):(levelPlatinumRaw == 1 ? Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)) :
+//                                Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
+//                              ],
+//                            ),
+                            Padding(
+                                padding: const EdgeInsets.only(left: 0.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+
+                                    Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                  ],
+                                )
+                            ),
+                            SizedBox(height: 7.0),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 0.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width:100.0,
+                                    child: Text('Kode Referral',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                                  ),
+                                  Text(": "+_kdRefferal,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                ],
+                              )
+                            ),
+                            SizedBox(height: 7.0),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 0.0),
-                                  child: Row(
-                                    mainAxisAlignment:MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(
-                                        width:100.0,
-                                        child: Text('Nama',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
-                                      ),
-                                      Text(": "+_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                                    ],
-                                  )
+                                    padding: const EdgeInsets.only(left: 0.0),
+                                    child: Row(
+                                      mainAxisAlignment:MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Container(
+                                          width:100.0,
+                                          child: Text('Membership',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                                        ),
+                                        Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                      ],
+                                    )
                                 ),
                                 SizedBox(width: 7.0),
                                 levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
                                   onTap: (){
-                                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
+                                    Navigator.of(context).push(new CupertinoPageRoute(builder: (_) => UpgradePlatinum()));
                                   },
                                   child: Container(
                                       padding: EdgeInsets.all(5),
@@ -309,36 +371,21 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
                               ],
                             ),
-                            levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 0.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    width:100.0,
-                                    child: Text('Kode Referral',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
-                                  ),
-                                  Text(": "+_kdRefferal,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                                ],
-                              )
-                            ),
-                            SizedBox(height: 7.0),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 0.0),
-                              child:Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    width:100.0,
-                                    child: Text('Membership',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
-                                  ),
-                                  Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-
-                                ],
-                              )
-//                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
-                            ),
+//                            Padding(
+//                              padding: const EdgeInsets.only(left: 0.0),
+//                              child:Row(
+//                                mainAxisAlignment: MainAxisAlignment.start,
+//                                children: <Widget>[
+//                                  Container(
+//                                    width:100.0,
+//                                    child: Text('Membership',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+//                                  ),
+//                                  Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+//
+//                                ],
+//                              )
+////                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+//                            ),
                             SizedBox(height: 7.0),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
@@ -1159,24 +1206,29 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
         padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
           children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                AutoSizeTextQ(
-                  'Saldo Utama',
-                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
-                  maxLines: 2,
-                ),
-                SizedBox(height:2.0),
-                AutoSizeTextQ(
-                    saldoMain,
-                    style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
-                    maxLines: 2
-                ),
-              ],
-            ),
+           Center(
+             child:  Column(
+               mainAxisAlignment: MainAxisAlignment.center,
+               crossAxisAlignment: CrossAxisAlignment.center,
+               children: <Widget>[
+                 AutoSizeTextQ(
+                   'Saldo Utama',
+                   textAlign: TextAlign.center,
+                   style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
+                   maxLines: 2,
+                 ),
+                 SizedBox(height:2.0),
+                 AutoSizeTextQ(
+                     saldoMain,
+                     textAlign: TextAlign.center,
+                     style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                     maxLines: 2
+                 ),
+               ],
+             ),
+           ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1184,11 +1236,16 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
               children: <Widget>[
                 AutoSizeTextQ(
                     'Saldo Bonus',
+                    textAlign: TextAlign.center,
                     style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(saldoBonus,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(
+                    saldoBonus,
+                    textAlign: TextAlign.center,
+
+                    style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1196,21 +1253,37 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(
+                    'Saldo Voucher',
+                    textAlign: TextAlign.center,
+
+                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(saldoVoucher,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(
+                    saldoVoucher,
+                    textAlign: TextAlign.center,
+
+                    style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
-                SizedBox(height:2.0),
-                AutoSizeTextQ(saldoPlatinum,style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
-              ],
-            ),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  AutoSizeTextQ('Saldo Platinum',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                  SizedBox(height:2.0),
+                  AutoSizeTextQ(
+                      saldoPlatinum,
+                      textAlign: TextAlign.center,
+
+                      style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                ],
+              ),
+            )
           ],
         )
     );

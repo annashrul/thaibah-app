@@ -219,6 +219,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                           ),
                                         ),
                                       ),
+
                                       new SizedBox(width: 10.0),
                                       Column(
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -266,19 +267,29 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                         linkStyle: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ),
                                       ),
                                       SizedBox(height: 10.0),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(10.0),
-                                            topRight: Radius.circular( 10.0)
+                                      InkWell(
+                                        onDoubleTap: (){
+                                          print("DOUBLE TAP");
+                                          setState(() {
+                                            isLoadingLikeOrUnLike=true;
+                                          });
+                                          sendLikeOrUnLike(snapshot.data.result.isLike);
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(10.0),
+                                                topRight: Radius.circular( 10.0)
+                                            ),
                                           ),
-                                        ),
-                                        child: Center(
-                                          child:Image.network(
-                                            snapshot.data.result.picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
-                                          )
-                                        ),
-                                      )
+                                          child: Center(
+                                              child:Image.network(
+                                                snapshot.data.result.picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
+                                              )
+                                          ),
+                                        )
+                                      ),
+
                                     ],
                                   )
                               ),
@@ -375,31 +386,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-//              Padding(
-//                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 0.0, 8.0),
-//                child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.start,
-//                  children: <Widget>[
-//                    new Container(
-//                      height: 40.0,
-//                      width: 40.0,
-//                      decoration: new BoxDecoration(
-//                        shape: BoxShape.circle,
-//                        image: new DecorationImage(
-//                            fit: BoxFit.fill,
-//                            image: new NetworkImage(
-//                                "https://pbs.twimg.com/profile_images/916384996092448768/PF1TSFOE_400x400.jpg")),
-//                      ),
-//
-//                    ),
-//                    new SizedBox(
-//                      width: 10.0,
-//                    ),
-//                  ],
-//                ),
-//              ),
               Container(
-//                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
                 child: TextFormField(
                   style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
                   controller: captionController,

@@ -276,14 +276,14 @@ class _LoginPhoneState extends State<LoginPhone> {
                   SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
                   Container(
                     width: double.infinity,
-                    height: ScreenUtilQ.getInstance().setHeight(typeOtp==true?350:320),
+                    height: ScreenUtilQ.getInstance().setHeight(typeOtp==true?420:320),
                     decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(0.0),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black12,offset: Offset(0.0, 0.0),blurRadius: 0.0),
-                          BoxShadow(color: Colors.black12,offset: Offset(0.0, -5.0),blurRadius: 10.0),
-                        ]
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(0.0),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black12,offset: Offset(0.0, 0.0),blurRadius: 0.0),
+                        BoxShadow(color: Colors.black12,offset: Offset(0.0, -5.0),blurRadius: 10.0),
+                      ]
                     ),
                     child: Padding(
                       padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
@@ -354,7 +354,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                             value: _valType,
                             items: _type.map((value) {
                               return DropdownMenuItem(
-                                child: Text(value,style: TextStyle(fontFamily: 'Rubik')),
+                                child: Text(value,style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                                 value: value,
                               );
                             }).toList(),
@@ -373,7 +373,6 @@ class _LoginPhoneState extends State<LoginPhone> {
                     alignment: Alignment.centerLeft,
                     child: Text("*Pastikan Handphone Anda Terkoneksi Dengan Internet*",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,color:Colors.red)),
                   ),
-
                   SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

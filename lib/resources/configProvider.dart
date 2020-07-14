@@ -31,7 +31,7 @@ class ConfigProvider {
       final token = await userRepository.getDataUser('token');
       final response = await client.get(
           ApiService().baseUrl+'info/checker',
-          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+          headers: {'Authorization':'','username':ApiService().username,'password':ApiService().password}
       );
       print(response.statusCode);
       if (response.statusCode == 200) {
