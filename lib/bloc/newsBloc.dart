@@ -9,11 +9,11 @@ class NewsBloc extends BaseBloc{
   bool _isDisposed = false;
   final PublishSubject<NewsModel> _serviceController = new PublishSubject<NewsModel>();
   Observable<NewsModel> get allNews => _serviceController.stream;
-  fetchNewsList(var page, var limit) async {
+  fetchNewsList(var page, var limit,var param) async {
     if(_isDisposed) {
       print('false');
     }else{
-      NewsModel news =  await repository.fetchAllNews(page,limit);
+      NewsModel news =  await repository.fetchAllNews(page,limit,param);
       _serviceController.sink.add(news);
     }
   }

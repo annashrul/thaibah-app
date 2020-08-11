@@ -3,15 +3,19 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlite_at_runtime/sqlite_at_runtime.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/promosiModel.dart';
+import 'package:thaibah/Model/tertimoniModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/detail_promosi_ui.dart';
 import 'package:thaibah/bloc/promosiBloc.dart';
+import 'package:thaibah/bloc/testiBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -80,7 +84,8 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
   @override
   void initState() {
     loadTheme();
-    promosiListBloc.fetchAllPromosiList(1,perpage);
+    testiBloc.fetchTesti('0',1,100);
+//    promosiListBloc.fetchAllPromosiList(1,perpage);
     super.initState();
   }
 //
@@ -90,169 +95,95 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
   }
 
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
       appBar:  UserRepository().appBarNoButton(context,'Tentang Thaibah',warna1,warna2),
       body: StreamBuilder(
-          stream: promosiListBloc.allPromosiList,
-          builder: (context, AsyncSnapshot<PromosiModel> snapshot) {
+          stream: testiBloc.getResult,
+          builder: (context, AsyncSnapshot<TestimoniModel> snapshot) {
             if(snapshot.hasData){
-              return _buildContent(snapshot, context);
+              return _content(snapshot, context);
+//              return _buildContent(snapshot, context);
             }else if(snapshot.hasError){
               return Text(snapshot.error.toString());
             }
-            return _loading(context);
+            return Center(child: CircularProgressIndicator(strokeWidth: 10,valueColor: new AlwaysStoppedAnimation<Color>(statusLevel!='0'?warna1:ThaibahColour.primary1)),);
           }
       ),
     );
   }
 
+  Widget _content(AsyncSnapshot<TestimoniModel> snapshot, BuildContext context) {
+    return isLoading?Center(child: CircularProgressIndicator(strokeWidth: 10,valueColor: new AlwaysStoppedAnimation<Color>(statusLevel!='0'?warna1:ThaibahColour.primary1)),):RefreshIndicator(
+      child: StaggeredGridView.countBuilder(
+        physics: new BouncingScrollPhysics(),
+        crossAxisCount: 4,
+        itemCount: snapshot.data.result.data.length,
+        itemBuilder: (BuildContext context, int index){
+          String cap = '';
+          if(snapshot.data.result.data[index].caption.length > 20){
+            cap = '${snapshot.data.result.data[index].caption.substring(0,20)} ...';
+          }else{
+            cap = snapshot.data.result.data[index].caption;
+          }
+          return InkWell(
 
-  Widget _loading(BuildContext context,) {
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
-    return ListView.builder(
-      itemCount: 4,
-      itemBuilder: (context, index) {
-        return InkWell(
-          child: Container(
-              padding: EdgeInsets.all(10.0),
-              child: Card(
-                color: Colors.transparent,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
-                child: new Column(
-                  children: <Widget>[
-                    new Stack(
-                      children: <Widget>[
-                        Container(
-                          height: ScreenUtilQ.getInstance().setHeight(450),
-                          child: SkeletonFrame(width: double.infinity,height: 200),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              )
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildContent(AsyncSnapshot<PromosiModel> snapshot, BuildContext context){
-    return snapshot.data.result.data.length > 0?RefreshIndicator(
-      child: LoadMoreQ(
-        child: ListView.builder(
-          itemCount: snapshot.data.result.data.length,
-          itemBuilder: (BuildContext context, int index) {
-
-            return InkWell(
-              onTap: ()=>{
-                Navigator.of(context, rootNavigator: true).push(
-                  new CupertinoPageRoute(builder: (context) => DetailPromosiUI(
-                    id:snapshot.data.result.data[index].id,
-                    title: snapshot.data.result.data[index].title,
-                    picture: snapshot.data.result.data[index].picture,
-                    caption: snapshot.data.result.data[index].caption,
-                    penulis: snapshot.data.result.data[index].penulis,
-                    createdAt: snapshot.data.result.data[index].createdAt,
-                    link:snapshot.data.result.data[index].link
-                  )),
-                )
-              },
-              child: Container(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      height: ScreenUtilQ.getInstance().setHeight(400),
-                      child: CachedNetworkImage(
-                        imageUrl: snapshot.data.result.data[index].thumbnail,
-                        placeholder: (context, url) => Center(
-                          child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                        ),
-                        errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                        imageBuilder: (context, imageProvider) => Container(
-                          decoration: BoxDecoration(
-                            borderRadius: new BorderRadius.circular(0.0),
-                            color: Colors.grey,
-                            image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
+            child: new Card(
+              elevation: 2.0,
+              margin: const EdgeInsets.all(5.0),
+              child: new Stack(
+                alignment: Alignment.bottomCenter,
+                children: <Widget>[
+                  new Hero(
+                    tag: 'tagImage$index',
+                    child: new Image.network(snapshot.data.result.data[index].thumbnail, fit: BoxFit.cover),
+                  ),
+                  new Align(
+                    child: new Container(
+                      padding: const EdgeInsets.all(6.0),
+                      child: new Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new Text(snapshot.data.result.data[index].name, style: new TextStyle(fontFamily: ThaibahFont().fontQ,color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
+                          Html(
+                            data: cap,
+                            defaultTextStyle: new TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ, fontSize: 12.0) ,
+                          )
+                        ],
                       ),
+                      color: Colors.black.withOpacity(0.4),
+                      width: double.infinity,
                     ),
-                    ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(snapshot.data.result.data[index].thumbnail),
-                      ),
-                      title: Text(
-                        snapshot.data.result.data[index].title,
-                        style: TextStyle(fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
-                      ),
-                      subtitle: Text(snapshot.data.result.data[index].penulis+" . "+snapshot.data.result.data[index].createdAt,
-                          style: TextStyle(
-                            color: Colors.grey, fontFamily: ThaibahFont().fontQ
-                          )),
-                      trailing: _threeItemPopup(snapshot.data.result.data[index].link),
-                    ),
-                  ],
-                ),
+                    alignment: Alignment.bottomCenter,
+                  ),
+                ],
               ),
-            );
-          },
-        ),
-        onLoadMore: _loadMore,
-        whenEmptyLoad: true,
-        delegate: DefaultLoadMoreDelegate(),
-        textBuilder: DefaultLoadMoreTextBuilder.english,
-        isFinish: snapshot.data.result.data.length < perpage,
+            ),
+            onTap: (){
+              Navigator.of(context, rootNavigator: true).push(
+                new CupertinoPageRoute(builder: (context) => DetailPromosiUI(
+                    id:snapshot.data.result.data[index].id,
+                    title: snapshot.data.result.data[index].name,
+                    picture: snapshot.data.result.data[index].thumbnail,
+                    caption: snapshot.data.result.data[index].caption,
+                    penulis: snapshot.data.result.data[index].name,
+                    createdAt: snapshot.data.result.data[index].createdAt.toString(),
+                    link:snapshot.data.result.data[index].rating.toString()
+                )),
+              );
+            },
+          );
+        },
+        staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
+        mainAxisSpacing: 4.0,
+        crossAxisSpacing: 4.0,
       ),
       onRefresh: _refresh
-    ):Container(
-    child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily: ThaibahFont().fontQ),))
     );
   }
-
-  Widget _threeItemPopup(var link) => PopupMenuButton(
-    onSelected: (e) async{
-      String url = '$link';
-      if (await canLaunch(url)) {
-        await launch(url);
-      }else{
-        scaffoldKey.currentState.showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-            content: Text('Link Download Tidak Tersedia',style: TextStyle(color:Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-          )
-        );
-      }
-    },
-    itemBuilder: (context) {
-      var list = List<PopupMenuEntry<Object>>();
-      list.add(
-        CheckedPopupMenuItem(
-          child: Text(
-            "Download",
-            style: TextStyle(color: Colors.black,fontFamily: ThaibahFont().fontQ),
-          ),
-          value: 1,
-        ),
-      );
-      return list;
-    },
-    icon: Icon(
-      Icons.more_vert,
-      size: 20,
-      color: Colors.black,
-    ),
-  );
 
 }
 

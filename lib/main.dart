@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:thaibah/Model/onboardingModel.dart' as Prefix2;
 import 'package:thaibah/Model/pageViewModel.dart';
 import 'package:thaibah/Model/user_location.dart';
@@ -28,7 +29,7 @@ import 'Constants/constants.dart';
 import 'Model/checkerModel.dart';
 import 'UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'UI/Widgets/pin_screen.dart';
-//import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:sqlite_at_runtime/sqlite_at_runtime.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +71,7 @@ class _MyAppState extends State<MyApp>  {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           home:  Splash(),
+//          home:  TablesQ(),
 
         )
     );
@@ -117,20 +119,12 @@ class SplashState extends State<Splash> {
     final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
     final statusLogin = await userRepository.getDataUser('status');
     final statusExitApp = await userRepository.getDataUser('statusExitApp');
-//    var ceking = await userRepository.checker();
 
-    print("STATUS LOGIN = $statusLogin");
-    print("STATUS ON BOARDING = $statusOnBoarding");
-    print("STATUS EXIT APP = $statusExitApp");
     if(checkVersion is Checker){
       Checker checker = checkVersion;
 //      var Checker result = res;
       setState(() {isLoading=false;});
-//      GagalHitProvider().fetchRequest('main',"SERVER VERSI ${result.result.versionCode} & LOCAL VERSI ${ApiService().versionCode}");
-      print("####################### CHECKING STATUS CHECKER ${checker.status} ################################");
       if(checker.status == 'success'){
-//        GagalHitProvider().fetchRequest('main',"SERVER VERSI ${checker.result.versionCode} & LOCAL VERSI ${ApiService().versionCode}");
-        print("####################### SERVER VERSI ${checker.result.versionCode} & LOCAL VERSI ${ApiService().versionCode} ################################");
         if(checker.result.versionCode != ApiService().versionCode){
           print("####################### CHECKING VERSION CODE ################################");
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
@@ -140,14 +134,12 @@ class SplashState extends State<Splash> {
         else{
           if(statusOnBoarding == ''||statusOnBoarding=='0'){
             setState(() {isLoading=false;});
-            print("####################### CHECKING STATUS ONBOARDING ################################");
             Navigator.of(context, rootNavigator: true).pushReplacement(
                 new CupertinoPageRoute(builder: (context) => IntroScreen())
             );
           }else{
             if(statusLogin=='1'){
               setState(() {isLoading=false;});
-              print("####################### CHECKING STATUS LOGIN ################################");
               Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                   new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
               );
@@ -163,14 +155,12 @@ class SplashState extends State<Splash> {
       else{
         if(statusOnBoarding == ''||statusOnBoarding=='0'){
           setState(() {isLoading=false;});
-          print("####################### CHECKING STATUS ONBOARDING ################################");
           Navigator.of(context, rootNavigator: true).pushReplacement(
               new CupertinoPageRoute(builder: (context) => IntroScreen())
           );
         }else{
           if(statusLogin=='1'){
             setState(() {isLoading=false;});
-            print("####################### CHECKING STATUS LOGIN ################################");
             Navigator.of(context, rootNavigator: true).pushReplacement(
                 new CupertinoPageRoute(builder: (context) => DashboardThreePage())
             );
@@ -185,18 +175,15 @@ class SplashState extends State<Splash> {
     }
     else{
       setState(() {isLoading=false;});
-      print("####################### ELSE CHECKER ################################");
       print(checkVersion);
       if(statusOnBoarding == ''||statusOnBoarding=='0'){
         setState(() {isLoading=false;});
-        print("####################### CHECKING STATUS ONBOARDING ################################");
         Navigator.of(context, rootNavigator: true).pushReplacement(
             new CupertinoPageRoute(builder: (context) => IntroScreen())
         );
       }else{
         if(statusLogin=='1'){
           setState(() {isLoading=false;});
-          print("####################### CHECKING STATUS LOGIN ################################");
           Navigator.of(context, rootNavigator: true).pushReplacement(
               new CupertinoPageRoute(builder: (context) => DashboardThreePage())
           );
@@ -208,11 +195,6 @@ class SplashState extends State<Splash> {
         }
       }
     }
-//
-//    setState(() {isLoading=false;});
-//    Navigator.of(context, rootNavigator: true).pushReplacement(
-//      new CupertinoPageRoute(builder: (context) => DashboardThreePage())
-//    );
 
   }
 
@@ -221,9 +203,6 @@ class SplashState extends State<Splash> {
     super.initState();
     isLoading=true;
     checkFirstSeen();
-//    new Timer(new Duration(milliseconds: 100), () {
-//
-//    });
   }
 
   @override
@@ -394,6 +373,216 @@ class _IntroScreenState extends State<IntroScreen> {
             )
           ],
         ):Text('Data Tidak Tersedia')
+    );
+  }
+}
+
+class TablesQ extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _TablesQ();
+  }
+}
+
+class _TablesQ extends State<TablesQ> {
+  static Future<List<Map>> fetch() async {
+    await Sqlartime.openDb('myDeeBee');
+    return Sqlartime.getTables();
+  }
+
+  createone() {
+    Sqlartime.tableCreate(['body'], ['eyes TEXT', 'heade TEXT']);
+  }
+
+  createtwo() {
+    Sqlartime.tableCreate(['time'], ['days TEXT', 'years TEXT']);
+  }
+
+  createthree() {
+    Sqlartime.tableCreate(['bio'], ['mend TEXT', 'temp NUMBER']);
+  }
+
+  createfour() async{
+    Sqlartime.tableCreate(['beranda'], ['days TEXT', 'years TEXT']);
+    final get = await Sqlartime.getAll('body');
+    print(get);
+
+//    Sqlartime.tableCreate(['vehicle'], ['carname TEXT', 'model NUMBER']);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: 250.0,
+              width: MediaQuery.of(context).size.width,
+              child: GridView.count(
+                crossAxisCount: 2,
+                childAspectRatio: 2.0,
+                padding: const EdgeInsets.all(8.0),
+                mainAxisSpacing: 12.0,
+                crossAxisSpacing: 12.0,
+                children: <Widget>[
+                  RaisedButton(
+                    child: Text(
+                      'Create Tab1',
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    onPressed: () {
+                      createone();
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text(
+                      'Create Tab2',
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    onPressed: () {
+                      createtwo();
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text(
+                      'Create Tab3',
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    onPressed: () {
+                      createthree();
+                    },
+                    // onPressed:() {},
+                  ),
+                  RaisedButton(
+                    child: Text(
+                      'Create Tab4',
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    onPressed: () {
+                      createfour();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: 400.0,
+              width: MediaQuery.of(context).size.width,
+              child: FutureBuilder<List<Map>>(
+                future: fetch(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        itemCount:
+                        snapshot.data == null ? 0 : snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  Card(
+                                    elevation: 10.0,
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 5.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        InkWell(
+                                          onTap: () async {
+                                            List<dynamic> row = [{'days','years'}];
+                                            List<dynamic> values = [{'mata',"1"}];
+                                            final cek = await Sqlartime.insertIntoTable('beranda', ['days','years'],['senen','1990']);
+                                            print("##################### $cek #######################");
+
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 12.0,
+                                                vertical: 10.0),
+                                            margin: EdgeInsets.only(left: 4.0),
+                                            decoration: BoxDecoration(
+                                                border: Border(
+                                                    right: BorderSide(
+                                                        width: 1.5,
+                                                        color:
+                                                        Colors.black26))),
+                                            child: CircleAvatar(
+                                              child: Text("any"
+                                                  .toUpperCase()
+                                                  .toString()),
+                                              radius: 14.0,
+                                              backgroundColor:
+                                              Colors.blueAccent,
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: InkWell(
+                                            onTap: () {},
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 16.0,
+                                                  vertical: 15.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceAround,
+                                                children: <Widget>[
+                                                  Text(
+                                                    snapshot.data[index]['name']
+                                                    as String,
+                                                    style: TextStyle(
+                                                      color: Colors.black54,
+                                                      fontWeight:
+                                                      FontWeight.w600,
+                                                      fontSize: 24.0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
+                  return Container(
+                    alignment: AlignmentDirectional.center,
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

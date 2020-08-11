@@ -22,7 +22,7 @@ class _NewsHomeState extends State<NewsHome> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    newsBloc.fetchNewsList(1,4);
+    newsBloc.fetchNewsList(1,4,'');
   }
 
   @override

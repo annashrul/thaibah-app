@@ -26,7 +26,7 @@ class _NewsPageState extends State<NewsPage> {
     setState(() {
       perpage = perpage += perpage;
     });
-    newsBloc.fetchNewsList(1, perpage);
+    newsBloc.fetchNewsList(1, perpage,'');
     print(perpage);
   }
   Future<void> _refresh() async {
@@ -46,7 +46,7 @@ class _NewsPageState extends State<NewsPage> {
   @override
   void initState() {
     super.initState();
-    newsBloc.fetchNewsList(1,perpage);
+    newsBloc.fetchNewsList(1,perpage,'');
 
   }
   @override

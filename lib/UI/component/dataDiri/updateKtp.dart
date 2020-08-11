@@ -204,9 +204,6 @@ class _UpdateKtpState extends State<UpdateKtp> {
         Map<String, dynamic> row = {
           DbHelper.columnId   : id,
           DbHelper.columnKtp : base64Image,
-//          DbHelper.columnPhone : no,
-//          DbHelper.columnPicture : base64Image,
-//          DbHelper.columnCover : base64Image2,
         };
         await dbHelper.update(row);
         setState(() {_isLoading = false;});

@@ -148,7 +148,7 @@ class Repository{
   Future<CategoryModel> fetchAllCategory(var param) => categoryProvider.fetchCategory(param);
   Future<NewsModel> fetchAllHomeNews(var title) => newsProvider.fetchHomeNews(title);
   Future<DetailNewsPerCategoryModel> fetchAllDetailNewsPerCategory(var page,var limit,var title) => newsProvider.fetchDetailNewsPerCategory(page,limit,title);
-  Future<NewsModel> fetchAllNews(var page, var limit) => newsProvider.fetchNews(page,limit);
+  Future<NewsModel> fetchAllNews(var page, var limit,var param) => newsProvider.fetchNews(page,limit,param);
   Future<ProductMlmModel> fetchAllProductMlm(var page,var limit) => productMlmProvider.fetchProductMlm(page,limit);
   Future<ProductMlmSuplemenModel> fetchAllProductMlmSuplemen(var page, var limit) => productMlmSuplemenProvider.fetchProductMlmSuplemen(page,limit);
   Future<ProductMlmDetailModel> fetchDetailProductMlmSuplemen(var id) => productMlmProvider.fetchProductDetailMlmSuplemen(id);

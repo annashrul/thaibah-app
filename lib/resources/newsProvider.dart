@@ -11,14 +11,16 @@ class NewsProvider {
   Client client = Client();
   final userRepository = UserRepository();
 
-  Future<NewsModel> fetchNews(var page,var limit) async{
+  Future<NewsModel> fetchNews(var page,var limit,var param) async{
 		final token = await userRepository.getDataUser('token');
+		String url = ApiService().baseUrl+'berita?page=$page&limit=$limit';
+		if(param!=''){
+		  url+='&category=$param';
+    }
     final response = await client.get(
-      ApiService().baseUrl+'berita?page=$page&limit=$limit',
+      url,
       headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
-    print("###########################################################BERITA###############################################################");
-    print(response.body);
     if (response.statusCode == 200) {
       return compute(newsModelFromJson,response.body);
     } else {

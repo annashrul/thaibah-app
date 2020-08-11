@@ -23,7 +23,7 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
   void initState() {
     super.initState();
     controller = new SwiperController();
-    _bloc.fetchNewsList(1, 6);
+    _bloc.fetchNewsList(1, 6,'Pengumuman');
   }
 
   @override
@@ -49,14 +49,13 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
 
   Widget buildContent(AsyncSnapshot<NewsModel> snapshot, BuildContext context){
     return Container(
-      height: MediaQuery.of(context).size.height/4,
+      height: MediaQuery.of(context).size.height/4.5,
       color: Colors.transparent,
       padding: EdgeInsets.only(left:15.0,right:15.0),
       child: Swiper(
         key: _scaffoldKey,
         controller: controller,
         autoplay: true,
-        fade: 0.0,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: (){
@@ -75,7 +74,6 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
                       borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0),bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
                       image: DecorationImage(
                           image: CachedNetworkImageProvider(snapshot.data.result.data[index].picture==''||snapshot.data.result.data[index].picture==null?IconImgs.noImage:snapshot.data.result.data[index].picture),
-//                                image: CachedNetworkImageProvider(IconImgs.noImage),
                           fit: BoxFit.fill
                       )
                   ),
@@ -86,13 +84,17 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
           );
         },
         itemCount: snapshot.data.result.data.length,
-        viewportFraction: 1,
-        scale: 1,
-        pagination: new SwiperPagination(
-            builder: new DotSwiperPaginationBuilder(
-                color: ThaibahColour.primary2, activeColor: ThaibahColour.primary1
-            )
-        ),
+//        scale:1,
+        fade:0.8,
+//        viewportFraction: 1,
+        viewportFraction: 0.8,
+        scale: 0.9,
+//        scale: 1,
+//        pagination: new SwiperPagination(
+//            builder: new DotSwiperPaginationBuilder(
+//                color: ThaibahColour.primary2, activeColor: ThaibahColour.primary1
+//            )
+//        ),
       ),
     );
   }

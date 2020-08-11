@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqlite_at_runtime/sqlite_at_runtime.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/checkerMemberModel.dart';
 import 'package:thaibah/Model/checkerModel.dart';
@@ -69,7 +70,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
 
 
-  String _name='',_saldoBonus="0",_saldoMain="0", _saldoVoucher="0",_saldoPlatinum="0",_saldo='0',_levelPlatinum='';
+  String _name='',_saldoBonus="0",_saldoMain="0", _saldoVoucher="0",_saldoPlatinum="0",_saldo='0',_levelPlatinum='',_saldoRaw='0';
   String pinku = "", id="", _nohp='', _level='';
   String _picture='',_kdRefferal='',_qr='';
   int levelPlatinumRaw=0;
@@ -107,9 +108,43 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   Color warna2;
   String statusLevel ='0';
 
+  String name='',saldoBonus="0",saldoMain="0", saldoVoucher="0",saldoPlatinum="0",saldo='0',levelPlatinum='',saldoRaw='0';
+  String nohp='', level='';
+  String picture='',kdRefferal='',qr='';
+  int lvlPlatinumRaw=0;
 
+
+  Future fetch() async{
+    await Sqlartime.openDb('thaibah_db_1');
+    final infoLocal = await Sqlartime.getAll('info');
+    print("GET TABLE INFO $infoLocal");
+    if(infoLocal.length > 0){
+      for(int i=0;i<infoLocal.length;i++){
+        name = infoLocal[i]['name'];
+        kdRefferal = infoLocal[i]['kd_referral'];
+        nohp = infoLocal[i]['no_hp'];
+        picture = infoLocal[i]['picture'];
+        qr = infoLocal[i]['qr'];
+        saldo = infoLocal[i]['saldo'];
+        saldoRaw = infoLocal[i]['saldo_raw'];
+        saldoMain = infoLocal[i]['saldo_main'];
+        saldoBonus = infoLocal[i]['saldo_bonus'];
+        saldoVoucher = infoLocal[i]['saldo_voucher'];
+        saldoPlatinum = infoLocal[i]['saldo_platinum'];
+        level = infoLocal[i]['level'];
+        levelPlatinum = infoLocal[i]['_levelPlatinum'];
+        levelPlatinumRaw = 0;
+      }
+
+    }
+    return infoLocal;
+
+
+  }
 
   Future<void> loadData() async {
+    await Sqlartime.openDb('thaibah_db_1');
+    final infoLocal = await Sqlartime.getAll('info');
     final token = await userRepository.getDataUser('token');
     final id = await userRepository.getDataUser('idServer');
     final levelStatus = await userRepository.getDataUser('statusLevel');
@@ -119,21 +154,14 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     if (id == null || id == '') {
-      print(
-          '####################### DATA SQLITE KOSONG ########################');
       setState(() {
         isLoading = false;
         modeUpdate = true;
       });
-      GagalHitProvider().fetchRequest('home',
-          'kondisi = ID SQLITE KOSONG, brand = ${androidInfo
-              .brand}, device = ${androidInfo.device}, model = ${androidInfo
-              .model}');
+      GagalHitProvider().fetchRequest('home', 'kondisi = ID SQLITE KOSONG, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }
     else {
       var ceking = await userRepository.checker();
-      print("###################### CEK MEMBER DI BERANDA = $ceking #######################");
-      // ceking = true ? tidak aktif : aktif
       if (ceking == true) {
         Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(new CupertinoPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
       } else {
@@ -169,17 +197,25 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
           levelPlatinumRaw = (info.result.levelPlatinumRaw);
           _saldoPlatinum = (info.result.saldoPlatinum);
           print("LEVEL PLATINUM ${info.result.levelPlatinum}");
-        } else {
+        }
+        else {
+          setState(() {
+            isLoading = false;
+            retry = false;
+            warna1 = color1 == '' ? ThaibahColour.primary1 : hexToColors(color1);
+            warna2 = color2 == '' ? ThaibahColour.primary2 : hexToColors(color2);
+            statusLevel = levelStatus;
+          });
           throw Exception('Failed to load info');
         }
+
       }
     }
   }
+
   DateTime dt = DateTime.now();
   PrayerModel prayerModel;
   int isActive = 0;
-
-
 
 
   @override
@@ -225,7 +261,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    return buildContent(context);
+    return retry==true?Text(name):buildContent(context);
   }
 
 
@@ -272,43 +308,6 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-//                            Row(
-//                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                              children: <Widget>[
-//                                Padding(
-//                                  padding: const EdgeInsets.only(left: 0.0),
-//                                  child: Row(
-//                                    mainAxisAlignment:MainAxisAlignment.start,
-//                                    children: <Widget>[
-//                                      Container(
-//                                        width:100.0,
-//                                        child: Text('Nama',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
-//                                      ),
-//                                      Text(": "+_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-//                                    ],
-//                                  )
-//                                ),
-//                                SizedBox(width: 7.0),
-//                                levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
-//                                  onTap: (){
-//                                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
-//                                  },
-//                                  child: Container(
-//                                      padding: EdgeInsets.all(5),
-//                                      decoration: new BoxDecoration(
-//                                        color: Colors.red,
-//                                        borderRadius: BorderRadius.circular(6),
-//                                      ),
-//                                      constraints: BoxConstraints(
-//                                        minWidth: 14,
-//                                        minHeight: 14,
-//                                      ),
-//                                      child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
-//                                  ),
-//                                ):(levelPlatinumRaw == 1 ? Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)) :
-//                                Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
-//                              ],
-//                            ),
                             Padding(
                                 padding: const EdgeInsets.only(left: 0.0),
                                 child: Row(
