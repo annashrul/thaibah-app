@@ -5,9 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/penukaranBonus.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 
 class UpdateKtp extends StatefulWidget {
@@ -194,11 +196,22 @@ class _UpdateKtpState extends State<UpdateKtp> {
     }else{
       var res = await updateMemberBloc.fetchUpdateMember('', '', '','', '',base64Image);
       if(res.status == 'success'){
-        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final dbHelper = DbHelper.instance;
 
+//        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final userRepository = UserRepository();
+        final id = await userRepository.getDataUser('id');
+        Map<String, dynamic> row = {
+          DbHelper.columnId   : id,
+          DbHelper.columnKtp : base64Image,
+//          DbHelper.columnPhone : no,
+//          DbHelper.columnPicture : base64Image,
+//          DbHelper.columnCover : base64Image2,
+        };
+        await dbHelper.update(row);
         setState(() {_isLoading = false;});
         Timer(Duration(seconds: 3), () {
-          prefs.setString('ktp', 'ktp');
+//          prefs.setString('ktp', 'ktp');
           Navigator.of(context, rootNavigator: true).push(
             new CupertinoPageRoute(builder: (context) => PenukaranBonus(saldo: widget.saldo,saldoBonus: widget.saldoBonus,)),
           );

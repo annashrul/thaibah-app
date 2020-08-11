@@ -72,11 +72,32 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
       final ktp = await userRepository.getDataUser('ktp');
       print(ktp);
       if(ktp == '-' || ktp == ''){
-        UserRepository().notifWithAction(scaffoldKey, context, 'Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi','failed',"UPLOAD KTP",(){
-          Navigator.of(context, rootNavigator: true).push(
-            new CupertinoPageRoute(builder: (context) => UpdateKtp(saldo: widget.saldo,saldoBonus: widget.saldoBonus)),
-          );
-        });
+//        UserRepository().notifWithAction(scaffoldKey, context, 'Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi','failed',"UPLOAD KTP",(){
+//          Navigator.of(context, rootNavigator: true).push(
+//            new CupertinoPageRoute(builder: (context) => UpdateKtp(saldo: widget.saldo,saldoBonus: widget.saldoBonus)),
+//          );
+//        });
+        FocusScope.of(context).requestFocus(new FocusNode());
+        scaffoldKey.currentState?.removeCurrentSnackBar();
+        scaffoldKey.currentState.showSnackBar(new SnackBar(
+          content: new Text(
+            'Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi',
+
+            style: TextStyle(color: Colors.white, fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
+          ),
+          action: SnackBarAction(
+            textColor: Colors.white,
+            label:'Upload KTP',
+            onPressed:(){
+              Navigator.of(context, rootNavigator: true).push(
+                new CupertinoPageRoute(builder: (context) => UpdateKtp(saldo: widget.saldo,saldoBonus: widget.saldoBonus)),
+              );
+            },
+          ),
+          backgroundColor: Colors.redAccent,
+          duration: Duration(seconds: 5),
+        ));
+//        UserRepository().notifNoAction(scaffoldKey, context, 'Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi', 'failed');
 
       }else{
         _pinBottomSheet(context);
