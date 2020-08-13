@@ -289,7 +289,12 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                   padding: const EdgeInsets.all(0.0),
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).push(
-                      new CupertinoPageRoute(builder: (context) => DetailBeritaUI(id: snapshot.data.result.data[i].id, category: snapshot.data.result.data[i].category)),
+                      new CupertinoPageRoute(builder: (context) => DetailBeritaUI(
+                          id: snapshot.data.result.data[i].id,
+                          category: snapshot.data.result.data[i].category,
+                          link:snapshot.data.result.data[i].link
+
+                      )),
                     );
 
                   },

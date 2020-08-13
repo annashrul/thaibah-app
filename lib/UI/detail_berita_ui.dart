@@ -18,11 +18,13 @@ import 'package:thaibah/config/api.dart';
 
 import 'Homepage/index.dart';
 import 'Widgets/pin_screen.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class DetailBeritaUI extends StatefulWidget {
   final String id;
   final String category;
-  DetailBeritaUI({this.id,this.category,Key key})  : super(key: key);
+  final String link;
+  DetailBeritaUI({this.id,this.category,this.link,Key key})  : super(key: key);
   @override
   _DetailBeritaUIState createState() => _DetailBeritaUIState();
 }
@@ -39,9 +41,20 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
   var localId;
   var localCategory;
 
+  static String videoId;
+  Future convertUrlYoutube() async{
+    setState(() {videoId = YoutubePlayer.convertUrlToId("${widget.link}");});
+    print("######### IEU VIDEO LINK YOUTUBE ${videoId}");
+  }
 
-
-
+  final List<YoutubePlayerController> _controllers = ['$videoId',].map<YoutubePlayerController>(
+        (videoId) => YoutubePlayerController(
+      initialVideoId: videoId,
+      flags: YoutubePlayerFlags(
+        autoPlay: false,
+      ),
+    ),
+  ).toList();
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -49,6 +62,7 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
     localCategory = widget.category;
     newsDetailBloc.fetchNewsDetail(localId);
     super.initState();
+    widget.link!='-'? convertUrlYoutube():'';
   }
 
   @override
@@ -154,15 +168,34 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                               margin: EdgeInsets.only(bottom: 10.0),
                               child: Text(snapshot.data.result.penulis,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Color(0xFFB1B1B1),fontWeight: FontWeight.bold),)
                           ),
+
                           Padding(
                               padding: const EdgeInsets.only(right: 0),
-                              child: Html(data:removeAllHtmlTags(snapshot.data.result.caption),defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),)
+                              child: Column(
+                                children: <Widget>[
+                                  Html(data:removeAllHtmlTags(snapshot.data.result.caption),defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),),
+                                  widget.link!='-'?YoutubePlayer(
+                                    key: ObjectKey(_controllers[0]),
+                                    controller: _controllers[0],
+                                    actionsPadding: EdgeInsets.only(left: 16.0),
+                                    bottomActions: [
+                                      CurrentPosition(),
+                                      SizedBox(width: 10.0),
+                                      ProgressBar(isExpanded: true),
+                                      SizedBox(width: 10.0),
+                                      RemainingDuration(),
+                                      FullScreenButton(),
+                                    ],
+                                  ):Container()
+                                ],
+                              ),
+//                              child: Html(data:removeAllHtmlTags(snapshot.data.result.caption),defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),)
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 30, bottom: 10),
                             child: RichText(
                               text: TextSpan(children: [
-                                TextSpan(text: "Berita ",style: AppTheme.TextTheme.titleRegularBlack),
+                                TextSpan(text: "Berita",style: AppTheme.TextTheme.titleRegularBlack),
                                 TextSpan(text: "Lainnya",style: AppTheme.TextTheme.titleRegularOrange),
                               ]),
                             ),

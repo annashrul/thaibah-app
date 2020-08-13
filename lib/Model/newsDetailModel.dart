@@ -44,6 +44,7 @@ class Result {
     String picture;
     String thumbnail;
     String caption;
+    String link;
     String category;
     String createdAt;
 
@@ -57,6 +58,7 @@ class Result {
         this.picture,
         this.thumbnail,
         this.caption,
+        this.link,
         this.category,
         this.createdAt,
     });
@@ -71,6 +73,7 @@ class Result {
         picture: json["picture"],
         thumbnail: json["thumbnail"],
         caption: json["caption"],
+        link: json["link"],
         category: json["category"],
         createdAt: json["created_at"],
     );
@@ -85,6 +88,7 @@ class Result {
         "picture": picture,
         "thumbnail": thumbnail,
         "caption": caption,
+        "link": link,
         "category": category,
         "created_at": createdAt,
     };

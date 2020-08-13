@@ -15,8 +15,8 @@ class DetailInspirasi extends StatefulWidget {
 
 class _DetailInspirasiState extends State<DetailInspirasi> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  static String videoId;
   bool cek = false;
+  static String videoId;
   Future convertUrlYoutube() async{
     setState(() {videoId = YoutubePlayer.convertUrlToId("${widget.video}");});
   }

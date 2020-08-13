@@ -76,6 +76,7 @@ class Datum {
   String picture;
   String thumbnail;
   String caption;
+  String link;
   int type;
   String category;
   String createdAt;
@@ -91,6 +92,7 @@ class Datum {
     this.picture,
     this.thumbnail,
     this.caption,
+    this.link,
     this.type,
     this.category,
     this.createdAt,
@@ -107,6 +109,7 @@ class Datum {
     picture: json["picture"],
     thumbnail: json["thumbnail"],
     caption: json["caption"],
+    link: json["link"],
     type: json["type"],
     category: json["category"],
     createdAt: json["created_at"],
@@ -123,6 +126,7 @@ class Datum {
     "picture": picture,
     "thumbnail": thumbnail,
     "caption": caption,
+    "link": link,
     "type": type,
     "category": category,
     "created_at": createdAt,

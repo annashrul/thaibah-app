@@ -115,6 +115,7 @@ class _CategoryNewsDetailState extends State<CategoryNewsDetail> {
             }else{
               tit = snapshot.data.result.data[i].title;
             }
+            print("DETAIL BERITA CATEGORY ");
             return Padding(
               padding: const EdgeInsets.only(left: 13,right: 13),
               child: Material(

@@ -61,7 +61,11 @@ class _NewsHomePageState extends State<NewsHomePage> with AutomaticKeepAliveClie
             onTap: (){
               Navigator.of(context, rootNavigator: true).push(
                 new CupertinoPageRoute(
-                  builder: (context) => DetailBeritaUI(id: snapshot.data.result.data[index].id, category: snapshot.data.result.data[index].category)
+                  builder: (context) => DetailBeritaUI(
+                      id: snapshot.data.result.data[index].id,
+                      category: snapshot.data.result.data[index].category,
+                      link:snapshot.data.result.data[index].link
+                  )
                 )
               );
             },
