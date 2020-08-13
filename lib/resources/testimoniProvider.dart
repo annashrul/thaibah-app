@@ -23,6 +23,7 @@ class TestimoniProvider {
         ApiService().baseUrl+'testi?tipe=$param&page=$page&limit=$limit',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
+    print("===> TESTIMONI ${response.body} <===");
     if (response.statusCode == 200) {
       // If the call to the server was successful, parse the JSON
       return compute(testimoniModelFromJson,response.body);

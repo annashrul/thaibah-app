@@ -71,18 +71,12 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
     }
   }
   Future<void> loadTestimoni(var idCategory) async{
-    String q='';
+    String q='testi?tipe=0&page=1&limit=${perpage.toString()}';
     if(idCategory!=''){
-      q = 'testi?tipe=0&page=1&limit=${perpage.toString()}&category=$idCategory';
+      q += '&category=$idCategory';
     }else{
-      if(idCategory=='0'){
-        q='testi?tipe=0&page=1&limit=${perpage.toString()}';
-      }else{
-        q='testi?tipe=0&page=1&limit=${perpage.toString()}';
-      }
-
+      idCategory=='0' ? q=q : q=q;
     }
-    print(q);
     try{
       final jsonString = await http.get(
           ApiService().baseUrl+q,
@@ -94,7 +88,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
           isLoading=false;
           video = jsonResponse['result']['data'];
         });
-        print("############### RESPONSE $jsonResponse");
+        print("===> RESPONSE TESTIMONI $jsonResponse <===");
       }
       else {
         throw Exception('Failed to load photos');
@@ -123,8 +117,6 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
     loadTestimoni('');
   }
 
-  List<int> _data = [];
-
   Future search(param) async{
     setState(() {isLoading=true;});
     param==0?loadTestimoni(''):loadTestimoni(categoryArray[param]);
@@ -143,7 +135,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
       await WcFlutterShare.share(
           sharePopupTitle: 'Thaibah Share Testimoni Produk',
           subject: 'Thaibah Share Testimoni Produk',
-          text: "${param}",
+          text: "$param",
           mimeType: 'text/plain'
       );
     });
@@ -166,6 +158,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
     loadTheme();
   }
 
+  final _itemExtent = 56.0;
 
   @override
   Widget build(BuildContext context) {
@@ -228,109 +221,206 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                     crossAxisCount: 1,
                   ),
                 ),
-              ):SliverPadding(
-                padding: EdgeInsets.all(2.0),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate((BuildContext context,int index){
-                    String cap='';
-                    if(video[index]['caption'].length > 100){
-                      cap = '${video[index]['caption'].substring(0,100)} ...';
-                    }else{
-                      cap = video[index]['caption'];
-                    }
-                    return InkWell(
-                      onTap: (){
-                        Navigator.of(context, rootNavigator: true).push(
-                          new CupertinoPageRoute(builder: (context) => DetailInspirasi(
-                              param:'Testimoni Produk',
-                              video: video[index]['video'],
-                              caption: video[index]['caption'],
-                              rating:video[index]['rating'].toString()
-                          )),
-                        );
-                      },
-                      child: Container(
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              height: ScreenUtilQ.getInstance().setHeight(400),
-                              child: CachedNetworkImage(
-                                imageUrl: video[index]['thumbnail'],
-                                placeholder: (context, url) => Center(
-                                  child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                                ),
-                                errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                imageBuilder: (context, imageProvider) => Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: new BorderRadius.circular(0.0),
-                                    color: Colors.grey,
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
+              ):
+//              SliverPadding(
+//                sliver: SliverGrid(
+//
+//                  delegate: SliverChildBuilderDelegate((BuildContext context,int index){
+//                    String cap='';
+//                    if(video[index]['caption'].length > 100){
+//                      cap = '${video[index]['caption'].substring(0,100)} ...';
+//                    }
+//                    else{
+//                      cap = video[index]['caption'];
+//                    }
+//                    return InkWell(
+//                      onTap: (){
+//                        Navigator.of(context, rootNavigator: true).push(
+//                          new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+//                              param:'Testimoni Produk',
+//                              video: video[index]['video'],
+//                              caption: video[index]['caption'],
+//                              rating:video[index]['rating'].toString()
+//                          )),
+//                        );
+//                      },
+//                      child: Column(
+//                        children: <Widget>[
+//                          Container(
+//                            height: ScreenUtilQ.getInstance().setHeight(400),
+//                            child: CachedNetworkImage(
+//                              imageUrl: video[index]['thumbnail'],
+//                              placeholder: (context, url) => Center(
+//                                child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+//                              ),
+//                              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+//                              imageBuilder: (context, imageProvider) => Container(
+//                                decoration: BoxDecoration(
+//                                  borderRadius: new BorderRadius.circular(0.0),
+//                                  color: Colors.grey,
+//                                  image: DecorationImage(
+//                                    image: imageProvider,
+//                                    fit: BoxFit.fill,
+//                                  ),
+//                                ),
+//                              ),
+//                            ),
+//                          ),
+//                          ListTile(
+//                            leading: CircleAvatar(
+//                              backgroundImage: NetworkImage(video[index]['thumbnail']),
+//                            ),
+//                            title: Html(
+//                              data:cap,
+//                              defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
+//                            ),
+//                            subtitle: Text(video[index]['category'], style: TextStyle(color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
+//                            trailing: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : PopupMenuButton(
+//                              onSelected: (e) async{
+//                                if(e=='0'){
+//                                  setState(() {
+//                                    isLoadingShare = true;
+//                                  });
+//                                  share(video[index]['video'],index);
+//                                }else{
+//                                  Navigator.of(context, rootNavigator: true).push(
+//                                    new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+//                                        param:'Testimoni Produk',
+//                                        video: video[index]['video'],
+//                                        caption: video[index]['caption'],
+//                                        rating:video[index]['rating'].toString()
+//                                    )),
+//                                  );
+//                                }
+//
+//                              },
+//                              itemBuilder: (_) => <PopupMenuItem<String>>[
+//                                new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
+//                                new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
+//                              ],
+//                            ):PopupMenuButton(
+//                              onSelected: (e) async{
+//                                print(e);
+//                                if(e=='0'){
+//                                  setState(() {
+//                                    isLoadingShare = true;
+//                                  });
+//                                  share(video[index]['video'],index);
+//                                }
+//                              },
+//                              itemBuilder: (_) => <PopupMenuItem<String>>[
+//                                new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
+//                                new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
+//                              ],
+//                            ),
+//                          ),
+//                        ],
+//                      ),
+//                    );
+//                  },childCount: video.length),
+//                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//                    crossAxisCount: 1,
+//                  ),
+//                ),
+//              )
+              SliverFixedExtentList(
+                itemExtent: MediaQuery.of(context).size.height/2,  // I'm forcing item heights
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  String cap='';
+                  if(video[index]['caption'].length > 100){
+                    cap = '${video[index]['caption'].substring(0,100)} ...';
+                  }
+                  else{
+                    cap = video[index]['caption'];
+                  }
+                  return InkWell(
+                    onTap: (){
+                      Navigator.of(context, rootNavigator: true).push(
+                        new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+                            param:'Testimoni Produk',
+                            video: video[index]['video'],
+                            caption: video[index]['caption'],
+                            rating:video[index]['rating'].toString()
+                        )),
+                      );
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          height: ScreenUtilQ.getInstance().setHeight(400),
+                          child: CachedNetworkImage(
+                            imageUrl: video[index]['thumbnail'],
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                            ),
+                            errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: new BorderRadius.circular(0.0),
+                                color: Colors.grey,
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.fill,
                                 ),
                               ),
                             ),
-                            ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(video[index]['thumbnail']),
-                              ),
-                              title: Html(
-                                data:cap,
-                                defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
-                              ),
-                              subtitle: Text(video[index]['category'], style: TextStyle(color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
-                              trailing: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : PopupMenuButton(
-                                onSelected: (e) async{
-                                  if(e=='0'){
-                                    setState(() {
-                                      isLoadingShare = true;
-                                    });
-                                    share(video[index]['video'],index);
-                                  }else{
-                                    Navigator.of(context, rootNavigator: true).push(
-                                      new CupertinoPageRoute(builder: (context) => DetailInspirasi(
-                                          param:'Testimoni Produk',
-                                          video: video[index]['video'],
-                                          caption: video[index]['caption'],
-                                          rating:video[index]['rating'].toString()
-                                      )),
-                                    );
-                                  }
-
-                                },
-                                itemBuilder: (_) => <PopupMenuItem<String>>[
-                                  new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
-                                  new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
-                                ],
-                              ):PopupMenuButton(
-                                onSelected: (e) async{
-                                  print(e);
-                                  if(e=='0'){
-                                    setState(() {
-                                      isLoadingShare = true;
-                                    });
-                                    share(video[index]['video'],index);
-                                  }
-                                },
-                                itemBuilder: (_) => <PopupMenuItem<String>>[
-                                  new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
-                                  new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
-                                ],
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    );
-                  },childCount: video.length),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                  ),
-                ),
-              )
+                        ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(video[index]['thumbnail']),
+                          ),
+                          title: Html(
+                            data:cap,
+                            defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
+                          ),
+                          subtitle: Text(video[index]['category'], style: TextStyle(color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
+                          trailing: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : PopupMenuButton(
+                            onSelected: (e) async{
+                              if(e=='0'){
+                                setState(() {
+                                  isLoadingShare = true;
+                                });
+                                share(video[index]['video'],index);
+                              }else{
+                                Navigator.of(context, rootNavigator: true).push(
+                                  new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+                                      param:'Testimoni Produk',
+                                      video: video[index]['video'],
+                                      caption: video[index]['caption'],
+                                      rating:video[index]['rating'].toString()
+                                  )),
+                                );
+                              }
 
+                            },
+                            itemBuilder: (_) => <PopupMenuItem<String>>[
+                              new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
+                              new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
+                            ],
+                          ):PopupMenuButton(
+                            onSelected: (e) async{
+                              print(e);
+                              if(e=='0'){
+                                setState(() {
+                                  isLoadingShare = true;
+                                });
+                                share(video[index]['video'],index);
+                              }
+                            },
+                            itemBuilder: (_) => <PopupMenuItem<String>>[
+                              new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
+                              new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                  childCount: video.length,
+                ),
+              ),
             ],
           )
       ),

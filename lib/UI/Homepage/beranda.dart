@@ -4,24 +4,16 @@ import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqlite_at_runtime/sqlite_at_runtime.dart';
 import 'package:thaibah/Constants/constants.dart';
-import 'package:thaibah/Model/checkerMemberModel.dart';
-import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Homepage/news.dart';
 import 'package:thaibah/UI/Widgets/mainCompass.dart';
-import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/asma_ui.dart';
 import 'package:thaibah/UI/component/news/newsPage.dart';
 import 'package:thaibah/UI/component/penarikan.dart';
-import 'package:thaibah/UI/component/pin/indexPin.dart';
 import 'package:thaibah/UI/component/prayerList.dart';
 import 'package:thaibah/UI/component/royalti/infoRoyaltiLevel.dart';
 import 'package:thaibah/UI/component/royalti/level.dart';
@@ -37,7 +29,6 @@ import 'package:thaibah/UI/lainnya/subDoaHadist.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/UI/ppob/listrik_ui.dart';
 import 'package:thaibah/UI/ppob/pulsa_ui.dart';
-import 'package:thaibah/UI/ppob/zakat_ui.dart';
 import 'package:thaibah/UI/quran_list_ui.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/UI/transfer_ui.dart';
@@ -48,13 +39,8 @@ import 'package:thaibah/config/flutterMaskedText.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
-import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:device_info/device_info.dart';
-import 'package:thaibah/UI/Widgets/tutorialClearData.dart';
-
-import 'package:thaibah/Model/userLocalModel.dart';
-import 'package:thaibah/DBHELPER/userDBHelper.dart';
 
 class Beranda extends StatefulWidget {
   final String lat;
@@ -68,29 +54,14 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   final TextStyle whiteText = TextStyle(color: Colors.white);
   final userRepository = UserRepository();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
-
-
-  String _name='',_saldoBonus="0",_saldoMain="0", _saldoVoucher="0",_saldoPlatinum="0",_saldo='0',_levelPlatinum='',_saldoRaw='0';
-  String pinku = "", id="", _nohp='', _level='';
-  String _picture='',_kdRefferal='',_qr='';
-  int levelPlatinumRaw=0;
-  bool showAlignmentCards = false;
-  bool isLoading = false;
-  var isPin;
-
-  int jam    = 0;
-  int menit  = 0;
-  String waktuSholat = '';
-  String keterangan = '';
-  String latitude = '', longitude = '';
-  bool versi = false;
-
+  PrayerModel prayerModel;
   Info info;
-
-  String versionCode = '';int statusMember;
-  bool loadingVersion=false;
-  bool loadingStatusMember=false;
-
+  Color warna1,warna2;
+  String _name='',_saldoBonus="0",_saldoMain="0", _saldoVoucher="0",_saldoPlatinum="0",_saldo='0',_levelPlatinum='',_saldoRaw='0';
+  String pinku = "", id="", _nohp='', _level='',_picture='',_kdRefferal='',_qr='',statusLevel ='0',latitude = '', longitude = '';
+  String versionCode = '';
+  int levelPlatinumRaw=0,statusMember,counterRTO=0;
+  bool retry = false,modeUpdate = false,modeLogout = false,isLoading = false,versi = false,loadingVersion=false,loadingStatusMember=false;
 
   Future<void> refresh() async{
     Timer(Duration(seconds: 1), () {
@@ -99,58 +70,12 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     loadData();
   }
-
-  bool retry = false;
-  bool modeUpdate = false;
-  bool modeLogout = false;
-  int count = 0;
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
-
-  String name='',saldoBonus="0",saldoMain="0", saldoVoucher="0",saldoPlatinum="0",saldo='0',levelPlatinum='',saldoRaw='0';
-  String nohp='', level='';
-  String picture='',kdRefferal='',qr='';
-  int lvlPlatinumRaw=0;
-
-
-  Future fetch() async{
-    await Sqlartime.openDb('thaibah_db_1');
-    final infoLocal = await Sqlartime.getAll('info');
-    print("GET TABLE INFO $infoLocal");
-    if(infoLocal.length > 0){
-      for(int i=0;i<infoLocal.length;i++){
-        name = infoLocal[i]['name'];
-        kdRefferal = infoLocal[i]['kd_referral'];
-        nohp = infoLocal[i]['no_hp'];
-        picture = infoLocal[i]['picture'];
-        qr = infoLocal[i]['qr'];
-        saldo = infoLocal[i]['saldo'];
-        saldoRaw = infoLocal[i]['saldo_raw'];
-        saldoMain = infoLocal[i]['saldo_main'];
-        saldoBonus = infoLocal[i]['saldo_bonus'];
-        saldoVoucher = infoLocal[i]['saldo_voucher'];
-        saldoPlatinum = infoLocal[i]['saldo_platinum'];
-        level = infoLocal[i]['level'];
-        levelPlatinum = infoLocal[i]['_levelPlatinum'];
-        levelPlatinumRaw = 0;
-      }
-
-    }
-    return infoLocal;
-
-
-  }
-
   Future<void> loadData() async {
-    await Sqlartime.openDb('thaibah_db_1');
-    final infoLocal = await Sqlartime.getAll('info');
     final token = await userRepository.getDataUser('token');
     final id = await userRepository.getDataUser('idServer');
     final levelStatus = await userRepository.getDataUser('statusLevel');
     final color1 = await userRepository.getDataUser('warna1');
     final color2 = await userRepository.getDataUser('warna2');
-
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     if (id == null || id == '') {
@@ -213,18 +138,11 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
     }
   }
 
-  DateTime dt = DateTime.now();
-  PrayerModel prayerModel;
-  int isActive = 0;
-
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     loadData();
-//    checker();
     isLoading = true;
     versi = true;
     latitude  = widget.lat;
@@ -257,11 +175,10 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
 
     }
   }
-  int counterRTO=0;
 
   @override
   Widget build(BuildContext context) {
-    return retry==true?Text(name):buildContent(context);
+    return buildContent(context);
   }
 
 
@@ -313,7 +230,6 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-
                                     Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                   ],
                                 )
@@ -325,7 +241,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Container(
-                                    width:100.0,
+                                    width:MediaQuery.of(context).size.width/4,
                                     child: Text('Kode Referral',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
                                   ),
                                   Text(": "+_kdRefferal,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
@@ -342,7 +258,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                       mainAxisAlignment:MainAxisAlignment.start,
                                       children: <Widget>[
                                         Container(
-                                          width:100.0,
+                                          width:MediaQuery.of(context).size.width/4,
                                           child: Text('Membership',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
                                         ),
                                         Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
@@ -392,7 +308,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Container(
-                                    width:100.0,
+                                    width:MediaQuery.of(context).size.width/4,
                                     child: Text('Level Royalti',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
                                   ),
                                   Text(": "+_level,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
@@ -1526,240 +1442,6 @@ class _WrapperIconState extends State<WrapperIcon> {
   }
 }
 
-
-//
-//class CompasPage extends StatefulWidget {
-//  @override
-//  _CompasPageState createState() => _CompasPageState();
-//}
-//class _CompasPageState extends State<CompasPage> {
-//
-//
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return WebviewScaffold(
-//      url: 'https://qiblafinder.withgoogle.com/intl/id/onboarding',
-//      appBar: AppBar(
-//        leading: IconButton(
-//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-//          onPressed: () => Navigator.of(context).pop(),
-//        ),
-//        centerTitle: false,
-//        flexibleSpace: Container(
-//          decoration: BoxDecoration(
-//            gradient: LinearGradient(
-//              begin: Alignment.centerLeft,
-//              end: Alignment.centerRight,
-//              colors: <Color>[
-//                Color(0xFF116240),
-//                Color(0xFF30cc23)
-//              ],
-//            ),
-//          ),
-//        ),
-//        elevation: 1.0,
-//        automaticallyImplyLeading: true,
-//        title: new Text("Arah Kiblat", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-//      ),
-//      withZoom: true,
-//      withLocalStorage: true,
-//      hidden: true,
-//      initialChild: Container(
-//        color: Colors.white,
-//        child: const Center(
-//          child: CircularProgressIndicator(),
-//        ),
-//      ),
-//    );
-//  }
-//}
-
-//
-//class IsPIN extends StatefulWidget {
-//  @override
-//  _IsPINState createState() => _IsPINState();
-//}
-//
-//class _IsPINState extends State<IsPIN> {
-//  @override
-//  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-//  var onTapRecognizer;
-//  bool hasError = false;
-//  String currentText = "";
-//  final userRepository = UserRepository();
-//  var pin;
-//  @override
-//  void initState() {
-//    onTapRecognizer = TapGestureRecognizer()
-//      ..onTap = () {
-//        Navigator.pop(context);
-//      };
-//
-//    super.initState();
-//    _check();
-//  }
-//
-//  @override
-//  void dispose() {
-//    super.dispose();
-//  }
-//  bool _isLoading = false;
-//  Future _check() async {
-//    pin = await userRepository.getPin();
-//  }
-//  void showInSnackBar(String value,background) {
-//    FocusScope.of(context).requestFocus(new FocusNode());
-//    _scaffoldKey.currentState?.removeCurrentSnackBar();
-//    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-//      content: new Text(
-//        value,
-//        textAlign: TextAlign.center,
-//        style: TextStyle(
-//            color: Colors.white,
-//            fontSize: 16.0,
-//            fontWeight: FontWeight.bold,
-//            fontFamily: "Rubik"),
-//      ),
-//      backgroundColor: background,
-//      duration: Duration(seconds: 3),
-//    ));
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Scaffold(
-//      appBar: AppBar(
-//        leading: IconButton(
-//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-//          onPressed: () => Navigator.of(context).pop(),
-//        ),
-//        centerTitle: false,
-//        flexibleSpace: Container(
-//          decoration: BoxDecoration(
-//            gradient: LinearGradient(
-//              begin: Alignment.centerLeft,
-//              end: Alignment.centerRight,
-//              colors: <Color>[
-//                Color(0xFF116240),
-//                Color(0xFF30cc23)
-//              ],
-//            ),
-//          ),
-//        ),
-//        elevation: 1.0,
-//        automaticallyImplyLeading: true,
-//        title: new Text("Keamanan", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-//      ),
-//      key: _scaffoldKey,
-//      body: GestureDetector(
-//        onTap: () {
-//          FocusScope.of(context).requestFocus(new FocusNode());
-//        },
-//        child: Container(
-//          height: MediaQuery.of(context).size.height,
-//          width: MediaQuery.of(context).size.width,
-//          child: ListView(
-//            children: <Widget>[
-//              SizedBox(height: 30),
-//              Image.asset(
-//                'assets/images/verify.png',
-//                height: MediaQuery.of(context).size.height / 3,
-//                fit: BoxFit.fitHeight,
-//              ),
-//              SizedBox(height: 8),
-//              Padding(
-//                padding: const EdgeInsets.symmetric(vertical: 8.0),
-//                child: Text(
-//                  'Masukan Pin',
-//                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-//                  textAlign: TextAlign.center,
-//                ),
-//              ),
-//              SizedBox(
-//                height: 20,
-//              ),
-//              Padding(
-//                  padding:
-//                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
-//                  child: Builder(
-//                    builder: (context) => Padding(
-//                      padding: const EdgeInsets.all(5.0),
-//                      child: Center(
-//                        child: PinPut(
-//                          fieldsCount: 6,
-//                          isTextObscure: true,
-//                          onSubmit: (String txtPin){
-//                            setState(() {
-//                              _isLoading=true;
-//                            });
-//                            if(int.parse(txtPin) == pin){
-//                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-//                            }else{
-//                              print('salaha');
-//                            }
-//                          },
-//                          actionButtonsEnabled: false,
-//                          clearInput: true,
-//                        ),
-//                      ),
-//                    ),
-//                  )
-//              ),
-//
-//            ],
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-//}
-//
-class CustomText {
-  final String label;
-  final double fontSize;
-  final String fontName;
-  final int textColor;
-  final int iconColor;
-  final TextAlign textAlign;
-  final int maxLines;
-  final IconData icon;
-
-  CustomText(
-      {@required this.label,
-        this.fontSize = 10.0,
-        this.fontName,
-        this.textColor = 0xFF000000,
-        this.iconColor = 0xFF000000,
-        this.textAlign = TextAlign.start,
-        this.maxLines = 1,
-        this.icon=Icons.broken_image
-      });
-
-  Widget text() {
-    var text = new Text(
-      label,
-      textAlign: textAlign,
-      overflow: TextOverflow.ellipsis,
-      maxLines: maxLines,
-      style: new TextStyle(
-        color: Color(textColor),
-        fontSize: fontSize,
-        fontFamily: fontName,
-      ),
-    );
-
-    return new Row(
-      children: <Widget>[
-        new Padding(
-          padding: EdgeInsets.all(10.0),
-          child: new Icon(icon,color: Color(iconColor),),
-        ),
-        text
-      ],
-    );
-  }
-}
 
 
 

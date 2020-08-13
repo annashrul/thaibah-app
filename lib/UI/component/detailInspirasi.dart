@@ -51,6 +51,7 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
   @override
   void initState() {
     super.initState();
+
     loadTheme();
     cekType();
     convertUrlYoutube();
@@ -60,7 +61,7 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context,"Detail Testimoni Produk",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar:UserRepository().appBarWithButton(context,"Detail ${widget.param}",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Expanded(

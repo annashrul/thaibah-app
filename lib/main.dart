@@ -45,7 +45,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp>  {
 
-
   @override
   void initState() {
     super.initState();
@@ -71,8 +70,6 @@ class _MyAppState extends State<MyApp>  {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           home:  Splash(),
-//          home:  TablesQ(),
-
         )
     );
   }

@@ -18,6 +18,7 @@ import 'package:thaibah/bloc/promosiBloc.dart';
 import 'package:thaibah/bloc/testiBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:thaibah/UI/component/detailInspirasi.dart';
 
 class About extends StatefulWidget {
 //  About({Key key}) : super(key: key);
@@ -40,6 +41,7 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
   Color warna1;
   Color warna2;
   String statusLevel ='0';
+  String tipe='2';
   Future loadTheme() async{
     final levelStatus = await userRepository.getDataUser('statusLevel');
     final color1 = await userRepository.getDataUser('warna1');
@@ -55,7 +57,9 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
     setState(() {
       perpage = perpage += 10;
     });
-    promosiListBloc.fetchAllPromosiList(1,perpage);
+//    promosiListBloc.fetchAllPromosiList(1,perpage);
+    testiBloc.fetchTesti(tipe,1,perpage);
+
     print(perpage);
   }
 
@@ -64,7 +68,9 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
     setState(() {
       isLoading=false;
     });
-    promosiListBloc.fetchAllPromosiList(1,perpage);
+//    promosiListBloc.fetchAllPromosiList(1,perpage);
+    testiBloc.fetchTesti(tipe,1,perpage);
+
   }
 
   Future<bool> _loadMore() async {
@@ -74,7 +80,8 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
     setState(() {
       perpage = perpage += 10;
     });
-    promosiListBloc.fetchAllPromosiList(1,perpage);
+//    promosiListBloc.fetchAllPromosiList(1,perpage);
+    testiBloc.fetchTesti(tipe,1,perpage);
     print(perpage);
     return true;
   }
@@ -84,7 +91,7 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
   @override
   void initState() {
     loadTheme();
-    testiBloc.fetchTesti('0',1,100);
+    testiBloc.fetchTesti(tipe,1,100);
 //    promosiListBloc.fetchAllPromosiList(1,perpage);
     super.initState();
   }
@@ -125,7 +132,8 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
           String cap = '';
           if(snapshot.data.result.data[index].caption.length > 20){
             cap = '${snapshot.data.result.data[index].caption.substring(0,20)} ...';
-          }else{
+          }
+          else{
             cap = snapshot.data.result.data[index].caption;
           }
           return InkWell(
@@ -164,16 +172,24 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
             ),
             onTap: (){
               Navigator.of(context, rootNavigator: true).push(
-                new CupertinoPageRoute(builder: (context) => DetailPromosiUI(
-                    id:snapshot.data.result.data[index].id,
-                    title: snapshot.data.result.data[index].name,
-                    picture: snapshot.data.result.data[index].thumbnail,
+                new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+                    param:'Tentang Thaibah',
+                    video: snapshot.data.result.data[index].video,
                     caption: snapshot.data.result.data[index].caption,
-                    penulis: snapshot.data.result.data[index].name,
-                    createdAt: snapshot.data.result.data[index].createdAt.toString(),
-                    link:snapshot.data.result.data[index].rating.toString()
+                    rating:snapshot.data.result.data[index].rating.toString()
                 )),
               );
+//              Navigator.of(context, rootNavigator: true).push(
+//                new CupertinoPageRoute(builder: (context) => DetailPromosiUI(
+//                    id:snapshot.data.result.data[index].id,
+//                    title: snapshot.data.result.data[index].name,
+//                    picture: snapshot.data.result.data[index].thumbnail,
+//                    caption: snapshot.data.result.data[index].caption,
+//                    penulis: snapshot.data.result.data[index].name,
+//                    createdAt: snapshot.data.result.data[index].createdAt.toString(),
+//                    link:snapshot.data.result.data[index].rating.toString()
+//                )),
+//              );
             },
           );
         },
