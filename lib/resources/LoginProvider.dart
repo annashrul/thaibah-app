@@ -45,9 +45,8 @@ class LoginProvider {
 //  }
 
   Future fetchLoginNoHp(var nohp,var deviceid,var typeotp,var brand) async {
-    print("RUNNING URL ON ${ApiService().baseUrl} PARAM = $nohp & $deviceid & $typeotp & $brand");
-
     return await client.post(ApiService().baseUrl+"auth/login",
+      headers: {'username':ApiService().username,'password':ApiService().password},
       body: {
         "nohp":"$nohp",
         "deviceid":"$deviceid",

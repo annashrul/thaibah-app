@@ -234,16 +234,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         automaticallyImplyLeading: false,
         title: new Text("Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
       ),
-      body: retry==true?UserRepository().requestTimeOut((){
-        setState(() {
-          counterHit = counterHit+1;
-          retry=false;
-          isLoading=true;
-        });
-        loadData(1, perpage);
-      }):moreThenOne==true?UserRepository().moreThenOne(context, (){
-        Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TutorialClearData()));
-      }):buildContent(context)
+      body: buildContent(context)
     );
   }
 

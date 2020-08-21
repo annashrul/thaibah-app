@@ -129,13 +129,20 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
         crossAxisCount: 4,
         itemCount: snapshot.data.result.data.length,
         itemBuilder: (BuildContext context, int index){
-          String cap = '';
+          String cap = '';String tit='';
           if(snapshot.data.result.data[index].caption.length > 20){
             cap = '${snapshot.data.result.data[index].caption.substring(0,20)} ...';
           }
           else{
             cap = snapshot.data.result.data[index].caption;
           }
+          if(snapshot.data.result.data[index].name.length > 20){
+            tit = '${snapshot.data.result.data[index].name.substring(0,20)} ...';
+          }
+          else{
+            tit = snapshot.data.result.data[index].name;
+          }
+
           return InkWell(
 
             child: new Card(
@@ -155,7 +162,7 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          new Text(snapshot.data.result.data[index].name, style: new TextStyle(fontFamily: ThaibahFont().fontQ,color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
+                          new Text(tit, style: new TextStyle(fontFamily: ThaibahFont().fontQ,color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.0)),
                           Html(
                             data: cap,
                             defaultTextStyle: new TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ, fontSize: 12.0) ,

@@ -30,7 +30,9 @@ class MemberProvider {
 
   Future fetchCreateMember(var pin, var name,var ismobile,var no_hp, var referral/*, var ktp*/) async {
     return await client.post(ApiService().baseUrl+"auth/register",
-      body: {
+        headers: {'username':ApiService().username,'password':ApiService().password},
+
+        body: {
         "pin":"$pin",
         "name":"$name",
         "ismobile":"$ismobile",
@@ -58,6 +60,7 @@ class MemberProvider {
       cek = referral;
     }
     return await client.post(ApiService().baseUrl+"auth/resendotp",
+        headers: {'username':ApiService().username,'password':ApiService().password},
         body: {
           "nohp":"$nohp",
           "type":"$type",
@@ -79,6 +82,8 @@ class MemberProvider {
     final nama = await userRepository.getDataUser('name');
     final nohp = await userRepository.getDataUser('phone');
     return await client.post(ApiService().baseUrl+"auth/resendotp",
+        headers: {'username':ApiService().username,'password':ApiService().password},
+
         body: {
           "nohp":"$nohp",
           "type":"resend",

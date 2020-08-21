@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:infinite_widgets/infinite_widgets.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/tertimoniModel.dart';
@@ -40,20 +41,41 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
   List<String> categoryString=['semua'];
   List<Widget> videosWidget = List();
   final userRepository = UserRepository();
+  Future<void> loadCategory() async{
+    final token = await userRepository.getDataUser('token');
+    try{
+      final jsonString = await http.get(
+          ApiService().baseUrl+'category?type=testimoni',
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      ).timeout(Duration(seconds: ApiService().timerActivity));
+      if (jsonString.statusCode == 200) {
+        final jsonResponse = json.decode(jsonString.body);
+        jsonResponse['result'].forEach((element){
+          setState(() {
+            categoryString.add(element['title']);
+            categoryArray.add(element['id'].toString());
+          });
+        });
 
-  Future<void> loadTestimoni(var idCategory) async{
-    String q='';
-    if(idCategory!=''){
-      q = 'testi?tipe=1&page=1&limit=${perpage.toString()}&category=$idCategory';
-    }else{
-      if(idCategory=='0'){
-        q='testi?tipe=1&page=1&limit=${perpage.toString()}';
-      }else{
-        q='testi?tipe=1&page=1&limit=${perpage.toString()}';
       }
-
+      else {
+        throw Exception('Failed to load photos');
+      }
+      _tabController = new TabController(length:categoryString.length, vsync: this, initialIndex: 0);
+      setState(() {
+        isLoading1=false;
+      });
+    }catch(e){
+      print(e);
     }
-    print(q);
+  }
+  Future<void> loadTestimoni(var idCategory) async{
+    String q='testi?tipe=1&page=1&limit=${perpage.toString()}';
+    if(idCategory!=''){
+      q += '&category=$idCategory';
+    }else{
+      idCategory=='1' ? q=q : q=q;
+    }
     try{
       final jsonString = await http.get(
           ApiService().baseUrl+q,
@@ -65,7 +87,7 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
           isLoading=false;
           video = jsonResponse['result']['data'];
         });
-        print("############### RESPONSE $jsonResponse");
+        print("===> RESPONSE TESTIMONI $jsonResponse <===");
       }
       else {
         throw Exception('Failed to load photos');
@@ -94,7 +116,6 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
     loadTestimoni('');
   }
 
-
   Future search(param) async{
     setState(() {isLoading=true;});
     param==0?loadTestimoni(''):loadTestimoni(categoryArray[param]);
@@ -113,7 +134,7 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
       await WcFlutterShare.share(
           sharePopupTitle: 'Thaibah Share Testimoni Produk',
           subject: 'Thaibah Share Testimoni Produk',
-          text: "${param}",
+          text: "$param",
           mimeType: 'text/plain'
       );
     });
@@ -132,9 +153,11 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
     isLoading=true;
     isLoading1=true;
     loadTestimoni('');
+    loadCategory();
     loadTheme();
   }
 
+  final _itemExtent = 56.0;
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +165,42 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
       child: Scaffold(
           body: CustomScrollView(
             slivers: <Widget>[
+              SliverAppBar(
+                floating: true,
+                pinned: false,
+                snap: false,
+                elevation: 5,
+                backgroundColor: Colors.white,
+                title: isLoading1?Center(child: CircularProgressIndicator(strokeWidth: 10,valueColor: new AlwaysStoppedAnimation<Color>(statusLevel!='0'?warna1:ThaibahColour.primary1)),):TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  onTap: (index) {
+                    print(index);
+                    setState(() {
+                      _tabController.index = index;
+                      cloneIndex = index;
+                    });
+                    search(index);
+                  },
+                  tabs: List.generate(categoryString.length, (index) => Tab(
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          categoryString[index],
+                          style: TextStyle(fontSize: 15,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      decoration: BoxDecoration(color: index == _tabController.index ? warna1 : Colors.black12, borderRadius: BorderRadius.circular(20)),
+                    ),
+                  )),
+                  labelPadding: EdgeInsets.symmetric(horizontal: 0),
+                  indicatorWeight: 1,
+                  indicatorColor: Colors.transparent,
+                  unselectedLabelColor: Colors.black,
+                  labelColor: Colors.white,
+                ),
+              ),
               isLoading?SliverPadding(
                 padding: EdgeInsets.all(2.0),
                 sliver: SliverGrid(
@@ -162,124 +221,107 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
                   ),
                 ),
               ):
-              SliverToBoxAdapter(
-                child: video.length==0?Column(mainAxisAlignment:MainAxisAlignment.center,crossAxisAlignment:CrossAxisAlignment.center,children: <Widget>[Container(height: 600.0,child:Center(child:Text('Tidak Ada Data', style: TextStyle(fontSize: 15,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),)))],):RefreshIndicator(
-                    child: Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(1.0),
-                        height: MediaQuery.of(context).size.height/1,
-                        child: InfiniteGridView(
-                          loadingWidget:Center(child: CircularProgressIndicator(strokeWidth: 10)),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.all(1.0),
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    height: MediaQuery.of(context).size.height/5.9,
-                                    alignment: Alignment.center,
-                                    child: Center(
-                                      child: _signInButton(video[index]['video'],video[index]['caption'],video[index]['rating'].toString()),
-                                    ),
-                                    decoration:
-                                    BoxDecoration(
-                                      color: Colors.black.withOpacity(0.9),
-                                      image: new DecorationImage(
-                                        fit: BoxFit.cover,
-                                        colorFilter:
-                                        ColorFilter.mode(Colors.black.withOpacity(0.2),
-                                            BlendMode.dstATop),
-                                        image: new NetworkImage(
-                                          video[index]['thumbnail'],
-                                        ),
-                                      ),
-                                    ),
-//                                    decoration: BoxDecoration(
-//                                        color: Color.fromRGBO(255, 255, 255, 0.19),
-//                                        image: DecorationImage(
-//                                          image: NetworkImage(video[index]['thumbnail']),
-//                                          fit: BoxFit.cover,
-//                                        )
-//                                    ),
-                                  ),
-
-                                  Container(
-                                    width: MediaQuery.of(context).size.width/1,
-                                    height: ScreenUtilQ.getInstance().setHeight(60),
-                                    decoration: BoxDecoration(
-                                        gradient: LinearGradient(colors: [statusLevel!='0'?warna1:Color(0xFF116240),statusLevel!='0'?warna2:Color(0xFF30CC23)]),
-                                        borderRadius: BorderRadius.circular(0.0),
-                                        boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-                                    ),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        onTap: () async {
-                                          setState(() {
-                                            isLoadingShare = true;
-                                          });
-//
-                                          share(video[index]['video'],index);
-                                        },
-                                        child: Center(
-                                          child: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))
-                                          ):Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)) : Text("BAGIKAN VIDEO", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-
+              SliverFixedExtentList(
+                itemExtent: MediaQuery.of(context).size.height/2,  // I'm forcing item heights
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  String cap='';
+                  if(video[index]['caption'].length > 100){
+                    cap = '${video[index]['caption'].substring(0,100)} ...';
+                  }
+                  else{
+                    cap = video[index]['caption'];
+                  }
+                  return InkWell(
+                    onTap: (){
+                      Navigator.of(context, rootNavigator: true).push(
+                        new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+                            param:'Testimoni Produk',
+                            video: video[index]['video'],
+                            caption: video[index]['caption'],
+                            rating:video[index]['rating'].toString()
+                        )),
+                      );
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          height: ScreenUtilQ.getInstance().setHeight(400),
+                          child: CachedNetworkImage(
+                            imageUrl: video[index]['thumbnail'],
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                            ),
+                            errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: new BorderRadius.circular(0.0),
+                                color: Colors.grey,
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.fill,
+                                ),
                               ),
-                            );
-                          },
-                          itemCount: video.length,
-                          hasNext: video.length >= perpage,
-                          nextData: this.loadNextData,
-                        )
+                            ),
+                          ),
+                        ),
+                        ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(video[index]['thumbnail']),
+                          ),
+                          title: Html(
+                            data:cap,
+                            defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
+                          ),
+                          subtitle: Text(video[index]['category'], style: TextStyle(color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
+                          trailing: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : PopupMenuButton(
+                            onSelected: (e) async{
+                              if(e=='0'){
+                                setState(() {
+                                  isLoadingShare = true;
+                                });
+                                share(video[index]['video'],index);
+                              }else{
+                                Navigator.of(context, rootNavigator: true).push(
+                                  new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+                                      param:'Testimoni Produk',
+                                      video: video[index]['video'],
+                                      caption: video[index]['caption'],
+                                      rating:video[index]['rating'].toString()
+                                  )),
+                                );
+                              }
+
+                            },
+                            itemBuilder: (_) => <PopupMenuItem<String>>[
+                              new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
+                              new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
+                            ],
+                          ):PopupMenuButton(
+                            onSelected: (e) async{
+                              print(e);
+                              if(e=='0'){
+                                setState(() {
+                                  isLoadingShare = true;
+                                });
+                                share(video[index]['video'],index);
+                              }
+                            },
+                            itemBuilder: (_) => <PopupMenuItem<String>>[
+                              new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
+                              new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    onRefresh: refresh
+                  );
+                },
+                  childCount: video.length,
                 ),
               ),
-
             ],
           )
       ),
-    );
-  }
-  Widget _signInButton(var video,var caption,var rating) {
-    return ButtonTheme(
-        height: 50,
-        minWidth: 50,
-        child: InkWell(
-            onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-                new CupertinoPageRoute(builder: (context) => DetailInspirasi(
-                    param:'Testimoni Produk',
-                    video: video,
-                    caption: caption,
-                    rating:rating.toString()
-                )),
-              );
-            }, //
-            child: Padding(
-                padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
-                child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Expanded(
-                          flex: 10,
-                          child: Padding(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: Icon(Icons.play_circle_outline,size: 70.0,color: Colors.white,)
-                          )
-                      )
-                    ]
-                )
-            )
-        )
     );
   }
 

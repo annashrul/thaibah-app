@@ -26,7 +26,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
   bool isLoading1 = false;
 
   final _bloc = SosmedBloc();
-  int perpage = 10;
+  int perpage = 20;
 
   void load() {
     perpage = perpage += 10;
@@ -59,7 +59,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
     super.initState();
     loadTheme();
     if(mounted){
-      _bloc.fetchListSosmed(1,10,'kosong');
+      _bloc.fetchListSosmed(1,20,'kosong');
     }
   }
 
