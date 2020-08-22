@@ -132,6 +132,16 @@ class UserRepository {
                   child: InkWell(
                     splashColor: Colors.green, // splash color
                     onTap: () async {
+                      final dbHelper = DbHelper.instance;
+                      final id = await getDataUser('id');
+
+                      Map<String, dynamic> row = {
+                        DbHelper.columnId   : id,
+                        DbHelper.columnStatus : '0',
+                        DbHelper.columnStatusOnBoarding  : "1",
+                        DbHelper.columnStatusExitApp  : "1"
+                      };
+                      await dbHelper.update(row);
                       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
                     }, // button pressed
                     child: Column(
@@ -146,8 +156,8 @@ class UserRepository {
               ),
             ),
             SizedBox(height: 10.0,),
-            Text("anda baru saja mengupgdate aplikasi thaibah.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-            Text("tekan tombol keluar untuk melanjutkan proses pemakaian aplikasi thaibah",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+            Text("Token Belum Terpasang Pada Akun Thaibah Anda.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+            Text("Silahkan Keluar dan Masuk Kembali Ke Aplikasi Thaibah Agar Akun Anda Mempunyai Token",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
           ],
         ),
       ),

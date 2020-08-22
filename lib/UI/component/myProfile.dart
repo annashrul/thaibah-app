@@ -356,11 +356,7 @@ class _MyProfileState extends State<MyProfile> {
                             DbHelper.columnStatusOnBoarding  : "1",
                             DbHelper.columnStatusExitApp  : "1"
                           };
-                          print("ID = $id");
-                          print("STATUS LOGIN = $statusLogin");
-                          print("STATUS ONBOARDING = $statusOnBoarding");
                           final rowsAffected = await dbHelper.update(row);
-                          print(rowsAffected);
                           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => xWidget), (Route<dynamic> route) => false);
                         }else{
                           setState(() {

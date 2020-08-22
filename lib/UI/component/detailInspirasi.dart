@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class DetailInspirasi extends StatefulWidget {
@@ -51,10 +53,28 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
   @override
   void initState() {
     super.initState();
-
+    isLoadingShare=false;
     loadTheme();
     cekType();
     convertUrlYoutube();
+  }
+  bool isLoadingShare=true;
+  Future share(param) async{
+    setState(() {
+      isLoadingShare = true;
+    });
+
+    Timer(Duration(seconds: 1), () async {
+      setState(() {
+        isLoadingShare = false;
+      });
+      await WcFlutterShare.share(
+          sharePopupTitle: 'Share Tentang Thaibah',
+          subject: 'Share Tentang Thaibah',
+          text: "$param",
+          mimeType: 'text/plain'
+      );
+    });
   }
 
   @override
@@ -103,6 +123,32 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
           )
         ],
       ),
+      bottomNavigationBar:  widget.param!='Tentang Thaibah'?Text(''):InkWell(
+        onTap: () async {
+          setState(() {
+            isLoadingShare = true;
+          });
+          await share(widget.video);
+        },
+        child: Container(
+          width: ScreenUtilQ.getInstance().setWidth(710),
+          height: ScreenUtilQ.getInstance().setHeight(100),
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
+              borderRadius: BorderRadius.circular(0.0),
+              boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
+          ),
+          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          child:Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+//          crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              isLoadingShare?CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(Colors.white)):Text("BAGIKAN", style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: 14, color: Colors.white,fontWeight: FontWeight.bold),),
+            ],
+          ),
+        ),
+      ),
+
     );
   }
 

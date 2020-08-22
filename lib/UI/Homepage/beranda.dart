@@ -78,7 +78,8 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
     final color2 = await userRepository.getDataUser('warna2');
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    if (id == null || id == '') {
+    print("############# THIS TOKEN $token #####################");
+    if (token == null || token == '') {
       setState(() {
         isLoading = false;
         modeUpdate = true;
