@@ -3,16 +3,20 @@ library intro_views_flutter;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:thaibah/Constants/constants.dart';
-import 'package:thaibah/Model/pageIndicatorViewModel.dart';
-import 'package:thaibah/Model/pageViewModel.dart';
-import 'package:thaibah/Model/slideUpdate.dart';
-import 'package:thaibah/UI/Animation_Gesture/animated_page_dragger.dart';
-import 'package:thaibah/UI/Animation_Gesture/page_dragger.dart';
-import 'package:thaibah/UI/Animation_Gesture/page_reveal.dart';
-import 'package:thaibah/UI/splash/page.dart';
-import 'package:thaibah/UI/splash/pageIndicator.dart';
-import 'package:thaibah/UI/splash/pageIndicatorButton.dart';
+
+import '../../Constants/constants.dart';
+import '../../Model/pageIndicatorViewModel.dart';
+import '../../Model/pageViewModel.dart';
+import '../../Model/slideUpdate.dart';
+import '../Animation_Gesture/animated_page_dragger.dart';
+import '../Animation_Gesture/page_dragger.dart';
+import '../Animation_Gesture/page_reveal.dart';
+import 'page.dart';
+import 'page.dart';
+import 'pageIndicator.dart';
+import 'pageIndicatorButton.dart';
+
+
 
 /// This is the IntroViewsFlutter widget of app which is a stateful widget as its state is dynamic and updates asynchronously.
 class IntroViewsFlutter extends StatefulWidget {
@@ -108,10 +112,10 @@ class IntroViewsFlutter extends StatefulWidget {
         this.onTapSkipButton,
         this.onTapNextButton,
         this.pageButtonsColor,
-        this.doneText = const Text("SELESAI", style: TextStyle(fontFamily:'Rosemary')),
-        this.nextText = const Text("LANJUT", style: TextStyle(fontFamily: 'Rosemary')),
-        this.skipText = const Text("LEWATI", style: TextStyle(fontFamily: 'Rosemary')),
-        this.backText = const Text("KEMBALI", style: TextStyle(fontFamily: 'Rosemary')),
+        this.doneText = const Text("SELESAI", style: TextStyle(fontFamily:'Rubik')),
+        this.nextText = const Text("LANJUT", style: TextStyle(fontFamily: 'Rubik')),
+        this.skipText = const Text("LEWATI", style: TextStyle(fontFamily: 'Rubik')),
+        this.backText = const Text("KEMBALI", style: TextStyle(fontFamily: 'Rubik')),
         this.doneButtonPersist = false,
         this.columnMainAxisAlignment = MainAxisAlignment.spaceAround,
         this.fullTransition = FULL_TARNSITION_PX,
@@ -237,7 +241,7 @@ class _IntroViewsFlutterState extends State<IntroViewsFlutter>
       backgroundColor: widget.background,
       body: Stack(
         children: <Widget>[
-          Page(
+          Pages(
             pageViewModel: pages[activePageIndex],
             percentVisible: 1.0,
             columnMainAxisAlignment: widget.columnMainAxisAlignment,
@@ -245,7 +249,7 @@ class _IntroViewsFlutterState extends State<IntroViewsFlutter>
           PageReveal(
             //next page reveal
             revealPercent: slidePercent,
-            child: Page(
+            child: Pages(
                 pageViewModel: pages[nextPageIndex],
                 percentVisible: slidePercent,
                 columnMainAxisAlignment: widget.columnMainAxisAlignment),

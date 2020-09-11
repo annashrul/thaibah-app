@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'SCREENUTIL/ScreenUtilQ.dart';
 
 typedef void DeleteCode();
 typedef Future<bool> PassCodeVerify(List<int> passcode);
@@ -147,6 +148,8 @@ class _LockScreenQState extends State<LockScreenQ> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     Future.delayed(Duration(milliseconds: 200), () {
       _fingerPrint();
     });
@@ -162,35 +165,12 @@ class _LockScreenQState extends State<LockScreenQ> {
                 Expanded(
                   flex: 3,
                   child: Container(
-//                    decoration: BoxDecoration(
-//                      borderRadius: BorderRadius.only(
-//                        bottomLeft: Radius.circular(10.0),
-//                        bottomRight: Radius.circular(10.0),
-//                      ),
-//                      gradient: LinearGradient(
-//                        begin: Alignment.centerLeft,
-//                        end: Alignment.centerRight,
-//                        colors: <Color>[Color(0xFF116240),Color(0xFF30cc23)],
-//                      ),
-//                    ),
                     child: Stack(
                       children: <Widget>[
                         ClipPath(
-//                          clipper: BgClipper(),
-//                          SizedBox(height: 60.0),
                           child: Container(
                             height: MediaQuery.of(context).size.height,
                             width: MediaQuery.of(context).size.width,
-//                            decoration: BoxDecoration(
-//                              image: DecorationImage(
-//                                image: AssetImage(widget.bgImage),
-//                                fit: BoxFit.cover,
-//                                colorFilter: ColorFilter.mode(
-//                                  Colors.grey.shade800,
-//                                  BlendMode.hardLight,
-//                                ),
-//                              ),
-//                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -202,7 +182,7 @@ class _LockScreenQState extends State<LockScreenQ> {
                                   widget.title,
                                   style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 20,
+                                      fontSize: ScreenUtilQ.getInstance().setSp(40),
                                       fontWeight: FontWeight.bold,
                                       fontFamily: ThaibahFont().fontQ
                                   ),
@@ -212,7 +192,7 @@ class _LockScreenQState extends State<LockScreenQ> {
                                 ),
                                 Text(
                                   widget.deskripsi,
-                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ, fontSize: 10),
+                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ, fontSize: ScreenUtilQ.getInstance().setSp(20)),
                                 ),
                                 SizedBox(
                                   height: Platform.isIOS ? 40 : 15,
@@ -306,17 +286,21 @@ class _LockScreenQState extends State<LockScreenQ> {
 
 
   Widget forgotScreen(){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return InkResponse(
       onTap: (){
         widget.fingerFunction();
       },
       child: Center(
-        child: Text(widget.forgotPin,style: TextStyle(color:Colors.green,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+        child: Text(widget.forgotPin,style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(26),color:Colors.green,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
       ),
     );
   }
 
   Widget buildContainerCircle(int number) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return InkResponse(
       highlightColor: Colors.red,
       onTap: () {
@@ -340,7 +324,7 @@ class _LockScreenQState extends State<LockScreenQ> {
             number.toString(),
             style: TextStyle(
                 fontFamily:ThaibahFont().fontQ,
-                fontSize: 28,
+                fontSize:  ScreenUtilQ.getInstance().setSp(40),
                 fontWeight: FontWeight.bold,
                 color: widget.numColor),
           ),
@@ -351,6 +335,8 @@ class _LockScreenQState extends State<LockScreenQ> {
 
 
   Widget buildRemoveIcon(IconData icon) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return InkResponse(
       onTap: () {
         if (0 < _currentCodeLength) {
@@ -371,18 +357,15 @@ class _LockScreenQState extends State<LockScreenQ> {
               )
             ]),
         child: Center(
-          child: Text('Ulangi',style:TextStyle(fontSize:16.0,color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-//          child: Icon(
-//            icon,
-//            size: 30,
-//            color: widget.numColor,
-//          ),
+          child: Text('Ulangi',style:TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(40),color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
         ),
       ),
     );
   }
 
   Widget buildContainerIcon(IconData icon) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return InkResponse(
       onTap: () {
         if (0 < _currentCodeLength) {
@@ -411,13 +394,7 @@ class _LockScreenQState extends State<LockScreenQ> {
               )
             ]),
         child: Center(
-          child: Text('Hapus',style:TextStyle(fontSize:16.0,color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-
-//          child: Icon(
-//            icon,
-//            size: 30,
-//            color: widget.numColor,
-//          ),
+          child: Text('Hapus',style:TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(40),color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
         ),
       ),
     );

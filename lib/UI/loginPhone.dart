@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -85,7 +86,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                   children: <Widget>[
                     CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
                     SizedBox(height:5.0),
-                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                    Text("Tunggu Sebentar .....", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),)
                   ],
                 ),
               )
@@ -231,242 +232,259 @@ class _LoginPhoneState extends State<LoginPhone> {
     _large =  ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     _medium =  ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
     return pages(context);
-
   }
 
   Widget pages(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false)..init(context);
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+      body: LayoutBuilder(
+        builder: (context,constraints){
+          print("SCALE WIDTH ${constraints.maxWidth}");
+          double tinggi = ScreenUtilQ.getInstance().setHeight(typeOtp==true?520:320);
+          if(constraints.maxWidth < 32.0 || constraints.maxWidth == 32.0){
+
+          }
+          if(constraints.maxWidth > 32.0 && constraints.maxWidth > 34.0){
+
+          }
+
+          return Stack(
+            fit: StackFit.expand,
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(top: 30.0),
-                child: Center(child:Image.asset("assets/images/logoOnBoardTI.png",width: 120.0)),
-              ),
-
-              Expanded(
-                child: Container(),
-              ),
-              Image.asset("assets/images/image_02.png")
-            ],
-          ),
-
-          SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(left: 28.0, right: 28.0, top: 10.0),
-              child: Column(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Image.asset(
-                        "",
-                        width: ScreenUtilQ.getInstance().setWidth(150),
-                        height: ScreenUtilQ.getInstance().setHeight(150),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
-                  Container(
-                    width: double.infinity,
-                    height: ScreenUtilQ.getInstance().setHeight(typeOtp==true?420:320),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(0.0),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black12,offset: Offset(0.0, 0.0),blurRadius: 0.0),
-                        BoxShadow(color: Colors.black12,offset: Offset(0.0, -5.0),blurRadius: 10.0),
-                      ]
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("Masuk",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(45),fontFamily:ThaibahFont().fontQ,letterSpacing: .6,fontWeight: FontWeight.bold)),
-                          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
-                          Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Telah Anda Daftarkan)",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26))),
-                          Row(
-                            children: <Widget>[
-                              Container(
-                                child: CountryCodePicker(
-                                  onChanged: (CountryCode  countryCode){
-                                    setState(() {
-                                      codeCountry = "${countryCode.dialCode.replaceAll('+', '')}";
-                                    });
-                                  },
-                                  initialSelection: 'ID',
-                                  favorite: ['+62','ID'],
-                                  showCountryOnly: true,
-                                  showOnlyCountryWhenClosed: false,
-                                  alignLeft: true,
-                                ),
-                                width: MediaQuery.of(context).size.width/3.1-30.0,
-                              ),
-
-                              new SizedBox(
-                                width: 0.0,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width/1.7-30.0,
-                                child: TextFormField(
-                                  style: TextStyle(fontFamily: ThaibahFont().fontQ),
-                                  maxLength: 15,
-                                  controller: _noHpController,
-                                  keyboardType: TextInputType.number,
-                                  textInputAction: TextInputAction.done,
-                                  inputFormatters: <TextInputFormatter>[
-                                    WhitelistingTextInputFormatter.digitsOnly
-                                  ],
-                                  focusNode: _noHpFocus,
-                                  onFieldSubmitted: (value){
-                                    _noHpFocus.unfocus();
-                                    if(_noHpController.text == ''){
-                                      UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Tidak Terdaftar","failed");
-                                    }
-                                    else{
-                                      setState(() {
-                                        _isLoading = true;
-                                      });
-                                      login();
-                                    }
-                                  },
-                                  decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
-                                ),
-                              ),
-
-                            ],
-                          ),
-                          SizedBox(height:typeOtp==true?5.0:0.0),
-                          typeOtp==true?Text("Kirim OTP via ?",style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26))):Text(''),
-                          SizedBox(height:typeOtp==true?5.0:0.0),
-                          typeOtp==true?DropdownButton(
-                            isDense: true,
-                            isExpanded: true,
-                            hint: Text("Pilih",style: TextStyle(fontFamily: 'Rubik'),),
-                            value: _valType,
-                            items: _type.map((value) {
-                              return DropdownMenuItem(
-                                child: Text(value,style: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-                                value: value,
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _valType = value;
-                              });
-                            },
-                          ):Container(),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text("*Pastikan Handphone Anda Terkoneksi Dengan Internet*",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,color:Colors.red)),
-                  ),
-                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      InkWell(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width/1,
-                          height: ScreenUtilQ.getInstance().setHeight(100),
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
-                              borderRadius: BorderRadius.circular(6.0),
-                              boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () async {
-                                final checkConnection = await userRepository.check();
-                                if(checkConnection == false){
-                                  setState(() {_isLoading = false;});
-                                  UserRepository().notifNoAction(_scaffoldKey, context, "Anda Tidak Terhubung Dengan Internet","failed");
-                                }else{
-                                  if(_noHpController.text == ''){
-                                    UserRepository().notifNoAction(_scaffoldKey, context, "Anda Belum Memasukan No WhatsApp","failed");
-                                  }else{
-                                    setState(() {
-                                      _isLoading = true;
-                                    });
-                                   login();
-                                  }
-                                }
-
-                              },
-                              child:Center(
-                                child: Text("Masuk",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      horizontalLine(),
-                      Text("Atau",style: TextStyle(fontSize: 16.0, fontFamily:ThaibahFont().fontQ, fontWeight: FontWeight.bold)),
-                      horizontalLine()
-                    ],
-                  ),
-                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      InkWell(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width/1,
-                          height: ScreenUtilQ.getInstance().setHeight(100),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.green,
-                              width: 3.0
-                            ),
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(5.0) //
-                            ),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Regist(),
-                                  ),
-                                );
-                              },
-                              child: Center(
-                                child: Text("Daftar",style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
+                  Padding(
+                    padding: EdgeInsets.only(top: 30.0),
+                    child: Center(child:Image.asset("assets/images/logoOnBoardTI.png",width: 120.0)),
                   ),
 
+                  Expanded(
+                    child: Container(),
+                  ),
+                  Image.asset("assets/images/image_02.png")
                 ],
               ),
-            ),
-          )
-        ],
+
+              SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 28.0, right: 28.0, top: 10.0),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Image.asset(
+                            "",
+                            width: ScreenUtilQ.getInstance().setWidth(150),
+                            height: ScreenUtilQ.getInstance().setHeight(150),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
+                      Container(
+                        width: double.infinity,
+                        height: ScreenUtilQ.getInstance().setHeight(typeOtp==true?420:320),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(0.0),
+                            boxShadow: [
+                              BoxShadow(color: Colors.black12,offset: Offset(0.0, 0.0),blurRadius: 0.0),
+                              BoxShadow(color: Colors.black12,offset: Offset(0.0, -5.0),blurRadius: 10.0),
+                            ]
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text("Masuk", style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(40),fontFamily:ThaibahFont().fontQ,letterSpacing: .6,fontWeight: FontWeight.bold),),
+                              SizedBox(height: ScreenUtilQ.getInstance().setHeight(18)),
+                              Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Telah Anda Daftarkan)",
+                                style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26)),
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Container(
+                                    child: CountryCodePicker(
+                                      onChanged: (CountryCode  countryCode){
+                                        setState(() {
+                                          codeCountry = "${countryCode.dialCode.replaceAll('+', '')}";
+                                        });
+                                      },
+                                      initialSelection: 'ID',
+                                      favorite: ['+62','ID'],
+                                      showCountryOnly: true,
+                                      showOnlyCountryWhenClosed: false,
+                                      alignLeft: true,
+                                    ),
+                                    width: MediaQuery.of(context).size.width/3.1-30.0,
+                                  ),
+
+                                  new SizedBox(
+                                    width: 0.0,
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width/1.7-30.0,
+                                    child: TextFormField(
+                                      style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                                      maxLength: 15,
+                                      controller: _noHpController,
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.done,
+                                      inputFormatters: <TextInputFormatter>[
+                                        WhitelistingTextInputFormatter.digitsOnly
+                                      ],
+                                      focusNode: _noHpFocus,
+                                      onFieldSubmitted: (value){
+                                        _noHpFocus.unfocus();
+                                        if(_noHpController.text == ''){
+                                          UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Tidak Terdaftar","failed");
+                                        }
+                                        else{
+                                          setState(() {
+                                            _isLoading = true;
+                                          });
+                                          login();
+                                        }
+                                      },
+                                      decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                              SizedBox(height:typeOtp==true?5.0:0.0),
+
+                              typeOtp==true?Text("Kirim OTP Via ?", style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(18)),):Text(''),
+                              SizedBox(height:typeOtp==true?5.0:0.0),
+                              typeOtp==true?DropdownButton(
+                                isDense: true,
+                                isExpanded: true,
+                                hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontFamily: 'Rubik'),),
+                                value: _valType,
+                                items: _type.map((value) {
+                                  return DropdownMenuItem(
+                                    child: Html(data:value,defaultTextStyle: TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
+                                    value: value,
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _valType = value;
+                                  });
+                                },
+                              ):Container(),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text("*Pastikan Handphone Anda Terkoneksi Dengan Internet*",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,color:Colors.red)),
+                      ),
+                      SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          InkWell(
+                            child: Container(
+                              width: MediaQuery.of(context).size.width/1,
+                              height: ScreenUtilQ.getInstance().setHeight(100),
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () async {
+                                    final checkConnection = await userRepository.check();
+                                    if(checkConnection == false){
+                                      setState(() {_isLoading = false;});
+                                      UserRepository().notifNoAction(_scaffoldKey, context, "Anda Tidak Terhubung Dengan Internet","failed");
+                                    }else{
+                                      if(_noHpController.text == ''){
+                                        UserRepository().notifNoAction(_scaffoldKey, context, "Anda Belum Memasukan No WhatsApp","failed");
+                                      }else{
+                                        setState(() {
+                                          _isLoading = true;
+                                        });
+                                        login();
+                                      }
+                                    }
+
+                                  },
+                                  child:Center(
+                                    child: Text("Masuk",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          horizontalLine(),
+                          Text("Atau",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(45), fontFamily:ThaibahFont().fontQ, fontWeight: FontWeight.bold)),
+                          horizontalLine()
+                        ],
+                      ),
+                      SizedBox(height: ScreenUtilQ.getInstance().setHeight(30)),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          InkWell(
+                            child: Container(
+                              width: MediaQuery.of(context).size.width/1,
+                              height: ScreenUtilQ.getInstance().setHeight(100),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Colors.green,
+                                    width: 3.0
+                                ),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(5.0) //
+                                ),
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Regist(),
+                                      ),
+                                    );
+                                  },
+                                  child: Center(
+                                    child: Text("Daftar",style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+
+                    ],
+                  ),
+                ),
+              )
+            ],
+          );
+        }
       ),
 
     );

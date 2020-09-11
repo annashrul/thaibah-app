@@ -184,6 +184,8 @@ class UserRepository {
     return cek;
   }
   appBarWithButton(BuildContext context, title,Color color1, Color color2,Function callback,Widget action){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false)..init(context);
     var cek =  AppBar(
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios,color: Colors.white),
@@ -193,7 +195,7 @@ class UserRepository {
       ),
       centerTitle: false,
       elevation: 0.0,
-      title: Text(title,style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(45),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -292,7 +294,7 @@ class UserRepository {
 
   buttonQ(BuildContext context,Color color1,Color color2,Function callback,bool isLoading){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     var cek = Container(
       margin: EdgeInsets.all(16),
       width: MediaQuery.of(context).size.width/1,
@@ -307,7 +309,7 @@ class UserRepository {
         child: InkWell(
           onTap:callback,
           child: Center(
-            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text("Simpan",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text("Simpan",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
           ),
         ),
       ),
@@ -316,7 +318,7 @@ class UserRepository {
   }
   buttonLoadQ(BuildContext context,Color color1,Color color2,Function callback,bool isLoading){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     var cek = Container(
       margin: EdgeInsets.all(16),
       width: MediaQuery.of(context).size.width/1,
@@ -331,7 +333,7 @@ class UserRepository {
         child: InkWell(
           onTap:callback,
           child: Center(
-            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text("Tampilkan Lebih Banyak",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text("Tampilkan Lebih Banyak",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
           ),
         ),
       ),

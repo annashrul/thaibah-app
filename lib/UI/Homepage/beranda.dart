@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
@@ -185,7 +186,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
 
   Widget buildContent(BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() :Column(
       children: <Widget>[
         Container(
@@ -231,7 +232,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                    Text(_name,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                   ],
                                 )
                             ),
@@ -243,9 +244,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 children: <Widget>[
                                   Container(
                                     width:MediaQuery.of(context).size.width/4,
-                                    child: Text('Kode Referral',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                                    child: Text('Kode Referral',style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(26),fontFamily:ThaibahFont().fontQ)),
                                   ),
-                                  Text(": "+_kdRefferal,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                  Text(": "+_kdRefferal,style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                 ],
                               )
                             ),
@@ -260,9 +261,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                       children: <Widget>[
                                         Container(
                                           width:MediaQuery.of(context).size.width/4,
-                                          child: Text('Membership',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                                          child:Text('Membership',style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(26),fontFamily:ThaibahFont().fontQ)),
                                         ),
-                                        Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                        Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                       ],
                                     )
                                 ),
@@ -281,7 +282,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                         minWidth: 14,
                                         minHeight: 14,
                                       ),
-                                      child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
+                                      child: Text("UPGRADE",style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(20),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
                                   ),
                                 ):(levelPlatinumRaw == 1 ? Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)) :
                                 Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
@@ -310,9 +311,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 children: <Widget>[
                                   Container(
                                     width:MediaQuery.of(context).size.width/4,
-                                    child: Text('Level Royalti',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
+                                    child: Text('Level Royalti',style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(26),fontFamily:ThaibahFont().fontQ)),
                                   ),
-                                  Text(": "+_level,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                  Text(": "+_level,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
 
                                 ],
                               )
@@ -439,214 +440,11 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
     );
   }
 
-  Widget buildContents(BuildContext context){
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
-    return isLoading ? _loading() :Column(
-        children: <Widget>[
-          Flexible(
-            flex: 2,
-            fit: FlexFit.loose,
-            child: Container(
-              child: Stack(
-                children: <Widget>[
-                  Positioned(
-                    bottom: 40,
-                    top: 0,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.fromLTRB(0.0, ScreenUtilQ.getInstance().setHeight(50), 0.0, ScreenUtilQ.getInstance().setHeight(50)),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0),
-                        ),
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomRight,
-                          end: Alignment.topLeft,
-                          colors: <Color>[ThaibahColour.primary1,ThaibahColour.primary2],
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          ListTile(
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    CircleAvatar(
-                                      radius: 35.0,
-                                      child: CachedNetworkImage(
-                                        imageUrl: _picture,
-                                        imageBuilder: (context, imageProvider) => Container(
-                                          width: 100.0,
-                                          height: 100.0,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                          ),
-                                        ),
-                                        placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
-                                        errorWidget: (context, url, error) => Icon(Icons.error),
-                                      ),
-                                    ),
-                                    SizedBox(width: 7.0),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 0.0),
-                                              child: Text(_name,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                                            ),
-                                            SizedBox(width: 7.0),
-                                            levelPlatinumRaw == 0 ? isLoading?Container():GestureDetector(
-                                              onTap: (){
-                                                Navigator.of(context).push(new MaterialPageRoute(builder: (_) => UpgradePlatinum()));
-                                              },
-                                              child: Container(
-                                                  padding: EdgeInsets.all(5),
-                                                  decoration: new BoxDecoration(
-                                                    color: Colors.red,
-                                                    borderRadius: BorderRadius.circular(6),
-                                                  ),
-                                                  constraints: BoxConstraints(
-                                                    minWidth: 14,
-                                                    minHeight: 14,
-                                                  ),
-                                                  child: Text("UPGRADE",style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
-                                              ),
-                                            ):Container(child:Image.asset("${ApiService().assetsLocal}platinum.png",height:20.0,width:20.0))
-                                          ],
-                                        ),
-                                        levelPlatinumRaw == 0 ? SizedBox(height: 7.0) : Container(),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 0.0),
-                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Kode Referral : '+_kdRefferal,style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                                        ),
-                                        SizedBox(height: 7.0),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 0.0),
-                                          child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Jenjang Karir : $_level',style: whiteText.copyWith(fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-
-                          ),
-                          Container(
-                            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                            child: SizedBox(
-                              child: Container(height: 1.0,color: Colors.white),
-                            ),
-                          ),
-                          levelPlatinumRaw==0?CardSaldo(saldoMain: _saldoMain,saldoBonus: _saldoBonus,saldoVoucher: _saldoVoucher,saldoPlatinum: _saldoPlatinum):CardSaldoNoPlatinum(saldoMain: _saldoMain,saldoBonus: _saldoBonus,saldoVoucher: _saldoVoucher,saldoPlatinum: _saldoPlatinum),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-//                    top:190,
-                      bottom:0,
-                      left: 10,
-                      right: 10,
-                      child: Card(
-                        elevation: 1.0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                        color: Colors.white,
-                        child: Row(
-                          children: <Widget>[
-                            CardEmoney(imgUrl:'Icon_Utama_TopUp',title:'Top Up',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SaldoUI(saldo: _saldoMain,name: _name)),).then((val){
-                              loadData(); //you get details from screen2 here
-                            });}),
-                            CardEmoney(imgUrl:'Icon_Utama_Transfer',title:'Transfer',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr)),).whenComplete(loadData);},),
-                            CardEmoney(imgUrl:'Icon_Utama_Penarikan',title:'Penarikan',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Penarikan(saldoMain: _saldoMain)),).whenComplete(loadData);},),
-                            CardEmoney(imgUrl:'Icon_Utama_History',title:'Riwayat',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => HistoryUI(page: 'home')));},),
-                          ],
-                        ),
-                      )
-                  )
-                ],
-              ),
-            ),
-          ),
-          Flexible(
-            flex: 2,
-              fit: FlexFit.loose,
-              child: RefreshIndicator(
-                  child: SingleChildScrollView(
-                      child:Column(
-                        children: <Widget>[
-                          NewsHomePage(),
-                          Card(
-                            elevation: 1.0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                            color: Colors.white,
-                            margin: const EdgeInsets.only(left:15.0,right: 15.0,top: 0.0,bottom: 0.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize:MainAxisSize.min ,
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize:MainAxisSize.min ,
-                                  children: <Widget>[
-                                    CardEmoney(imgUrl:'Icon_Utama_Baca_Alquran',title:'Al-Quran',xFunction: (){
-                                      Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));}),
-                                    CardEmoney(imgUrl:'Icon_Utama_Waktu_Shalat',title:'Waktu Shalat',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)));},),
-                                    CardEmoney(imgUrl:'Icon_Utama_Masjid_Terdekat',title:'Masjid',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>  MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));},),
-                                    CardEmoney(imgUrl:'Icon_Utama_Doa_Harian',title:'Doa Harian',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));},),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize:MainAxisSize.min ,
-                                  children: <Widget>[
-                                    CardEmoney(imgUrl:'Icon_Utama_Hadits',title:'Hadits',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));},),
-                                    CardEmoney(imgUrl:'Icon_Utama_Asmaul_Husna',title:'Asmaul Husna',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));},),
-                                    CardEmoney(imgUrl:'Icon_Utama_Kalender_Hijriah',title:'Kalender',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));},),
-                                    CardEmoney(imgUrl:'Icon_Utama_Lainnya',title:'Lainnya',xFunction: (){
-                                      _lainnyaModalBottomSheet(context,'ppob');
-                                    },),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-//                              buildCardIcon(),
-                          const SizedBox(height: 15.0),
-                          titleQ("Jenjang Karir",Colors.black,true,'level'),
-                          const SizedBox(height: 15.0),
-                          WrapperLevel(),
-                          const SizedBox(height: 15.0),
-                          titleQ("Informasi & Inspirasi",Colors.black,true,'inspirasi'),
-                          const SizedBox(height: 0.0),
-                          ListSosmed(),
-                          const SizedBox(height: 15.0),
-                        ],
-                      )
-                  ),
-                  key: _refresh,
-                  onRefresh: refresh
-              )
-          )
-
-        ]
-    );
-  }
 
   /* STRUKTUR WIDGET CARD ISLAMIC */
-  Widget buildCardIcon(){
+  Widget buildCardIcon(BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return Container(
       decoration: BoxDecoration(
         color:isLoading?Colors.transparent:Colors.green,
@@ -691,6 +489,8 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   }
   /* STRUKTUR WIDGET TITLE */
   Widget titleQ(String title,Color warna,bool param,type){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return Padding(
       padding: const EdgeInsets.only(left: 15.0,right: 15.0),
       child: GestureDetector(
@@ -716,8 +516,8 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : Text("$title",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 14.0,color: warna)),
-            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : param == true ? type == 'level' ? Text("Info Jenjang Karir",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 12.0,color: warna)) : Text("Lihat Semua",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 12.0,color: warna)) : Container(),
+            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : Text("$title",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(24),color: warna)),
+            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : param == true ? type == 'level' ? Text("Info Jenjang Karir",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(20),color: warna)) : Text("Lihat Semua",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(20),color: warna)) : Container(),
           ],
         ),
       ),
@@ -725,6 +525,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   }
   /* STRUKTUR WIDGET FITUR LAINNYA */
   Widget moreStructure(var iconUrl,var page,String title){
+
     return Column(
 //      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -1118,11 +919,12 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
     );
   }
   Widget cardSaldoNoPlatinum(BuildContext context,saldoMain,saldoBonus,saldoVoucher,saldoPlatinum) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return Container(
         padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
           children: <Widget>[
            Center(
              child:  Column(
@@ -1132,7 +934,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                  AutoSizeTextQ(
                    'Saldo Utama',
                    textAlign: TextAlign.center,
-                   style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
+                   style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(24),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
                    maxLines: 2,
                  ),
                  SizedBox(height:2.0),
@@ -1219,6 +1021,8 @@ class CardSaldoNoPlatinum extends StatefulWidget {
 class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return Container(
         padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
         child: Row(
@@ -1230,13 +1034,13 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               children: <Widget>[
                 AutoSizeTextQ(
                   'Saldo Utama',
-                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
+                  style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
                   maxLines: 2,
                 ),
                 SizedBox(height:2.0),
                 AutoSizeTextQ(
                     widget.saldoMain,
-                    style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
               ],
@@ -1248,11 +1052,11 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               children: <Widget>[
                 AutoSizeTextQ(
                     'Saldo Bonus',
-                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1260,9 +1064,9 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1270,9 +1074,9 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
           ],
@@ -1296,6 +1100,8 @@ class CardSaldo extends StatefulWidget {
 class _CardSaldoState extends State<CardSaldo> {
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return Container(
         padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
         child: Row(
@@ -1305,15 +1111,15 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ(
+                Text(
                   'Saldo Utama',
-                  style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
+                  style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
                   maxLines: 2,
                 ),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(
+                Text(
                     widget.saldoMain,
-                    style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
               ],
@@ -1323,13 +1129,13 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ(
+                Text(
                     'Saldo Bonus',
-                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text(widget.saldoBonus,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1337,9 +1143,9 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text('Saldo Voucher',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text(widget.saldoVoucher,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1347,9 +1153,9 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text('Saldo Platinum',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:10.0,color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text(widget.saldoPlatinum,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
           ],
@@ -1369,6 +1175,8 @@ class CardEmoney extends StatefulWidget {
 class _CardEmoneyState extends State<CardEmoney> {
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return Expanded(
       child: GestureDetector(
         onTap: (){
@@ -1388,7 +1196,7 @@ class _CardEmoneyState extends State<CardEmoney> {
                 width: ScreenUtilQ.getInstance().setWidth(60),
               ),
               SizedBox(height: 5.0),
-              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize: 12.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize:ScreenUtilQ.getInstance().setSp(20),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ],
           )),
         ),
@@ -1441,6 +1249,7 @@ class _WrapperIconState extends State<WrapperIcon> {
       ],
     );
   }
+
 }
 
 
@@ -1451,3 +1260,19 @@ class _WrapperIconState extends State<WrapperIcon> {
 
 
 
+class AppScale {
+  BuildContext _ctxt;
+
+  AppScale(this._ctxt);
+
+  double get labelDim => scaledWidth(.04);
+  double get popupMenuButton => scaledHeight(.065);
+
+  double scaledWidth(double widthScale) {
+    return MediaQuery.of(_ctxt).size.width * widthScale;
+  }
+
+  double scaledHeight(double heightScale) {
+    return MediaQuery.of(_ctxt).size.height * heightScale;
+  }
+}

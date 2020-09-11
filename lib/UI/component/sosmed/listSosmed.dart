@@ -13,6 +13,8 @@ import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../Widgets/SCREENUTIL/ScreenUtilQ.dart';
+
 class ListSosmed extends StatefulWidget {
   @override
   _ListSosmedState createState() => _ListSosmedState();
@@ -72,6 +74,8 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     super.build(context);
     return StreamBuilder(
         stream: _bloc.getResult,
@@ -87,6 +91,8 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
   }
 
   Widget buildContent(AsyncSnapshot<ListSosmedModel> snapshot, BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
     return isLoading?CircularProgressIndicator(strokeWidth: 10):Container(
       child:  Column(
         children: <Widget>[
@@ -146,7 +152,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                             }
                                           },
                                           text: removeAllHtmlTags(caption),
-                                          style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:ThaibahFont().fontQ),
+                                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(45),color:Colors.black,fontFamily:ThaibahFont().fontQ),
                                           linkStyle: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ),
                                         ),
                                       ),
@@ -161,8 +167,8 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                                 children: <Widget>[
                                   Container(
                                     margin: EdgeInsets.only(top: 3.0),
-                                    height: 80.0,
-                                    width: 100.0,
+                                    height: ScreenUtilQ.getInstance().setHeight(120),
+                                    width: ScreenUtilQ.getInstance().setWidth(140),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12.0),
                                     ),
@@ -199,9 +205,9 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                               child: Container(
                                   child: Row(
                                     children: <Widget>[
-                                      Icon(FontAwesomeIcons.penAlt,color: Colors.grey,size: 12.0),
+                                      Icon(FontAwesomeIcons.penAlt,color: Colors.grey,size:ScreenUtilQ.getInstance().setHeight(20)),
                                       SizedBox(width: 5.0),
-                                      Text(snapshot.data.result.data[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
+                                      Text(snapshot.data.result.data[index].penulis,style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
                                     ],
                                   )
                               ),
@@ -212,9 +218,9 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                               child: Container(
                                   child: Row(
                                     children: <Widget>[
-                                      Icon(FontAwesomeIcons.comment,color: Colors.grey,size: 12.0),
+                                      Icon(FontAwesomeIcons.comment,color: Colors.grey,size:ScreenUtilQ.getInstance().setSp(20)),
                                       SizedBox(width: 5.0),
-                                      Text(snapshot.data.result.data[index].comments+' komentar',style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
+                                      Text(snapshot.data.result.data[index].comments+' komentar',style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
                                     ],
                                   )
                               ),
@@ -225,9 +231,9 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                               child: Container(
                                   child: Row(
                                     children: <Widget>[
-                                      Icon(FontAwesomeIcons.clock,color: Colors.grey,size: 12.0),
+                                      Icon(FontAwesomeIcons.clock,color: Colors.grey,size:ScreenUtilQ.getInstance().setSp(20)),
                                       SizedBox(width: 5.0),
-                                      Text("${snapshot.data.result.data[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
+                                      Text("${snapshot.data.result.data[index].createdAt}",style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
                                     ],
                                   )
                               ),

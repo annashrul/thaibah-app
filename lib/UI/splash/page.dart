@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:thaibah/Model/pageViewModel.dart';
+
+import '../../Model/pageViewModel.dart';
 /// This is the class which contains the Page UI.
-class Page extends StatelessWidget {
+class Pages extends StatelessWidget {
   ///page details
   final PageViewModel pageViewModel;
 
@@ -12,7 +13,7 @@ class Page extends StatelessWidget {
   final MainAxisAlignment columnMainAxisAlignment;
 
   //Constructor
-  Page({
+  Pages({
     this.pageViewModel,
     this.percentVisible = 1.0,
     this.columnMainAxisAlignment = MainAxisAlignment.spaceAround,
