@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Constants/constants.dart';
 
 import 'package:thaibah/Model/suratModel.dart';
@@ -23,6 +24,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'Homepage/index.dart';
+import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'Widgets/pin_screen.dart';
 
 class QuranListUI extends StatefulWidget {
@@ -36,7 +38,7 @@ class QuranListUIState extends State<QuranListUI> {
   bool isLoading = false;
   List colors = [Color(0xFF3f51b5), Color(0xFF116240), Colors.green, Colors.blue];
   Random random = new Random();
-  Widget appBarTitle = Text('Daftar Surat',style: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
+  Widget appBarTitle = Html(data:'Daftar Surat',defaultTextStyle: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
   Icon actionIcon = new Icon(Icons.search, color: Colors.white,);
   final key = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
@@ -71,6 +73,7 @@ class QuranListUIState extends State<QuranListUI> {
 
 
   void load(i,url,indonesia,arab) async{
+    print(url);
     setState(() {
       currentPlaying = "${indonesia} ( ${arab} )";
     });
@@ -187,6 +190,8 @@ class QuranListUIState extends State<QuranListUI> {
         )
       )
     );
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
 //    return PlayerWidget(url: "http://ia802609.us.archive.org/13/items/quraninindonesia/010Yunus.mp3",);
     return Scaffold(
       floatingActionButton: UnicornDialer(
@@ -239,9 +244,8 @@ class QuranListUIState extends State<QuranListUI> {
             icon: !isPLaying ? Icon(Icons.play_circle_outline): Icon(Icons.pause_circle_outline),
             onPressed: () => playpause(),
           ),
-
           Container(width: 100.0,),
-          Text(currentPlaying,style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 14.0),)
+          Text(currentPlaying,style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30)),)
 
         ],
       ),
@@ -250,6 +254,8 @@ class QuranListUIState extends State<QuranListUI> {
 
 
   Widget buildContent(AsyncSnapshot<SuratModel> snapshot, BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     if(snapshot.data.result.length > 0){
       return RefreshIndicator(
         child: ListView.builder(
@@ -274,11 +280,17 @@ class QuranListUIState extends State<QuranListUI> {
                           shape: BoxShape.circle,
                           color: colors[random.nextInt(4)],
                         ),
-                        child: new Text(snapshot.data.result[index].suratArab, style: new TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.white, fontSize: 11.0,fontWeight: FontWeight.bold)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Html(customTextAlign: (_) => TextAlign.center, data:snapshot.data.result[index].suratArab, defaultTextStyle: new TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.white, fontSize:10,fontWeight: FontWeight.bold))
+                          ],
+                        ),
                       ),
-                      title: Text(snapshot.data.result[index].suratIndonesia+' - '+snapshot.data.result[index].arti, style: TextStyle(fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                      title: Html(data:snapshot.data.result[index].suratIndonesia+' - '+snapshot.data.result[index].arti, defaultTextStyle: TextStyle(fontSize:12,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                       subtitle:
-                      Text("Terdiri dari "+snapshot.data.result[index].jumlahAyat.toString()+" ayat", style: TextStyle(fontFamily:ThaibahFont().fontQ),),
+                      Html(data:"Terdiri dari "+snapshot.data.result[index].jumlahAyat.toString()+" ayat", defaultTextStyle: TextStyle(fontSize:12,fontFamily:ThaibahFont().fontQ),),
                       trailing: InkWell(
                         onTap: () => load(index,snapshot.data.result[index].suratAudio,snapshot.data.result[index].suratIndonesia,snapshot.data.result[index].suratArab),
                         child: Icon(Icons.play_circle_outline),
@@ -329,7 +341,6 @@ class QuranListUIState extends State<QuranListUI> {
               if (this.actionIcon.icon == Icons.search) {
                 this.actionIcon = new Icon(Icons.close, color: Colors.white,);
                 this.appBarTitle = new TextFormField(
-
                   controller: _searchQuery,
                   autofocus: true,
                   style: new TextStyle(
@@ -366,14 +377,13 @@ class QuranListUIState extends State<QuranListUI> {
     setState(() {
       _IsSearching = true;
     });
-    print('cek');
+
   }
 
   void _handleSearchEnd() {
     setState(() {
       this.actionIcon = new Icon(Icons.search, color: Colors.white,);
-      this.appBarTitle = Text('Daftar Surat',style: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
-//      new Text("Daftar Surat", style: new TextStyle(color: Colors.white),);
+      this.appBarTitle = Html(data:'Daftar Surat',defaultTextStyle: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
       _IsSearching = false;
       _searchQuery.clear();
 

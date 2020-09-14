@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/prayerBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -20,94 +22,10 @@ class PrayerList extends StatefulWidget {
 }
 
 class _PrayerListState extends State<PrayerList> {
-  double _imageHeight = 256.0;
-
-  double _height;
-  double _width;
-  Duration duration;
-  Duration position;
-
-  String localFilePath;
-
-  PlayerState playerState = PlayerState.stopped;
-
-  get isPlaying => playerState == PlayerState.playing;
-  get isPaused => playerState == PlayerState.paused;
-
-  get durationText => duration != null ? duration.toString().split('.').first : '';
-  get positionText => position != null ? position.toString().split('.').first : '';
-
-  bool isMuted = false;
-  bool isPlay = false;
-  AudioPlayer audioPlayer = AudioPlayer();
-
-  void play(mp3URL) async {
-    print(mp3URL);
-    if (!isPlay) {
-      int result = await audioPlayer.play(mp3URL);
-      if (result == 1) {
-        setState(() {
-          isPlay = true;
-        });
-      }
-    } else {
-      int result = await audioPlayer.stop();
-      if (result == 1) {
-        setState(() {
-          isPlay = false;
-        });
-      }
-    }
-  }
-
-
-  Future<void> pause() async {
-    int result = await audioPlayer.pause();
-    if (result == 1) {
-      setState(() {
-        isPlay = false;
-      });
-    }
-  }
-
-  void stop(int index) async {
-    if(index == 0){
-      await audioPlayer.stop();
-      setState(() {
-        isPlay = false;
-      });
-    }else if(index == 1){
-      await audioPlayer.stop();
-      setState(() {
-        isPlay = false;
-      });
-    }else if(index == 2){
-      await audioPlayer.stop();
-      setState(() {
-        isPlay = false;
-      });
-    }else {
-      await audioPlayer.stop();
-      setState(() {
-        isPlay = false;
-      });
-    }
-    print(index);
-  }
-
-//  if((int.parse(compareIsya)+20) <= int.parse(compareNow)){
-//  keterangan = '';
-//  print("######################################KOSONG######################################");
-//  }else{
-//  print("######################################AYAAN######################################");
-//  keterangan = 'selamat menunaikan sholat isya';
-//  }
-
-  void onComplete() {
-    setState(() => playerState = PlayerState.stopped);
-  }
-
-
+  AudioPlayer audioPlayer;
+  String currentPlaying = '';
+  bool isPLaying = false;
+  bool isLoaded= false;
   Color warna1;
   Color warna2;
   String statusLevel ='0';
@@ -128,25 +46,28 @@ class _PrayerListState extends State<PrayerList> {
     // TODO: implement initState
     super.initState();
     loadTheme();
+    audioPlayer = new AudioPlayer();
   }
+  @override
+  void dispose() {
+    super.dispose();
+    audioPlayer.stop();
+    setState(() {
+      isPLaying = false;
+    });
 
+  }
   @override
   Widget build(BuildContext context) {
-    _height = MediaQuery.of(context).size.height;
-    _width = MediaQuery.of(context).size.width;
-//    var userLocation = Provider.of<UserLocation>(context);
-//    prayerBloc.fetchPrayerList(userLocation.longitude==null?'':userLocation.longitude,userLocation.latitude==null?'':userLocation.latitude);
     prayerBloc.fetchPrayerList(widget.lng, widget.lat);
     return Scaffold(
       appBar:UserRepository().appBarWithButton(context,"Jadwal Sholat",warna1,warna2,(){Navigator.pop(context);},Container()),
-//      body: buildContent('Dzuhur', '12:00')
       body: StreamBuilder(
           stream: prayerBloc.allPrayer,
           builder: (context, AsyncSnapshot<PrayerModel> snapshot) {
             if(snapshot.hasData){
               var background;
               var newDateTimeObj = new DateFormat().add_Hm();
-              print(newDateTimeObj);
               return Column(
                 children: <Widget>[
                   buildContent("Shubuh", snapshot.data.result.rawFajr,background,'http://thaibah.com/assets/subuh_.mp3',0),
@@ -173,14 +94,21 @@ class _PrayerListState extends State<PrayerList> {
                         decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0)),
                         child: ListTile(
                           contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                          title: SkeletonFrame(width: _width/2,height: 16),
+                          leading: Container(
+                            alignment: Alignment.center,
+                            width: 50.0,
+                            height: 50.0,
+                            padding: const EdgeInsets.all(5.0),
+                            child: Image.network('https://img.icons8.com/cotton/2x/speaker.png'),
+                          ),
+                          title: SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16),
                           subtitle: Container(
                             margin: EdgeInsets.only(top: 10.0),
                             child: Row(
                               children: <Widget>[
-                                SkeletonFrame(width: _width/5,height: 16),
+                                SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 16),
                                 SizedBox(width: 5.0),
-                                SkeletonFrame(width: _width/4,height: 16),
+                                SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16),
                               ],
                             ),
                           ),
@@ -194,83 +122,84 @@ class _PrayerListState extends State<PrayerList> {
             );
           }
       ),
+      bottomNavigationBar: !isLoaded ? null: controls(),
     );
   }
 
   Widget buildContent(var nama, var waktu, var background, String pathUrl, int index) {
-    _height = MediaQuery.of(context).size.height;
-    _width = MediaQuery.of(context).size.width;
-    return Container(
-      child: ListView(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        children: <Widget>[
-        Card(
-          color: background,
-            elevation: 0.0,
-            margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-            child: Container(
-              decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0)),
-              child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                  title: Text(
-                    nama,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-                  ),
-                  // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
 
-                  subtitle: Container(
-                    margin: EdgeInsets.only(top: 10.0),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(Icons.access_time, color: Colors.black, size: 20.0,),
-                        SizedBox(width: 5.0),
-                        Text(waktu, style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                  ),
-                  trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
+    return GestureDetector(
+        onTap: (){
 
-                          decoration: BoxDecoration(
-                              color: Colors.green, shape: BoxShape.circle),
-                          child: IconButton(
-                            color: Colors.white,
-                            onPressed: () async {
-                              await audioPlayer.play(pathUrl);
-                            },
-                            icon: Icon(Icons.play_circle_outline),
-                          ),
-                        ),
-                        SizedBox(width: 5.0,),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Colors.green, shape: BoxShape.circle),
-                          child: IconButton(
-                            color: Colors.white,
-                            onPressed: () => stop(index),
-                            icon: Icon(Icons.stop),
-                          ),
-                        ),
-//                        new IconButton(
-//                          onPressed: () => stop(index),
-//                          iconSize: 30.0,
-//                          icon: Icon(Icons.stop)
-//                        ),
-                      ]
-                  ),
-              ),
+        },
+        child: Card(
+          color:(index % 2 == 0) ? Colors.white : Color(0xFFF7F7F9),
+          elevation: 0,
+          child: ListTile(
+            leading: Container(
+              alignment: Alignment.center,
+              width: 50.0,
+              height: 50.0,
+              padding: const EdgeInsets.all(5.0),
+              child: Image.network('https://img.icons8.com/cotton/2x/speaker.png'),
             ),
-          )
-        ],
+            title: Html(data:nama, defaultTextStyle: TextStyle(fontSize:12,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+            subtitle:
+            Html(data:waktu, defaultTextStyle: TextStyle(fontSize:12,fontFamily:ThaibahFont().fontQ),),
+            trailing: InkWell(
+              onTap: (){load(nama,pathUrl);},
+              child: Icon(Icons.play_circle_outline),
+            ),
+          ),
+        )
+    );
+  }
+  Widget controls (){
+    return Container(
+      height: 50.0,
+      padding: EdgeInsets.all(10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          IconButton(
+            icon: !isPLaying ? Icon(Icons.play_circle_outline): Icon(Icons.pause_circle_outline),
+            onPressed: () => playpause(),
+          ),
 
+          Text(currentPlaying,style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ().setSp(30)),)
+
+        ],
       ),
     );
-
-
   }
 
+
+
+
+  void load(nama,url) async{
+    setState(() {
+      currentPlaying = "$nama";
+    });
+    await audioPlayer.play(url);
+    setState(() {
+      isLoaded = true;
+      isPLaying = true;
+    });
+
+  }
+  void playpause()async{
+    if(isPLaying){
+      await audioPlayer.pause();
+      setState(() {
+        isPLaying = false;
+      });
+    } else {
+      await audioPlayer.resume();
+      setState(() {
+        isPLaying = true;
+      });
+    }
+  }
 
 
 }

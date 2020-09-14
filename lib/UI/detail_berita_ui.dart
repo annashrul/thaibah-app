@@ -6,6 +6,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/categoryModel.dart';
 import 'package:thaibah/Model/newsDetailModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
 import 'dart:ui';
@@ -40,21 +41,7 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
   Random random = new Random();
   var localId;
   var localCategory;
-
-  static String videoId;
-  Future convertUrlYoutube() async{
-    setState(() {videoId = YoutubePlayer.convertUrlToId("${widget.link}");});
-    print("######### IEU VIDEO LINK YOUTUBE ${videoId}");
-  }
-
-  final List<YoutubePlayerController> _controllers = ['$videoId',].map<YoutubePlayerController>(
-        (videoId) => YoutubePlayerController(
-      initialVideoId: videoId,
-      flags: YoutubePlayerFlags(
-        autoPlay: false,
-      ),
-    ),
-  ).toList();
+  YoutubePlayerController _controller1;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -62,17 +49,26 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
     localCategory = widget.category;
     newsDetailBloc.fetchNewsDetail(localId);
     super.initState();
-    widget.link!='-'? convertUrlYoutube():'';
+    _controller1 = YoutubePlayerController(
+      initialVideoId: YoutubePlayer.convertUrlToId(widget.link),
+      flags: YoutubePlayerFlags(
+        autoPlay: false,
+      ),
+    );
+
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+    _controller1.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -151,22 +147,22 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                               children: <Widget>[
                                 Text(
                                   snapshot.data.result.category,
-                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.w500,fontSize: 16),
+                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.w500,fontSize:ScreenUtilQ.getInstance().setSp(40)),
                                 ),
                                 Text(
                                   snapshot.data.result.createdAt,
-                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.w500,fontSize: 16),
+                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.w500,fontSize: ScreenUtilQ.getInstance().setSp(40)),
                                 )
                               ],
                             ),
                           ),
                           Container(
                               margin: EdgeInsets.only(bottom: 10.0),
-                              child: Text(snapshot.data.result.title,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),)
+                              child: Text(snapshot.data.result.title,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(36)),)
                           ),
                           Container(
                               margin: EdgeInsets.only(bottom: 10.0),
-                              child: Text(snapshot.data.result.penulis,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Color(0xFFB1B1B1),fontWeight: FontWeight.bold),)
+                              child: Text(snapshot.data.result.penulis,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Color(0xFFB1B1B1),fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(34)),)
                           ),
 
                           Padding(
@@ -174,19 +170,7 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                               child: Column(
                                 children: <Widget>[
                                   Html(data:removeAllHtmlTags(snapshot.data.result.caption),defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),),
-                                  widget.link!='-'?YoutubePlayer(
-                                    key: ObjectKey(_controllers[0]),
-                                    controller: _controllers[0],
-                                    actionsPadding: EdgeInsets.only(left: 16.0),
-                                    bottomActions: [
-                                      CurrentPosition(),
-                                      SizedBox(width: 10.0),
-                                      ProgressBar(isExpanded: true),
-                                      SizedBox(width: 10.0),
-                                      RemainingDuration(),
-                                      FullScreenButton(),
-                                    ],
-                                  ):Container()
+                                  widget.link!='-'?YoutubePlayer(controller: _controller1):Container()
                                 ],
                               ),
 //                              child: Html(data:removeAllHtmlTags(snapshot.data.result.caption),defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),)
@@ -353,6 +337,8 @@ class _ToggleButtonState extends State<ToggleButton> {
   }
 
   Widget buildCategory(AsyncSnapshot<CategoryModel> snapshot, BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: snapshot.data.result.length,
@@ -369,7 +355,7 @@ class _ToggleButtonState extends State<ToggleButton> {
                 alignment: Alignment.center,
                 child: Text(
                   snapshot.data.result[index].title,
-                  style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                  style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30)),
                 ),
               ),
               decoration: BoxDecoration(

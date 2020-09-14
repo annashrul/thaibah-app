@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/myBankModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/listBank.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
@@ -22,36 +23,31 @@ class _BankState extends State<Bank> {
   TextEditingController accNoController, accNameController;
   String bankCodeController='';
   bool _isLoading = false;
-  final _titleStyle = TextStyle(
-    fontWeight: FontWeight.bold,
-    color: Colors.black,
-  );
+
 
 
   Future create() async{
     var res = await createMyBankBloc.fetchCreateMyBank("", bankCodeController, accNoController.text, accNameController.text);
-    print(res);
     if(res is GeneralInsertId){
       GeneralInsertId result = res;
       if(result.status == 'success'){
         setState(() {
-          _isLoading  = false;
+          Navigator.of(context).pop();
           _addNewCard = false;
           accNameController.clear();
           accNoController.clear();
         });
+        myBankBloc.fetchMyBankList();
         UserRepository().notifNoAction(_scaffoldKey, context,"Data Bank Berhasil Ditambahkan","success");
-//        return showInSnackBar('Data Bank Berhasil Ditambahkan','sukses');
-      }else{
-        setState(() {_isLoading = false;});
+      }
+      else{
+        setState(() {Navigator.of(context).pop();});
         UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
-//        return showInSnackBar(result.msg,'gagal');
       }
     }else{
       General results = res;
-      setState(() {_isLoading = false;});
+      setState(() {Navigator.of(context).pop();});
       UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
-//      return showInSnackBar(results.msg,'gagal');
     }
   }
 
@@ -61,23 +57,18 @@ class _BankState extends State<Bank> {
       General result = res;
       if(result.status == 'success'){
         setState(() {
-          _isLoading = false;
+          Navigator.of(context).pop();
         });
         UserRepository().notifNoAction(_scaffoldKey, context,"Data Bank Berhasil Dihapus","success");
-
-//        return showInSnackBar('Data Bank Anda Berhasil Dihapus','sukses');
+        myBankBloc.fetchMyBankList();
       }else{
-        setState(() {_isLoading = false;});
+        setState(() {Navigator.of(context).pop();});
         UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
-
-//        return showInSnackBar(result.msg,'gagal');
       }
     }else{
       General results = res;
-      setState(() {_isLoading = false;});
+      setState(() {Navigator.of(context).pop();});
       UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
-
-//      return showInSnackBar(results.msg,'gagal');
     }
   }
 
@@ -116,6 +107,8 @@ class _BankState extends State<Bank> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return Scaffold(
       key: _scaffoldKey,
       appBar: UserRepository().appBarWithButton(context,"Daftar Bank",warna1,warna2,(){Navigator.pop(context);},_buildAddCardButton()),
@@ -189,12 +182,13 @@ class _BankState extends State<Bank> {
 
   getBank(val){
     bankCodeController = val;
-    print(bankCodeController);
   }
 
 
 
   Widget buildContent(AsyncSnapshot<MyBankModel> snapshot, BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     if(snapshot.data.result.length > 0){
       return  Column(
         children: <Widget>[
@@ -203,14 +197,13 @@ class _BankState extends State<Bank> {
             padding: const EdgeInsets.symmetric(vertical: 18.0),
             child: Text(
               'Pilih dan Geser Untuk Menghapus Data Bank Anda',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,fontFamily:ThaibahFont().fontQ),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(40),fontFamily:ThaibahFont().fontQ),
               textAlign: TextAlign.center,
             ),
           ),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),
-
               itemCount: snapshot.data.result.length,
               itemBuilder: (BuildContext context, int index) {
                 return Dismissible(
@@ -249,35 +242,51 @@ class _BankState extends State<Bank> {
                               ),
                             ),
                             title: Text(
-                              snapshot.data.result[index].accName,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),
+                              snapshot.data.result[index].accName,style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),
                             ),
                             subtitle: Row(
                               children: <Widget>[
-                                Text(snapshot.data.result[index].accNo, style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black))
+                                Text(snapshot.data.result[index].accNo, style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Colors.black))
                               ],
                             ),
                         ),
                       ),
                     ),
-                    background: slideLeftBackground(),
+                    background: Container(
+                      color: Colors.red,
+                      child: Align(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Icon(Icons.delete, color: Colors.white,),
+                            Text(" Delete",
+                              style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),color: Colors.white, fontWeight: FontWeight.w700,fontFamily: ThaibahFont().fontQ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(width: 20,),
+                          ],
+                        ),
+                        alignment: Alignment.centerRight,
+                      ),
+                    ),
                     confirmDismiss: (direction) async {
                       final bool res = await showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: Text("Anda Yakin Akan Menghapus Data Ini ???",style:TextStyle(fontFamily:ThaibahFont().fontQ)),
+                            content: Text("Anda Yakin Akan Menghapus Data Ini ???",style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ)),
                             actions: <Widget>[
                               FlatButton(
-                                child: Text("Cancel", style: TextStyle(color: Colors.black,fontFamily: ThaibahFont().fontQ)),
+                                child: Text("Cancel", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontFamily: ThaibahFont().fontQ)),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                               ),
                               FlatButton(
-                                child: Text("Delete", style: TextStyle(color: Colors.red,fontFamily: ThaibahFont().fontQ),),
+                                child: Text("Delete", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.red,fontFamily: ThaibahFont().fontQ),),
                                 onPressed: () async {
                                   setState(() {
-                                    _isLoading = true;
+                                    UserRepository().loadingQ(context);
                                   });
                                   delete(snapshot.data.result[index].id);
                                   Navigator.of(context).pop();
@@ -299,7 +308,7 @@ class _BankState extends State<Bank> {
         children: <Widget>[
           (!_addNewCard) ? Text('') : _buildNewCard(),
           Container(
-              child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily:ThaibahFont().fontQ)))
+              child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ)))
           ),
         ],
       );
@@ -321,27 +330,29 @@ class _BankState extends State<Bank> {
   }
 
   Widget _newCardForm() {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     final height = 22.0;
     return Column(
       children: <Widget>[
         ListBank(callback: getBank),
         SizedBox(height: height),
         TextField(
-          style: TextStyle(fontFamily:ThaibahFont().fontQ,),
+          style: TextStyle(color:Colors.black,fontWeight:FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,),
           controller: accNoController,
           decoration: InputDecoration(
             labelText: 'No Rekening',
-            labelStyle: TextStyle(fontFamily:ThaibahFont().fontQ)
+            labelStyle: TextStyle(color:Colors.black,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ)
           ),
           keyboardType: TextInputType.number,
         ),
         SizedBox(height: height),
         TextField(
-          style: TextStyle(fontFamily: ThaibahFont().fontQ),
+          style: TextStyle(color:Colors.black,fontWeight:FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
           controller: accNameController,
           decoration: InputDecoration(
             labelText: 'Atas Nama',
-              labelStyle: TextStyle(fontFamily:ThaibahFont().fontQ)
+              labelStyle: TextStyle(color:Colors.black,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ)
 
           ),
           keyboardType: TextInputType.text,
@@ -351,7 +362,7 @@ class _BankState extends State<Bank> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            FlatButton(
+            MaterialButton(
               onPressed: () {
                 accNameController.clear();
                 accNoController.clear();
@@ -361,35 +372,33 @@ class _BankState extends State<Bank> {
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('BATAL', style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ)),
+                child: Text('Kembali', style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color: Colors.white,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ)),
               ),
-              color: Colors.white,
+              color: Color(0xFF116240),
             ),
+
             MaterialButton(
               onPressed: () {
                 if(bankCodeController == '' || bankCodeController == null){
                   UserRepository().notifNoAction(_scaffoldKey, context,"No Rekening Harus Diisi","failed");
-//                  return showInSnackBar("No Rekening Harus Disi",'gagal');
                 }
                 else if(accNoController.text == ""){
                   UserRepository().notifNoAction(_scaffoldKey, context,"No Rekening Harus Diisi","failed");
-//                  return showInSnackBar("No Rekening Harus Disi",'gagal');
                 }else if(accNameController.text == ""){
                   UserRepository().notifNoAction(_scaffoldKey, context,"Atas Nama Harus Diisi","failed");
-//                  return showInSnackBar("Atas Nama Harus Disi",'gagal');
                 }
                 else {
-                  setState(() {_isLoading = true;});
+                  setState(() {UserRepository().loadingQ(context);});
                   create();
                 }
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: _isLoading?Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Center(
-                  child: Text("Daftar",style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+                child: Center(
+                  child: Text("Simpan",style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(34),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
                 ),
               ),
-              color: Color(0xFF116240),
+              color: ThaibahColour.primary2,
             )
           ],
         )
@@ -411,33 +420,5 @@ class _BankState extends State<Bank> {
 
   }
 
-  Widget slideLeftBackground() {
-    return Container(
-      color: Colors.red,
-      child: Align(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Icon(
-              Icons.delete,
-              color: Colors.white,
-            ),
-            Text(
-              " Delete",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,fontFamily: ThaibahFont().fontQ
-              ),
-              textAlign: TextAlign.right,
-            ),
-            SizedBox(
-              width: 20,
-            ),
-          ],
-        ),
-        alignment: Alignment.centerRight,
-      ),
-    );
-  }
 
 }

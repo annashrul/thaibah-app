@@ -1,13 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/myBankModel.dart' as prefix0;
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/bank/indexBank.dart';
@@ -90,35 +93,19 @@ class _PenarikanState extends State<Penarikan> {
 
   }
 
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    scaffoldKey.currentState?.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily:ThaibahFont().fontQ
-        ),
-      ),
-      backgroundColor: Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
   @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return Scaffold(
         key: scaffoldKey,
         appBar:UserRepository().appBarWithButton(context,'Penarikan',warna1,warna2,(){Navigator.of(context).pop();},Container()),
         body: ListView(
           children: <Widget>[
             Container(
-              padding:EdgeInsets.all(10.0),
               decoration: BoxDecoration(
                   boxShadow: [
                     new BoxShadow(
@@ -139,30 +126,28 @@ class _PenarikanState extends State<Penarikan> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  CardHeader(saldo: widget.saldoMain),
+                  Padding(
+                    padding: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 8),
+                    child:CardHeader(saldo: widget.saldoMain),
+                  ),
                   Padding(
                     padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        _bank(context)
-                      ],
-                    ),
+                    child: _bank(context),
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nominal",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                        Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
                           controller: moneyController,
                           keyboardType: TextInputType.number,
                           maxLines: 1,
-                          style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                          style: TextStyle(color:Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                           autofocus: false,
                           decoration: InputDecoration(
-                            hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontSize: 12.0),
+                            hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30)),
                             prefixText: 'Rp.',
                           ),
                           inputFormatters: <TextInputFormatter>[
@@ -174,13 +159,11 @@ class _PenarikanState extends State<Penarikan> {
                             saldoFocus.unfocus();
                             if(moneyController.text == '0.00' || moneyController.text == null || bankCodeController == '' || bankCodeController == null){
                               UserRepository().notifNoAction(scaffoldKey, context,"Lengkapi Form Yang SUdah Tersedia","failed");
-//                              return showInSnackBar("Lengkapi Form Yang Tersedia");
                             }
                             else{
                               setState(() {
                                 _isLoading = true;
                               });
-
                               _pinBottomSheet(context);
                             }
                           },
@@ -194,7 +177,7 @@ class _PenarikanState extends State<Penarikan> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                        Text("Pilih Nominal Cepat",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         GridView.builder(
                           padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
                           physics: NeverScrollableScrollPhysics(),
@@ -225,13 +208,13 @@ class _PenarikanState extends State<Penarikan> {
                   ),
                   UserRepository().buttonQ(context,warna1,warna2,(){
                     if(moneyController.text == '0.00' || moneyController.text == null ||  bankCodeController == '' || bankCodeController == null){
-                      return showInSnackBar("Lengkapi Form Yang Tersedia");
+                      UserRepository().notifNoAction(scaffoldKey, context, "Lengkapi Form Yang Tersedia", "failed");
                     }
                     else{
-                      _isLoading = true;
+
                       _pinBottomSheet(context);
                     }
-                  }, _isLoading)
+                  }, false,'Simpan')
 
                 ],
               ),
@@ -251,6 +234,8 @@ class _PenarikanState extends State<Penarikan> {
   }
 
   _bank(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     myBankBloc.fetchMyBankList();
     return StreamBuilder(
         stream: myBankBloc.allBank,
@@ -258,54 +243,56 @@ class _PenarikanState extends State<Penarikan> {
           if(snapshot.hasError) print(snapshot.error);
           if(snapshot.hasData){
             if(snapshot.data.result.length > 0){
-              return InputDecorator(
-                decoration: const InputDecoration(
-                  labelStyle: TextStyle(color:Colors.black,fontFamily:'Rosemary',fontWeight: FontWeight.bold),
-                  labelText: 'Bank',
-                ),
-                isEmpty: bankCodeController == null,
-                child: new DropdownButtonHideUnderline(
-                  child: new DropdownButton<String>(
-                    value: bankCodeController,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Html(data:"Bank",defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                  DropdownButton(
                     isDense: true,
+                    isExpanded: true,
+                    hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
+                    value: bankCodeController,
+                    items: snapshot.data.result.map((prefix0.Result items){
+                      return new DropdownMenuItem<String>(
+                          value: items.id,
+                          child: Html(data:items.bankname!=''?items.bankname:'kosong',defaultTextStyle: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ))
+                      );
+                    }).toList(),
                     onChanged: (String newValue) {
                       setState(() {
                         _onDropDownItemSelectedBank(newValue);
                       });
                     },
-                    items: snapshot.data.result.map((prefix0.Result items){
-                      return new DropdownMenuItem<String>(
-                          value: items.id,
-
-                          child: Text(items.bankname!=''?items.bankname:'kosong',style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ),maxLines: 2,softWrap: true,overflow: TextOverflow.ellipsis,)
-                      );
-                    }).toList(),
-                  ),
-                ),
+                  )
+                ],
               );
             }else{
               return Card(
                 color: Colors.white,
-                elevation: 1.0,
+                elevation: 0.0,
                 child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.only(top:10.0,bottom:10.0),
                     child: Column(
                       children: <Widget>[
-                        Center(
-                          child: Text('Anda Belum Mempuya Akun Bank',style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.red,fontWeight: FontWeight.bold,fontSize: 18.0),),
-                        ),
+                        Html(customTextAlign: (_) => TextAlign.center, data:'Anda Belum Mempuya Akun Bank',defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold,fontSize:14)),
                         SizedBox(height: 10.0,),
-                        InkWell(
-                          onTap: (){
-                            Navigator.of(context, rootNavigator: true).push(
-                              new CupertinoPageRoute(builder: (context) =>  Bank()),
-                            );
-//                            Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => Bank()), (Route<dynamic> route) => false);
-                          },
-                          child:Center(
-                            child: Text('Buat Akun Bank ? Klik Disini',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18.0),),
+                        RichText(
+                          text: TextSpan(
+                              text: 'Buat Akun Bank ? ',
+                              style: TextStyle(fontSize: 14,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
+                              children: <TextSpan>[
+                                TextSpan(
+                                    recognizer: new TapGestureRecognizer()..onTap = (){
+                                      Navigator.of(context, rootNavigator: true).push(
+                                        new CupertinoPageRoute(builder: (context) =>  Bank()),
+                                      );
+                                    },
+                                    text: 'Tap Disini',
+                                    style: TextStyle(color: Colors.green,fontSize: 14,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)
+                                ),
+                              ]
                           ),
-                        )
+                        ),
                       ],
                     )
                 ),
@@ -326,13 +313,9 @@ class _PenarikanState extends State<Penarikan> {
 
 
   Future<void> _pinBottomSheet(context) async {
-//    setState(() {
-//
-//    });
-    _isLoading = false;
     Navigator.push(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (context) => PinScreen(callback: _callBackPin),
       ),
     );
@@ -341,26 +324,7 @@ class _PenarikanState extends State<Penarikan> {
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
       setState(() {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 100.0),
-                child: AlertDialog(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                      SizedBox(height:5.0),
-                      Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
-                    ],
-                  ),
-                )
-            );
-
-          },
-        );
+        UserRepository().loadingQ(context);
       });
       print(saldoController.text);
       var rplcComa = moneyController.text.replaceAll(",", "");

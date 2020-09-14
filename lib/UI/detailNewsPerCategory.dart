@@ -13,6 +13,7 @@ import 'package:thaibah/bloc/newsBloc.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
 import 'package:thaibah/config/api.dart';
 
+import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'Widgets/loadMoreQ.dart';
 import 'Widgets/pin_screen.dart';
 
@@ -58,7 +59,6 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
     WidgetsBinding.instance.addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());
     localTitle = widget.title;
     super.initState();
-//    load();
     newsDetailPerCategory.fetchDetailNewsPerCategory(1,perpage,localTitle);
   }
 
@@ -70,6 +70,8 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -115,7 +117,7 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                   padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
                   child: new Text(
                     localTitle,
-                    style: new TextStyle(fontSize: 20.0,color: mainColor,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                    style: new TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),color: mainColor,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -200,6 +202,8 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
 
 
   Widget itemContent(AsyncSnapshot<DetailNewsPerCategoryModel> snapshot, BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     if(snapshot.data.result.data.length > 0){
       return RefreshIndicator(
         child: LoadMoreQ(
@@ -269,13 +273,13 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                                       padding: const EdgeInsets.all(2.0),
                                       child: new Text(
                                         title,
-                                        style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: Colors.black),
+                                        style: new TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: Colors.black),
                                       ),
                                     ),
 
                                     new Padding(padding: const EdgeInsets.all(0.0)),
                                     Html(data:caption,defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),),
-                                    Text(snapshot.data.result.data[i].createdAt,style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ),)
+                                    Text(snapshot.data.result.data[i].createdAt,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ),)
                                   ],
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
@@ -311,7 +315,7 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
     }
     else{
       return Container(
-          child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily:ThaibahFont().fontQ),))
+          child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily:ThaibahFont().fontQ),))
       );
     }
 

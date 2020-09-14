@@ -170,6 +170,9 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -205,8 +208,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                   margin:EdgeInsets.only(top:10.0),
                   child: SvgPicture.asset(
                     ApiService().assetsLocal+"Icon_Utama_Produk_abu.svg",
-                    height: ScreenUtilQ.getInstance().setHeight(50),
-                    width: ScreenUtilQ.getInstance().setWidth(50),
+                    height: ScreenUtilQ.getInstance().setHeight(60),
+                    width: ScreenUtilQ.getInstance().setWidth(60),
                     color: Colors.white,
                   ),
                 ),
@@ -214,7 +217,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
               ),
 
               total != 0 ?new Positioned(
-                right: 11,
+                right: 5,
                 top: 11,
                 child: new Container(
                   padding: EdgeInsets.all(2),
@@ -223,7 +226,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                     borderRadius: BorderRadius.circular(6),
                   ),
                   constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
-                  child: Text('$total', style: TextStyle(color: Colors.white, fontSize: 8,fontFamily:ThaibahFont().fontQ), textAlign: TextAlign.center,),
+                  child: Text('$total', style: TextStyle(color: Colors.white, fontSize: ScreenUtilQ.getInstance().setSp(24),fontFamily:ThaibahFont().fontQ), textAlign: TextAlign.center,),
                 ),
               ):Container()
             ],
@@ -232,7 +235,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
         centerTitle: false,
         elevation: 0.0,
         automaticallyImplyLeading: false,
-        title: new Text("Produk Kami", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+        title: new Text("Produk Kami", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
       ),
       body: buildContent(context)
     );
@@ -240,7 +243,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
 
   Widget buildContent(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return  isLoading ? _loading() :  productMlmSuplemenModel.result.data.length > 0 ? RefreshIndicator(
       child: Padding(
           padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
@@ -317,7 +320,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                             padding: EdgeInsets.all(5),
                                             child: Row(
                                               children: <Widget>[
-                                                Text(productMlmSuplemenModel.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 14.0,fontWeight: FontWeight.bold),),
+                                                Text(productMlmSuplemenModel.result.data[index].title,style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(40),fontWeight: FontWeight.bold),),
                                                 SizedBox(width: 5.0),
                                                 productMlmSuplemenModel.result.data[index].isplatinum == 1 ?
                                                 Container(
@@ -327,10 +330,10 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                                     borderRadius: BorderRadius.circular(6),
                                                   ),
                                                   constraints: BoxConstraints(
-                                                    minWidth: 14,
+                                                    minWidth: ScreenUtilQ.getInstance().setWidth(40),
                                                     minHeight: 14,
                                                   ),
-                                                  child: Text("PRODUK PLATINUM",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 12.0,fontWeight: FontWeight.bold),),
+                                                  child: Text("PRODUK PLATINUM",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(34),fontWeight: FontWeight.bold),),
                                                 ) : Container()
                                               ],
                                             ),
@@ -341,11 +344,11 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                     ),
                                     Container(
                                       padding: EdgeInsets.all(5),
-                                      child: Text("Sisa : "+ productMlmSuplemenModel.result.data[index].qty.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily:ThaibahFont().fontQ),),
+                                      child: Html(data: "Sisa : "+ productMlmSuplemenModel.result.data[index].qty.toString(), defaultTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14,fontFamily:ThaibahFont().fontQ),),
                                     ),
                                     Container(
                                       padding: EdgeInsets.all(5),
-                                      child: Text("Harga : "+ productMlmSuplemenModel.result.data[index].satuan+"/${productMlmSuplemenModel.result.data[index].satuanBarang}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily:ThaibahFont().fontQ),),
+                                      child: Html(data:"Harga : "+ productMlmSuplemenModel.result.data[index].satuan+"/${productMlmSuplemenModel.result.data[index].satuanBarang}", defaultTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize:14, fontFamily:ThaibahFont().fontQ),),
                                     ),
                                     productMlmSuplemenModel.result.data[index].isplatinum == 1 ?
                                     Column(
@@ -353,7 +356,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
                                       children: <Widget>[
                                         Container(
                                           padding: EdgeInsets.all(5),
-                                          child: Text("Detail Produk Platinum", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,fontFamily:ThaibahFont().fontQ),),
+                                          child: Html(data:"Detail Produk Platinum", defaultTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize:14,fontFamily:ThaibahFont().fontQ),),
                                         ),
                                         Container(
                                           padding: EdgeInsets.all(3),

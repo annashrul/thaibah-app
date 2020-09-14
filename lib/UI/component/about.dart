@@ -104,6 +104,8 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: scaffoldKey,
       appBar:  UserRepository().appBarNoButton(context,'Tentang Thaibah',warna1,warna2),
@@ -162,7 +164,7 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          new Text(tit, style: new TextStyle(fontFamily: ThaibahFont().fontQ,color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.0)),
+                          new Text(tit, style: new TextStyle(fontFamily: ThaibahFont().fontQ,color: Colors.white, fontWeight: FontWeight.bold, fontSize:ScreenUtilQ.getInstance().setSp(30))),
                           Html(
                             data: cap,
                             defaultTextStyle: new TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ, fontSize: 12.0) ,

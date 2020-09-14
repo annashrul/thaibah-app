@@ -556,7 +556,7 @@ class _CreateMemberState extends State<CreateMember> {
                     create();
                   }
                 }
-              }, _isLoading)
+              }, _isLoading,'Simpan')
 //              Padding(
 //                padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 8),
 //                child: Column(

@@ -73,6 +73,8 @@ class _TestimoniState extends State<Testimoni> with SingleTickerProviderStateMix
       'Produk':'Produk',
       'Bisnis':'Bisnis',
     };
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(

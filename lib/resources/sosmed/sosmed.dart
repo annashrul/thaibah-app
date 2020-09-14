@@ -111,22 +111,6 @@ class SosmedProvider {
     final token = await userRepository.getDataUser('token');
     final deviceId = await userRepository.getDeviceId();
     var results;
-//    try{
-//      final response = await client.post(
-//          ApiService().baseUrl+"socmed/like",
-//          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
-//          body: {"id_content":"$id","deviceid":"$deviceId"}
-//      ).timeout(Duration(microseconds: ApiService().timerActivity));
-//      if(response.statusCode == 200){
-//        results = General.fromJson(json.decode(response.body));
-//      }else{
-//        results = General.fromJson(json.decode(response.body));
-//      }
-//    }catch(e){
-//      results = 'gagal';
-//    }
-//    return results;
-//    var results;
     try{
       final response =  await client.post(
           ApiService().baseUrl+"socmed/like",

@@ -5,8 +5,10 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
@@ -204,6 +206,9 @@ class _DetailDepositState extends State<DetailDeposit> {
     );
   }
   Widget _bottomNavBarBeli(BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Container(
       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Row(
@@ -222,7 +227,7 @@ class _DetailDepositState extends State<DetailDeposit> {
                   });
                   cancelDeposit();
                 },
-                child: Text(isLoading ? "Pengecekan data ...." : "Batalkan Deposit", style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ)),
+                child: Text(isLoading ? "Pengecekan data ...." : "Batalkan Deposit", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),color: Colors.white,fontFamily: ThaibahFont().fontQ)),
               )
           ),
           Container(
@@ -237,7 +242,7 @@ class _DetailDepositState extends State<DetailDeposit> {
                     new CupertinoPageRoute(builder: (context) => BuktiTransfer(id_deposit: widget.id_deposit)),
                   );
                 },
-                child: Text("Upload Bukti Transfer", style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ)),
+                child: Text("Upload Bukti Transfer", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),color: Colors.white,fontFamily: ThaibahFont().fontQ)),
               )
           ),
         ],
@@ -256,6 +261,9 @@ class ItemCard extends StatelessWidget {
   ItemCard(this.titel, this.subtitle, this.value, this.colors);
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Container(
@@ -274,17 +282,17 @@ class ItemCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  titel,
+                 titel,
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
+                      fontSize: ScreenUtilQ.getInstance().setSp(40),
                     fontFamily: ThaibahFont().fontQ
                   ),
                 ),
                 Text(
                   subtitle,
-                  style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ),
+                  style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),color: Colors.white,fontFamily: ThaibahFont().fontQ),
                 )
               ],
             ),
@@ -293,7 +301,7 @@ class ItemCard extends StatelessWidget {
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 20.0,fontFamily: ThaibahFont().fontQ),
+                  fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
             )
           ],
         ),
@@ -309,6 +317,9 @@ class CreditCardContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 21),
       decoration: BoxDecoration(
@@ -339,7 +350,7 @@ class CreditCardContainer extends StatelessWidget {
             ),
             Text(
               noRekening,
-              style: TextStyle(color: Colors.white, fontSize: 25,fontFamily: ThaibahFont().fontQ),
+              style: TextStyle(color: Colors.white, fontSize:ScreenUtilQ.getInstance().setSp(50),fontFamily: ThaibahFont().fontQ),
             ),
             SizedBox(
               height: 11,
@@ -348,7 +359,7 @@ class CreditCardContainer extends StatelessWidget {
               bankName,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 19,fontFamily: ThaibahFont().fontQ
+                fontSize: ScreenUtilQ.getInstance().setSp(50),fontFamily: ThaibahFont().fontQ
               ),
             ),
             SizedBox(
@@ -358,7 +369,7 @@ class CreditCardContainer extends StatelessWidget {
               atasNama,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 19,fontFamily: ThaibahFont().fontQ
+                fontSize: ScreenUtilQ.getInstance().setSp(50),fontFamily: ThaibahFont().fontQ
               ),
             ),
 

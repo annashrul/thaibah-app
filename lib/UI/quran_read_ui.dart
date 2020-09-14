@@ -7,6 +7,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/islamic/ayatModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/islamic/islamicBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -228,27 +229,6 @@ class QuranReadUIState extends State<QuranReadUI> {
     return  Scaffold(
       key: scaffoldKey,
       appBar: UserRepository().appBarWithButton(context, param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param', warna1,warna2,(){Navigator.pop(context);},Container()),
-//      appBar: AppBar(
-//        leading: IconButton(
-//          icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-//          onPressed: (){
-//            Navigator.of(context).pop();
-//          },
-//        ),
-//        flexibleSpace: Container(
-//          decoration: BoxDecoration(
-//            gradient: LinearGradient(
-//              begin: Alignment.centerLeft,
-//              end: Alignment.centerRight,
-//              colors: <Color>[
-//                Color(0xFF116240),
-//                Color(0xFF30cc23)
-//              ],
-//            ),
-//          ),
-//        ),
-//        title: Text(param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param',style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-//      ),
       body: StreamBuilder(
         stream: ayatBloc.allAyat,
         builder: (context, AsyncSnapshot<AyatModel> snapshot) {
@@ -271,7 +251,7 @@ class QuranReadUIState extends State<QuranReadUI> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              param == 'detail' ? Text("Total Ayat : ${widget.total}", style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black54),):Text("Total Pencarian : ${snapshot.data.result.data.length}", style: TextStyle(color: Colors.black54,fontFamily:ThaibahFont().fontQ),),
+                              param == 'detail' ? Text("Total Ayat : ${widget.total}", style: TextStyle(fontSize:ScreenUtilQ().setSp(40),fontFamily:ThaibahFont().fontQ,color: Colors.black54),):Text("Total Pencarian : ${snapshot.data.result.data.length}", style: TextStyle(fontSize:ScreenUtilQ().setSp(40),color: Colors.black54,fontFamily:ThaibahFont().fontQ),),
                             ],
                           ),
 
@@ -316,7 +296,7 @@ class QuranReadUIState extends State<QuranReadUI> {
                             textDirection: TextDirection.rtl,
                             child: Align(
                               alignment: Alignment.topRight,
-                              child: Text(snapshot.data.result.data[index].arabic, style: TextStyle(fontSize: 20, fontFamily:ThaibahFont().fontQ)),
+                              child: Html(customTextAlign: (_) => TextAlign.right,data:snapshot.data.result.data[index].arabic, defaultTextStyle: TextStyle(fontSize: 20, fontFamily:ThaibahFont().fontQ)),
                             ),
                           ),
                         ),

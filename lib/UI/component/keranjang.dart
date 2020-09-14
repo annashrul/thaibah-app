@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart';
 import 'package:thaibah/Model/MLM/listCartModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/MLM/checkoutSuplemen.dart';
 import 'package:thaibah/UI/component/address/addAddress.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
@@ -32,28 +34,6 @@ class _KeranjangState extends State<Keranjang> {
 
   Future cek(var total,var berat, var jumlahQty) async{
     var newBerat = berat*jumlahQty;
-    setState(() {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 100.0),
-              child: AlertDialog(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                    SizedBox(height:5.0),
-                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
-                  ],
-                ),
-              )
-          );
-
-        },
-      );
-    });
     var test = await DetailCheckoutSuplemenProvider().fetchDetailCheckoutSuplemen();
 
     if(test is GetDetailChekoutSuplemenModel){
@@ -126,6 +106,9 @@ class _KeranjangState extends State<Keranjang> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Scaffold(
       key: scaffoldKey,
       appBar:UserRepository().appBarWithButton(context, "Keranjang Belanja",warna1,warna2,(){Navigator.of(context).pop();},Container()),
@@ -149,10 +132,9 @@ class _KeranjangState extends State<Keranjang> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text("Total Tagihan", style: TextStyle(color: Colors.black54,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
+                          Text("Total Tagihan", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black54,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
                           SizedBox(height: 5.0),
-                          Text("Rp ${formatter.format(snapshot.data.result.rawTotal)}", style: TextStyle(color: Colors.red,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-
+                          Text("Rp ${formatter.format(snapshot.data.result.rawTotal)}", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.red,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                         ],
                       ),
                       Container(
@@ -164,15 +146,13 @@ class _KeranjangState extends State<Keranjang> {
                             color:statusLevel!='0'?warna1:ThaibahColour.primary2,
                             onPressed: (){
                               setState(() {
-                                isLoading = true;
+                                UserRepository().loadingQ(context);
                               });
                               cek(snapshot.data.result.rawTotal,weight,snapshot.data.result.jumlah);
                             },
-                            child:Text("Lanjut", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
-
+                            child:Text("Lanjut", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
                           )
                       )
-
                     ],
                   ),
                 ))
@@ -197,6 +177,7 @@ class _KeranjangState extends State<Keranjang> {
   Widget buildContent(AsyncSnapshot<ListCartModel> snapshot, BuildContext context){
     var _height = MediaQuery.of(context).size.height;
     var _width = MediaQuery.of(context).size.width;
+
     if(snapshot.data.result.data.length > 0){
       return  Column(
         children: <Widget>[
@@ -315,7 +296,7 @@ class SingleCartProductState extends State<SingleCartProduct> {
 
   @override
   Widget build(BuildContext context) {
-      return  Card(
+    return  Card(
         color: widget.warna,
         elevation: 0.0,
         child: Row(
@@ -356,9 +337,9 @@ class SingleCartProductState extends State<SingleCartProduct> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    new Text(widget.CartProdName,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
+                    new Text(widget.CartProdName,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
                     SizedBox(height: 10.0),
-                    new Text("Rp ${formatter.format(updatePrice)}",style: TextStyle(fontWeight:FontWeight.bold,color: Colors.red,fontFamily:ThaibahFont().fontQ),),
+                    new Text("Rp ${formatter.format(updatePrice)}",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight:FontWeight.bold,color: Colors.red,fontFamily:ThaibahFont().fontQ),),
                     SizedBox(height: 10.0),
                     ChangeQuantity(
                         valueChanged: (int newValue){
@@ -383,16 +364,16 @@ class SingleCartProductState extends State<SingleCartProduct> {
                         context: context,
                         builder: (BuildContext context){
                           return AlertDialog(
-                            content: Text("Anda Yakin Akan Menghapus produk Ini ???",style: TextStyle(fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                            content: Text("Anda Yakin Akan Menghapus produk Ini ???",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                             actions: <Widget>[
                               FlatButton(
-                                child: Text("Batal", style: TextStyle(color: Colors.black,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                child: Text("Batal", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),color: Colors.black,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                               ),
                               FlatButton(
-                                child: Text("Hapus", style: TextStyle(color: Colors.red,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                                child: Text("Hapus", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),color: Colors.red,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                                 onPressed: () async {
                                   setState(() {});
                                   delete(widget.CardProdId);
@@ -461,7 +442,7 @@ class ChangeQuantity extends StatelessWidget {
         Text(
           "${cartQty.toString()}",
           textAlign: TextAlign.right,
-          style: TextStyle(fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
+          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
         ),
         SizedBox(width: 10.0),
         InkWell(
@@ -470,63 +451,5 @@ class ChangeQuantity extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class ChangeTotalState extends StatefulWidget {
-  final CartTot;
-  ChangeTotalState({this.CartTot});
-
-  @override
-  _ChangeTotalStateState createState() => _ChangeTotalStateState();
-}
-
-class _ChangeTotalStateState extends State<ChangeTotalState>   with WidgetsBindingObserver  {
-  int total = 0;
-  AppLifecycleState _lastLifecycleState;
-  final formatter = new NumberFormat("#,###");
-
-//
-//  Future changeTotal() async{
-//    var res = await ProductMlmSuplemenProvider().fetchListCart();
-//    setState(() {});
-//    total = res.result.rawTotal;
-//  }
-
-  @override
-  void initState() {
-//    changeTotal();
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    if(total != widget.CartTot){
-      setState(() {
-        total = widget.CartTot;
-      });
-    }
-
-
-  }
-
-
-//  @override
-//  void setState(fn) {
-//    // TODO: implement setState
-//    super.setState(fn);
-//    changeTotal();
-//  }
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    setState(() {
-      _lastLifecycleState = state;
-    });
-  }
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-  }
-  @override
-  Widget build(BuildContext context) {
-    return new Text('Rp ${formatter.format(total)}',style:TextStyle(color:Colors.red,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),);
   }
 }

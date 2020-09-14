@@ -31,28 +31,6 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
   int totalPembayaran = 0;
 
   Future create(var id_bank,var picture, var bank_code) async {
-    setState(() {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 100.0),
-              child: AlertDialog(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                    SizedBox(height:5.0),
-                    Text("Tunggu Sebentar .....",style: TextStyle(fontFamily: ThaibahFont().fontQ),)
-                  ],
-                ),
-              )
-          );
-
-        },
-      );
-    });
     var res = await detailDepositBloc.fetchDetailDeposit(id_bank, widget.amount);
     if(res.status == 'success'){
       setState(() {Navigator.pop(context);});
@@ -129,6 +107,8 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
   final formatter = new NumberFormat("#,###");
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
 
     return  Scaffold(
         key: scaffoldKey,
@@ -161,14 +141,14 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text("Nominal", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 14, color: Colors.white,fontWeight: FontWeight.bold),),
+                  Text("Nominal", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30), color: Colors.white,fontWeight: FontWeight.bold),),
                 ],
               ),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  Text("Rp ${formatter.format(widget.amount)}", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 14, color: Colors.white,fontWeight: FontWeight.bold),),
+                  Text("Rp ${formatter.format(widget.amount)}", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(28), color: Colors.white,fontWeight: FontWeight.bold),),
                 ],
               ),
             ],
@@ -179,6 +159,9 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
 
 
   Widget buildContent(AsyncSnapshot<ListAvailableBankModel> snapshot, BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     if(snapshot.data.result.length > 0){
       return Column(
         children: <Widget>[
@@ -186,7 +169,7 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
             padding: const EdgeInsets.symmetric(vertical: 18.0),
             child: Text(
               'Pilih Bank Yang Akan Dituju',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,fontFamily:ThaibahFont().fontQ),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(40),fontFamily:ThaibahFont().fontQ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -198,7 +181,7 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
                   return GestureDetector(
                     onTap: (){
                       setState(() {
-                        _isLoading = true;
+                        UserRepository().loadingQ(context);
                       });
                       create(snapshot.data.result[index].idBank,snapshot.data.result[index].picture,snapshot.data.result[index].bankCode.toString());
                     },
@@ -236,11 +219,11 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
                             ),
                           ),
                           title: Text(
-                            snapshot.data.result[index].atasNama,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),
+                            snapshot.data.result[index].atasNama,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),
                           ),
                           subtitle: Row(
                             children: <Widget>[
-                              Text(snapshot.data.result[index].noRekening, style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold))
+                              Text(snapshot.data.result[index].noRekening, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold))
                             ],
                           ),
                         ),

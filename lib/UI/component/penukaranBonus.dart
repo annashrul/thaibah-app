@@ -8,6 +8,7 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/dataDiri/updateKtp.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
@@ -82,7 +83,6 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
         scaffoldKey.currentState.showSnackBar(new SnackBar(
           content: new Text(
             'Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi',
-
             style: TextStyle(color: Colors.white, fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
           ),
           action: SnackBarAction(
@@ -140,6 +140,8 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: scaffoldKey,
       appBar:UserRepository().appBarWithButton(context,"Penukaran Bonus",warna1,warna2,(){Navigator.pop(context);},Container()),
@@ -150,7 +152,6 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
         children: <Widget>[
           Container(
             padding:EdgeInsets.all(10.0),
-
             decoration: BoxDecoration(
                 boxShadow: [
                   new BoxShadow(
@@ -200,8 +201,8 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                                 ],
                               ),
                             ),
-                            title: Text("Saldo Utama", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
-                            subtitle: Text(widget.saldo, style: TextStyle(fontSize: 11.0,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
+                            title: Text("Saldo Utama", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
+                            subtitle: Text(widget.saldo, style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontFamily:ThaibahFont().fontQ)),
                           ),
                         ),
 
@@ -221,8 +222,8 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                                 ],
                               ),
                             ),
-                            title: Text("Saldo Bonus", style: TextStyle(fontSize: 13.0,fontWeight: FontWeight.bold,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
-                            subtitle: Text(widget.saldoBonus, style: TextStyle(fontSize: 11.0,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
+                            title: Text("Saldo Bonus", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
+                            subtitle: Text(widget.saldoBonus, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontFamily:ThaibahFont().fontQ)),
                           ),
                         ),
                       ],
@@ -234,15 +235,15 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text("Nominal",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                      Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                       TextFormField(
-                        style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                        style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                         controller: moneyController,
                         keyboardType: TextInputType.number,
                         maxLines: 1,
                         autofocus: false,
                         decoration: InputDecoration(
-                          hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
+                          hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                           prefixText: 'Rp.',
                         ),
                         inputFormatters: <TextInputFormatter>[
@@ -268,7 +269,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text("Pilih Nominal Cepat",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                      Text("Pilih Nominal Cepat",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                       GridView.builder(
                         padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
                         physics: NeverScrollableScrollPhysics(),
@@ -299,21 +300,8 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                 ),
                 UserRepository().buttonQ(context,warna1,warna2,(){
                   save();
-                }, false)
-//                Align(
-//                    alignment: Alignment.centerRight,
-//                    child: Container(
-//                      margin: EdgeInsets.all(16),
-//                      decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle),
-//                      child: IconButton(
-//                        color: Colors.white,
-//                        onPressed: () async {
-//                          save();
-//                        },
-//                        icon: Icon(Icons.arrow_forward),
-//                      ),
-//                    )
-//                ),
+                }, false,'Simpan')
+
               ],
             ),
           )
@@ -348,7 +336,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                     children: <Widget>[
                       CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
                       SizedBox(height:5.0),
-                      Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                      Text("Tunggu Sebentar .....",style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                     ],
                   ),
                 )

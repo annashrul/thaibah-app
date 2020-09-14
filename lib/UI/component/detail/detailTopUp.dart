@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
@@ -129,6 +130,9 @@ class _DetailTopUpState extends State<DetailTopUp> {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
     final key = new GlobalKey<ScaffoldState>();
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Scaffold(
         key: key,
         appBar: UserRepository().appBarWithButton(context, 'Transaksi Berhasil',warna1,warna2,(){
@@ -150,24 +154,29 @@ class _DetailTopUpState extends State<DetailTopUp> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
                     'Silahkan transfer tepat sebesar',
-                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(36)),
                     textAlign: TextAlign.center,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 8.0),
-                  child: Text(
-                    widget.amount,
-                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 30),
-                    textAlign: TextAlign.center,
-                  ),
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                    child: Container(
+                      color:statusLevel!='0'?warna1:ThaibahColour.primary2,
+                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                      child: Text(
+                        widget.amount,
+                        style: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(40)),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
                 ),
+
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
                   child: Text(
                     'Pembayaran dapat dilakukan ke rekening berikut :',
-                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: 14),
+                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(30)),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -205,16 +214,16 @@ class _DetailTopUpState extends State<DetailTopUp> {
                           ),
                         ),
                       ),
-                      title: Text(widget.atas_nama),
+                      title: Text(widget.atas_nama,style: TextStyle(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
                       subtitle: GestureDetector(
                         onTap: () {
                           Clipboard.setData(new ClipboardData(text: widget.no_rekening));
-                          key.currentState.showSnackBar(new SnackBar(content: new Text("no rekening berhasil disalin")));
+                          key.currentState.showSnackBar(new SnackBar(content: new Text("no rekening berhasil disalin",style: TextStyle(fontSize:  ScreenUtilQ.getInstance().setSp(20),fontFamily: 'Rubik'),)));
                         },
                         child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Text( widget.no_rekening),
+                              Text( widget.no_rekening,style: TextStyle(fontFamily: 'Rubik',fontSize:  ScreenUtilQ.getInstance().setSp(30)),),
                               SizedBox(width: 5),
                               Icon(Icons.content_copy, color: Colors.black, size: 15,),
                             ]
@@ -231,7 +240,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                       child: Text(
                         'VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT',
-                        style: TextStyle(fontSize: 14,fontFamily:ThaibahFont().fontQ,color:Colors.white,fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color:Colors.white,fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                     )
@@ -261,7 +270,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
                       child: Text(
                         'mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi',
-                        style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ),
+                        style: TextStyle(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ),
                         textAlign: TextAlign.left,
                       ),
                     )
@@ -273,7 +282,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                       child: Text(
                         'Pastikan anda transfer sebelum tanggal $hari-$bulan-$tahun 23:00 WIB atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini atau di halaman riwayat topup',
-                        style: TextStyle(fontSize: 12,fontFamily: ThaibahFont().fontQ),
+                        style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                         textAlign: TextAlign.left,
                       ),
                     )
@@ -286,6 +295,9 @@ class _DetailTopUpState extends State<DetailTopUp> {
   }
 
   Widget _bottomNavBarBeli(BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Container(
       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Row(
@@ -309,7 +321,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
                     new CupertinoPageRoute(builder: (context) => BuktiTransfer(id_deposit: widget.id_deposit)),
                   );
                 },
-                child: Text("SAYA SUDAH TRANSFER", style: TextStyle(fontSize:16.0,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
+                child: Text("SAYA SUDAH TRANSFER", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
               )
           )
         ],

@@ -131,8 +131,7 @@ class _SaldoUIState extends State<SaldoUI> {
   @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false)..init(context);
-
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     double screenWidth = MediaQuery.of(context).size.width;
     var width = (screenWidth - ((_crossAxisCount - 1) * _crossAxisSpacing)) / _crossAxisCount;
     var height = width / _aspectRatio;
@@ -171,15 +170,15 @@ class _SaldoUIState extends State<SaldoUI> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                        Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
-                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
+                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
                           controller: moneyController,
                           keyboardType: TextInputType.number,
                           maxLines: 1,
                           autofocus: false,
                           decoration: InputDecoration(
-                            hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(26)),
+                            hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30)),
                             prefixText: 'Rp.',
                           ),
                           inputFormatters: <TextInputFormatter>[
@@ -209,7 +208,7 @@ class _SaldoUIState extends State<SaldoUI> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Pilih Nominal Cepat",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                        Text("Pilih Nominal Cepat",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         GridView.builder(
                           padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
                           physics: NeverScrollableScrollPhysics(),
@@ -241,7 +240,7 @@ class _SaldoUIState extends State<SaldoUI> {
                   UserRepository().buttonQ(context, warna1, warna2, (){
                     setState(() {isLoading = true;});
                     getBank();
-                  }, isLoading)
+                  }, isLoading,'Simpan')
 
                 ],
               ),
@@ -252,14 +251,13 @@ class _SaldoUIState extends State<SaldoUI> {
   }
   Widget radioItem(RadioModel _item) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false)..init(context);
-
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return new Container(
       padding:EdgeInsets.all(10.0),
       child: new Center(
         child: new Text(
             _item.buttonText,
-            style: new TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:_item.isSelected ? statusLevel!='0'?warna1:Colors.green : Colors.black,fontSize:ScreenUtilQ.getInstance().setSp(24))
+            style: new TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:_item.isSelected ? statusLevel!='0'?warna1:Colors.green : Colors.black,fontSize:ScreenUtilQ.getInstance().setSp(30))
         ),
       ),
       decoration: new BoxDecoration(
@@ -279,12 +277,14 @@ class RadioItem extends StatelessWidget {
   RadioItem(this._item);
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return new Container(
       padding:EdgeInsets.all(10.0),
       child: new Center(
         child: new Text(
           _item.buttonText,
-          style: new TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:_item.isSelected ? Colors.green : Colors.black,fontSize: 12.0)
+          style: new TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:_item.isSelected ? Colors.green : Colors.black,fontSize:ScreenUtilQ.getInstance().setSp(30))
         ),
       ),
       decoration: new BoxDecoration(

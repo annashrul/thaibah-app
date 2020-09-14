@@ -499,7 +499,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                   setState(() {_isLoading = true;});
                   update();
                 }
-              }, _isLoading)
+              }, _isLoading,'Simpan')
 //              Align(
 //                  alignment: Alignment.centerRight,
 //                  child: Container(

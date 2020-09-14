@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/detailNewsPerCategoryModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/detail_berita_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
@@ -28,6 +29,8 @@ class _CategoryNewsDetailState extends State<CategoryNewsDetail> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return StreamBuilder(
       stream: newsDetailPerCategory.allDetailNewsPerCategory,
       builder: (context, AsyncSnapshot<DetailNewsPerCategoryModel> snapshot) {
@@ -102,6 +105,8 @@ class _CategoryNewsDetailState extends State<CategoryNewsDetail> {
     );
   }
   Widget buildContent(AsyncSnapshot<DetailNewsPerCategoryModel> snapshot, BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Container(
       height: 200,
       width: MediaQuery.of(context).size.width,
@@ -115,7 +120,6 @@ class _CategoryNewsDetailState extends State<CategoryNewsDetail> {
             }else{
               tit = snapshot.data.result.data[i].title;
             }
-            print("DETAIL BERITA CATEGORY ");
             return Padding(
               padding: const EdgeInsets.only(left: 13,right: 13),
               child: Material(
@@ -160,7 +164,7 @@ class _CategoryNewsDetailState extends State<CategoryNewsDetail> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(tit,style: TextStyle(color:Colors.black, fontSize: 14,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
+                              Text(tit,style: TextStyle(color:Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
                             ],
                           )
                         )

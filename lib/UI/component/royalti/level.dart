@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/royalti/royaltiMemberModel.dart';
 import 'package:thaibah/UI/Homepage/level.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/royalti/royaltiBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -71,6 +72,7 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
   }
 
   Widget wrapperBuildContent(BuildContext context){
+
     return Container(
       padding: EdgeInsets.only(right:12.0,left:12.0,top:0,bottom:0),
       child: Container(
@@ -120,6 +122,8 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
   }
 
   Widget buildContent(AsyncSnapshot<RoyaltiMemberModel> snapshot, BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     if(snapshot.data.result.length > 0){
       return isLoading?Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Container(
         height: 150,
@@ -150,8 +154,8 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
                   visible: true,
                   child: Column(
                     children: <Widget>[
-                      Text(snapshot.data.result[index].memberName, textAlign: TextAlign.center,style: TextStyle(fontSize:12.0,color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                      Text(snapshot.data.result[index].level, textAlign: TextAlign.center,style: TextStyle(fontSize:12.0,color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
+                      Text(snapshot.data.result[index].memberName, textAlign: TextAlign.center,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                      Text(snapshot.data.result[index].level, textAlign: TextAlign.center,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))
                     ],
                   ),
                 ),
@@ -165,7 +169,7 @@ class _WrapperLevelState extends State<WrapperLevel> with AutomaticKeepAliveClie
       return Container(
         margin: EdgeInsets.symmetric(vertical: 16.0),
         child: Center(
-          child: isLoading?Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Text('tidak ada data',style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+          child: isLoading?Container(child:Center(child:CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))):Text('tidak ada data',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
         ),
       );
     }

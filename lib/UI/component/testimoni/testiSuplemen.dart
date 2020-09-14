@@ -97,7 +97,6 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
       print(e);
     }
   }
-
   Future loadTheme() async{
     final levelStatus = await userRepository.getDataUser('statusLevel');
     final color1 = await userRepository.getDataUser('warna1');
@@ -162,6 +161,8 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return SafeArea(
       child: Scaffold(
           body: CustomScrollView(
@@ -189,7 +190,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
                           categoryString[index],
-                          style: TextStyle(fontSize: 15,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(38),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),
                         ),
                       ),
                       decoration: BoxDecoration(color: index == _tabController.index ? warna1 : Colors.black12, borderRadius: BorderRadius.circular(20)),
@@ -223,7 +224,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                 ),
               ):
               SliverFixedExtentList(
-                itemExtent: MediaQuery.of(context).size.height/2,  // I'm forcing item heights
+                itemExtent: MediaQuery.of(context).size.height/2.5,  // I'm forcing item heights
                 delegate: SliverChildBuilderDelegate((context, index) {
                   String cap='';
                   if(video[index]['caption'].length > 100){
@@ -273,7 +274,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                             data:cap,
                             defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
                           ),
-                          subtitle: Text(video[index]['category'], style: TextStyle(color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
+                          subtitle: Text(video[index]['category'], style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
                           trailing: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : PopupMenuButton(
                             onSelected: (e) async{
                               if(e=='0'){

@@ -42,8 +42,6 @@ class TransferProvider {
         }else if(response.statusCode == 400){
           result =  General.fromJson(json.decode(response.body));
         }
-      // print(response.statusCode);
-//      var result =  TransferDetailModel.fromJson(jsonDecode(response.body));
       return result;
     });
   }

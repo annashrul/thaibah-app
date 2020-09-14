@@ -41,8 +41,8 @@ class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> {
 
   Widget buildProduk(AsyncSnapshot<GetDetailChekoutSuplemenModel> snapshot, BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
-    double _crossAxisSpacing = 1, _mainAxisSpacing = 3, _aspectRatio = 3;
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
+    double _crossAxisSpacing = 1, _mainAxisSpacing = 3, _aspectRatio = 2.5;
     int _crossAxisCount = 2;
     double screenWidth = MediaQuery.of(context).size.width;
     var width = (screenWidth - ((_crossAxisCount - 1) * _crossAxisSpacing)) / _crossAxisCount;
@@ -98,12 +98,12 @@ class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(0.0),
-                              child: new Text('${snapshot.data.result.produk[i].title}',style: new TextStyle(fontSize: 11.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: Colors.black),),
+                              child: new Text('${snapshot.data.result.produk[i].title}',style: new TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: Colors.black),),
                             ),
                             SizedBox(height: 5.0),
-                            Text('${snapshot.data.result.produk[i].qty} Barang (${snapshot.data.result.produk[i].weight} Gram) x Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice))}',style: TextStyle(fontSize: 10,fontFamily:ThaibahFont().fontQ,color:Colors.grey,fontWeight: FontWeight.bold),),
+                            Text('${snapshot.data.result.produk[i].qty} Barang (${snapshot.data.result.produk[i].weight} Gram) x Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice))}',style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(24),fontFamily:ThaibahFont().fontQ,color:Colors.grey,fontWeight: FontWeight.bold),),
                             SizedBox(height: 5.0),
-                            Text('Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice)*int.parse(snapshot.data.result.produk[i].qty) )}',style: TextStyle(fontSize: 11,fontFamily:ThaibahFont().fontQ,color: Colors.redAccent,fontWeight: FontWeight.bold),)
+                            Text('Rp ${formatter.format(int.parse(snapshot.data.result.produk[i].rawPrice)*int.parse(snapshot.data.result.produk[i].qty) )}',style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Colors.redAccent,fontWeight: FontWeight.bold),)
                           ],
                           crossAxisAlignment: CrossAxisAlignment.start,
                         ),

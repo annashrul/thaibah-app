@@ -554,6 +554,8 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
   
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: scaffoldKey,
       body:  WillPopScope(
@@ -572,13 +574,13 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
                   SizedBox(height: 20.0),
                   Container(
                     child: Center(
-                      child: Text("Silahkan Perbaharui Aplikasi Anda Ke Versi ${ApiService().versionCode} !!".toUpperCase(), textAlign: TextAlign.center, style:TextStyle(color:Colors.red,fontSize:14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                      child: Text("Silahkan Perbaharui Aplikasi Anda Ke Versi ${ApiService().versionCode} !!".toUpperCase(), textAlign: TextAlign.center, style:TextStyle(color:Colors.red,fontSize:ScreenUtilQ.getInstance().setSp(34),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                     ),
                   ),
                   SizedBox(height: 20.0),
                   Container(
                     child: Center(
-                      child: Text("Tekan Tombol Dibawah Ini Untuk Memperbaharui Aplikasi ...".toUpperCase(),  textAlign: TextAlign.center,style:TextStyle(color:Colors.red,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                      child: Text("Tekan Tombol Dibawah Ini Untuk Memperbaharui Aplikasi ...".toUpperCase(),  textAlign: TextAlign.center,style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color:Colors.red,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                     ),
                   ),
                   SizedBox(height: 20.0),
@@ -598,7 +600,7 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
                         child: Text(
                           "Perbaharui Aplikasi Sekarang".toUpperCase(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

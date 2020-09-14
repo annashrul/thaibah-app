@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/profileModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/alertq.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/Widgets/tutorialClearData.dart';
@@ -60,6 +61,8 @@ class _MyProfileState extends State<MyProfile> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -81,12 +84,7 @@ class _MyProfileState extends State<MyProfile> {
     }else if(ratio >= 2.0 && ratio <2.5){
       mq = MediaQuery.of(context).size.height/15;
     }
-    print("longestSide ${MediaQuery.of(context).size.longestSide}");
-    print("shortestSide ${MediaQuery.of(context).size.shortestSide}");
-    print("aspectRatio ${MediaQuery.of(context).size.aspectRatio}");
-    print("flifed ${MediaQuery.of(context).size.flipped}");
-    print("devicePixelRatio ${ui.window.devicePixelRatio}");
-
+   
     return Scaffold(
       key: scaffoldKey,
       body: isLoading?_loading():Container(
@@ -148,13 +146,13 @@ class _MyProfileState extends State<MyProfile> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('$name',style: TextStyle(color: Colors.white, fontFamily:ThaibahFont().fontQ, fontSize: 14.0, fontWeight: FontWeight.bold)),
+                            Text('$name',style: TextStyle(color: Colors.white, fontFamily:ThaibahFont().fontQ, fontSize:ScreenUtilQ.getInstance().setSp(30), fontWeight: FontWeight.bold)),
                             GestureDetector(
                               child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     Text('$kdReferral',style: TextStyle(
-                                        fontWeight: FontWeight.bold, color: Colors.white,fontFamily:ThaibahFont().fontQ,
+                                        fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold, color: Colors.white,fontFamily:ThaibahFont().fontQ,
                                         shadows: [Shadow(blurRadius: 5.0,color: Colors.black,offset: Offset(0.0, 1.0))]
                                     )),
                                     SizedBox(width: 5),
@@ -212,7 +210,7 @@ class _MyProfileState extends State<MyProfile> {
                                       Padding(
                                         padding: EdgeInsets.only(left: 0.0),
                                         child: Center(
-                                          child: Text('Bagikan Link',textAlign: TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0,color: Colors.black,fontWeight: FontWeight.bold)),
+                                          child: Text('Bagikan Link',textAlign: TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontWeight: FontWeight.bold)),
                                         ),
                                       ),
                                     ],
@@ -263,9 +261,9 @@ class _MyProfileState extends State<MyProfile> {
         children: <Widget>[
           SvgPicture.network(ApiService().iconUrl+'icon_'+pathImg+'.svg', height: 35,width:35),
           SizedBox(height: 5.0,),
-          Text('$titleOne',style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 12.0)),
+          Text('$titleOne',style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(30))),
           SizedBox(height: 5.0,),
-          Text('$titleTwo',style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 12.0)),
+          Text('$titleTwo',style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(30))),
         ],
       ),
     );
@@ -293,7 +291,7 @@ class _MyProfileState extends State<MyProfile> {
               Padding(
                 padding: EdgeInsets.only(left: 0.0),
                 child: Center(
-                  child: Text(title,textAlign: TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0,color: Colors.black,fontWeight: FontWeight.bold)),
+                  child: Text(title,textAlign: TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -357,6 +355,8 @@ class _MyProfileState extends State<MyProfile> {
                             DbHelper.columnStatusExitApp  : "1"
                           };
                           final rowsAffected = await dbHelper.update(row);
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.clear();
                           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => xWidget), (Route<dynamic> route) => false);
                         }else{
                           setState(() {
@@ -383,7 +383,7 @@ class _MyProfileState extends State<MyProfile> {
         ) : Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => xWidget));
       },
       child: ListTile(
-        title: Text(title,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 12.0)),
+        title: Text(title,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30))),
         leading: CircleAvatar(
           backgroundColor: backgroundColor,
           child: Center(child: Icon(icon, color: iconColor)),

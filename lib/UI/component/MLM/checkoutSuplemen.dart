@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
@@ -238,18 +239,24 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   var totBar = '';
   Widget _optionAddress(){
     return Container(
-      margin: EdgeInsets.only(left:10.0,right:10.0),
+      margin: EdgeInsets.only(left:10.0,right:10.0,top:10),
       width: _width,
-      child: InputDecorator(
-        decoration: const InputDecoration(
-          labelText: 'Pilih Alamat',
-          labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily:'Rubik',fontSize:20),
-        ),
-        isEmpty: dropdownValue == null,
-        child: new DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Pilih Alamat",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+          DropdownButton(
+            isDense: true,
+            isExpanded: true,
+            hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
             value: dropdownValue,
-            onChanged: (String newValue) {
+            items: <String>['Saya', 'Lainnya'].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value,style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30)),),
+              );
+            }).toList(),
+            onChanged: (newValue) {
               setState(() {
                 dropdownValue  = newValue;
                 _onDropDownItemSelectedProvinsi(null);
@@ -258,14 +265,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               });
               pilih();
             },
-            items: <String>['Saya', 'Lainnya'].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value,style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize: 12.0),),
-              );
-            }).toList(),
-          ),
-        ),
+          )
+        ],
       ),
     );
   }
@@ -276,8 +277,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Alamat Pengiriman:", style: TextStyle(fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),),
-          Text(widget.address, style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 12,color:Colors.grey)),
+          Text("Alamat Pengiriman:", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),),
+          Text(widget.address, style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(26),color:Colors.grey)),
 
         ],
       ),
@@ -285,13 +286,15 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
   Widget _address(BuildContext context){
     return Container(
-      margin: EdgeInsets.only(left:10.0,right:10.0),
+      margin: EdgeInsets.only(left:10.0,right:10.0,top:10),
       width: _width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _provinsi(context),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
           _kota(context),
+          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
           _kecamatan(context),
         ],
       ),
@@ -302,17 +305,23 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         stream: provinsiBloc.allProvinsi,
         builder: (context,AsyncSnapshot<ProvinsiModel> snapshot) {
           if(snapshot.hasData){
-            return new InputDecorator(
-              decoration: const InputDecoration(
-                  labelText: 'Provinsi:',
-                  labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily:'Rubik',fontSize: 20)
-              ),
-              isEmpty: _currentItemSelectedProvinsi == null,
-              child: new DropdownButtonHideUnderline(
-                child: new DropdownButton<String>(
-                  value: _currentItemSelectedProvinsi,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Html(data:"Provinsi",defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                DropdownButton(
                   isDense: true,
-                  onChanged: (String newValue) {
+                  isExpanded: true,
+                  hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
+                  value: _currentItemSelectedProvinsi,
+                  items: snapshot.data.result.map((prefix0.Result items) {
+                    String cek = "${items.id.toString()}|${items.name}";
+                    return new DropdownMenuItem<String>(
+                      value: "${cek}",
+                      child: Html(data:items.name,defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12),),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
                     setState(() {
                       var cik = newValue.split("|");
                       _onDropDownItemSelectedProvinsi(newValue);
@@ -322,16 +331,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       tProvinsi = ", Provinsi "+cik[1];
                     });
                   },
-                  items: snapshot.data.result.map((prefix0.Result items) {
-                    String cek = "${items.id.toString()}|${items.name}";
-                    return new DropdownMenuItem<String>(
-                      value: "${cek}",
-                      child: Text(items.name,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0),),
-                    );
-                  }).toList()
-                  ,
-                ),
-              ),
+                )
+              ],
             );
           }else if(snapshot.hasError){
             return Text(snapshot.error);
@@ -349,37 +350,36 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         stream: kotaBloc.allKota,
         builder: (context,AsyncSnapshot<KotaModel> snapshot) {
           if(snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData ? new InputDecorator(
-            decoration: const InputDecoration(
-                labelText: 'Kota:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
-            ),
-            isEmpty: _currentItemSelectedKota == null,
-            child: new DropdownButtonHideUnderline(
-              child: new DropdownButton<String>(
-                value: _currentItemSelectedKota,
-                isDense: true,
-                onChanged: (String newValue) {
-                  setState(() {
-                    var cik = newValue.split("|");
-                    _onDropDownItemSelectedKota(newValue);
-                    getKecamatan(cik[0]);
-                    _onDropDownItemSelectedKecamatan(null);
-                    tKota = ", Kota "+cik[1];
-                  });
-                },
-                items: snapshot.data.result.map((prefix1.Result items) {
-                  String cek = "${items.id}|${items.name}";
-                  return new DropdownMenuItem<String>(
-                    value: "$cek",
-                    child: new Text(items.name,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12)),
-                  );
-                }).toList()
-                ,
-              ),
-            ),
-          )
-              :  Container();
+          return snapshot.hasData? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Html(data:"Kota",defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                DropdownButton(
+                  isDense: true,
+                  isExpanded: true,
+                  hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
+                  value: _currentItemSelectedKota,
+                  items: snapshot.data.result.map((prefix1.Result items) {
+                    String cek = "${items.id}|${items.name}";
+                    return new DropdownMenuItem<String>(
+                      value: "$cek",
+                      child: new Html(data:items.name,defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12)),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      var cik = newValue.split("|");
+                      _onDropDownItemSelectedKota(newValue);
+                      getKecamatan(cik[0]);
+                      _onDropDownItemSelectedKecamatan(null);
+                      tKota = ", Kota "+cik[1];
+                    });
+                  },
+                )
+
+              ],
+            ) :Container();
+
         }
     );
   }
@@ -388,34 +388,33 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         stream: kecamatanBloc.allKecamatan,
         builder: (context,AsyncSnapshot<prefix2.KecamatanModel> snapshot) {
           if(snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData ? new InputDecorator(
-            decoration: const InputDecoration(
-                labelText: 'Kecamatan:',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize: 20)
-            ),
-            isEmpty: _currentItemSelectedKecamatan == null,
-            child: new DropdownButtonHideUnderline(
-              child: new DropdownButton<String>(
-                value: _currentItemSelectedKecamatan,
+          return snapshot.hasData?Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Html(data:"Kecamatan",defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+              DropdownButton(
                 isDense: true,
-                onChanged: (String newValue) {
+                isExpanded: true,
+                hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
+                value: _currentItemSelectedKecamatan,
+                items: snapshot.data.result.map((prefix2.Result items) {
+                  String cek = "${items.subdistrictId}|${items.subdistrictName}";
+                  return new DropdownMenuItem<String>(
+                    value: "$cek",
+                    child: new Html(data:items.subdistrictName,defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12)),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
                   setState(() {
                     var cik = newValue.split("|");
                     tKecamatan = ", Kecamatan "+cik[1];
                     _onDropDownItemSelectedKecamatan(newValue);
                   });
                 },
-                items: snapshot.data.result.map((prefix2.Result items) {
-                  String cek = "${items.subdistrictId}|${items.subdistrictName}";
-                  return new DropdownMenuItem<String>(
-                    value: "$cek",
-                    child: new Text(items.subdistrictName,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12)),
-                  );
-                }).toList(),
-              ),
-            ),
-          )
-              : Container();
+              )
+
+            ],
+          ):Container();
         }
     );
   }
@@ -423,18 +422,24 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     return StreamBuilder(
         stream: detailChekoutSuplemenBloc.getResult,
         builder: (context,AsyncSnapshot<GetDetailChekoutSuplemenModel> snapshot) {
+
           if(snapshot.hasData){
-            return new InputDecorator(
-              decoration: const InputDecoration(
-                labelText: 'Kurir',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize:20),
-              ),
-              isEmpty: _currentItemSelectedKurir == null,
-              child: new DropdownButtonHideUnderline(
-                child: new DropdownButton<String>(
-                  value: _currentItemSelectedKurir,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Html(data:"Kurir",defaultTextStyle: TextStyle(fontSize:12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                DropdownButton(
                   isDense: true,
-                  onChanged: (String newValue) {
+                  isExpanded: true,
+                  hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
+                  value: _currentItemSelectedKurir,
+                  items: snapshot.data.result.kurir.map((prefix4.Kurir items){
+                    return new DropdownMenuItem<String>(
+                      value: "${items.kurir}",
+                      child: Html(data:"${items.kurir}",defaultTextStyle:TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12)),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
                     setState(() {
                       _onDropDownItemSelectedKurir(newValue);
                       newValue !='COD' ? getOngkir():null;
@@ -444,15 +449,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       _onDropDownItemSelectedJasa(null);
                     });
                   },
-                  items: snapshot.data.result.kurir.map((prefix4.Kurir items){
-                    return new DropdownMenuItem<String>(
-                      value: "${items.kurir}",
-                      child: Text("${items.kurir}",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0)),
-                    );
-                  }).toList(),
-                ),
-              ),
+                )
+              ],
             );
+
           }else if(snapshot.hasError){
             print(snapshot.error);
           }
@@ -470,18 +470,23 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         builder: (context,AsyncSnapshot<prefix3.OngkirModel> snapshot) {
           if(snapshot.hasData){
             jasper = snapshot.data.result.kurir;
-            return InputDecorator(
-              decoration: const InputDecoration(
-                labelText: 'Jenis Layanan',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold,color:Colors.black,fontFamily: "Rubik",fontSize:20),
-
-              ),
-              isEmpty: _currentItemSelectedJasa == null,
-              child: new DropdownButtonHideUnderline(
-                child: new DropdownButton<String>(
-                  value: _currentItemSelectedJasa,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Html(data:"Jenis Layanan",defaultTextStyle: TextStyle(fontSize:12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                DropdownButton(
                   isDense: true,
-                  onChanged: (String newValue) {
+                  isExpanded: true,
+                  hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
+                  value: _currentItemSelectedJasa,
+                  items: snapshot.data.result.ongkir.map((prefix3.Ongkir items) {
+                    jasper = "${items.description}|${items.cost}";
+                    return new DropdownMenuItem<String>(
+                      value: "$jasper",
+                      child: Html(data:"${snapshot.data.result.kurir} - ${items.description} | ${formatter.format(items.cost)} | ${items.estimasi} (hari)",defaultTextStyle:TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12)),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
                     setState(() {
                       _onDropDownItemSelectedJasa(newValue);
                       paket = newValue.split("|");
@@ -489,16 +494,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       totOngkir = int.parse(paket[1]);
                     });
                   },
-                  items: snapshot.data.result.ongkir.map((prefix3.Ongkir items) {
-                    jasper = "${items.description}|${items.cost}";
-                    return new DropdownMenuItem<String>(
-                      value: "$jasper",
-                      child: Text("${snapshot.data.result.kurir} - ${items.description} | ${formatter.format(items.cost)} | ${items.estimasi} (hari)",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12.0)),
-                    );
-                  }).toList(),
-                ),
-              ),
+                )
+              ],
             );
+
           }else if(snapshot.hasError) {
             return Text(snapshot.error);
           }
@@ -509,8 +508,6 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   Widget _bottomNavBarBeli(BuildContext context){
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
       child: Row(
@@ -520,8 +517,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("Total Tagihan", style: TextStyle(color: Colors.black54),),
-              Text("Rp ${_currentItemSelectedKurir=='COD'?widget.total: formatter.format(total==0?widget.total:total)}",style:TextStyle(color:Colors.red,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+              Text("Total Tagihan", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
+              Text("Rp ${_currentItemSelectedKurir=='COD'?widget.total: formatter.format(total==0?widget.total:total)}",style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.red,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
             ],
           ),
           Container(
@@ -561,18 +558,35 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Kecamatan', 'failed');
                     }else if(_currentItemSelectedKurir==null){
                       UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Kurir', 'failed');
-                    }else if(_currentItemSelectedJasa == null){
-                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Jasa Layanan', 'failed');
-                    }else if(otherAddress.text == ''){
-                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Isi Alamat Lengkap Anda', 'failed');
-                    }else if(kodePos.text == ''){
-                      UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Isi Kode Pos', 'failed');
-                    }else{
-                      _lainnyaModalBottomSheet(context);
                     }
+                    else if(_currentItemSelectedKurir != 'COD'){
+                      if(_currentItemSelectedJasa == null){
+                        UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Pilih Jasa Layanan', 'failed');
+                      }
+                      else if(otherAddress.text == ''){
+                        UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Isi Alamat Lengkap Anda', 'failed');
+                      }else if(kodePos.text == ''){
+                        UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Isi Kode Pos', 'failed');
+                      }else{
+                        _lainnyaModalBottomSheet(context);
+                      }
+                    }else if(_currentItemSelectedKurir == 'COD'){
+                      if(vouncher.text == ''){
+                        UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Masukan Kode Voucher Anda', 'failed');
+                      }
+                      else if(otherAddress.text == ''){
+                        UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Isi Alamat Lengkap Anda', 'failed');
+                      }else if(kodePos.text == ''){
+                        UserRepository().notifNoAction(scaffoldKey, context,'Silahkan Isi Kode Pos', 'failed');
+                      }else{
+                        _lainnyaModalBottomSheet(context);
+                      }
+                    }
+
+
                   }
                 },
-                child: Text("Bayar", style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 14.0)),
+                child: Text("Bayar", style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(34))),
               )
           )
         ],
@@ -586,26 +600,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
 
   _callBackPin(BuildContext context,bool isTrue) async{
     setState(() {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 100.0),
-              child: AlertDialog(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                    SizedBox(height:5.0),
-                    Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
-                  ],
-                ),
-              )
-          );
-
-        },
-      );
+      UserRepository().loadingQ(context);
     });
     final dbHelper = DbHelper.instance;
     var sendAddress; var sendVoucher; var sendKurir; var sendOngkir;
@@ -698,6 +693,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
@@ -715,7 +712,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               margin: EdgeInsets.only(top:20.0,bottom:10.0),
               color: Colors.white,
               padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
-              child:Text('Daftar Produk', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+              child:Text('Daftar Produk', style: TextStyle(color:Colors.green,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
             ),
             ProdukCheckoutSuplemen(),
             Container(
@@ -724,23 +721,24 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Informasi Pengiriman', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                  Text('Informasi Pengiriman', style: TextStyle(color:Colors.green,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
             _optionAddress(),
             isTrue?_address(context):_alamatPengirim(),
             Container(
-              padding: EdgeInsets.only(left:10.0,right:10.0),
+              padding: EdgeInsets.only(left:10.0,right:10.0,top:10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _kurir(context),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
                   _jasa(context),
                 ],
               ),
             ),
-            SizedBox(height:10.0),
+            // SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
             _currentItemSelectedKurir == 'COD' ? Container(
               padding: EdgeInsets.only(left:10.0,right:10.0),
               child: Column(
@@ -751,15 +749,17 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                         text: 'Voucher',
                         style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
                         children: <TextSpan>[
-                          TextSpan(text: ' ( masukan kode voucher yang telah anda dapatkan )',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' ( masukan kode voucher yang telah anda dapatkan )',style: TextStyle(color: Colors.green,fontSize: 12,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         ]
                     ),
                   ),
                   TextField(
+                    style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik'),
                     controller: vouncher,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: InputDecoration(
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
+                      hintText: 'contoh : COD200812W4',
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30))
                     ),
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
@@ -772,6 +772,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 ],
               ),
             ):Container(),
+            isTrue ? SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)):Container(),
             isTrue ? Container(
               padding: EdgeInsets.only(left:10.0,right:10.0),
               child: Column(
@@ -782,15 +783,16 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                         text: 'Detail Alamat',
                         style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
                         children: <TextSpan>[
-                          TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' ( nama jalan, rt, rw, blok, no rumah,kelurahan)',style: TextStyle(color: Colors.green,fontSize: 12,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         ]
                     ),
                   ),
                   TextField(
-                    style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                    style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30)),
                     controller: otherAddress,
                     decoration: InputDecoration(
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
+                      hintText: 'contoh : nama jalan, rt, rw, blok, no rumah,kelurahan',
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30))
                     ),
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
@@ -799,21 +801,22 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       setState(() {});
                     },
                   ),
-                  SizedBox(height:10.0),
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
                   RichText(
                     text: TextSpan(
                         text: 'Kode Pos',
                         style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
                         children: <TextSpan>[
-                          TextSpan(text: ' ( contoh : 4207081 )',style: TextStyle(color: Colors.green,fontSize: 10,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' ( contoh : 4207081 )',style: TextStyle(color: Colors.green,fontSize: 12,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         ]
                     ),
                   ),
                   TextField(
-                    style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                    style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize:  ScreenUtilQ.getInstance().setSp(30)),
                     controller: kodePos,
                     decoration: InputDecoration(
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
+                      hintText: 'contoh : 4207081',
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30))
                     ),
                     maxLines: null,
                     keyboardType: TextInputType.number,
@@ -823,8 +826,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                     },
                   ),
                   SizedBox(height:10.0),
-                  Text("Alamat Pengiriman :", style: TextStyle(fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ)),
-                  Text("${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}", style: TextStyle(color:Colors.grey,fontSize:11.0,fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ))
+                  Text("Alamat Pengiriman :", style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ,color: Colors.green)),
+                  Text("${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}", style: TextStyle(color:Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ))
                 ],
               ),
             ):Text(''),
@@ -834,7 +837,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Gunakan Metode Pembayaran Dari ?', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                  Text('Gunakan Metode Pembayaran Dari ?', style: TextStyle(color:Colors.green,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -859,10 +862,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                               groupValue: _radioValue2,
                               onChanged: _handleRadioValueChange2,
                             ),
-                            Text('Saldo Utama',style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                            Text('Saldo Utama',style: new TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoMain",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                        Text("$saldoMain",style: new TextStyle(color:Colors.red,fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
 
                       ],
                     ),
@@ -884,10 +887,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                               groupValue: _radioValue2,
                               onChanged: _handleRadioValueChange2,
                             ),
-                            new Text('Saldo Voucher',style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                            new Text('Saldo Voucher',style: new TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoVoucher",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                        Text("$saldoVoucher",style: new TextStyle(color:Colors.red,fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                       ],
                     ),
                   ) : Container(),
@@ -908,10 +911,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                               groupValue: _radioValue2,
                               onChanged: _handleRadioValueChange2,
                             ),
-                            new Text('Saldo Platinum',style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                            new Text('Saldo Platinum',style: new TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text("$saldoPlatinum",style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                        Text("$saldoPlatinum",style: new TextStyle(color:Colors.red,fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
 
                       ],
                     ),
@@ -937,8 +940,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Text('Saldo Gabungan',style: new TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                                Text('gabungan saldo platinum & utama',style: new TextStyle(color:Colors.green,fontStyle: FontStyle.italic,fontSize: 10.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                Text('Saldo Gabungan',style: new TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                Text('gabungan saldo platinum & utama',style: new TextStyle(color:Colors.green,fontStyle: FontStyle.italic,fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                               ],
                             )
 
@@ -948,8 +951,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text("$saldoPlatinum",textAlign:TextAlign.right,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                            Text("$saldoGabungan",textAlign:TextAlign.left,style: new TextStyle(color:Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                            Text("$saldoPlatinum",textAlign:TextAlign.right,style: new TextStyle(color:Colors.red,fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                            Text("$saldoGabungan",textAlign:TextAlign.left,style: new TextStyle(color:Colors.red,fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
                           ],
                         )
 
@@ -965,7 +968,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Ringkasan Belanja', style: TextStyle(color:Colors.green,fontSize: 14.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                  Text('Ringkasan Belanja', style: TextStyle(color:Colors.green,fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -986,8 +989,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('Total Harga (${totQty.toString()} Barang)', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-              Text("Rp ${formatter.format(totBayar)}",style: TextStyle(color: Colors.red, fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+              Text('Total Harga (${totQty.toString()} Barang)', style: TextStyle(color:Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+              Text("Rp ${formatter.format(totBayar)}",style: TextStyle(color: Colors.red, fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
             ],
           ),
           SizedBox(height: 0.0),
@@ -996,8 +999,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('Total Ongkos Kirim', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-              Text('Rp ${totOngkir==0?0:formatter.format(totOngkir)}', style: TextStyle(color: Colors.red,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+              Text('Total Ongkos Kirim', style: TextStyle(color:Colors.grey,fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+              Text('Rp ${totOngkir==0?0:formatter.format(totOngkir)}', style: TextStyle(color: Colors.red,fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
             ],
           ),
         ],
@@ -1006,6 +1009,8 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   void _lainnyaModalBottomSheet(context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     showModalBottomSheet(
         context: context,
         backgroundColor: Colors.white,
@@ -1023,15 +1028,14 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text("Apakah alamat anda sudah benar ?", style:TextStyle(color:Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 16.0,fontWeight: FontWeight.bold)),
+                Html(data:"Apakah alamat anda sudah benar ?", defaultTextStyle:TextStyle(color:Colors.green,fontFamily:ThaibahFont().fontQ,fontSize:14,fontWeight: FontWeight.bold)),
                 Divider(),
-                Text("Alamat Anda :", style:TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize: 14.0,fontWeight: FontWeight.bold)),
+                Html(data:"Alamat Anda :", defaultTextStyle:TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize:14,fontWeight: FontWeight.bold)),
                 SizedBox(height:10.0),
-                Text("$addr", style:TextStyle(color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontSize: 14.0,fontWeight: FontWeight.bold)),
+                Html(data:"$addr", defaultTextStyle:TextStyle(color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontSize:14,fontWeight: FontWeight.bold)),
                 Divider(),
-                Text("* Apabila alamat anda salah akan menghambat proses pengiriman *", style:TextStyle(color:Colors.red,fontFamily:ThaibahFont().fontQ,fontSize: 14.0,fontWeight: FontWeight.bold)),
+                Html(data:"* Apabila alamat anda salah akan menghambat proses pengiriman *", defaultTextStyle:TextStyle(color:Colors.red,fontFamily:ThaibahFont().fontQ,fontSize:12,fontWeight: FontWeight.bold)),
                 SizedBox(height:20.0),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -1044,7 +1048,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                             onTap: (){
                               Navigator.of(context).pop();
                             },
-                            child: Text("Kembali",style:TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                            child: Text("Kembali",style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ),
                         )
                     ),
@@ -1057,7 +1061,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                             onTap: (){
                               _pinBottomSheet(context);
                             },
-                            child: Text("Lanjut",style:TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                            child: Text("Lanjut",style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                           ),
                         )
                     ),

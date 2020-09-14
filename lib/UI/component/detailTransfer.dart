@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/bloc/transferBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
@@ -56,190 +57,160 @@ class _DetailTransferState extends State<DetailTransfer> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: TextTheme(
-          headline: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
+    return Scaffold(
+        appBar: UserRepository().appBarWithButton(context,'Konfirmasi Transfer', warna1, warna2,(){
+          Navigator.of(context).pop();
+        }, Container()),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                statusLevel!='0'?warna1:ThaibahColour.primary1,
+                statusLevel!='0'?warna2:ThaibahColour.primary2
+              ],
+            ),
           ),
-          subhead: TextStyle(color: Colors.white54),
-          body1: TextStyle(color: Colors.white54),
-          subtitle: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 17,
-          ),
-          title: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 19,
-          ),
-        ),
-      ),
-      home: SafeArea(
-        child: Scaffold(
-            appBar: UserRepository().appBarWithButton(context,'Konfirmasi Transfer', warna1, warna2,(){
-              Navigator.of(context).pop();
-            }, Container()),
-            body: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [
-                    statusLevel!='0'?warna1:ThaibahColour.primary1,
-                    statusLevel!='0'?warna2:ThaibahColour.primary2
-                  ],
-                ),
-              ),
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(11.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black45,
-                                      blurRadius: 3.0,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                      widget.picture
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 5.0),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    widget.penerima,
-                                    style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-                                  ),
-                                  Text(
-                                    widget.referralpenerima,
-                                    style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-
-                        SizedBox(height: 5),
-
-                        SizedBox(height: 11),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white30,
-                            borderRadius: BorderRadius.circular(35),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              FlatButton(
-                                child: Row(
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.sync_problem,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      "Lanjutkan",
-                                      style: TextStyle(fontWeight:FontWeight.bold,color: Colors.white,fontFamily: ThaibahFont().fontQ),
-                                    )
-                                  ],
-                                ),
-                                onPressed: () {
-
-                                  print('tap');
-                                  _pinBottomSheet(context);
-                                },
-                              ),
-
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 11),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      child: Column(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(11.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      child: Row(
                         children: <Widget>[
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.all(11.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(31),
-                                  topRight: Radius.circular(31),
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black45,
+                                  blurRadius: 3.0,
+                                  offset: Offset(0, 3),
                                 ),
-                                color: Colors.white,
-                              ),
-                              child: Column(
-                                children: <Widget>[
-
-                                  Expanded(
-                                    child: ListView(
-                                      children: <Widget>[
-                                        bottomCard(Icon(Icons.input,color: Colors.white),'Nominal Transfer','Rp. '+formatter.format(int.parse(widget.nominal))),
-                                        widget.statusFee == true ? bottomCard(Icon(Icons.error,color: Colors.white),'Biaya Transfer','Rp. '+formatter.format(int.parse(widget.fee_charge))):Container(),
-                                        bottomCard(Icon(Icons.note,color: Colors.white),'Catatan',widget.pesan!=''?widget.pesan:'-'),
-                                        Divider(),
-                                        SizedBox(height: 25.0),
-                                        Row(
-                                          children: <Widget>[
-                                            SizedBox(width: 5.0),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Center(
-                                                    child: Text("SUMBER DANA YANG DIGUNAKAN DARI SALDO UTAMA ANDA",style: TextStyle(color: Colors.black45,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 20.0,letterSpacing: 5.0),textAlign: TextAlign.center,),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        )
-
-                                      ],
-                                    ),
-                                  ),
-
-                                ],
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                  widget.picture
                               ),
                             ),
+                          ),
+                          SizedBox(width: 5.0),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                widget.penerima,
+                                style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color: Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                              ),
+                              Text(
+                                widget.referralpenerima,
+                                style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color: Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                  )
-                ],
-              ),
-            )
+                    SizedBox(height: 5),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white30,
+                        borderRadius: BorderRadius.circular(35),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          FlatButton(
+                            child: Row(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.sync_problem,
+                                  color: Colors.white,
+                                  size: ScreenUtilQ.getInstance().setHeight(60),
+                                ),
+                                Text(
+                                  "Lanjutkan",
+                                  style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),fontWeight:FontWeight.bold,color: Colors.white,fontFamily: ThaibahFont().fontQ),
+                                )
+                              ],
+                            ),
+                            onPressed: () {
+                              _pinBottomSheet(context);
+                            },
+                          ),
 
-        ),
-      ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 11),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(11.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(31),
+                              topRight: Radius.circular(31),
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Column(
+                            children: <Widget>[
+
+                              Expanded(
+                                child: ListView(
+                                  children: <Widget>[
+                                    bottomCard(Icon(Icons.input,color: Colors.white),'Nominal Transfer','Rp. '+formatter.format(int.parse(widget.nominal))),
+                                    widget.statusFee == true ? bottomCard(Icon(Icons.error,color: Colors.white),'Biaya Transfer','Rp. '+formatter.format(int.parse(widget.fee_charge))):Container(),
+                                    bottomCard(Icon(Icons.note,color: Colors.white),'Catatan',widget.pesan!=''?widget.pesan:'-'),
+                                    Divider(),
+                                    SizedBox(height: 25.0),
+                                    Row(
+                                      children: <Widget>[
+                                        SizedBox(width: 5.0),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              Center(
+                                                child: Text("SUMBER DANA YANG DIGUNAKAN DARI SALDO UTAMA ANDA",style: TextStyle(color: Colors.black45,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(40),letterSpacing: 5.0),textAlign: TextAlign.center,),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
+
+                                  ],
+                                ),
+                              ),
+
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        )
+
     );
   }
 
@@ -262,8 +233,8 @@ class _DetailTransferState extends State<DetailTransfer> {
             crossAxisAlignment:
             CrossAxisAlignment.start,
             children: <Widget>[
-              Text("$title",style: TextStyle(color: Colors.black87,fontFamily:ThaibahFont().fontQ)),
-              Text("$desc",style: TextStyle(color: Colors.black45,fontFamily:ThaibahFont().fontQ)),
+              Text("$title",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color: Colors.black87,fontFamily:ThaibahFont().fontQ)),
+              Text("$desc",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color: Colors.black45,fontFamily:ThaibahFont().fontQ)),
             ],
           ),
         ),
@@ -380,15 +351,9 @@ class _DetailTransferState extends State<DetailTransfer> {
   }
 
   Future<void> _pinBottomSheet(context) async {
-//    showDialog(
-//        context: context,
-//        builder: (BuildContext bc){
-//          return PinScreen(callback: _callBackPin);
-//        }
-//    );
     Navigator.push(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (context) => PinScreen(callback: _callBackPin),
       ),
     );
@@ -397,19 +362,9 @@ class _DetailTransferState extends State<DetailTransfer> {
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
       setState(() {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: LinearProgressIndicator(),
-            );
-          },
-        );
-
+        UserRepository().loadingQ(context);
       });
       var res = await transferBloc.fetchTransfer(widget.nominal, widget.referralpenerima,"");
-
       if(res.status=="success"){
         setState(() {
           Navigator.pop(context);
@@ -432,7 +387,8 @@ class _DetailTransferState extends State<DetailTransfer> {
               );
             }
         );
-      }else{
+      }
+      else{
         setState(() {
           Navigator.pop(context);
         });

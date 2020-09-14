@@ -35,7 +35,7 @@ class _CardHeaderState extends State<CardHeader> {
   @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false)..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
 
     return Container(
       margin: EdgeInsets.all(10.0),
@@ -54,13 +54,13 @@ class _CardHeaderState extends State<CardHeader> {
           Center(
             child: Padding(
               padding: EdgeInsets.all(5.0),
-              child: Text("Saldo Anda",style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              child: Text("Saldo Anda",style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(36),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ),
           ),
           Center(
             child: Padding(
               padding: EdgeInsets.all(5.0),
-              child: Text(widget.saldo,style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              child: Text(widget.saldo,style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(36),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ),
           ),
         ],

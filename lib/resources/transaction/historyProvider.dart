@@ -10,19 +10,11 @@ class HistoryProvider {
   final userRepository = UserRepository();
   Future<HistoryModel> fetchHistory(var param, var page,var limit,var from,var to, var q) async{
     final token = await userRepository.getDataUser('token');
-    var url;
-    if(param == 'mainTrx'){
-      url = 'transaction/myhistory?type=master&page=$page&limit=$limit&datefrom=$from&dateto=$to&q=$q';
+    var url='transaction/myhistory?type=$param&page=$page&limit=$limit&datefrom=$from&dateto=$to';
+    if(q!=''){
+      url+='&q=$q';
     }
-    if(param == 'bonus'){
-      url = 'transaction/myhistory?type=bonus&page=$page&limit=$limit&datefrom=$from&dateto=$to&q=$q';
-    }
-    if(param == 'voucher'){
-      url = 'transaction/myhistory?type=voucher&page=$page&limit=$limit&datefrom=$from&dateto=$to&q=$q';
-    }
-    if(param == 'platinum'){
-      url = 'transaction/myhistory?type=platinum&page=$page&limit=$limit&datefrom=$from&dateto=$to&q=$q';
-    }
+
     print(param);
     print(url);
     final response = await client.get(

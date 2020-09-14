@@ -28,28 +28,7 @@ class _BuktiTransferState extends State<BuktiTransfer> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   String fileName;
   Future upload() async{
-    setState(() {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 100.0),
-            child: AlertDialog(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                  SizedBox(height:5.0),
-                  Text("Tunggu Sebentar .....")
-                ],
-              ),
-            )
-          );
 
-        },
-      );
-    });
     if(_image != null){
       fileName = _image.path.split("/").last;
       var type = fileName.split('.');
@@ -125,6 +104,9 @@ class _BuktiTransferState extends State<BuktiTransfer> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Scaffold(
       appBar:UserRepository().appBarWithButton(context,'Upload Bukti Transfer',warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: Container(
@@ -133,7 +115,7 @@ class _BuktiTransferState extends State<BuktiTransfer> {
           children: <Widget>[
             SizedBox(
               width: double.infinity,
-              height: ScreenUtilQ.getInstance().setHeight(130),
+              height: ScreenUtilQ.getInstance().setHeight(170),
               child: new OutlineButton(
                 borderSide: BorderSide(color: Colors.grey,width: 1.0),
                 child: Column(
@@ -141,7 +123,7 @@ class _BuktiTransferState extends State<BuktiTransfer> {
                   children: <Widget>[
                     SizedBox(height: ScreenUtilQ.getInstance().setHeight(30),),
                     Icon(Icons.cloud_upload),
-                    _image == null ? Text('Upload Bukti Transfer',style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:Colors.red)) : Center(child: Text('$_image',textAlign:TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12.0,fontWeight: FontWeight.bold,color:Colors.grey)))
+                    _image == null ? Text('Upload Bukti Transfer',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:Colors.red)) : Center(child: Text('$_image',textAlign:TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,color:Colors.grey))),
                   ],
                 ),
                 onPressed: () async {
@@ -173,6 +155,9 @@ class _BuktiTransferState extends State<BuktiTransfer> {
   }
 
   Widget _bottomNavBarBeli(BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Container(
       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Row(
@@ -193,10 +178,13 @@ class _BuktiTransferState extends State<BuktiTransfer> {
                 color: statusLevel!='0'?warna1:ThaibahColour.primary2,
                 onPressed: (){
                   if(_image!=null){
+                    setState(() {
+                      UserRepository().loadingQ(context);
+                    });
                     upload();
                   }
                 },
-                child: Text("SIMPAN", style: TextStyle(fontSize:16.0,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
+                child: Text("SIMPAN", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(45),fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
               )
           )
         ],

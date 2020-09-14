@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 
 /// return true is refresh success
 ///
@@ -401,7 +402,7 @@ class DefaultLoadMoreDelegate extends LoadMoreDelegate {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(text),
+              child: Text(text,style: TextStyle(fontSize: ScreenUtilQ().setSp(30)),),
             ),
           ],
         ),

@@ -20,6 +20,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'listLikeSosmed.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 
 class DetailSosmed extends StatefulWidget {
   final String id;
@@ -147,7 +148,6 @@ class _DetailSosmedState extends State<DetailSosmed> {
     });
 
   }
-
   Color warna1;
   Color warna2;
   String statusLevel ='0';
@@ -179,6 +179,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: _scaffoldKey,
       appBar:UserRepository().appBarWithButton(context,"Detail Postingan",warna1,warna2,(){Navigator.pop(context);},Container()),
@@ -225,8 +227,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          new Text("${snapshot.data.result.penulis}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                                          new Text("${snapshot.data.result.createdAt}",style: TextStyle(fontSize:10.0,color:Colors.grey,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                          new Text("${snapshot.data.result.penulis}",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                          new Text("${snapshot.data.result.createdAt}",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.grey,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                         ],
                                       )
                                     ],
@@ -319,7 +321,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
 
                                             print(snapshot.data.result.isLike);
                                           },
-                                          child:new Icon(FontAwesomeIcons.heart,color: snapshot.data.result.isLike==true?Colors.red:Colors.black)
+                                          child:new Icon(FontAwesomeIcons.heart,size:  ScreenUtilQ.getInstance().setSp(70),color: snapshot.data.result.isLike==true?Colors.red:Colors.black)
                                       ),
                                       new SizedBox(width: 10.0),
                                       GestureDetector(
@@ -335,12 +337,12 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                             _blocDetail.fetchListDetailSosmed(widget.id); //you get details from screen2 here
                                           });
                                         },
-                                        child:int.parse(snapshot.data.result.likes) != 0 ? Text("$sukai",style: TextStyle(decoration: TextDecoration.underline,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 10.0)) : Text("$sukai",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: 10.0),),
+                                        child:int.parse(snapshot.data.result.likes) != 0 ? Text("$sukai",style: TextStyle(decoration: TextDecoration.underline,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(26))) : Text("$sukai",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(26)),),
                                       ),
                                       new SizedBox(width: 16.0),
-                                      new Icon(FontAwesomeIcons.comment),
+                                      new Icon(FontAwesomeIcons.comment,size: ScreenUtilQ.getInstance().setSp(70)),
                                       new SizedBox(width: 10.0),
-                                      Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontSize:10.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                      Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
 
 
                                     ],
@@ -375,6 +377,9 @@ class _DetailSosmedState extends State<DetailSosmed> {
   }
 
   void _lainnyaModalBottomSheet(context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
         backgroundColor: Colors.black,
@@ -388,7 +393,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
             children: <Widget>[
               Container(
                 child: TextFormField(
-                  style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
+                  style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
                   controller: captionController,
                   textInputAction: TextInputAction.newline,
                   keyboardType: TextInputType.multiline,
@@ -402,7 +407,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                     }
                   },
                   decoration: new InputDecoration(
-                    hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                    hintStyle: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                     border: InputBorder.none,
                     hintText: "Tambahkan Komentar...",
                   ),
@@ -428,7 +433,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                     },
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(10.0, 22.0, 10.0, 22.0),
-                      child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),),
+                      child:Center(child: Text("Simpan",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(45),color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),),
                     ),
                   )
               )
@@ -439,6 +444,9 @@ class _DetailSosmedState extends State<DetailSosmed> {
   }
 
   Widget buildContent(AsyncSnapshot<ListDetailSosmedModel> snapshot, BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return snapshot.data.result.comment.length > 0 ? isLoading ? _loading() : ListView.builder(
         primary: true,
         shrinkWrap: true,
@@ -471,10 +479,9 @@ class _DetailSosmedState extends State<DetailSosmed> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
 //                          Html(data:snapshot.data.result.comment[index].name,defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                          AutoSizeTextQ(
+                          Text(
                             snapshot.data.result.comment[index].name,
-                            style: TextStyle(color:Colors.grey,fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
-
+                            style: TextStyle(color:Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(34),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
                           ),
                           Linkify(
                             onOpen: (link) async {
@@ -494,7 +501,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                       ),
                     ),
                     new SizedBox(width: 10.0),
-                    Text("${snapshot.data.result.comment[index].createdAt}",style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey,fontSize: 8.0)),
+                    Text("${snapshot.data.result.comment[index].createdAt}",style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(26))),
                   ],
                 ),
               ),

@@ -5,6 +5,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/configModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -81,49 +82,58 @@ class _TransferUIState extends State<TransferUI> {
     var rplcComa = moneyMaskedTextController.text.replaceAll(",", "");
     var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
     String nominal = sbtrLast3;
-    print(nominal);
     String referral_penerima = penerimaController.text != "" ? penerimaController.text : _currentItemSelectedContact ;
     String pesan = pesanController.text!=''?pesanController.text:'-';
-    print(referral_penerima);
-    var res = await TransferProvider().transferDetail(nominal, referral_penerima, pesan);
-    if(res is TransferDetailModel){
-      TransferDetailModel results = res;
-      if(results.status == 'success'){
+    String saldo = widget.saldo.replaceAll(",", "").substring(0,widget.saldo.length-5);
+    if(int.parse(nominal)>int.parse(saldo.replaceAll("Rp",'').replaceAll(" ",""))){
+      setState(() {
+        Navigator.pop(context);
+      });
+      UserRepository().notifNoAction(scaffoldKey, context,"nominal lebih besar dari saldo utama","failed");
+    }
+    else{
+      var res = await TransferProvider().transferDetail(nominal, referral_penerima, pesan);
+      if(res is TransferDetailModel){
+        TransferDetailModel results = res;
+        if(results.status == 'success'){
+          setState(() {
+            Navigator.pop(context);
+          });
+          Navigator.of(context, rootNavigator: true).push(
+            new CupertinoPageRoute(builder: (context) => DetailTransfer(
+                nominal: results.result.nominal.toString(),
+                fee_charge: results.result.feeCharge.toString(),
+                total_bayar: results.result.totalBayar.toString(),
+                penerima: results.result.penerima,
+                picture: results.result.picture,
+                referralpenerima: results.result.referralpenerima,
+                pesan:pesanController.text,
+                statusFee:results.result.statusFeecharge
+            )),
+          );
+        }else{
+          setState(() {
+            Navigator.pop(context);
+            penerimaController.text = '';
+          });
+          UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
+        }
+      }
+      else{
+        General results = res;
         setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context, rootNavigator: true).push(
-          new CupertinoPageRoute(builder: (context) => DetailTransfer(
-              nominal: results.result.nominal.toString(),
-              fee_charge: results.result.feeCharge.toString(),
-              total_bayar: results.result.totalBayar.toString(),
-              penerima: results.result.penerima,
-              picture: results.result.picture,
-              referralpenerima: results.result.referralpenerima,
-              pesan:pesanController.text,
-              statusFee:results.result.statusFeecharge
-          )),
-        );
-      }else{
-        setState(() {
-          _isLoading = false;
-          penerimaController.text = '';
+          Navigator.pop(context);
         });
         UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
-//        return showInSnackBar(results.msg);
       }
-    }else{
-      General results = res;
-      setState(() {
-        _isLoading = false;
-      });
-      UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
-
-//      return showInSnackBar(results.msg);
     }
+
+
   }
 
   void _lainnyaModalBottomSheet(context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     showModalBottomSheet(
         context: context,
         backgroundColor: Colors.transparent,
@@ -131,7 +141,6 @@ class _TransferUIState extends State<TransferUI> {
           return Container(
             height: MediaQuery.of(context).size.height/1,
             child: Material(
-              //margin: EdgeInsets.only(top: 10),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
                 // backgroundColor: Colors.grey,
                 elevation: 5.0,
@@ -139,7 +148,7 @@ class _TransferUIState extends State<TransferUI> {
                 child: Column(
                     children: <Widget>[
                       SizedBox(height: 20,),
-                      Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                      Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: ScreenUtilQ.getInstance().setSp(34),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
                       SizedBox(height: 10.0,),
                       Container(
                         height:MediaQuery.of(context).size.height/2,
@@ -185,13 +194,10 @@ class _TransferUIState extends State<TransferUI> {
 
   @override
   Widget build(BuildContext context) {
-//    moneyMaskedTextController.updateValue(0.00);
-//    moneyMaskedTextController.addListener((){
-//      print(moneyMaskedTextController.numberValue);
-//    });
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
-
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
         resizeToAvoidBottomInset: false,
         // bottomNavigationBar: _bottomNavBar(),
@@ -238,12 +244,12 @@ class _TransferUIState extends State<TransferUI> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nominal",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                        Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
-                          style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontFamily: ThaibahFont().fontQ),
                           controller: moneyMaskedTextController,
                           decoration: InputDecoration(
-                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                             prefixText: 'Rp.',
                           ),
                           keyboardType: TextInputType.number,
@@ -255,17 +261,11 @@ class _TransferUIState extends State<TransferUI> {
                           ],
                           focusNode: tfFocus,
                           onFieldSubmitted: (term){
-//                            print(double.parse(term));
-//                            moneyMaskedTextController.updateValue(double.parse(term));
                             tfFocus.unfocus();
                             _fieldFocusChange(context, tfFocus, penerimaFocus);
                           },
-//                          onChanged: (x){
-//                            print("########################### $x ########################");
-//                            tfController.text = x;
-//                            moneyMaskedTextController.text = x;
-//                          },
                         ),
+
                       ],
                     ),
                   ),
@@ -280,9 +280,9 @@ class _TransferUIState extends State<TransferUI> {
                               return snapshot.hasData ?  snapshot.data.result.transfer == 'all' ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text("Penerima",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                  Text("Penerima",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                                   TextFormField(
-                                    style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontFamily: ThaibahFont().fontQ),
                                     textCapitalization: TextCapitalization.sentences,
                                     onChanged: (value) {
                                       if (penerimaController.text != value.toUpperCase())
@@ -291,10 +291,6 @@ class _TransferUIState extends State<TransferUI> {
                                     controller: penerimaController,
                                     decoration: InputDecoration(
                                       hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
-//                                      suffixIcon: IconButton(
-//                                          onPressed: scanCode,
-//                                          icon: Icon(Icons.settings_overscan)
-//                                      ),
                                       suffixIcon: InkWell(
                                         onTap: scanCode,
                                         child: Padding(
@@ -308,7 +304,6 @@ class _TransferUIState extends State<TransferUI> {
                                     ),
                                     keyboardType: TextInputType.number,
                                     inputFormatters: <TextInputFormatter>[
-//                                      LengthLimitingTextInputFormatter(13),
                                       WhitelistingTextInputFormatter.digitsOnly,
                                       BlacklistingTextInputFormatter.singleLineFormatter,
                                     ],
@@ -337,49 +332,17 @@ class _TransferUIState extends State<TransferUI> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Pesan",style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                        Text("Keterangan",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
-                          style: TextStyle(fontFamily: ThaibahFont().fontQ),
+                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontFamily: ThaibahFont().fontQ),
                           controller: pesanController,
                           decoration: InputDecoration(
-                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                           ),
                           maxLines: null,
                           keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.done,
                           focusNode: pesanFocus,
-                          onFieldSubmitted: (term){
-                            pesanFocus.unfocus();
-                            print(moneyMaskedTextController.text);
-//                              setState(() {
-//                                _isLoading = true;
-//                              });
-//                              sendTransferDetail();
-                            if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
-                              UserRepository().notifNoAction(scaffoldKey, context,"Nominal Tidak Boleh Kosong","failed");
-//                              return showInSnackBar("Nominal Tidak Boleh Kosong");
-                            }
-                            else{
-                              if(cik == 'all'){
-                                if(penerimaController.text == ''){
-                                  UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
-//                                  return showInSnackBar("Penerima Semua Tidak Boleh Kosong");
-                                }
-                              }
-                              if(cik=='contact'){
-                                if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
-                                  UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
-
-//                                  return showInSnackBar("Penerima Contact Tidak Boleh Kosong");
-                                }
-                              }
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              sendTransferDetail();
-                            }
-//                            sendTransferDetail();
-                          },
                         ),
                       ],
                     ),
@@ -390,29 +353,25 @@ class _TransferUIState extends State<TransferUI> {
                     (){
                       if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
                         UserRepository().notifNoAction(scaffoldKey, context,"Nominal Tidak Boleh Kosong","failed");
-//                        return showInSnackBar("Nominal Tidak Boleh Kosong");
                       }
                       else{
                         if(cik == 'all'){
                           if(penerimaController.text == ''){
                             UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
-//                            return showInSnackBar("Penerima Tidak Boleh Kosong");
                           }
                         }
                         if(cik=='contact'){
                           if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
                             UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
-
-//                            return showInSnackBar("Penerima Tidak Boleh Kosong");
                           }
                         }
                         setState(() {
-                          _isLoading = true;
+                          UserRepository().loadingQ(context);
                         });
                         sendTransferDetail();
                       }
                     },
-                    _isLoading
+                    false,'Simpan'
                   )
                 ],
               ),
@@ -441,15 +400,21 @@ class _TransferUIState extends State<TransferUI> {
             if(snapshot.hasError) print(snapshot.error);
             if(snapshot.hasData){
               if(snapshot.data.result.length > 0){
-                return new InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Penerima',
-                  ),
-                  isEmpty: _currentItemSelectedContact == null,
-                  child: new DropdownButtonHideUnderline(
-                    child: new DropdownButton<String>(
-                      value: _currentItemSelectedContact,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Html(data:"Penerima",defaultTextStyle: TextStyle(fontSize:12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                    DropdownButton(
                       isDense: true,
+                      isExpanded: true,
+                      hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
+                      value: _currentItemSelectedContact,
+                      items: snapshot.data.result.map((prefix0.Result items){
+                        return new DropdownMenuItem<String>(
+                          value: "${items.referral}",
+                          child: Html(data:"${items.name} | ${items.referral}",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik')),
+                        );
+                      }).toList(),
                       onChanged: (String newValue) {
                         setState(() {
                           tfFocus.unfocus();
@@ -457,15 +422,34 @@ class _TransferUIState extends State<TransferUI> {
                           _onDropDownItemSelectedContact(newValue);
                         });
                       },
-                      items: snapshot.data.result.map((prefix0.Result items){
-                        return new DropdownMenuItem<String>(
-                          value: "${items.referral}",
-                          child: Text("${items.name} | ${items.referral}"),
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                    )
+                  ],
                 );
+                // return new InputDecorator(
+                //   decoration: const InputDecoration(
+                //     labelText: 'Penerima',
+                //   ),
+                //   isEmpty: _currentItemSelectedContact == null,
+                //   child: new DropdownButtonHideUnderline(
+                //     child: new DropdownButton<String>(
+                //       value: _currentItemSelectedContact,
+                //       isDense: true,
+                //       onChanged: (String newValue) {
+                //         setState(() {
+                //           tfFocus.unfocus();
+                //           FocusScope.of(context).requestFocus(new FocusNode());
+                //           _onDropDownItemSelectedContact(newValue);
+                //         });
+                //       },
+                //       items: snapshot.data.result.map((prefix0.Result items){
+                //         return new DropdownMenuItem<String>(
+                //           value: "${items.referral}",
+                //           child: Text("${items.name} | ${items.referral}"),
+                //         );
+                //       }).toList(),
+                //     ),
+                //   ),
+                // );
               }else{
                 return Card(
                   color: Colors.white,
@@ -496,8 +480,6 @@ class _TransferUIState extends State<TransferUI> {
     final val = newValueSelected;
     tfFocus.unfocus();
     setState(() {
-//      FocusScope.of(context).detach();
-
       FocusScope.of(context).requestFocus(new FocusNode());
       _currentItemSelectedContact = val;
     });

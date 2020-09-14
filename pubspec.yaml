@@ -41,6 +41,8 @@ dependencies:
   app_settings: 3.0.1
   sqflite: any
   path_provider: any
+  flutter_cupertino_date_picker:
+
 #  google_fonts: any
 
 

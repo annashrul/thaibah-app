@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/royalti/levelModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/bloc/royalti/royaltiBloc.dart';
 import 'package:thaibah/Constants/constants.dart';
 
@@ -44,6 +45,7 @@ class _LevelState extends State<Level> {
   }
 
   Widget buildContent(AsyncSnapshot<LevelModel> snapshot, BuildContext context){
+
     return Container(
         padding: EdgeInsets.all(0.0),
         height: 40,
@@ -96,7 +98,8 @@ class _ChoiceChipState extends State<ChoiceChip> {
   }
   @override
   Widget build(BuildContext context) {
-
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     // TODO: implement build
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -116,7 +119,7 @@ class _ChoiceChipState extends State<ChoiceChip> {
           ),
           Text(
             widget.text,
-            style: TextStyle(color: Colors.white, fontSize: 12,fontFamily:ThaibahFont().fontQ),
+            style: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ),
             softWrap: true,
           )
         ],

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
@@ -16,6 +17,31 @@ import 'package:thaibah/resources/gagalHitProvider.dart';
 
 
 class UserRepository {
+
+
+  loadingQ(BuildContext context){
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 100.0),
+            child: AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                  SizedBox(height:10.0),
+                  Html(customTextAlign: (_) => TextAlign.center, data:"Tunggu Sebentar .....",defaultTextStyle:TextStyle(fontSize:12,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                ],
+              ),
+            )
+        );
+
+      },
+    );
+  }
+
   requestTimeOut(Function callback){
     return Container(
       child: Center(
@@ -117,6 +143,8 @@ class UserRepository {
     );
   }
   modeUpdate(BuildContext context){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Container(
       padding:EdgeInsets.all(10.0),
       child: Center(
@@ -148,7 +176,7 @@ class UserRepository {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Icon(Icons.power_settings_new,color: Colors.white,), // icon
-                        Text("Keluar",style:TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.white,fontWeight: FontWeight.bold)), // text
+                        Text("Keluar",style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),fontFamily:ThaibahFont().fontQ,color:Colors.white,fontWeight: FontWeight.bold)), // text
                       ],
                     ),
                   ),
@@ -156,18 +184,20 @@ class UserRepository {
               ),
             ),
             SizedBox(height: 10.0,),
-            Text("Token Belum Terpasang Pada Akun Thaibah Anda.",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-            Text("Silahkan Keluar dan Masuk Kembali Ke Aplikasi Thaibah Agar Akun Anda Mempunyai Token",textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+            Text("Token Belum Terpasang Pada Akun Thaibah Anda.",textAlign: TextAlign.center,style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+            Text("Silahkan Keluar dan Masuk Kembali Ke Aplikasi Thaibah Agar Akun Anda Mempunyai Token",textAlign: TextAlign.center,style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
           ],
         ),
       ),
     );
   }
   appBarNoButton(BuildContext context, title,Color color1, Color color2){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     var cek =  AppBar(
       centerTitle: false,
       elevation: 0.0,
-      title: Text(title,style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -185,7 +215,7 @@ class UserRepository {
   }
   appBarWithButton(BuildContext context, title,Color color1, Color color2,Function callback,Widget action){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false)..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     var cek =  AppBar(
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios,color: Colors.white),
@@ -195,7 +225,7 @@ class UserRepository {
       ),
       centerTitle: false,
       elevation: 0.0,
-      title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(45),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -214,8 +244,9 @@ class UserRepository {
     );
     return cek;
   }
-
   appBarWithTab(BuildContext context, title,Color color1, Color color2,Map<String,dynamic> lbl){
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     List<Tab> tab = new List();
     lbl.forEach((key, value) {
       tab.add(Tab(text: value));
@@ -235,13 +266,13 @@ class UserRepository {
       ),
       centerTitle: false,
       elevation: 0.0,
-      title: Text(title, style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      title: Text(title, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
       bottom: TabBar(
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.grey[400],
           indicatorWeight: 2,
-          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily:ThaibahFont().fontQ,fontSize: 16),
+          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(36)),
           tabs: tab
       ),
       actions: <Widget>[
@@ -255,6 +286,8 @@ class UserRepository {
     lbl.forEach((key, value) {
       tab.add(Tab(text: value));
     });
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     var cek = new AppBar(
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios,color: Colors.white),
@@ -276,13 +309,13 @@ class UserRepository {
       ),
       centerTitle: false,
       elevation: 0.0,
-      title: Text(title, style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      title: Text(title, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
       bottom: TabBar(
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.grey[400],
           indicatorWeight: 5 ,
-          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily:ThaibahFont().fontQ,fontSize: 16),
+          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(40)),
           tabs: tab
       ),
       actions: <Widget>[
@@ -291,14 +324,13 @@ class UserRepository {
     );
     return cek;
   }
-
-  buttonQ(BuildContext context,Color color1,Color color2,Function callback,bool isLoading){
+  buttonQ(BuildContext context,Color color1,Color color2,Function callback,bool isLoading,label){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     var cek = Container(
       margin: EdgeInsets.all(16),
       width: MediaQuery.of(context).size.width/1,
-      height: ScreenUtilQ.getInstance().setHeight(100),
+      height: ScreenUtilQ.getInstance().setHeight(150),
       decoration: BoxDecoration(
           gradient: LinearGradient(colors: [color1!=null?color1:ThaibahColour.primary1,color2!=null?color2:ThaibahColour.primary2]),
           borderRadius: BorderRadius.circular(6.0),
@@ -309,7 +341,7 @@ class UserRepository {
         child: InkWell(
           onTap:callback,
           child: Center(
-            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text("Simpan",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text(label,style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(45),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
           ),
         ),
       ),
@@ -318,7 +350,7 @@ class UserRepository {
   }
   buttonLoadQ(BuildContext context,Color color1,Color color2,Function callback,bool isLoading){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     var cek = Container(
       margin: EdgeInsets.all(16),
       width: MediaQuery.of(context).size.width/1,
@@ -352,13 +384,16 @@ class UserRepository {
     );
   }
   void notifNoAction(_scaffoldKey,BuildContext context,String value,param) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     FocusScope.of(context).requestFocus(new FocusNode());
     _scaffoldKey.currentState?.removeCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
       content: new Text(
         value,
         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
+        style: TextStyle(color: Colors.white, fontSize: ScreenUtilQ.getInstance().setSp(30), fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
       ),
       backgroundColor: param=='failed' ? Colors.redAccent : ThaibahColour.primary2,
       duration: Duration(seconds: 3),
@@ -366,13 +401,16 @@ class UserRepository {
     return;
   }
   void notifWithAction(_scaffoldKey,BuildContext context,String value,param,label,Function callback) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     FocusScope.of(context).requestFocus(new FocusNode());
     _scaffoldKey.currentState?.removeCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
       content: new Text(
         value,
         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
+        style: TextStyle(color: Colors.white, fontSize: ScreenUtilQ.getInstance().setSp(30), fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
       ),
       action: SnackBarAction(
         textColor: Colors.white,
@@ -395,7 +433,6 @@ class UserRepository {
     String onesignalUserId = status.subscriptionStatus.userId;
     return onesignalUserId;
   }
-
   Future<bool> cekVersion() async {
 
     var res = await ConfigProvider().cekVersion();
@@ -409,7 +446,6 @@ class UserRepository {
     }
     return false;
   }
-
   Future<bool> cekStatusMember() async {
     var res = await ConfigProvider().cekVersion();
     if(res is Checker){
@@ -421,83 +457,6 @@ class UserRepository {
     }
     return false;
   }
-//  Future<bool> cekStatusLogin()async{
-//    final prefs = await SharedPreferences.getInstance();
-//    if(prefs.getString('id') == null || prefs.getString('id') == ''){
-//      return true;
-//    }
-//    return false;
-//  }
-//
-//  Future<void> deleteToken() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    prefs.remove("token");
-//    return;
-//  }
-//
-//  Future<void> persistToken(String token) async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String ctoken = prefs.getString('token');
-//    // await Future.delayed(Duration(seconds: 1));
-//    if(token == ctoken){
-//      return true;
-//    }else{
-//      return false;
-//    }
-//  }
-//
-//  Future<bool> hasToken() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String token = prefs.getString('token');
-//    if(token!=null){
-//      return true;
-//    }else{
-//      return false;
-//    }
-//  }
-//
-//  Future<String> getToken() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String token = prefs.getString('token');
-//    return token;
-//  }
-//
-//  Future<int> getPin() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String pin = prefs.getString('pin');
-//    return int.parse(pin);
-//  }
-//
-//  Future<String> getID() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String id = prefs.getString('id');
-//    return id;
-//  }
-//
-//  Future<String> getReff() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String reff = prefs.getString('kd_referral');
-//    return reff;
-//  }
-//
-//  Future<String> getName() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String name = prefs.getString('name');
-//    return name;
-//  }
-//
-//  Future<String> getNoHp() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String nohp = prefs.getString('nohp');
-//    return nohp;
-//  }
-//
-//  Future<String> getKtp() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String nohp = prefs.getString('ktp');
-//    return nohp;
-//  }
-
   Future<bool> check() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
@@ -507,7 +466,6 @@ class UserRepository {
     }
     return false;
   }
-
   Future getDataUser(param) async{
     int id;
     String idServer='';
@@ -576,8 +534,6 @@ class UserRepository {
     if(param=='warna1'){return warna1;}
     if(param=='warna2'){return warna2;}
   }
-
-
   Future<bool> checker() async{
     var cekMember = await ConfigProvider().checkerMember();
     if(cekMember is CheckerMember){

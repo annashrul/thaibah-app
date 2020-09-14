@@ -132,6 +132,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
             warna1 = color1 == '' ? ThaibahColour.primary1 : hexToColors(color1);
             warna2 = color2 == '' ? ThaibahColour.primary2 : hexToColors(color2);
             statusLevel = levelStatus;
+            modeUpdate = true;
           });
           throw Exception('Failed to load info');
         }
@@ -186,7 +187,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
 
   Widget buildContent(BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() :Column(
       children: <Widget>[
         Container(
@@ -232,7 +233,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    Text(_name,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                    Text(_name,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(34),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                   ],
                                 )
                             ),
@@ -244,9 +245,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 children: <Widget>[
                                   Container(
                                     width:MediaQuery.of(context).size.width/4,
-                                    child: Text('Kode Referral',style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(26),fontFamily:ThaibahFont().fontQ)),
+                                    child: Text('Kode Referral',style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ)),
                                   ),
-                                  Text(": "+_kdRefferal,style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                  Text(": "+_kdRefferal,style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                 ],
                               )
                             ),
@@ -261,9 +262,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                       children: <Widget>[
                                         Container(
                                           width:MediaQuery.of(context).size.width/4,
-                                          child:Text('Membership',style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(26),fontFamily:ThaibahFont().fontQ)),
+                                          child:Text('Membership',style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ)),
                                         ),
-                                        Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                        Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
                                       ],
                                     )
                                 ),
@@ -311,9 +312,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 children: <Widget>[
                                   Container(
                                     width:MediaQuery.of(context).size.width/4,
-                                    child: Text('Level Royalti',style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(26),fontFamily:ThaibahFont().fontQ)),
+                                    child: Text('Level Royalti',style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ)),
                                   ),
-                                  Text(": "+_level,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(26),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                  Text(": "+_level,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
 
                                 ],
                               )
@@ -444,7 +445,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   /* STRUKTUR WIDGET CARD ISLAMIC */
   Widget buildCardIcon(BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Container(
       decoration: BoxDecoration(
         color:isLoading?Colors.transparent:Colors.green,
@@ -490,7 +491,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   /* STRUKTUR WIDGET TITLE */
   Widget titleQ(String title,Color warna,bool param,type){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Padding(
       padding: const EdgeInsets.only(left: 15.0,right: 15.0),
       child: GestureDetector(
@@ -516,8 +517,8 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : Text("$title",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(24),color: warna)),
-            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : param == true ? type == 'level' ? Text("Info Jenjang Karir",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(20),color: warna)) : Text("Lihat Semua",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(20),color: warna)) : Container(),
+            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : Text("$title",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(30),color: warna)),
+            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : param == true ? type == 'level' ? Text("Info Jenjang Karir",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(26),color: warna)) : Text("Lihat Semua",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(26),color: warna)) : Container(),
           ],
         ),
       ),
@@ -920,7 +921,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   }
   Widget cardSaldoNoPlatinum(BuildContext context,saldoMain,saldoBonus,saldoVoucher,saldoPlatinum) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Container(
         padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
         child: Row(
@@ -1022,7 +1023,7 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
   @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Container(
         padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
         child: Row(
@@ -1034,13 +1035,13 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               children: <Widget>[
                 AutoSizeTextQ(
                   'Saldo Utama',
-                  style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
+                  style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
                   maxLines: 2,
                 ),
                 SizedBox(height:2.0),
                 AutoSizeTextQ(
                     widget.saldoMain,
-                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
               ],
@@ -1052,11 +1053,11 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               children: <Widget>[
                 AutoSizeTextQ(
                     'Saldo Bonus',
-                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoBonus,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1064,9 +1065,9 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Voucher',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoVoucher,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1074,9 +1075,9 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ('Saldo Platinum',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                AutoSizeTextQ(widget.saldoPlatinum,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
           ],
@@ -1101,7 +1102,7 @@ class _CardSaldoState extends State<CardSaldo> {
   @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Container(
         padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
         child: Row(
@@ -1113,13 +1114,13 @@ class _CardSaldoState extends State<CardSaldo> {
               children: <Widget>[
                 Text(
                   'Saldo Utama',
-                  style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
+                  style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
                   maxLines: 2,
                 ),
                 SizedBox(height:2.0),
                 Text(
                     widget.saldoMain,
-                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
               ],
@@ -1131,11 +1132,11 @@ class _CardSaldoState extends State<CardSaldo> {
               children: <Widget>[
                 Text(
                     'Saldo Bonus',
-                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
                     maxLines: 2
                 ),
                 SizedBox(height:2.0),
-                Text(widget.saldoBonus,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text(widget.saldoBonus,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1143,9 +1144,9 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('Saldo Voucher',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text('Saldo Voucher',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                Text(widget.saldoVoucher,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text(widget.saldoVoucher,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -1153,9 +1154,9 @@ class _CardSaldoState extends State<CardSaldo> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('Saldo Platinum',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text('Saldo Platinum',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
                 SizedBox(height:2.0),
-                Text(widget.saldoPlatinum,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(20),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                Text(widget.saldoPlatinum,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
           ],
@@ -1176,7 +1177,7 @@ class _CardEmoneyState extends State<CardEmoney> {
   @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Expanded(
       child: GestureDetector(
         onTap: (){
@@ -1192,11 +1193,11 @@ class _CardEmoneyState extends State<CardEmoney> {
               SvgPicture.network(
                 ApiService().iconUrl+widget.imgUrl+'.svg',
                 placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
-                height: ScreenUtilQ.getInstance().setHeight(60),
-                width: ScreenUtilQ.getInstance().setWidth(60),
+                height: ScreenUtilQ.getInstance().setHeight(70),
+                width: ScreenUtilQ.getInstance().setWidth(70),
               ),
               SizedBox(height: 5.0),
-              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize:ScreenUtilQ.getInstance().setSp(20),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ],
           )),
         ),
@@ -1219,7 +1220,7 @@ class _WrapperIconState extends State<WrapperIcon> {
   @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: true);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,

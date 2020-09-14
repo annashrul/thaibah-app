@@ -79,6 +79,8 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: _scaffoldKey,
       appBar:UserRepository().appBarWithButton(context,"Detail ${widget.param}",warna1,warna2,(){Navigator.pop(context);},Container()),
@@ -113,7 +115,6 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text("Deksripsi",style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold,fontSize: 20.0,fontFamily:ThaibahFont().fontQ)),
                   Html(data: widget.caption,defaultTextStyle: TextStyle(color: Colors.black,fontFamily:ThaibahFont().fontQ),),
                   Divider(),
                   generateStart(int.parse(widget.rating)),
@@ -143,7 +144,7 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
             mainAxisAlignment: MainAxisAlignment.center,
 //          crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              isLoadingShare?CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(Colors.white)):Text("BAGIKAN", style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: 14, color: Colors.white,fontWeight: FontWeight.bold),),
+              isLoadingShare?CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(Colors.white)):Text("BAGIKAN", style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(38), color: Colors.white,fontWeight: FontWeight.bold),),
             ],
           ),
         ),
