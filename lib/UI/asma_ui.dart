@@ -4,9 +4,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/asmaModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 import 'Homepage/index.dart';
 import 'Widgets/pin_screen.dart';
@@ -58,30 +60,7 @@ class AsmaUIState extends State<AsmaUI> {
     List colors = [Colors.red, Colors.green, Colors.blue];
     Random random = new Random();
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-            onPressed: (){
-              Navigator.of(context).pop();
-            },
-          ),
-          centerTitle: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF116240),
-                  Color(0xFF30cc23)
-                ],
-              ),
-            ),
-          ),
-          elevation: 1.0,
-          automaticallyImplyLeading: true,
-          title: new Text("Asmaul Husna", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        ),
+        appBar: UserRepository().appBarWithButton(context,"Asmaul Husna",ThaibahColour.primary1,ThaibahColour.primary2, (){Navigator.pop(context);}, Container()),
         body: isLoading ? ListView.builder(
           itemCount: 10,
           itemBuilder: (context, index) {
@@ -110,12 +89,13 @@ class AsmaUIState extends State<AsmaUI> {
                       shape: BoxShape.circle,
                       color: colors[random.nextInt(3)],
                     ),
-                    child: new Text(asma.result[index].name, style: new TextStyle(color: Colors.white, fontSize: 13.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                    // child: new Text(asma.result[index].name, style: new TextStyle(color: Colors.white, fontSize: 13.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                    child:UserRepository().textQ(asma.result[index].name, 10, Colors.white,FontWeight.bold,TextAlign.center),
                   ),
-                  title: Text(asma.result[index].transliteration+' - '+asma.result[index].name, style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
-                  subtitle: Text(
-                    asma.result[index].meaning,style: TextStyle(fontFamily: 'Rubik'),
-                  ),
+                  // title: Text(asma.result[index].transliteration+' - '+asma.result[index].name, style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik'),),
+                  title:UserRepository().textQ(asma.result[index].transliteration+' - '+asma.result[index].name, 12, Colors.black,FontWeight.bold,TextAlign.left),
+                  // subtitle: Text(asma.result[index].meaning,style: TextStyle(fontFamily: 'Rubik'),),
+                  subtitle:UserRepository().textQ(asma.result[index].meaning, 12, Colors.grey,FontWeight.bold,TextAlign.left),
                   // trailing: Icon(Icons.more_vert),
                   isThreeLine: false,
                 ),

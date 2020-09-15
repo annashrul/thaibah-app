@@ -24,7 +24,6 @@ class TestiKavling extends StatefulWidget {
 }
 
 class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin  {
-
   @override
   bool get wantKeepAlive => true;
   bool isLoading=false;
@@ -96,7 +95,6 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
       print(e);
     }
   }
-
   Future loadTheme() async{
     final levelStatus = await userRepository.getDataUser('statusLevel');
     final color1 = await userRepository.getDataUser('warna1');
@@ -161,6 +159,8 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return SafeArea(
       child: Scaffold(
           body: CustomScrollView(
@@ -185,11 +185,8 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
                   tabs: List.generate(categoryString.length, (index) => Tab(
                     child: Container(
                       child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          categoryString[index],
-                          style: TextStyle(fontSize: 15,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),
-                        ),
+                          padding: const EdgeInsets.all(10.0),
+                          child: UserRepository().textQ(categoryString[index], 12, Colors.white,FontWeight.bold, TextAlign.center)
                       ),
                       decoration: BoxDecoration(color: index == _tabController.index ? warna1 : Colors.black12, borderRadius: BorderRadius.circular(20)),
                     ),
@@ -222,7 +219,7 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
                 ),
               ):
               SliverFixedExtentList(
-                itemExtent: MediaQuery.of(context).size.height/2,  // I'm forcing item heights
+                itemExtent: MediaQuery.of(context).size.height/2.5,  // I'm forcing item heights
                 delegate: SliverChildBuilderDelegate((context, index) {
                   String cap='';
                   if(video[index]['caption'].length > 100){
@@ -245,7 +242,7 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
                     child: Column(
                       children: <Widget>[
                         Container(
-                          height: ScreenUtilQ.getInstance().setHeight(400),
+                          height: 200,
                           child: CachedNetworkImage(
                             imageUrl: video[index]['thumbnail'],
                             placeholder: (context, url) => Center(
@@ -268,13 +265,38 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
                           leading: CircleAvatar(
                             backgroundImage: NetworkImage(video[index]['thumbnail']),
                           ),
+
                           title: Html(
                             data:cap,
                             defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
                           ),
-                          subtitle: Text(video[index]['category'], style: TextStyle(color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
+                          subtitle: Html(data:video[index]['category'], defaultTextStyle: TextStyle(fontSize:12,color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
                           trailing: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : PopupMenuButton(
                             onSelected: (e) async{
+                              if(e=='0'){
+                                setState(() {
+                                  isLoadingShare = true;
+                                });
+
+                                share(video[index]['video'],index);
+                              }else{
+                                Navigator.of(context, rootNavigator: true).push(
+                                  new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+                                      param:'Testimoni Produk',
+                                      video: video[index]['video'],
+                                      caption: video[index]['caption'],
+                                      rating:video[index]['rating'].toString()
+                                  )),
+                                );
+                              }
+                            },
+                            itemBuilder: (_) => <PopupMenuItem<String>>[
+                              new PopupMenuItem<String>(child: Html(data:'Bagikan',defaultTextStyle: TextStyle(fontSize:14,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),), value: '0'),
+                              new PopupMenuItem<String>(child: Html(data:'Putar',defaultTextStyle: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),), value: '1'),
+                            ],
+                          ):PopupMenuButton(
+                            onSelected: (e) async{
+                              print(e);
                               if(e=='0'){
                                 setState(() {
                                   isLoadingShare = true;
@@ -290,25 +312,10 @@ class _TestiKavlingState extends State<TestiKavling> with SingleTickerProviderSt
                                   )),
                                 );
                               }
-
                             },
                             itemBuilder: (_) => <PopupMenuItem<String>>[
-                              new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
-                              new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
-                            ],
-                          ):PopupMenuButton(
-                            onSelected: (e) async{
-                              print(e);
-                              if(e=='0'){
-                                setState(() {
-                                  isLoadingShare = true;
-                                });
-                                share(video[index]['video'],index);
-                              }
-                            },
-                            itemBuilder: (_) => <PopupMenuItem<String>>[
-                              new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
-                              new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
+                              new PopupMenuItem<String>(child: Html(data:'Bagikan',defaultTextStyle: TextStyle(fontSize:14,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),), value: '0'),
+                              new PopupMenuItem<String>(child: Html(data:'Putar',defaultTextStyle: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),), value: '1'),
                             ],
                           ),
                         ),

@@ -98,12 +98,6 @@ class _HistoryBonusState extends State<HistoryBonus>{
     _dateTime = DateTime.parse(formattedDate);
     historyBloc.fetchHistoryList(label, 1, perpage, _tgl_pertama.text,_tgl_kedua.text,'');
   }
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-
   void _showDatePicker(var param) {
     DatePicker.showDatePicker(
       context,
@@ -136,6 +130,13 @@ class _HistoryBonusState extends State<HistoryBonus>{
       },
     );
   }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

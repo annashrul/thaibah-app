@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thaibah/Constants/constants.dart';
 
 /// Alert types
 enum AlertType { error, success, info, warning, none }
@@ -94,22 +95,37 @@ class AlertQ {
                             SizedBox(
                               height: 15,
                             ),
-                            Text(
-                                title,
-                                style: style.titleStyle,
-                                textAlign: TextAlign.center,
+                            RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                text:title, style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FontStyle.normal,
+                                  fontSize: 22.0,
+                                  fontFamily: ThaibahFont().fontQ
+                                )
+                              )
                             ),
+
                             SizedBox(
                               height: desc == null ? 5 : 10,
                             ),
                             desc == null
                                 ? Container()
-                                : Text(
-                                desc,
-                                style: style.descStyle,
-                                textAlign: TextAlign.center,
+                                : RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(
+                                      text:desc, style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.normal,
+                                      fontSize: 18.0,
+                                      fontFamily: ThaibahFont().fontQ
+                                    )
+                                  )
 
-                            ),
+                              ),
                             content == null ? Container() : content,
                           ],
                         ),

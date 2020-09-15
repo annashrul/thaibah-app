@@ -58,10 +58,9 @@ class _ResiState extends State<Resi> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context, 'Lacak Resi',warna1,warna2,(){Navigator.of(context).pop();},Container()),
+      appBar:UserRepository().appBarWithButton(context, 'Lacak Resi ${widget.resi}',warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: Stack(
         children: <Widget>[
           _buildTimeline(),
@@ -91,40 +90,43 @@ class _ResiState extends State<Resi> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('No.Resi', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.resi, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                              RichText(text: TextSpan(text:'No.Resi', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                              RichText(text: TextSpan(text:snapshot.data.result.resi, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Tanggal Pengiriman', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.details.waybillDate+' '+snapshot.data.result.ongkir.details.waybillTime, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                              RichText(text: TextSpan(text:'Tanggal Pengiriman', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                              RichText(text: TextSpan(text:DateFormat.yMMMMd().format(DateTime.parse(snapshot.data.result.ongkir.details.waybillDate))+' '+snapshot.data.result.ongkir.details.waybillTime, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Service Code', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.summary.courierName, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                              RichText(text: TextSpan(text:'Service Code', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                              RichText(text: TextSpan(text:snapshot.data.result.ongkir.summary.courierName, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Pembeli', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.deliveryStatus.podReceiver, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                              RichText(text: TextSpan(text:'Pembeli', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                              RichText(text: TextSpan(text:snapshot.data.result.ongkir.deliveryStatus.podReceiver, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+
                             ],
                           ),
                           Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text('Status', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.result.ongkir.deliveryStatus.status, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
+                              RichText(text: TextSpan(text:'Status', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                              RichText(text: TextSpan(text:snapshot.data.result.ongkir.deliveryStatus.status, style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+
                             ],
                           ),
                           SizedBox(height: 20.0),
@@ -141,7 +143,15 @@ class _ResiState extends State<Resi> {
             }
             return Container(
               child: Center(
-                child: CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+                    SizedBox(height: 10),
+                    RichText(text: TextSpan(text:'tunggu sebentar ....', style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                  ],
+                ),
               ),
             );
           }
@@ -152,7 +162,6 @@ class _ResiState extends State<Resi> {
 
 
   Widget _buildTasksList(AsyncSnapshot<ResiModel> snapshot, BuildContext context) {
-//    return Text('acuy');
     return new Expanded(
       child: new AnimatedList(
         initialItemCount: snapshot.data.result.ongkir.manifest.length,
@@ -179,22 +188,33 @@ class _ResiState extends State<Resi> {
                       child: new Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          new Text(
-                            DateFormat.yMd().format(snapshot.data.result.ongkir.manifest[index].manifestDate.toUtc()),
-                            style: new TextStyle(fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
+                          RichText(
+                              text: TextSpan(
+                                text:DateFormat.yMMMMd().format(snapshot.data.result.ongkir.manifest[index].manifestDate.toLocal()),
+                                style: new TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: ThaibahFont().fontQ),
+                              )
                           ),
-                          new Text(
-                            snapshot.data.result.ongkir.manifest[index].manifestDescription.toLowerCase(),
-                            style: new TextStyle(fontSize: 12.0, color: Colors.grey,fontFamily: ThaibahFont().fontQ),
-                          )
+                          RichText(
+                              text: TextSpan(
+                                text:snapshot.data.result.ongkir.manifest[index].manifestDescription.toLowerCase(),
+                                style: new TextStyle(fontSize: 12.0, color: Colors.grey,fontFamily: ThaibahFont().fontQ),
+                              )
+                          ),
+
                         ],
                       ),
                     ),
                     new Padding(
                       padding: const EdgeInsets.only(right: 16.0),
-                      child: new Text(
-                        snapshot.data.result.ongkir.manifest[index].manifestTime,
-                        style: new TextStyle(fontSize: 12.0, color: Colors.grey,fontFamily: ThaibahFont().fontQ),
+                      // child: new Text(
+                      //   snapshot.data.result.ongkir.manifest[index].manifestTime,
+                      //   style: new TextStyle(fontSize: 12.0, color: Colors.grey,fontFamily: ThaibahFont().fontQ),
+                      // ),
+                      child: RichText(
+                          text: TextSpan(
+                            text:snapshot.data.result.ongkir.manifest[index].manifestTime,
+                            style: new TextStyle(fontSize: 12.0, color: Colors.grey,fontFamily: ThaibahFont().fontQ),
+                          )
                       ),
                     ),
                   ],

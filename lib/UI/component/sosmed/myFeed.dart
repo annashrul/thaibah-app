@@ -14,6 +14,7 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
@@ -35,10 +36,7 @@ class _MyFeedState extends State<MyFeed> {
   final _bloc = SosmedBloc();
   int perpage = 10;
   bool isLoading = false;
-  Future<File> file;
-  String base64Image;
-  File tmpFile;
-  String fileName;
+
   final userRepository = UserRepository();
 
 
@@ -157,8 +155,10 @@ class _MyFeedState extends State<MyFeed> {
 
   Color warna1;
   Color warna2;
+  String gambar;
   String statusLevel ='0';
   Future loadTheme() async{
+    final picture = await userRepository.getDataUser('picture');
     final levelStatus = await userRepository.getDataUser('statusLevel');
     final color1 = await userRepository.getDataUser('warna1');
     final color2 = await userRepository.getDataUser('warna2');
@@ -166,6 +166,7 @@ class _MyFeedState extends State<MyFeed> {
       warna1 = hexToColors(color1);
       warna2 = hexToColors(color2);
       statusLevel = levelStatus;
+      gambar = picture;
     });
   }
   @override
@@ -219,7 +220,12 @@ class _MyFeedState extends State<MyFeed> {
                     )
                   ],
                 ),),
-                body: buildContent(snapshot, context),
+                body: Column(
+                  children: [
+                    writeSomething(context),
+                    buildContent(snapshot, context)
+                  ],
+                ),
                 floatingActionButton: new FloatingActionButton(
                     elevation: 0.0,
                     child: new Icon(FontAwesomeIcons.penAlt),
@@ -581,24 +587,11 @@ class _MyFeedState extends State<MyFeed> {
     );
   }
 
-}
-
-
-class BottomWidget extends StatefulWidget {
-  final Function(String caption, File _image) sendFeed;
-  BottomWidget({this.sendFeed});
-  @override
-  _BottomWidgetState createState() => _BottomWidgetState();
-}
-
-class _BottomWidgetState extends State<BottomWidget> {
-  var captionController = TextEditingController();
   Future<File> file;
   String base64Image;
   File tmpFile;
   File _image;
   String fileName;
-  final FocusNode captionFocus = FocusNode();
   Future<Directory> getTemporaryDirectory() async {
     return Directory.systemTemp;
   }
@@ -640,6 +633,161 @@ class _BottomWidgetState extends State<BottomWidget> {
     });
   }
 
+  Widget writeSomething(BuildContext context){
+    return Container(
+      child: Column(
+        children: <Widget>[
+          SizedBox(height:5.0),
+          Container(
+            padding: EdgeInsets.only(left:20.0,right:20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                CircleAvatar(
+                  radius: 30.0,
+                  backgroundImage: NetworkImage('$gambar'),
+                ),
+                SizedBox(width:10.0),
+                Container(
+                  padding: const EdgeInsets.only(left:5.0,right:5.0),
+                  height: 60.0,
+                  width: MediaQuery.of(context).size.width/1.7,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          width: 1.0,
+                          color: Colors.grey[400]
+                      ),
+                      borderRadius: BorderRadius.circular(10.0)
+                  ),
+                  child: TextFormField(
+                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ().setSp(30)),
+                    textInputAction: TextInputAction.newline,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: new InputDecoration(
+                      hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                      border: InputBorder.none,
+                      hintText: "Buat Caption Status ...",
+                    ),
+                  ),
+                ),
+                SizedBox(width:5.0),
+                InkWell(
+                  onTap: (){
+                    getImageFile();
+                  },
+                  child: _image != null ? Container(
+                    height:50.0,
+                    width: 40.0,
+                    child: Image.file(_image),
+                  ):CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    radius: 25.0,
+                    backgroundImage: NetworkImage('https://cdn.iconscout.com/icon/free/png-512/upload-data-to-cloud-458000.png'),
+                  ),
+                )
+              ],
+            ),
+          ),
+          UserRepository().buttonQ(context, ThaibahColour.primary1,ThaibahColour.primary2,(){},false,'Simpan'),
+          Divider(),
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Icon(Icons.live_tv, size: 20.0, color: Colors.pink,),
+                    SizedBox(width: 5.0,),
+                    Text('Live', style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16.0)),
+                  ],
+                ),
+                Container(height: 20, child: VerticalDivider(color: Colors.grey[600])),
+                Row(
+                  children: <Widget>[
+                    Icon(Icons.photo_library, size: 20.0, color: Colors.green,),
+                    SizedBox(width: 5.0),
+                    Text('Photo', style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16.0)),
+                  ],
+                ),
+                Container(height: 20, child: VerticalDivider(color: Colors.grey[600])),
+                Row(
+                  children: <Widget>[
+                    Icon(Icons.video_call, size: 20.0, color: Colors.purple,),
+                    SizedBox(width: 5.0,),
+                    Text('Room', style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16.0)),
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+}
+
+
+class BottomWidget extends StatefulWidget {
+  final Function(String caption, File _image) sendFeed;
+  BottomWidget({this.sendFeed});
+  @override
+  _BottomWidgetState createState() => _BottomWidgetState();
+}
+
+class _BottomWidgetState extends State<BottomWidget> {
+  // var captionController = TextEditingController();
+  // final FocusNode captionFocus = FocusNode();
+  // Future<File> file;
+  // String base64Image;
+  // File tmpFile;
+  // File _image;
+  // String fileName;
+  // Future<Directory> getTemporaryDirectory() async {
+  //   return Directory.systemTemp;
+  // }
+  // getImageFile() async {
+  //   var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+  //   File croppedFile = await ImageCropper.cropImage(
+  //     sourcePath: image.path,
+  //     aspectRatioPresets: [
+  //       CropAspectRatioPreset.square,
+  //     ],
+  //     androidUiSettings: AndroidUiSettings(
+  //         toolbarTitle: 'Cropper',
+  //         toolbarColor: Colors.green,
+  //         toolbarWidgetColor: Colors.white,
+  //         initAspectRatio: CropAspectRatioPreset.original,
+  //         lockAspectRatio: false
+  //     ),
+  //     iosUiSettings: IOSUiSettings(
+  //       minimumAspectRatio: 1.0,
+  //     ),
+  //     maxWidth: 512,
+  //     maxHeight: 512,
+  //   );
+  //   final quality = 90;
+  //   final tmpDir = (await getTemporaryDirectory()).path;
+  //   final target ="$tmpDir/${DateTime.now().millisecondsSinceEpoch}-$quality.png";
+  //
+  //   var result = await FlutterImageCompress.compressAndGetFile(
+  //     croppedFile.path,
+  //     target,
+  //     format: CompressFormat.png,
+  //     quality: 90,
+  //   );
+  //
+  //   setState(() {
+  //     _image = result;
+  //     print(_image.lengthSync());
+  //     print("############################## $_image #################################");
+  //   });
+  // }
+
 
 
 
@@ -647,115 +795,118 @@ class _BottomWidgetState extends State<BottomWidget> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal:18,vertical: 18 ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children:<Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width/1.7,
-                child: InkWell(
-                  onTap: (){
-                    getImageFile();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.green,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(5.0)
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              height: 40.0,
-                              width: 40.0,
-                              child:_image != null ? Image.file(_image) :Image.network("https://vignette.wikia.nocookie.net/solo-leveling/images/5/5a/WK_No_Image.png/revision/latest?cb=20190324133049"),
-                            ),
-                            new SizedBox(width: 10.0),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  child: Row(
-                                    children: <Widget>[
-                                      Text("Upload Gambar",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                                      SizedBox(width: 10.0),
-                                      Icon(Icons.backup,color: Colors.white,)
-                                    ],
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              ),
-              SizedBox(width:10.0),
-              Container(
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(5.0)
-                    ),
-                  ),
-
-                  width: MediaQuery.of(context).size.width/4,
-                  child: InkWell(
-                    onTap: (){
-                      if(captionController.text == ''){
-                        FocusScope.of(context).requestFocus(FocusNode());
-                      }else{
-                        Navigator.of(context).pop();
-                        captionFocus.unfocus();
-                        widget.sendFeed(captionController.text,_image);
-                        captionController.text = '';
-                        _image = null;
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(10.0, 22.0, 10.0, 22.0),
-                      child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),),
-                    ),
-                  )
-              )
-            ]
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: TextFormField(
-              style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-              controller: captionController,
-              textInputAction: TextInputAction.newline,
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              focusNode: FocusNode(),
-              autofocus: true,
-
-              decoration: new InputDecoration(
-                hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-                border: InputBorder.none,
-                hintText: "Buat Caption Status ...",
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-        ],
-      ),
+      // child: Column(
+      //   crossAxisAlignment: CrossAxisAlignment.start,
+      //   mainAxisSize: MainAxisSize.min,
+      //   children: <Widget>[
+      //     Row(
+      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //       children:<Widget>[
+      //         Container(
+      //           width: MediaQuery.of(context).size.width/1.7,
+      //           child: InkWell(
+      //             onTap: (){
+      //               getImageFile();
+      //             },
+      //             child: Container(
+      //               padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+      //               decoration: BoxDecoration(
+      //                 border: Border.all(
+      //                   color: Colors.green,
+      //                   width: 1.0,
+      //                 ),
+      //                 borderRadius: BorderRadius.all(
+      //                     Radius.circular(5.0)
+      //                 ),
+      //               ),
+      //               child: Row(
+      //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                 children: <Widget>[
+      //                   Row(
+      //                     children: <Widget>[
+      //                       Container(
+      //                         height: 40.0,
+      //                         width: 40.0,
+      //                         child:_image != null ? Image.file(_image) :Image.network("https://vignette.wikia.nocookie.net/solo-leveling/images/5/5a/WK_No_Image.png/revision/latest?cb=20190324133049"),
+      //                       ),
+      //                       new SizedBox(width: 10.0),
+      //                       Column(
+      //                         mainAxisAlignment: MainAxisAlignment.start,
+      //                         crossAxisAlignment: CrossAxisAlignment.start,
+      //                         children: <Widget>[
+      //                           Container(
+      //                             child: Row(
+      //                               children: <Widget>[
+      //                                 Text("Upload Gambar",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+      //                                 SizedBox(width: 10.0),
+      //                                 Icon(Icons.backup,color: Colors.white,)
+      //                               ],
+      //                             ),
+      //                           )
+      //                         ],
+      //                       )
+      //                     ],
+      //                   ),
+      //                 ],
+      //               ),
+      //             ),
+      //           )
+      //         ),
+      //         SizedBox(width:10.0),
+      //         Container(
+      //             decoration: BoxDecoration(
+      //               color: Colors.green,
+      //               borderRadius: BorderRadius.all(
+      //                   Radius.circular(5.0)
+      //               ),
+      //             ),
+      //
+      //             width: MediaQuery.of(context).size.width/4,
+      //             child: InkWell(
+      //               onTap: (){
+      //                 if(captionController.text == ''){
+      //                   FocusScope.of(context).requestFocus(FocusNode());
+      //                 }else{
+      //                   Navigator.of(context).pop();
+      //                   captionFocus.unfocus();
+      //                   widget.sendFeed(captionController.text,_image);
+      //                   captionController.text = '';
+      //                   _image = null;
+      //                 }
+      //               },
+      //               child: Container(
+      //                 padding: const EdgeInsets.fromLTRB(10.0, 22.0, 10.0, 22.0),
+      //                 child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),),
+      //               ),
+      //             )
+      //         )
+      //       ]
+      //     ),
+      //     Padding(
+      //       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      //       child: TextFormField(
+      //         style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+      //         controller: captionController,
+      //         textInputAction: TextInputAction.newline,
+      //         keyboardType: TextInputType.multiline,
+      //         maxLines: null,
+      //         decoration: new InputDecoration(
+      //           hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+      //           border: InputBorder.none,
+      //           hintText: "Buat Caption Status ...",
+      //         ),
+      //         focusNode: FocusNode(),
+      //         autofocus: true,
+      //       ),
+      //     ),
+      //     SizedBox(height: 10),
+      //   ],
+      // ),
     );
   }
+
+
+
+
 }
 

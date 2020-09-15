@@ -164,7 +164,7 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          new Text(tit, style: new TextStyle(fontFamily: ThaibahFont().fontQ,color: Colors.white, fontWeight: FontWeight.bold, fontSize:ScreenUtilQ.getInstance().setSp(30))),
+                          new Html(data:tit, defaultTextStyle: new TextStyle(fontFamily: ThaibahFont().fontQ,color: Colors.white, fontWeight: FontWeight.bold, fontSize:12)),
                           Html(
                             data: cap,
                             defaultTextStyle: new TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ, fontSize: 12.0) ,

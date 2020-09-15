@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/categoryDoaModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/tabPulsa.dart';
@@ -92,9 +93,8 @@ class _DoaHarianState extends State<DoaHarian> {
                         child: new Column(
                             children : [
                               new TextFormField(
-
                                 decoration: new InputDecoration(
-                                  labelStyle: TextStyle(fontFamily: ThaibahFont().fontQ),
+                                  labelStyle: TextStyle(fontSize: ScreenUtilQ().setSp(30),fontFamily: ThaibahFont().fontQ),
                                   labelText: "Cari Do`a Disini ......",
                                   fillColor: Colors.grey,
                                   border: new OutlineInputBorder(
@@ -116,7 +116,7 @@ class _DoaHarianState extends State<DoaHarian> {
                                 autofocus: false,
                                 keyboardType: TextInputType.text,
                                 style: new TextStyle(
-                                  fontFamily: ThaibahFont().fontQ,
+                                  fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ().setSp(30)
                                 ),
                                 focusNode: searchFocus,
                                 onFieldSubmitted: (value){
@@ -128,7 +128,6 @@ class _DoaHarianState extends State<DoaHarian> {
                                 },
                               ),
                               SizedBox(height: 10.0),
-
                               Expanded(
                                   child: ListView(
                                     children: <Widget>[
@@ -213,20 +212,11 @@ class _DoaHarianState extends State<DoaHarian> {
               ),
               child: Center(
                 child: GridTile(
-                    header: Text(snapshot.data.result[index].title,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize:11.0,color: Colors.black, fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),
-                    ),
-//                      footer: Text(
-//                          "${snapshot.data.result[index].countcontent} Do'a",
-//                          textAlign: TextAlign.center,
-//                          style: TextStyle(color: Colors.black, fontFamily: "Rubik",fontWeight: FontWeight.bold)
-//                      ),
+                    header: UserRepository().textQ(snapshot.data.result[index].title, 12, Colors.black,FontWeight.bold, TextAlign.center),
                     child: Container(
                       margin: EdgeInsets.only(top:15.0),
                       padding: EdgeInsets.only(left:20.0,right:20.0,top:20.0,bottom: 20.0),
                       child: Center(
-//                        child: CircleImage(imgUrl: snapshot.data.result[index].thumbnail),
                         child: CircleAvatar(
                           radius: 35.0,
                           child: CachedNetworkImage(

@@ -108,7 +108,6 @@ class _KeranjangState extends State<Keranjang> {
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
     return Scaffold(
       key: scaffoldKey,
       appBar:UserRepository().appBarWithButton(context, "Keranjang Belanja",warna1,warna2,(){Navigator.of(context).pop();},Container()),
@@ -123,55 +122,69 @@ class _KeranjangState extends State<Keranjang> {
                   flex: 9,
                   child: buildContent(snapshot,context),
                 ),
-                Expanded(flex: 1,child: Container(
-                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("Total Tagihan", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black54,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
-                          SizedBox(height: 5.0),
-                          Text("Rp ${formatter.format(snapshot.data.result.rawTotal)}", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.red,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-                        ],
-                      ),
-                      Container(
-                          height: kBottomNavigationBarHeight,
-                          child: FlatButton(
-                            shape:RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
-                            ),
-                            color:statusLevel!='0'?warna1:ThaibahColour.primary2,
-                            onPressed: (){
-                              setState(() {
-                                UserRepository().loadingQ(context);
-                              });
-                              cek(snapshot.data.result.rawTotal,weight,snapshot.data.result.jumlah);
-                            },
-                            child:Text("Lanjut", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
-                          )
-                      )
-                    ],
-                  ),
-                ))
+
               ],
             );
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-//          return _AnimatedFlutterLogoState();
           return Container(
             child: Center(
-              child: Text('Data Tidak Ada'),
+              child:RichText(text: TextSpan(text:'Data Tidak Tersedia', style: TextStyle(fontSize:14,color: Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
             ),
           );
         },
       ),
+      bottomNavigationBar: StreamBuilder(
+
+        stream: listCartBloc.getResult,
+        builder: (context, AsyncSnapshot<ListCartModel> snapshot) {
+          if (snapshot.hasData) {
+            return _bottomNavBarBeli(context, snapshot.data.result.rawTotal,snapshot.data.result.jumlah);
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          return Text('');
+        },
+      ),
+
     );
   }
 
+  Widget _bottomNavBarBeli(BuildContext context,total,jumlah){
+    return Container(
+      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              RichText(text: TextSpan(text:'Total Belanja', style: TextStyle(fontSize: 12.0,color: Colors.grey,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ))),
+              RichText(text: TextSpan(text:'Rp ${formatter.format(total)}', style: TextStyle(fontSize: 12.0,color: Colors.red,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ))),
+            ],
+          ),
+          Container(
+              height: kBottomNavigationBarHeight,
+              child: FlatButton(
+                shape:RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
+                ),
+                color: ThaibahColour.primary2,
+                onPressed: (){
+                  setState(() {
+                    UserRepository().loadingQ(context);
+                  });
+                  cek(total,weight,jumlah);
+                },
+                child:RichText(text: TextSpan(text:'Lanjut', style: TextStyle(fontSize: 14.0,color: Colors.white,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ))),
+              )
+          )
+        ],
+      ),
+    );
+  }
 
 
   Widget buildContent(AsyncSnapshot<ListCartModel> snapshot, BuildContext context){
@@ -337,9 +350,9 @@ class SingleCartProductState extends State<SingleCartProduct> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    new Text(widget.CartProdName,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
+                    RichText(text: TextSpan(text:widget.CartProdName, style: TextStyle(fontSize:12,color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))),
                     SizedBox(height: 10.0),
-                    new Text("Rp ${formatter.format(updatePrice)}",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight:FontWeight.bold,color: Colors.red,fontFamily:ThaibahFont().fontQ),),
+                    RichText(text: TextSpan(text:"Rp ${formatter.format(updatePrice)}", style: TextStyle(fontSize:12,color: Colors.red,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))),
                     SizedBox(height: 10.0),
                     ChangeQuantity(
                         valueChanged: (int newValue){
@@ -364,16 +377,17 @@ class SingleCartProductState extends State<SingleCartProduct> {
                         context: context,
                         builder: (BuildContext context){
                           return AlertDialog(
-                            content: Text("Anda Yakin Akan Menghapus produk Ini ???",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                            content: RichText(text: TextSpan(text:"Anda Yakin Akan Menghapus produk Ini ???", style: TextStyle(fontSize:12,color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))),
                             actions: <Widget>[
                               FlatButton(
-                                child: Text("Batal", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),color: Colors.black,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                // child: Text("Batal", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),color: Colors.black,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                                child:RichText(text: TextSpan(text:"Batal", style: TextStyle(fontSize:12,color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                               ),
                               FlatButton(
-                                child: Text("Hapus", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),color: Colors.red,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                                child:RichText(text: TextSpan(text:"Hapus", style: TextStyle(fontSize:12,color: Colors.red,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))),
                                 onPressed: () async {
                                   setState(() {});
                                   delete(widget.CardProdId);
@@ -439,11 +453,8 @@ class ChangeQuantity extends StatelessWidget {
           child: Icon(Icons.add_circle,color: Color(0xFF116240)),
         ),
         SizedBox(width: 10.0),
-        Text(
-          "${cartQty.toString()}",
-          textAlign: TextAlign.right,
-          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
-        ),
+        RichText(textAlign: TextAlign.right,text: TextSpan(text:"${cartQty.toString()}", style: TextStyle(fontSize:12,color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ))),
+
         SizedBox(width: 10.0),
         InkWell(
           onTap: _subtract,

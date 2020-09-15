@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/subCategoryDoaModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/lainnya/listDoaHadist.dart';
@@ -69,7 +70,6 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
         children: <Widget>[
           Flexible(
               child: new Container (
-
                   color: Colors.white,
                   child: Column(
                       children : [
@@ -77,7 +77,7 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
                           padding: EdgeInsets.only(top:10.0,bottom: 10.0,left:10.0,right:10.0),
                           child: TextFormField(
                             decoration: new InputDecoration(
-                              labelStyle: TextStyle(fontFamily: ThaibahFont().fontQ),
+                              labelStyle: TextStyle(fontSize: ScreenUtilQ().setSp(30),fontFamily: ThaibahFont().fontQ),
                               labelText: "Cari hadits disini ......",
                               fillColor: Colors.grey,
                               border: new OutlineInputBorder(
@@ -86,7 +86,6 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
                                     color: Colors.grey
                                 ),
                               ),
-                              //fillColor: Colors.green
                             ),
                             validator: (val) {
                               if(val.length==0) {
@@ -95,24 +94,15 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
                                 return null;
                               }
                             },
-//                                controller: searchController,
                             autofocus: false,
                             keyboardType: TextInputType.text,
                             style: new TextStyle(
-                              fontFamily: ThaibahFont().fontQ,
+                              fontSize: ScreenUtilQ().setSp(30),fontFamily: ThaibahFont().fontQ,
                             ),
-//                                focusNode: searchFocus,
                             onFieldSubmitted: (value){
-//                                  searchFocus.unfocus();
-//                                  if(searchController.text != ''){
-//                                    search();
-//                                  }
-
                             },
                           ),
                         ):Text(''),
-
-
                         Expanded(
                             child: StreamBuilder(
                               stream: subCategoryDoaHadistBloc.getResult,
@@ -147,32 +137,7 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
           ),
         ],
       ),
-//      body: StreamBuilder(
-//        stream: subCategoryDoaHadistBloc.getResult,
-//        builder: (context, AsyncSnapshot<SubCategoryDoaModel> snapshot) {
-//          if (snapshot.hasData) {
-//            return buildContent(snapshot, context);
-//          } else if (snapshot.hasError) {
-//            return Text(snapshot.error.toString());
-//          }
-//
-//          return Container(
-//            padding: EdgeInsets.only(top:10.0,bottom: 10.0,left:10.0,right:10.0),
-//            child: ListView.builder(
-//              itemBuilder: (context,index){
-//                return Row(
-//                  crossAxisAlignment: CrossAxisAlignment.start,
-//                  children: <Widget>[
-//                    SkeletonFrame(width: MediaQuery.of(context).size.width/1.08,height: 16.0),
-//                    SizedBox(height: 30.0)
-//                  ],
-//                );
-//              },
-//              itemCount: 30,
-//            ),
-//          );
-//        },
-//      ),
+
     );
   }
 
@@ -208,19 +173,13 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-//                      Text('${snapshot.data.result[index].id}.',style: TextStyle(color:Colors.black,fontSize: 12.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-//                      SizedBox(width: 10.0),
                         Flexible(
-                          child: new Text("${snapshot.data.result[index].title}",
-                              style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontSize: 16.0,fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.clip),
+                          child: UserRepository().textQ(snapshot.data.result[index].title, 14, Colors.black,FontWeight.bold,TextAlign.left),
                         ),
-//                        Icon(Icons.arrow_forward_ios,size: 15.0)
                       ],
                     ),
                   ),
                 ),
-
                 Divider()
               ],
 
@@ -232,7 +191,7 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
     }else{
       return Container(
         child: Center(
-          child: Text('Data Tidak Ada',style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
+          child: UserRepository().textQ("Data Tidak Tersedia",14,Colors.black,FontWeight.bold,TextAlign.center),
         ),
       );
     }

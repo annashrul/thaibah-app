@@ -3,6 +3,7 @@ library intro_views_flutter;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 
 import '../../Constants/constants.dart';
 import '../../Model/pageIndicatorViewModel.dart';
@@ -112,10 +113,10 @@ class IntroViewsFlutter extends StatefulWidget {
         this.onTapSkipButton,
         this.onTapNextButton,
         this.pageButtonsColor,
-        this.doneText = const Text("SELESAI", style: TextStyle(fontFamily:'Rubik')),
-        this.nextText = const Text("LANJUT", style: TextStyle(fontFamily: 'Rubik')),
-        this.skipText = const Text("LEWATI", style: TextStyle(fontFamily: 'Rubik')),
-        this.backText = const Text("KEMBALI", style: TextStyle(fontFamily: 'Rubik')),
+        this.doneText = const Text("SELESAI", style: TextStyle(fontSize:12,fontFamily:'Rubik')),
+        this.nextText = const Text("LANJUT", style: TextStyle(fontSize:12,fontFamily: 'Rubik')),
+        this.skipText = const Text("LEWATI", style: TextStyle(fontSize:12,fontFamily: 'Rubik')),
+        this.backText = const Text("KEMBALI", style: TextStyle(fontSize:12,fontFamily: 'Rubik')),
         this.doneButtonPersist = false,
         this.columnMainAxisAlignment = MainAxisAlignment.spaceAround,
         this.fullTransition = FULL_TARNSITION_PX,

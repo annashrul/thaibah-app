@@ -136,44 +136,28 @@ class _InfoRoyaltiLevelState extends State<InfoRoyaltiLevel> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        snapshot.data.result.data[index].name,
-                        style: TextStyle(
-                            fontFamily:ThaibahFont().fontQ,
-                            color: primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
-                      ),
-                      SizedBox(
-                        height: 6,
-                      ),
+                      UserRepository().textQ(snapshot.data.result.data[index].name, 16, primary, FontWeight.bold,TextAlign.left),
+                      SizedBox(height: 6,),
                       Divider(),
-                      Text('Jumlah Kaki',style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                      UserRepository().textQ('Jumlah Kaki', 14, Colors.black, FontWeight.bold,TextAlign.left),
                       Row(
                         children: <Widget>[
                           generateStart(snapshot.data.result.data[index].kaki),
                         ],
                       ),
-                      SizedBox(
-                        height: 6,
-                      ),
+                      SizedBox(height: 6,),
                       Row(
                         children: <Widget>[
                           Flexible(
-                              child: Text(
-                                  "Nilai Omset per kaki sebesar : "+snapshot.data.result.data[index].omset,
-                                  style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: primary, fontSize: 11, letterSpacing: .3)
-                              ),
+                              child:UserRepository().textQ('Nilai Omset per kaki sebesar : ${snapshot.data.result.data[index].omset}', 12,primary, FontWeight.bold,TextAlign.left)
                           )
                         ],
                       ),
-                      SizedBox(
-                        height: 6,
-                      ),
+                      SizedBox(height: 6,),
                       Row(
                         children: <Widget>[
                           Flexible(
-                            child: Text("Mendapatkan Royalti Sebesar : " +snapshot.data.result.data[index].royalti.toString()+" % x Omset Nasional", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: primary, fontSize: 11, letterSpacing: .3))
+                            child: UserRepository().textQ("Mendapatkan Royalti Sebesar : ${snapshot.data.result.data[index].royalti.toString()} % x Omset Nasional", 12, primary, FontWeight.bold,TextAlign.left)
                           ),
                         ],
                       ),

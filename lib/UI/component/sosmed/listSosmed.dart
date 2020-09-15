@@ -85,7 +85,6 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
-
     super.build(context);
     return StreamBuilder(
         stream: _bloc.getResult,

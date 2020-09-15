@@ -18,23 +18,10 @@ class DetailInspirasi extends StatefulWidget {
 class _DetailInspirasiState extends State<DetailInspirasi> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   bool cek = false;
-  static String videoId;
-  Future convertUrlYoutube() async{
-    setState(() {videoId = YoutubePlayer.convertUrlToId("${widget.video}");});
-  }
-
   Future cekType() async{
     cek = widget.type=='inspirasi'?true:false;
   }
-
-  final List<YoutubePlayerController> _controllers = ['$videoId',].map<YoutubePlayerController>(
-    (videoId) => YoutubePlayerController(
-      initialVideoId: videoId,
-      flags: YoutubePlayerFlags(
-        autoPlay: true,
-      ),
-    ),
-  ).toList();
+  YoutubePlayerController _controller1;
   bool versi = false;
   Color warna1;
   Color warna2;
@@ -56,8 +43,20 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
     isLoadingShare=false;
     loadTheme();
     cekType();
-    convertUrlYoutube();
+    _controller1 = YoutubePlayerController(
+      initialVideoId: YoutubePlayer.convertUrlToId(widget.video),
+      flags: YoutubePlayerFlags(
+        autoPlay: false,
+      ),
+    );
   }
+  @override
+  void dispose() {
+    super.dispose();
+    _controller1.dispose();
+  }
+
+
   bool isLoadingShare=true;
   Future share(param) async{
     setState(() {
@@ -88,25 +87,7 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
         children: <Widget>[
           Expanded(
             flex: 3,
-            child: ListView.separated(
-              itemBuilder: (context, index) {
-                return YoutubePlayer(
-                  key: ObjectKey(_controllers[index]),
-                  controller: _controllers[index],
-                  actionsPadding: EdgeInsets.only(left: 16.0),
-                  bottomActions: [
-                    CurrentPosition(),
-                    SizedBox(width: 10.0),
-                    ProgressBar(isExpanded: true),
-                    SizedBox(width: 10.0),
-                    RemainingDuration(),
-                    FullScreenButton(),
-                  ],
-                );
-              },
-              itemCount: _controllers.length,
-              separatorBuilder: (context, _) => SizedBox(height: 10.0),
-            ),
+            child: YoutubePlayer(controller: _controller1),
           ),
           Expanded(
             flex: 7,

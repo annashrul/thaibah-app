@@ -205,7 +205,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                           SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
                           Container(
                             width: double.infinity,
-                            height: ScreenUtilQ.getInstance().setHeight(typeOtp==true?500:400),
+                            height: typeOtp==true?200:150,
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(0.0),
@@ -267,7 +267,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                                   SizedBox(height:typeOtp==true?10.0:0.0),
 
                                   typeOtp==true?Text("Kirim OTP Via ${_switchValue?'SMS':'WhatsApp'}", style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold),):Text(''),
-                                  SizedBox(height:typeOtp==true?5.0:0.0),
+                                  SizedBox(height:typeOtp!=true?5.0:0.0),
                                   typeOtp==true?Row(
                                     children: [
                                       btnSwitch(context),

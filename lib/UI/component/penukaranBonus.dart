@@ -173,7 +173,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
+                  padding: EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0),
                   child:Container(
                     padding: EdgeInsets.all(0.0),
                     decoration: new BoxDecoration(

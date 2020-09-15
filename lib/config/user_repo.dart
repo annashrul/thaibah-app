@@ -9,6 +9,7 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/checkerMemberModel.dart';
 import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/UI/Widgets/alertq.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
@@ -18,7 +19,39 @@ import 'package:thaibah/resources/gagalHitProvider.dart';
 
 class UserRepository {
 
-
+  notifAlertQ(BuildContext context,param,title,desc,txtBtn1,txtBtn2,Function callback1,Function callback2){
+    AlertType alertType;
+    if(param=='success'){
+      alertType = AlertType.success;
+    }
+    if(param=='warning'){
+      alertType = AlertType.warning;
+    }
+    if(param=='error'){
+      alertType = AlertType.error;
+    }
+    return AlertQ(
+      context: context,
+      type: alertType,
+      title:title,
+      desc:desc,
+      buttons: [
+        DialogButton(
+          child:RichText(text: TextSpan(text:txtBtn1, style: TextStyle(color: Colors.white, fontSize: 20,fontFamily:  ThaibahFont().fontQ))),
+          onPressed:callback1,
+          color: Color.fromRGBO(0, 179, 134, 1.0),
+        ),
+        DialogButton(
+          child:RichText(text: TextSpan(text:txtBtn2, style: TextStyle(color: Colors.white, fontSize: 20,fontFamily:  ThaibahFont().fontQ))),
+          onPressed:callback2,
+          gradient: LinearGradient(colors: [
+            Color.fromRGBO(116, 116, 191, 1.0),
+            Color.fromRGBO(52, 138, 199, 1.0)
+          ]),
+        )
+      ],
+    ).show();
+  }
   loadingQ(BuildContext context){
     return showDialog(
       barrierDismissible: false,
@@ -197,7 +230,9 @@ class UserRepository {
     var cek =  AppBar(
       centerTitle: false,
       elevation: 0.0,
-      title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.left),
+
+      // title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -225,7 +260,8 @@ class UserRepository {
       ),
       centerTitle: false,
       elevation: 0.0,
-      title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      // title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.left),
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -266,7 +302,7 @@ class UserRepository {
       ),
       centerTitle: false,
       elevation: 0.0,
-      title: Text(title, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.center),
       bottom: TabBar(
           indicatorColor: Colors.white,
           labelColor: Colors.white,
@@ -309,7 +345,8 @@ class UserRepository {
       ),
       centerTitle: false,
       elevation: 0.0,
-      title: Text(title, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      // title: Text(title, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+      title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.left),
       bottom: TabBar(
           indicatorColor: Colors.white,
           labelColor: Colors.white,
@@ -341,7 +378,8 @@ class UserRepository {
         child: InkWell(
           onTap:callback,
           child: Center(
-            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text(label,style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(45),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):
+            textQ(label, 14, Colors.white, FontWeight.bold, TextAlign.center)
           ),
         ),
       ),
@@ -365,53 +403,42 @@ class UserRepository {
         child: InkWell(
           onTap:callback,
           child: Center(
-            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):Text("Tampilkan Lebih Banyak",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
+            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):
+            textQ("Tampilkan Lebih Banyak", 14, Colors.white, FontWeight.bold, TextAlign.center)
           ),
         ),
       ),
     );
     return cek;
   }
-  textQ(String txt,double size){
-    return Text(
-      txt,
-      style: TextStyle(
-        letterSpacing:1.0,
-        fontSize: size,
-        fontWeight: FontWeight.bold,
-        fontFamily:ThaibahFont().fontQ
+  textQ(String txt,double size,Color color,FontWeight fontWeight,TextAlign textAlign){
+    return RichText(
+      textAlign: textAlign,
+      softWrap: true,
+      text: TextSpan(
+        text:txt,
+        style: TextStyle(
+          fontSize:size,color: color,fontFamily:ThaibahFont().fontQ,fontWeight:fontWeight,
+        ),
+
       )
     );
   }
   void notifNoAction(_scaffoldKey,BuildContext context,String value,param) {
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
     FocusScope.of(context).requestFocus(new FocusNode());
     _scaffoldKey.currentState?.removeCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.white, fontSize: ScreenUtilQ.getInstance().setSp(30), fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
-      ),
+      content: textQ(value, 12, Colors.white, FontWeight.bold, TextAlign.center),
       backgroundColor: param=='failed' ? Colors.redAccent : ThaibahColour.primary2,
       duration: Duration(seconds: 3),
     ));
     return;
   }
   void notifWithAction(_scaffoldKey,BuildContext context,String value,param,label,Function callback) {
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
     FocusScope.of(context).requestFocus(new FocusNode());
     _scaffoldKey.currentState?.removeCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.white, fontSize: ScreenUtilQ.getInstance().setSp(30), fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ),
-      ),
+      content: textQ(value, 12, Colors.white, FontWeight.bold, TextAlign.center),
       action: SnackBarAction(
         textColor: Colors.white,
         label:label,

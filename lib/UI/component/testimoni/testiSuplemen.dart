@@ -188,10 +188,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                     child: Container(
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          categoryString[index],
-                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(38),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),
-                        ),
+                        child: UserRepository().textQ(categoryString[index], 12, Colors.white,FontWeight.bold, TextAlign.center)
                       ),
                       decoration: BoxDecoration(color: index == _tabController.index ? warna1 : Colors.black12, borderRadius: BorderRadius.circular(20)),
                     ),
@@ -247,7 +244,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                     child: Column(
                       children: <Widget>[
                         Container(
-                          height: ScreenUtilQ.getInstance().setHeight(400),
+                          height: 200,
                           child: CachedNetworkImage(
                             imageUrl: video[index]['thumbnail'],
                             placeholder: (context, url) => Center(
@@ -270,13 +267,38 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                           leading: CircleAvatar(
                             backgroundImage: NetworkImage(video[index]['thumbnail']),
                           ),
+
                           title: Html(
                             data:cap,
                             defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
                           ),
-                          subtitle: Text(video[index]['category'], style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
+                          subtitle: Html(data:video[index]['category'], defaultTextStyle: TextStyle(fontSize:12,color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
                           trailing: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : PopupMenuButton(
                             onSelected: (e) async{
+                              if(e=='0'){
+                                setState(() {
+                                  isLoadingShare = true;
+                                });
+
+                                share(video[index]['video'],index);
+                              }else{
+                                Navigator.of(context, rootNavigator: true).push(
+                                  new CupertinoPageRoute(builder: (context) => DetailInspirasi(
+                                      param:'Testimoni Produk',
+                                      video: video[index]['video'],
+                                      caption: video[index]['caption'],
+                                      rating:video[index]['rating'].toString()
+                                  )),
+                                );
+                              }
+                            },
+                            itemBuilder: (_) => <PopupMenuItem<String>>[
+                              new PopupMenuItem<String>(child: Html(data:'Bagikan',defaultTextStyle: TextStyle(fontSize:14,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),), value: '0'),
+                              new PopupMenuItem<String>(child: Html(data:'Putar',defaultTextStyle: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),), value: '1'),
+                            ],
+                          ):PopupMenuButton(
+                            onSelected: (e) async{
+                              print(e);
                               if(e=='0'){
                                 setState(() {
                                   isLoadingShare = true;
@@ -292,25 +314,10 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                                   )),
                                 );
                               }
-
                             },
                             itemBuilder: (_) => <PopupMenuItem<String>>[
-                              new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
-                              new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
-                            ],
-                          ):PopupMenuButton(
-                            onSelected: (e) async{
-                              print(e);
-                              if(e=='0'){
-                                setState(() {
-                                  isLoadingShare = true;
-                                });
-                                share(video[index]['video'],index);
-                              }
-                            },
-                            itemBuilder: (_) => <PopupMenuItem<String>>[
-                              new PopupMenuItem<String>(child: const Text('Bagikan'), value: '0'),
-                              new PopupMenuItem<String>(child: const Text('Putar'), value: '1'),
+                              new PopupMenuItem<String>(child: Html(data:'Bagikan',defaultTextStyle: TextStyle(fontSize:14,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),), value: '0'),
+                              new PopupMenuItem<String>(child: Html(data:'Putar',defaultTextStyle: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),), value: '1'),
                             ],
                           ),
                         ),

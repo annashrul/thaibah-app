@@ -527,7 +527,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
                 ),
-                color: statusLevel!='0'?warna1:ThaibahColour.primary2,
+                color: ThaibahColour.primary2,
                 onPressed: (){
                   if(dropdownValue == 'Saya'){
                     if(_currentItemSelectedKurir==null){
@@ -595,6 +595,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
   }
 
   Future<void> _pinBottomSheet(context) async {
+    Navigator.pop(context);
     Navigator.push(context, CupertinoPageRoute(builder: (context) =>   PinScreen(callback: _callBackPin)));
   }
 
@@ -616,20 +617,19 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       sendVoucher = vouncher.text;
       sendKurir = 'COD | Cash On Delivery';
       sendOngkir = '0';
-    }else{
+    }
+    else{
       sendVoucher = '-';
       sendKurir = "${_currentItemSelectedKurir} | ${paket[0]}";
       sendOngkir = "${paket[1]}";
     }
-
     var res = await ProductMlmProvider().fetchCheckoutCart(widget.total,sendKurir,sendOngkir,sendAddress,addressType,sendVoucher,_radioValue2);
-    print("######################## STATUS CHECKOUT ${res.status}");
-    setState(() {Navigator.of(context).pop();});
+
     if(res is CheckoutToDetailModel){
-      setState(() {Navigator.of(context).pop();});
       CheckoutToDetailModel result = res;
       if(result.status=="success"){
-        setState(() {Navigator.of(context).pop();});
+
+
         final userRepo = UserRepository();
         final id = await userRepo.getDataUser("id");
         final statusLevel = await userRepo.getDataUser("statusLevel");
@@ -642,42 +642,22 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         if(int.parse(statusLevel) < result.result.levelStatus){
           await dbHelper.update(row);
         }
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return RichAlertDialogQ(
-                alertTitle: richTitle("Transaksi Berhasil"),
-                alertSubtitle: richSubtitle("Terimakasih Telah Melakukan Transaksi"),
-                alertType: RichAlertType.SUCCESS,
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("Lihat Riwayat",style:TextStyle(fontWeight:FontWeight.bold,fontFamily: ThaibahFont().fontQ)),
-                    onPressed: (){
-                      Navigator.push(context, CupertinoPageRoute(builder: (context) =>   DetailHistorySuplemen(
-                          id: result.result.id.toString(),
-                          resi: 'kosong',
-                          status: 0,
-                          param:'checkout'
-                      )));
-                    },
-                  ),
-                  FlatButton(
-                    child: Text("Kembali",style:TextStyle(fontWeight:FontWeight.bold,fontFamily: ThaibahFont().fontQ),),
-                    onPressed: (){
-                      Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-                    },
-                  ),
-                ],
-              );
-            }
-        );
+        Navigator.of(context).pop();
+        UserRepository().notifAlertQ(context,'success', 'Transaksi Berhasil', 'Terimakasih Telah Melakukan Transaksi', 'Kembali','Lihat Riwayat',(){
+            Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+          },(){
+          Navigator.push(context, CupertinoPageRoute(builder: (context) =>   DetailHistorySuplemen(
+              id: result.result.id.toString(),
+              resi: 'kosong',
+              status: 0,
+              param:'checkout'
+          )));
+        });
       }
       else{
-
         setState(() {Navigator.of(context).pop();});
         setState(() {Navigator.of(context).pop();});
         UserRepository().notifNoAction(scaffoldKey, context,result.msg,"failed");
-//        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result.msg)));
       }
     }
     else{

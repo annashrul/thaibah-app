@@ -37,6 +37,7 @@ import 'package:thaibah/UI/upgradePlatinum.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/autoSizeTextQ.dart';
 import 'package:thaibah/config/flutterMaskedText.dart';
+import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
@@ -209,7 +210,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                     Row(
                       children: <Widget>[
                         CircleAvatar(
-                          radius: 40.0,
+                          radius:ScreenUtilQ.getInstance().setSp(200),
                           child: CachedNetworkImage(
                             imageUrl: _picture,
                             imageBuilder: (context, imageProvider) => Container(
@@ -237,7 +238,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                   ],
                                 )
                             ),
-                            SizedBox(height: 7.0),
+                            SizedBox(height:ScreenUtilQ.getInstance().setSp(20)),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
                               child: Row(
@@ -251,7 +252,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 ],
                               )
                             ),
-                            SizedBox(height: 7.0),
+                            SizedBox(height:ScreenUtilQ.getInstance().setSp(10)),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
@@ -289,22 +290,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
                               ],
                             ),
-//                            Padding(
-//                              padding: const EdgeInsets.only(left: 0.0),
-//                              child:Row(
-//                                mainAxisAlignment: MainAxisAlignment.start,
-//                                children: <Widget>[
-//                                  Container(
-//                                    width:100.0,
-//                                    child: Text('Membership',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
-//                                  ),
-//                                  Text(": "+_levelPlatinum,style: whiteText.copyWith(fontSize: 14.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-//
-//                                ],
-//                              )
-////                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Membership : $_levelPlatinum',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
-//                            ),
-                            SizedBox(height: 7.0),
+                            SizedBox(height:ScreenUtilQ.getInstance().setSp(10)),
                             Padding(
                               padding: const EdgeInsets.only(left: 0.0),
                               child:Row(
@@ -318,7 +304,6 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
 
                                 ],
                               )
-//                              child: isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 16.0):Text('Level Royalti : $_level',style: whiteText.copyWith(fontSize: 14.0,fontFamily:ThaibahFont().fontQ)),
                             ),
                           ],
                         ),
@@ -327,8 +312,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                   ],
                 ),
               ),
+              SizedBox(height:ScreenUtilQ.getInstance().setSp(20)),
               Container(
-                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
                 child: SizedBox(
                   child: Container(height: 1.0,color: Colors.white),
                 ),
@@ -343,7 +329,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                   _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
                   _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
                   _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"),
-              SizedBox(height:15.0),
+              SizedBox(height:ScreenUtilQ.getInstance().setSp(20)),
               Container(
                   padding: const EdgeInsets.only(left:0.0,right:0.0),
                   child:Card(
@@ -413,7 +399,26 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                               CardEmoney(imgUrl:'Icon_Utama_Asmaul_Husna',title:'Asmaul Husna',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));},),
                               CardEmoney(imgUrl:'Icon_Utama_Kalender_Hijriah',title:'Kalender',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));},),
                               CardEmoney(imgUrl:'Icon_Utama_Lainnya',title:'Lainnya',xFunction: (){
-                                _lainnyaModalBottomSheet(context,'ppob');
+                                showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return RichAlertDialogQ(
+                                      alertTitle: richTitle("PERHATIAN"),
+                                      alertSubtitle: richSubtitle("Maaf Fitur Ini Sedang Dalam Tahap Pengembangan"),
+                                      alertType: RichAlertType.WARNING,
+                                      actions: <Widget>[
+                                        Container(
+                                          width: MediaQuery.of(context).size.width/3,
+                                          child: UserRepository().buttonQ(context, warna1, warna2, (){
+                                            Navigator.pop(context);
+                                          }, false, 'OKE'),
+                                        )
+                                      ],
+                                    );
+                                  },
+                                );
+                                // _lainnyaModalBottomSheet(context,'ppob');
                               },),
                             ],
                           ),
@@ -932,19 +937,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                mainAxisAlignment: MainAxisAlignment.center,
                crossAxisAlignment: CrossAxisAlignment.center,
                children: <Widget>[
-                 AutoSizeTextQ(
-                   'Saldo Utama',
-                   textAlign: TextAlign.center,
-                   style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(24),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
-                   maxLines: 2,
-                 ),
+                 RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Utama', style: TextStyle(color:Colors.white,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                  SizedBox(height:2.0),
-                 AutoSizeTextQ(
-                     saldoMain,
-                     textAlign: TextAlign.center,
-                     style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
-                     maxLines: 2
-                 ),
+                 RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoMain, style: TextStyle(color:Colors.yellowAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                ],
              ),
            ),
@@ -953,18 +948,10 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ(
-                    'Saldo Bonus',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
-                    maxLines: 2
-                ),
+                RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Bonus', style: TextStyle(color:Colors.white,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(
-                    saldoBonus,
-                    textAlign: TextAlign.center,
+                RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoBonus, style: TextStyle(color:Colors.yellowAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
 
-                    style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -972,17 +959,10 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AutoSizeTextQ(
-                    'Saldo Voucher',
-                    textAlign: TextAlign.center,
-
-                    style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Voucher', style: TextStyle(color:Colors.white,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                 SizedBox(height:2.0),
-                AutoSizeTextQ(
-                    saldoVoucher,
-                    textAlign: TextAlign.center,
+                RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoVoucher, style: TextStyle(color:Colors.yellowAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
 
-                    style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
@@ -991,15 +971,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  AutoSizeTextQ('Saldo Platinum',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize:8.0,color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                  RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Platinum', style: TextStyle(color:Colors.white,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                   SizedBox(height:2.0),
-                  AutoSizeTextQ(
-                      saldoPlatinum,
-                      textAlign: TextAlign.center,
-
-                      style: TextStyle(fontSize:10.0,color:statusLevel!='0'?Colors.white:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
+                  RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoPlatinum, style: TextStyle(color:Colors.yellowAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                 ],
               ),
             )

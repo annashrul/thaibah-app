@@ -281,12 +281,10 @@ class _IntroScreenState extends State<IntroScreen> {
   Future load() async{
     Client client = Client();
     final response = await client.get(ApiService().baseUrl+'info/onboarding');
-    print("##################### RESPONSE ONBOARDING STATUS CODE ${response.statusCode} #####################");
     if(response.statusCode == 200){
       final jsonResponse = json.decode(response.body);
       if(response.body.isNotEmpty){
         Prefix2.OnboardingModel onboardingModel = Prefix2.OnboardingModel.fromJson(jsonResponse);
-        print("##################### RESPONSE ONBOARDING ${onboardingModel.result.length} #####################");
         if(onboardingModel.result.length != 0){
           onboardingModel.result.map((Prefix2.Result items){
             setState(() {
@@ -296,8 +294,8 @@ class _IntroScreenState extends State<IntroScreen> {
                 title: Container(),
                 body: Column(
                   children: <Widget>[
-                    Text(items.title,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Color(0xFF116240),fontWeight: FontWeight.bold)),
-                    Text(items.description,style: TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                    Text(items.title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Color(0xFF116240),fontWeight: FontWeight.bold)),
+                    Text(items.description,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                   ],
                 ),
                 mainImage: Image.network(
@@ -317,7 +315,7 @@ class _IntroScreenState extends State<IntroScreen> {
         else{
           Navigator.push(
             context,
-            MaterialPageRoute(
+            CupertinoPageRoute(
               builder: (BuildContext context) => LoginPhone(),
             ), //MaterialPageRoute
           );
@@ -327,13 +325,12 @@ class _IntroScreenState extends State<IntroScreen> {
       else{
         Navigator.push(
           context,
-          MaterialPageRoute(
+          CupertinoPageRoute(
             builder: (BuildContext context) => LoginPhone(),
           ), //MaterialPageRoute
         );
       }
     }else {
-      print("##################### ELSE RESPONSE ONBOARDING STATUS CODE ${response.statusCode} #####################");
       throw Exception('Failed to load info');
     }
   }
@@ -342,7 +339,7 @@ class _IntroScreenState extends State<IntroScreen> {
   Future<Null> go() async {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (BuildContext context) => LoginPhone(),
       ), //MaterialPageRoute
     );
@@ -367,10 +364,10 @@ class _IntroScreenState extends State<IntroScreen> {
                 go();
               },
               showSkipButton: true,
-              doneText: Text("MULAI",style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              doneText: Text("MULAI",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
               pageButtonsColor: Colors.green,
               pageButtonTextStyles: new TextStyle(
-                fontSize: 16.0,
+                fontSize: ScreenUtilQ.getInstance().setSp(30),
                 fontFamily:ThaibahFont().fontQ,
                 fontWeight: FontWeight.bold
               ),

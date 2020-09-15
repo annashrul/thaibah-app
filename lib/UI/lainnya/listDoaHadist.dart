@@ -143,7 +143,7 @@ class _ListDoaHadistState extends State<ListDoaHadist> {
                           textDirection: TextDirection.rtl,
                           child: Align(
                             alignment: Alignment.topRight,
-                            child: Text(snapshot.data.result[index].arabic, style: TextStyle(fontSize: 22, fontFamily:ThaibahFont().fontQ),),
+                            child:UserRepository().textQ(snapshot.data.result[index].arabic, 16, Colors.black,FontWeight.bold,TextAlign.right),
                           ),
                         ),
                       ),

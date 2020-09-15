@@ -133,15 +133,15 @@ class _MasjidTerdekatState extends State<MasjidTerdekat> {
                               width: ScreenUtilQ.getInstance().setWidth(60),
                             ),
                           ),
-                          title: Text(
-                            snapshot.data.result[index].name,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),
-                          ),
+                          // title: Text(snapshot.data.result[index].name,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),),
+                          title: UserRepository().textQ(snapshot.data.result[index].name, 12, Colors.black,FontWeight.bold,TextAlign.left),
                           subtitle: Row(
                             children: <Widget>[
-                              Text(snapshot.data.result[index].address, style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey,fontSize: 11.0,fontWeight:FontWeight.bold))
+                              Expanded(child: UserRepository().textQ(snapshot.data.result[index].address, 10, Colors.grey,FontWeight.bold,TextAlign.left),)
                             ],
                           ),
-                          trailing: Text(snapshot.data.result[index].distance,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontSize: 11.0,fontWeight:FontWeight.bold),),
+                          // trailing: Text(snapshot.data.result[index].distance,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontSize: 11.0,fontWeight:FontWeight.bold),),
+                          trailing: UserRepository().textQ(snapshot.data.result[index].distance, 10, Colors.grey,FontWeight.bold,TextAlign.right),
                         ),
                       ),
                     ),

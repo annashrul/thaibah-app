@@ -155,6 +155,7 @@ class _HistoryMainState extends State<HistoryMain>{
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+
                       Text('Dari',style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(30))),
                       TextField(
                         style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
@@ -319,7 +320,8 @@ class _HistoryMainState extends State<HistoryMain>{
                                             Row(
                                               children: <Widget>[
                                                 Icon(Icons.add,size: 12,),
-                                                Text(snapshot.data.result.data[index].trxIn, style: TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.green,fontSize:ScreenUtilQ.getInstance().setSp(28), fontWeight: FontWeight.bold)),
+                                                UserRepository().textQ(snapshot.data.result.data[index].trxIn, 10, Colors.green, FontWeight.bold,TextAlign.left)
+                                                // Text(snapshot.data.result.data[index].trxIn, style: TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.green,fontSize:ScreenUtilQ.getInstance().setSp(28), fontWeight: FontWeight.bold)),
                                               ],
                                             ),
                                             Row(
@@ -327,7 +329,7 @@ class _HistoryMainState extends State<HistoryMain>{
                                                 Icon(const IconData(0xe15b, fontFamily: 'MaterialIcons'),
                                                   color: Colors.black,size: 12,
                                                 ),
-                                                Text(snapshot.data.result.data[index].trxOut, style: TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.red,fontSize:ScreenUtilQ.getInstance().setSp(28), fontWeight: FontWeight.bold)),
+                                                UserRepository().textQ(snapshot.data.result.data[index].trxOut, 10, Colors.red, FontWeight.bold,TextAlign.left)
                                               ],
                                             ),
                                           ],
