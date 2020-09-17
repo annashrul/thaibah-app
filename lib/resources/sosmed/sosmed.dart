@@ -89,23 +89,29 @@ class SosmedProvider {
   Future sendComment(var id,var caption) async {
     final token = await userRepository.getDataUser('token');
     final deviceId = await userRepository.getDeviceId();
-    return await client.post(
-        ApiService().baseUrl+"socmed/comment",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
-        body: {
-          "caption":"$caption",
-          "id_content":"$id",
-          "deviceid":"$deviceId",
-        }).then((Response response) {
-      var results;
+    var results;
+    try{
+      final response = await client.post(
+          ApiService().baseUrl+"socmed/comment",
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+          body: {
+            "caption":"$caption",
+            "id_content":"$id",
+            "deviceid":"$deviceId",
+          }).timeout(Duration(seconds: ApiService().timerActivity)
+      );
       if(response.statusCode == 200){
         results = GeneralInsertId.fromJson(json.decode(response.body));
       }else if(response.statusCode == 400){
         results =  General.fromJson(json.decode(response.body));
       }
-      print(results.status);
-      return results;
-    });
+    }  on TimeoutException catch(e){
+      results =  'timeout';
+    } on Error catch (e) {
+      results = 'error';
+    }
+    return results;
+
   }
   Future sendLikeOrUnLike(var id) async {
     final token = await userRepository.getDataUser('token');

@@ -5,12 +5,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listInboxSosmedModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
+import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 
 class InboxSosmed extends StatefulWidget {
@@ -21,14 +24,12 @@ class InboxSosmed extends StatefulWidget {
 class _InboxSosmedState extends State<InboxSosmed> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
-  String pesan = "When you do something beautiful and nobody noticed, do not be sad. For the sun every morning is a beautiful spectacle and the most of the audience sleeps.";
   final _bloc = InboxSosmedBloc();
   int perpage = 10;
   bool isLoading = false;
   bool isLoading1 = false;
   void load() {
     perpage = perpage += 10;
-    print("PERPAGE ${perpage}");
     setState(() {isLoading = false;});
     _bloc.fetchListInboxSosmed(1,perpage);
 
@@ -43,52 +44,25 @@ class _InboxSosmedState extends State<InboxSosmed> {
     load();
   }
   Future<bool> _loadMore() async {
-    print("onLoadMore");
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     load();
     return true;
   }
-  int cek = 0;
   Future deleteInbox(id,index) async{
-    print(index);
-    setState(() {
-      cek = index;
-    });
-    print(cek);
     var res = await SosmedProvider().deleteInbox(id);
     if(res is General){
       General results = res;
       if(results.status == 'success'){
-        setState(() {
-          isLoading1 = false;
-        });
+        Navigator.pop(context);
         _bloc.fetchListInboxSosmed(1, perpage);
-        return showInSnackBar('pesan berhasil di hapus','success');
+        UserRepository().notifNoAction(scaffoldKey, context,'pesan berhasil di hapus', "success");
       }else{
-        setState(() {
-          isLoading1 = false;
-        });
-        return showInSnackBar(results.msg,'success');
+        Navigator.pop(context);
+        UserRepository().notifNoAction(scaffoldKey, context,results.msg, "failed");
       }
     }
   }
-  void showInSnackBar(String value,String param) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    scaffoldKey.currentState?.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: param == 'success' ? Colors.green : Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -108,31 +82,8 @@ class _InboxSosmedState extends State<InboxSosmed> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_backspace,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0.0,
-        title: Text('Pesan Masuk ', style: TextStyle(fontFamily:'Rubik',color:Colors.white,fontWeight: FontWeight.bold)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Color(0xFF116240),
-                Color(0xFF30cc23)
-              ],
-            ),
-          ),
-        ),
-      ),
-      body: Container(
+      appBar: UserRepository().appBarWithButton(context,"Pesan Masuk",ThaibahColour.primary1,ThaibahColour.primary2, (){Navigator.pop(context);}, Container()),
+        body: Container(
         margin: EdgeInsets.only(top:5.0),
         child: StreamBuilder(
             stream: _bloc.getResult,
@@ -146,7 +97,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               }
-              return Container(child:Center(child:CircularProgressIndicator()));
+              return UserRepository().loadingWidget();
             }
         ),
       ),
@@ -156,7 +107,9 @@ class _InboxSosmedState extends State<InboxSosmed> {
   Widget buildContent(AsyncSnapshot<ListInboxSosmedModel> snapshot, BuildContext context){
     List colors = [Color(0xFF116240), Color(0xFF30cc23)];
     Random random = new Random();
-    return snapshot.data.result.data.length > 0 ? isLoading ? Container(child:Center(child:CircularProgressIndicator())) : RefreshIndicator(
+    return snapshot.data.result.data.length > 0 ? isLoading ? UserRepository().loadingWidget() : LiquidPullToRefresh(
+      color: Colors.transparent,
+      backgroundColor:ThaibahColour.primary2,
       child: LoadMoreQ(
         child: ListView.builder(
           itemCount: snapshot.data.result.data.length,
@@ -186,7 +139,6 @@ class _InboxSosmedState extends State<InboxSosmed> {
                       ],
                       borderRadius: BorderRadius.circular(5),
                       color: Colors.transparent
-//                          color: Colors.white,
                   ),
                   child: Row(
                     children: <Widget>[
@@ -206,8 +158,8 @@ class _InboxSosmedState extends State<InboxSosmed> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  new Text("$hm", style: new TextStyle(color: Colors.white, fontSize: 9.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                                  new Text("$ymd", style: new TextStyle(color: Colors.white, fontSize: 9.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
+                                  UserRepository().textQ(hm, 10,Colors.white,FontWeight.bold,TextAlign.center),
+                                  UserRepository().textQ(ymd,10,Colors.white,FontWeight.bold,TextAlign.center),
                                 ],
                               ),
                             ),
@@ -221,26 +173,11 @@ class _InboxSosmedState extends State<InboxSosmed> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(
-                              '${snapshot.data.result.data[index].title}',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                fontFamily:'Rubik',
-                              ),
-                            ),
+                            UserRepository().textQ(snapshot.data.result.data[index].title, 12,Colors.black,FontWeight.bold,TextAlign.left),
                             Padding(
                               padding: EdgeInsets.only(top: 5),
                             ),
-                            Text(
-                              '${snapshot.data.result.data[index].caption}',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 10,
-                                fontFamily:'Rubik',
-                              ),
-                            ),
+                            UserRepository().textQ(snapshot.data.result.data[index].caption, 12,Colors.grey,FontWeight.bold,TextAlign.left),
                             Padding(
                               padding: EdgeInsets.only(top: 5),
                             ),
@@ -251,17 +188,18 @@ class _InboxSosmedState extends State<InboxSosmed> {
                         children: <Widget>[
                           Padding(
                             padding: EdgeInsets.only(right: 15),
-                            child: index == cek ? isLoading1 ? CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))): new IconButton(
+                            child: new IconButton(
                                 icon: Icon(FontAwesomeIcons.trash,color: Colors.grey,size: 12.0,),
                                 onPressed: () {
-                                  setState(() {isLoading1 = true;});
-                                  deleteInbox(snapshot.data.result.data[index].id,index);
-                                }
-                            ): new IconButton(
-                                icon: Icon(FontAwesomeIcons.trash,color: Colors.grey,size: 12.0,),
-                                onPressed: () {
-                                  setState(() {isLoading1 = true;});
-                                  deleteInbox(snapshot.data.result.data[index].id,index);
+                                  UserRepository().notifAlertQ(context,"warning","Perhatian","Apakah anda yakin akan menghapus pesan ini ?","Batal","Oke",(){
+                                    Navigator.pop(context);
+                                  },(){
+                                    Navigator.pop(context);
+                                    UserRepository().loadingQ(context);
+                                    deleteInbox(snapshot.data.result.data[index].id,index);
+                                  });
+
+
                                 }
                             ),
                           )
@@ -282,7 +220,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
       ),
       onRefresh: refresh,
       key: _refresh,
-    ) : Container(child:Center(child:Text("Data Tidak Tersdia",style:TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold))));
+    ) : UserRepository().noData();
   }
 
 

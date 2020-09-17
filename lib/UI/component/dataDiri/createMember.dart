@@ -13,11 +13,7 @@ import 'package:thaibah/Model/registUIModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
-import 'package:thaibah/UI/Widgets/responsive_ui.dart';
-import 'package:thaibah/UI/component/detailDownline.dart';
 import 'package:thaibah/UI/component/myProfile.dart';
-import 'package:thaibah/UI/jaringan_ui.dart';
-import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
@@ -271,67 +267,9 @@ class _CreateMemberState extends State<CreateMember> {
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
       body: _form(),
-//      bottomNavigationBar: _bottomNavBarBeli(context),
-
     );
   }
 
-  Widget _bottomNavBarBeli(BuildContext context){
-    return Container(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
-              borderRadius: BorderRadius.circular(0.0),
-              boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-            ),
-            width: MediaQuery.of(context).size.width/1,
-            height: kBottomNavigationBarHeight,
-            child: FlatButton(
-
-              onPressed: (){
-                if (nameController.text == "") {
-                  return showInSnackBar("Nama Harus Disi");
-                }else if(noHpController.text == ""){
-                  return showInSnackBar("No Handphone Harus Disi");
-                }else if(reffController.text == ""){
-                  return showInSnackBar("Kode Referral Harus Disi");
-                }
-//                else if(pinController.text == ""){
-//                  return showInSnackBar("PIN Harus Diisi");
-//                }else if(_image == null || _image == ""){
-//                  return showInSnackBar("Silahkan Upload Photo KTP");
-//                }
-                else {
-                  if(pinController.text != confirmPinController.text){
-                    pinController.clear();
-                    confirmPinController.clear();
-                    return showInSnackBar("PIN Yang Anda Masukan Tidak Sesuai");
-                  }else{
-                    setState(() {_isLoading = true;});
-                    create();
-                  }
-//                  if(pinController.text.length < 6){
-//                    return showInSnackBar("PIN Yang Anda Masukan Kurang Dari 6 Digit");
-//                  }else{
-//                    setState(() {_isLoading = true;});
-//                    create();
-//                  }
-//                  setState(() {_isLoading = true;});
-//                  create();
-
-                }
-              },
-              child:_isLoading?Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Text("Daftar", style: TextStyle(color: Colors.white)),
-            )
-          )
-        ],
-      ),
-    );
-  }
 
   _fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
     currentFocus.unfocus();
@@ -399,7 +337,6 @@ class _CreateMemberState extends State<CreateMember> {
                         ],
                       ),
                     ),
-//                    Text("No WhatsApp",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
                     Row(
                       children: <Widget>[
                         Container(
@@ -531,152 +468,29 @@ class _CreateMemberState extends State<CreateMember> {
               ),
               UserRepository().buttonQ(context,warna1,warna2,(){
                 if (nameController.text == "") {
-//                  return showInSnackBar("Nama Harus Disi");
                   UserRepository().notifNoAction(_scaffoldKey, context,"Nama Harus Diisi","failed");
                 }else if(noHpController.text == ""){
-//                  return showInSnackBar("No Handphone Harus Disi");
                   UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Harus Diisi","failed");
                 }else if(reffController.text == ""){
                   UserRepository().notifNoAction(_scaffoldKey, context,"Kode Referral Harus Diisi","failed");
-//                  return showInSnackBar("Kode Referral Harus Disi");
                 }
-//                else if(pinController.text == ""){
-//                  return showInSnackBar("PIN Harus Diisi");
-//                }else if(_image == null || _image == ""){
-//                  return showInSnackBar("Silahkan Upload Photo KTP");
-//                }
                 else {
                   if(pinController.text != confirmPinController.text){
                     pinController.clear();
                     confirmPinController.clear();
                     UserRepository().notifNoAction(_scaffoldKey, context,"PIN Yang Anda Masuka Tidak Sesuai","failed");
-//                    return showInSnackBar("PIN Yang Anda Masukan Tidak Sesuai");
                   }else{
                     setState(() {_isLoading = true;});
                     create();
                   }
                 }
               }, _isLoading,'Simpan')
-//              Padding(
-//                padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 8),
-//                child: Column(
-//                  crossAxisAlignment: CrossAxisAlignment.start,
-//                  children: <Widget>[
-//                    Text("PIN (buat pin sebanyak 6 digit)",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-//                    TextFormField(
-//                      obscureText: _secureText,
-//                      maxLength: 6,
-//                      maxLengthEnforced: true,
-//                      controller: pinController,
-//                      decoration: InputDecoration(
-//                          suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
-//                          hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)
-//                      ),
-//                      keyboardType: TextInputType.number,
-//                      maxLines: null,
-//                      textInputAction: TextInputAction.done,
-//                      focusNode: pinFocus,
-//                      onFieldSubmitted: (term){
-//                        pinFocus.unfocus();
-//                      },
-//                    ),
-//                  ],
-//                ),
-//              ),
-//              Padding(
-//                padding: EdgeInsets.only(left:16.0,right:16.0,top:16.0,bottom:0.0),
-//                child: Column(
-//                  crossAxisAlignment: CrossAxisAlignment.start,
-//                  children: <Widget>[
-//                    Text("Silahkan Upload atau Ambil Photo KTP",style: TextStyle(color:Colors.black,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-//                    Container(
-//                        width: double.infinity,
-//                        margin: EdgeInsets.only(top:10.0),
-//                        child: OutlineButton(
-//                          borderSide: BorderSide(color: Colors.grey,width: 1.0),
-//                          child: Column(
-//                            crossAxisAlignment: CrossAxisAlignment.center,
-//                            children: <Widget>[
-//                              Row(
-//                                mainAxisAlignment: MainAxisAlignment.center,
-//                                children: <Widget>[
-//                                  Radio(
-//                                    value: 'camera',
-//                                    groupValue: _radioValue1,
-//                                    onChanged: _handleRadioValueChange1,
-//                                  ),
-//                                  new Text('Kamera',style: new TextStyle(fontSize: 11.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-//                                  Radio(
-//                                    value: 'gallery',
-//                                    groupValue: _radioValue1,
-//                                    onChanged: _handleRadioValueChange1,
-//                                  ),
-//                                  new Text('Galeri',style: new TextStyle(fontSize: 11.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-//                                ],
-//                              ),
-//                              SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
-//                              _radioValue1 == 'camera' ? Icon(Icons.camera_alt) : Icon(Icons.folder),
-//                              _image == null ? _radioValue1 == 'camera' ? Text('Ambil Photo',style: new TextStyle(fontSize: 11.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)) : Text('Upload Photo',style: new TextStyle(fontSize: 11.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)) : Text('$_image',style: new TextStyle(fontSize: 11.0,fontFamily: 'Rubik',fontWeight: FontWeight.bold)),
-//                              SizedBox(height: ScreenUtil.getInstance().setHeight(50),),
-//                            ],
-//                          ),
-//                          onPressed: () => getImageFile(),
-//
-//                        )
-//                    ),
-//                  ],
-//                ),
-//              ),
-//
-//              Flexible(
-//                  child: _image == null ? new Center(child: Text('')): Container(
-//                    padding: EdgeInsets.only(left:16.0,right:16.0),
-//                    child: new Image.file(_image,fit: BoxFit.fill,filterQuality: FilterQuality.high,),
-//                  )
-//              ),
             ],
           ),
         ),
       ],
     );
   }
-
-
-  Widget imgPicker(){
-    return Container(
-      height: 100,
-      child: _image == null
-          ? new Text('Tidak ada gambar dipilih')
-          : new Image.file(_image),
-    );
-  }
-
-  Widget pickerImg(){
-    _width = MediaQuery.of(context).size.width;
-    _pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    bool large =  ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
-    bool medium=  ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
-    return MaterialButton(
-      elevation: large? 4 : (medium? 3 : 2),
-      color: Colors.grey[50],
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-      onPressed: () async {
-
-      },
-      textColor: Colors.black45,
-      padding: EdgeInsets.all(0.0),
-      child: Container(
-        alignment: Alignment.center,
-        width: _width/1.2,
-        padding: EdgeInsets.only(top: 10, bottom: 10),
-        decoration: BoxDecoration(
-        ),
-        child: Text('Ambil Gambar',style: TextStyle(fontSize: _large? 19: (_medium? 17: 15))),
-      ),
-    );
-  }
-
-
 }
 
 

@@ -238,7 +238,7 @@ class _MyProfileState extends State<MyProfile> {
                       customlistDetails('','Penukaran Bonus', Icons.monetization_on, Colors.green[100], Colors.red[400],PenukaranBonus(saldo: saldoMain, saldoBonus:saldoBonus)),
                       customlistDetails('','Riwayat Penarikan', Icons.history, Colors.red[50], Colors.red[300],HistoryPenarikan()),
                       customlistDetails('','Riwayat Pembelian', Icons.history, Colors.amber[200], Colors.white,IndexHistory()),
-                      customlistDetails('','Riwayat Top Up', Icons.history, Colors.blue[100], Colors.white,HistoryDeposit()),
+                      customlistDetails('','Riwayat Top Up', Icons.history, Colors.blue[100], Colors.white,HistoryDeposit(saldo: saldoMain)),
                       customlistDetails('','Sosial Media', Icons.perm_media, Colors.green, Colors.white,MyFeed()),
                       customlistDetails('','Kebijakan & Privasi', Icons.lock, Colors.orange[100], Colors.orange[300],PrivacyPolicy(privasi: privacyPolicy)),
                       customlistDetails('','Pengaturan', Icons.settings, Colors.black, Colors.white,IndexMember(id: id)),

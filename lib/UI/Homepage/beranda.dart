@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/mainUiModel.dart';
@@ -66,10 +67,6 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   bool retry = false,modeUpdate = false,modeLogout = false,isLoading = false,versi = false,loadingVersion=false,loadingStatusMember=false;
 
   Future<void> refresh() async{
-    Timer(Duration(seconds: 1), () {
-      setState(() {isLoading = true;});
-    });
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     loadData();
   }
   Future<void> loadData() async {
@@ -80,7 +77,6 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
     final color2 = await userRepository.getDataUser('warna2');
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    print("############# THIS TOKEN $token #####################");
     if (token == null || token == '') {
       setState(() {
         isLoading = false;
@@ -189,7 +185,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
   Widget buildContent(BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    return modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() :Column(
+    return modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() : Column(
       children: <Widget>[
         Container(
           padding:EdgeInsets.only(top:30.0,left:10.0,right:10.0,bottom:10.0),
@@ -210,7 +206,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                     Row(
                       children: <Widget>[
                         CircleAvatar(
-                          radius:ScreenUtilQ.getInstance().setSp(200),
+                          radius:35,
                           child: CachedNetworkImage(
                             imageUrl: _picture,
                             imageBuilder: (context, imageProvider) => Container(
@@ -298,10 +294,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                 children: <Widget>[
                                   Container(
                                     width:MediaQuery.of(context).size.width/4,
-                                    child: Text('Level Royalti',style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ)),
+                                    child:Text('Level Royalti',style: whiteText.copyWith(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ)),
                                   ),
                                   Text(": "+_level,style: whiteText.copyWith(fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-
                                 ],
                               )
                             ),
@@ -357,16 +352,18 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
             ],
           ),
         ),
-        SizedBox(height:10.0),
         Flexible(
           flex:1,
-          child:RefreshIndicator(
+          child:LiquidPullToRefresh(
+            color: ThaibahColour.primary2,
+            backgroundColor:Colors.white,
             child: SingleChildScrollView(
                 primary: true,
                 scrollDirection: Axis.vertical,
                 physics: ClampingScrollPhysics(),
                 child:Column(
                   children: <Widget>[
+                    SizedBox(height:10.0),
                     NewsHomePage(),
                     Card(
                       elevation: 1.0,
@@ -439,7 +436,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                 )
             ),
             key: _refresh,
-            onRefresh: refresh
+            onRefresh: loadData
           ),
         )
       ],
@@ -604,7 +601,7 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                               Row(
                                 children: <Widget>[
                                   CircleAvatar(
-                                    radius: 40,
+                                    radius: 28,
                                     backgroundColor: Colors.white,
                                     child: ClipOval(child: SkeletonFrame(width: 50,height: 50),
                                     ),
@@ -932,50 +929,61 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-           Center(
-             child:  Column(
-               mainAxisAlignment: MainAxisAlignment.center,
-               crossAxisAlignment: CrossAxisAlignment.center,
-               children: <Widget>[
-                 RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Utama', style: TextStyle(color:Colors.white,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                 SizedBox(height:2.0),
-                 RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoMain, style: TextStyle(color:Colors.yellowAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-               ],
+           Padding(
+             padding: EdgeInsets.all(3.0),
+             child: Center(
+               child:  Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 crossAxisAlignment: CrossAxisAlignment.center,
+                 children: <Widget>[
+                   RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Utama', style: TextStyle(color:Colors.white,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                   SizedBox(height:2.0),
+                   RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoMain, style: TextStyle(color:Colors.yellowAccent,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                 ],
+               ),
              ),
            ),
             SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Bonus', style: TextStyle(color:Colors.white,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                SizedBox(height:2.0),
-                RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoBonus, style: TextStyle(color:Colors.yellowAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-
-              ],
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Voucher', style: TextStyle(color:Colors.white,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                SizedBox(height:2.0),
-                RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoVoucher, style: TextStyle(color:Colors.yellowAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-
-              ],
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Center(
+            Padding(
+              padding: EdgeInsets.all(3.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Platinum', style: TextStyle(color:Colors.white,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                  RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Bonus', style: TextStyle(color:Colors.white,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                   SizedBox(height:2.0),
-                  RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoPlatinum, style: TextStyle(color:Colors.yellowAccent,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                  RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoBonus, style: TextStyle(color:Colors.yellowAccent,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+
                 ],
               ),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Padding(
+              padding: EdgeInsets.all(3.0),
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Voucher', style: TextStyle(color:Colors.white,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                  SizedBox(height:2.0),
+                  RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoVoucher, style: TextStyle(color:Colors.yellowAccent,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                ],
+              )
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
+            Padding(
+              padding: EdgeInsets.only(left:3.0),
+              child:Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Platinum', style: TextStyle(color:Colors.white,fontSize: 11.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                    SizedBox(height:2.0),
+                    RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoPlatinum, style: TextStyle(color:Colors.yellowAccent,fontSize: 11.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                  ],
+                ),
+              )
             )
           ],
         )

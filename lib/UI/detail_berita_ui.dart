@@ -16,6 +16,7 @@ import 'package:thaibah/UI/detailNewsPerCategory.dart';
 import 'package:thaibah/bloc/categoryBloc.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 import 'Homepage/index.dart';
 import 'Widgets/pin_screen.dart';
@@ -42,6 +43,18 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
   var localId;
   var localCategory;
   YoutubePlayerController _controller1;
+
+  getLink(){
+    if(widget.link!='-'){
+      _controller1 = YoutubePlayerController(
+        initialVideoId: YoutubePlayer.convertUrlToId(widget.link),
+        flags: YoutubePlayerFlags(
+          autoPlay: false,
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -49,13 +62,7 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
     localCategory = widget.category;
     newsDetailBloc.fetchNewsDetail(localId);
     super.initState();
-    _controller1 = YoutubePlayerController(
-      initialVideoId: YoutubePlayer.convertUrlToId(widget.link),
-      flags: YoutubePlayerFlags(
-        autoPlay: false,
-      ),
-    );
-
+    getLink();
   }
 
   @override
@@ -63,6 +70,7 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
     _controller1.dispose();
+
   }
 
   @override
@@ -145,24 +153,20 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(
-                                  snapshot.data.result.category,
-                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.w500,fontSize:ScreenUtilQ.getInstance().setSp(40)),
-                                ),
-                                Text(
-                                  snapshot.data.result.createdAt,
-                                  style: TextStyle(color:  Color(0xFFB1B1B1),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.w500,fontSize: ScreenUtilQ.getInstance().setSp(40)),
-                                )
+                                UserRepository().textQ(snapshot.data.result.category, 10, Colors.grey,FontWeight.bold, TextAlign.left),
+                                UserRepository().textQ(snapshot.data.result.createdAt, 10, Colors.grey,FontWeight.bold, TextAlign.right)
                               ],
                             ),
                           ),
                           Container(
                               margin: EdgeInsets.only(bottom: 10.0),
-                              child: Text(snapshot.data.result.title,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(36)),)
+                            child: UserRepository().textQ(snapshot.data.result.title, 12, Colors.black,FontWeight.bold, TextAlign.left)
+                            // child: Text(snapshot.data.result.title,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(36)),)
                           ),
                           Container(
                               margin: EdgeInsets.only(bottom: 10.0),
-                              child: Text(snapshot.data.result.penulis,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Color(0xFFB1B1B1),fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(34)),)
+                              // child: Text(snapshot.data.result.penulis,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Color(0xFFB1B1B1),fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(34)),)
+                              child: UserRepository().textQ(snapshot.data.result.penulis, 10, Colors.grey,FontWeight.bold, TextAlign.right)
                           ),
 
                           Padding(
@@ -173,7 +177,6 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                                   widget.link!='-'?YoutubePlayer(controller: _controller1):Container()
                                 ],
                               ),
-//                              child: Html(data:removeAllHtmlTags(snapshot.data.result.caption),defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),)
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 30, bottom: 10),
@@ -353,17 +356,14 @@ class _ToggleButtonState extends State<ToggleButton> {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Align(
                 alignment: Alignment.center,
-                child: Text(
-                  snapshot.data.result[index].title,
-                  style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30)),
-                ),
+                child:UserRepository().textQ(snapshot.data.result[index].title, 12, Colors.white, FontWeight.bold,TextAlign.center)
+
               ),
               decoration: BoxDecoration(
                 color: colors[random.nextInt(4)],
                 borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(color: colors[random.nextInt(4)].withOpacity(0.4),blurRadius: 8,offset: Offset(0.0, 3))
-                ]),
+
+              ),
             ),
           )
         );

@@ -54,22 +54,6 @@ class _SaldoUIState extends State<SaldoUI> {
           );
         });
 
-//        scaffoldKey.currentState.showSnackBar(
-//            SnackBar(
-//              backgroundColor: Colors.red,
-//              duration: const Duration(seconds: 5),
-//              content: Text('Silahkan Buat PIN untuk Melanjutkan Transaksi',style: TextStyle(color:Colors.white,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-//              action: SnackBarAction(
-//                textColor: Colors.green,
-//                label: 'Buat PIN',
-//                onPressed: () {
-//                  Navigator.of(context, rootNavigator: true).push(
-//                    new CupertinoPageRoute(builder: (context) => Pin(saldo: widget.saldo,param:'topup')),
-//                  );
-//                },
-//              ),
-//            )
-//        );
       }else{
         var rplcComa = moneyController.text.replaceAll(",", "");
         var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
@@ -135,6 +119,7 @@ class _SaldoUIState extends State<SaldoUI> {
     double screenWidth = MediaQuery.of(context).size.width;
     var width = (screenWidth - ((_crossAxisCount - 1) * _crossAxisSpacing)) / _crossAxisCount;
     var height = width / _aspectRatio;
+    print("SALDO ${widget.saldo}");
     return Scaffold(
         key: scaffoldKey,
         appBar: UserRepository().appBarWithButton(context, 'Top Up', warna1, warna2, (){
@@ -166,11 +151,11 @@ class _SaldoUIState extends State<SaldoUI> {
                 children: <Widget>[
                   CardHeader(saldo: widget.saldo),
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                        // Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
                           style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
                           controller: moneyController,
@@ -178,7 +163,15 @@ class _SaldoUIState extends State<SaldoUI> {
                           maxLines: 1,
                           autofocus: false,
                           decoration: InputDecoration(
-                            hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30)),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            ),
+                            labelText: 'Nominal',
+                            labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                             prefixText: 'Rp.',
                           ),
                           inputFormatters: <TextInputFormatter>[

@@ -4,44 +4,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/historyModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/transaction/historyBloc.dart';
-//import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:thaibah/config/user_repo.dart';
-import 'package:thaibah/config/dateRangePickerQ.dart' as DateRagePicker;
 
-class HistoryVoucher extends StatefulWidget {
+class WidgetHistorySaldo extends StatefulWidget {
+  final String label;
+  WidgetHistorySaldo({this.label});
   @override
-  _HistoryVoucherState createState() => _HistoryVoucherState();
+  _WidgetHistorySaldoState createState() => _WidgetHistorySaldoState();
 }
 
-class _HistoryVoucherState extends State<HistoryVoucher>{
+class _WidgetHistorySaldoState extends State<WidgetHistorySaldo> {
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final userRepository = UserRepository();
   bool isLoading = false;
   int perpage=20;
-  String label='voucher';
   DateTime _dateTime;
   DateTimePickerLocale _locale = DateTimePickerLocale.id;
   TextEditingController _tgl_pertama = TextEditingController();
   TextEditingController _tgl_kedua = TextEditingController();
   final searchController = TextEditingController();
   final FocusNode searchFocus       = FocusNode();
-  Color warna1;
-  Color warna2;
-  Future loadTheme() async{
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-    });
-  }
   Future _search() async{
     setState(() {isLoading=true;});
     if (_tgl_pertama.text != 'yyyy-MM-dd') {
@@ -50,12 +40,12 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
     if (_tgl_kedua.text != 'yyyy-MM-dd') {
       _tgl_kedua.text = _tgl_kedua.text;
     }
-    if(searchController.text!=''){
+    if(searchController.text!=''||searchController.text!='tulis disini ...'){
       searchController.text = searchController.text;
     }else{
       searchController.text = '';
     }
-    historyBloc.fetchHistoryList(label, 1, perpage, _tgl_pertama.text,_tgl_kedua.text,searchController.text);
+    historyBloc.fetchHistoryList(widget.label, 1, perpage, _tgl_pertama.text,_tgl_kedua.text,searchController.text);
     Timer(Duration(seconds: 1), () {
       setState(() {
         isLoading = false;
@@ -70,14 +60,9 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
       isLoading=false;
 
     });
-    historyBloc.fetchHistoryList(label, 1, perpage, _tgl_pertama.text,_tgl_kedua.text,searchController.text);
+    historyBloc.fetchHistoryList(widget.label, 1, perpage, _tgl_pertama.text,_tgl_kedua.text,searchController.text);
   }
   Future<void> refresh() async {
-    Timer(Duration(seconds: 1), () {
-      setState(() {
-        isLoading = true;
-      });
-    });
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     load();
   }
@@ -87,25 +72,6 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
     load();
     return true;
   }
-
-
-  @override
-  void initState() {
-    super.initState();
-    var date = new DateTime.now().toString();
-    var dateParse = DateTime.parse(date);
-    var formattedDate = "${dateParse.year}-${dateParse.month.toString().padLeft(2, '0')}-${dateParse.day.toString().padLeft(2, '0')}";
-    _tgl_pertama.text = formattedDate;
-    _tgl_kedua.text = formattedDate;
-    _dateTime = DateTime.parse(formattedDate);
-    historyBloc.fetchHistoryList(label, 1, perpage, _tgl_pertama.text,_tgl_kedua.text,'');
-  }
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-
   void _showDatePicker(var param) {
     DatePicker.showDatePicker(
       context,
@@ -140,6 +106,18 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
   }
 
   @override
+  void initState() {
+    super.initState();
+    var date = new DateTime.now().toString();
+    var dateParse = DateTime.parse(date);
+    var formattedDate = "${dateParse.year}-${dateParse.month.toString().padLeft(2, '0')}-${dateParse.day.toString().padLeft(2, '0')}";
+    _tgl_pertama.text = formattedDate;
+    _tgl_kedua.text = formattedDate;
+    _dateTime = DateTime.parse(formattedDate);
+    print("WIDGET ${widget.label}");
+    historyBloc.fetchHistoryList(widget.label, 1, perpage, _tgl_pertama.text,_tgl_kedua.text,'');
+  }
+  @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
@@ -155,16 +133,24 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Dari',style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(30))),
                       TextField(
                         style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                         readOnly: true,
                         controller: _tgl_pertama,
-                        keyboardType: TextInputType.url,
+                        keyboardType: TextInputType.text,
                         decoration: InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.green),
+                          ),
+                          labelText: 'Dari',
+                          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
+                          hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                           hintText: 'yyyy-MM-dd',
-                          hintStyle: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black26, fontWeight: FontWeight.bold, fontFamily: 'Rubik'),
                         ),
+
                         onTap: () {_showDatePicker('1');},
                         onChanged: (value) {
                           setState(() {
@@ -185,15 +171,22 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Sampai',style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(30))),
                       TextField(
                         style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                         readOnly: true,
                         controller: _tgl_kedua,
                         keyboardType: TextInputType.url,
                         decoration: InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.green),
+                          ),
+                          labelText: 'Sampai',
+                          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
+                          hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                           hintText: 'yyyy-MM-dd',
-                          hintStyle: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black26, fontWeight: FontWeight.bold, fontFamily: 'Rubik'),
                         ),
                         onTap: () {_showDatePicker('2');},
                         onChanged: (value) {
@@ -213,13 +206,22 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('Cari',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
+                    // Text('Cari',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),),
                     TextFormField(
+                        keyboardType: TextInputType.text,
                         autofocus: false,
                         style:TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                         decoration: InputDecoration(
-                            hintText: 'Tulis Disini ...',
-                            hintStyle: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.grey,fontFamily:ThaibahFont().fontQ)
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.green),
+                          ),
+                          labelText: 'Cari',
+                          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
+                          hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                          hintText: 'tulis disini ...',
                         ),
                         controller: searchController,
                         focusNode: searchFocus,
@@ -238,7 +240,7 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
         ),
         Padding(
           padding: EdgeInsets.only(left:0.0,right:0.0,top:0.0),
-          child: UserRepository().buttonQ(context, warna1, warna2,(){_search();}, isLoading,'cari'),
+          child: UserRepository().buttonQ(context, ThaibahColour.primary1,ThaibahColour.primary2,(){_search();}, isLoading,'cari'),
         ),
         Expanded(
             child:  StreamBuilder(
@@ -261,7 +263,9 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
   Widget buildContent(AsyncSnapshot<HistoryModel> snapshot, BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-    return snapshot.data.result.data.length > 0 ? isLoading ? _loading() : RefreshIndicator(
+    return snapshot.data.result.data.length > 0 ? LiquidPullToRefresh(
+      color: Colors.transparent,
+      backgroundColor:ThaibahColour.primary2,
       child: Column(
         children: <Widget>[
           Expanded(
@@ -293,7 +297,7 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: <Widget>[
-                                            Html(data:hm, defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 12, fontWeight: FontWeight.bold )),
+                                            Html(data:hm, defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 10, fontWeight: FontWeight.bold )),
                                             Html(data:ymd, defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:10),)
                                           ],
                                         ),
@@ -303,23 +307,23 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
                                     Expanded(
                                       flex: 4,
                                       child: Column(
-                                        // mainAxisAlignment: MainAxisAlignment.start,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          Container(child: Html(data:snapshot.data.result.data[index].note, defaultTextStyle: TextStyle(fontSize:12,fontFamily:ThaibahFont().fontQ)),
+                                          Container(child: Html(data:snapshot.data.result.data[index].note, defaultTextStyle: TextStyle(fontSize:10,fontFamily:ThaibahFont().fontQ)),
                                           ),
                                         ],
                                       ),
                                     ),
                                     Expanded(
-                                        flex: 2,
+                                        flex: 3,
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.end,
                                           children: <Widget>[
                                             Row(
                                               children: <Widget>[
                                                 Icon(Icons.add,size: 12,),
-                                                Text(snapshot.data.result.data[index].trxIn, style: TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.green,fontSize:ScreenUtilQ.getInstance().setSp(28), fontWeight: FontWeight.bold)),
+                                                UserRepository().textQ(snapshot.data.result.data[index].trxIn, 10, Colors.green, FontWeight.bold,TextAlign.left)
+                                                // Text(snapshot.data.result.data[index].trxIn, style: TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.green,fontSize:ScreenUtilQ.getInstance().setSp(28), fontWeight: FontWeight.bold)),
                                               ],
                                             ),
                                             Row(
@@ -327,7 +331,7 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
                                                 Icon(const IconData(0xe15b, fontFamily: 'MaterialIcons'),
                                                   color: Colors.black,size: 12,
                                                 ),
-                                                Text(snapshot.data.result.data[index].trxOut, style: TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.red,fontSize:ScreenUtilQ.getInstance().setSp(28), fontWeight: FontWeight.bold)),
+                                                UserRepository().textQ(snapshot.data.result.data[index].trxOut, 10, Colors.red, FontWeight.bold,TextAlign.left)
                                               ],
                                             ),
                                           ],
@@ -348,8 +352,7 @@ class _HistoryVoucherState extends State<HistoryVoucher>{
       ),
       onRefresh: refresh,
       key: _refresh,
-    ) : Container(child: Center(child: Text("Data Tidak Tersedia",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))));
-
+    ) : UserRepository().noData();
   }
   Widget _loading() {
     return ListView.builder(

@@ -224,8 +224,8 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                 itemExtent: MediaQuery.of(context).size.height/2.5,  // I'm forcing item heights
                 delegate: SliverChildBuilderDelegate((context, index) {
                   String cap='';
-                  if(video[index]['caption'].length > 100){
-                    cap = '${video[index]['caption'].substring(0,100)} ...';
+                  if(video[index]['caption'].length > 70){
+                    cap = '${video[index]['caption'].substring(0,70)} ...';
                   }
                   else{
                     cap = video[index]['caption'];
@@ -244,7 +244,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                     child: Column(
                       children: <Widget>[
                         Container(
-                          height: 200,
+                          height: MediaQuery.of(context).size.height/4,
                           child: CachedNetworkImage(
                             imageUrl: video[index]['thumbnail'],
                             placeholder: (context, url) => Center(
@@ -267,12 +267,10 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                           leading: CircleAvatar(
                             backgroundImage: NetworkImage(video[index]['thumbnail']),
                           ),
-
                           title: Html(
                             data:cap,
                             defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
                           ),
-                          subtitle: Html(data:video[index]['category'], defaultTextStyle: TextStyle(fontSize:12,color: Colors.grey, fontFamily: ThaibahFont().fontQ)),
                           trailing: index == cek ? isLoadingShare ? CircularProgressIndicator(strokeWidth:10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)) : PopupMenuButton(
                             onSelected: (e) async{
                               if(e=='0'){

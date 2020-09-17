@@ -29,7 +29,6 @@ import 'Constants/constants.dart';
 import 'Model/checkerModel.dart';
 import 'UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'UI/Widgets/pin_screen.dart';
-import 'package:sqlite_at_runtime/sqlite_at_runtime.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

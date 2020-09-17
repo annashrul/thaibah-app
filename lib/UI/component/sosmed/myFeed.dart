@@ -1,15 +1,19 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -21,8 +25,10 @@ import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/UI/component/sosmed/inboxSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 class MyFeed extends StatefulWidget {
 
@@ -39,6 +45,11 @@ class _MyFeedState extends State<MyFeed> {
 
   final userRepository = UserRepository();
 
+  Future<File> file;
+  String base64Image;
+  File tmpFile;
+  File _image;
+  String fileName;
 
   Future sendFeed(caption,img) async{
     if(img != null){
@@ -54,24 +65,22 @@ class _MyFeedState extends State<MyFeed> {
       GeneralInsertId results = res;
       if(results.status == 'success'){
         _bloc.fetchListSosmed(1, perpage,'ada');
-        setState(() {
-          isLoading = false;
-        });
+        Navigator.pop(context);
 
-        return showInSnackBar(results.msg,'sukses');
-      }else{
-        setState(() {isLoading = false;});
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"success");
+      }
+      else{
+        Navigator.pop(context);
         print(results.msg);
-
-        return showInSnackBar(results.msg,'gagal');
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
       }
     }
     else{
       General results = res;
       print(results.msg);
-      setState(() {isLoading = false;});
+      Navigator.pop(context);
 
-      return showInSnackBar(results.msg,'gagal');
+      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
     }
   }
   Future deleteFeed(var id) async{
@@ -80,24 +89,23 @@ class _MyFeedState extends State<MyFeed> {
       General results = res;
       if(results.status == 'success'){
         setState(() {
-          isLoading = false;
+          Navigator.of(context).pop();
         });
         _bloc.fetchListSosmed(1, perpage,'ada');
-        return showInSnackBar(results.msg,'sukses');
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg, "success");
       }else{
-        setState(() {isLoading = false;});
-        return showInSnackBar(results.msg,'gagal');
+        setState(() {Navigator.of(context).pop();});
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg, "failed");
+
       }
     }
     else{
       General results = res;
-      print(results.msg);
-      setState(() {isLoading = false;});
-      return showInSnackBar(results.msg,'gagal');
+      setState(() {Navigator.of(context).pop();});
+      UserRepository().notifNoAction(_scaffoldKey, context,results.msg, "failed");
 
     }
   }
-
   Future deleteCountInbox() async{
     var res = await SosmedProvider().deleteCountInbox();
     if(res is General){
@@ -105,18 +113,17 @@ class _MyFeedState extends State<MyFeed> {
       if(results.status == 'success'){
       }else{
         setState(() {isLoading = false;});
-        return showInSnackBar(results.msg,'gagal');
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"success");
       }
     }
     else{
       General results = res;
       print(results.msg);
       setState(() {isLoading = false;});
-      return showInSnackBar(results.msg,'gagal');
+      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
 
     }
   }
-
   void load() {
     perpage = perpage += 10;
     print("PERPAGE ${perpage}");
@@ -125,8 +132,14 @@ class _MyFeedState extends State<MyFeed> {
 
   }
   Future<void> refresh() async {
+    setState(() {
+      isLoading=true;
+    });
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     load();
+    setState(() {
+      isLoading=false;
+    });
   }
   Future<bool> _loadMore() async {
     print("onLoadMore");
@@ -134,31 +147,15 @@ class _MyFeedState extends State<MyFeed> {
     load();
     return true;
   }
-
-  void showInSnackBar(String value, String param) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: param == 'sukses' ? Colors.green:Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
-
   Color warna1;
   Color warna2;
   String gambar;
   String statusLevel ='0';
+  String nama ='';
   Future loadTheme() async{
     final picture = await userRepository.getDataUser('picture');
+    final name = await userRepository.getDataUser('name');
+
     final levelStatus = await userRepository.getDataUser('statusLevel');
     final color1 = await userRepository.getDataUser('warna1');
     final color2 = await userRepository.getDataUser('warna2');
@@ -167,8 +164,64 @@ class _MyFeedState extends State<MyFeed> {
       warna2 = hexToColors(color2);
       statusLevel = levelStatus;
       gambar = picture;
+      nama = name;
     });
   }
+
+  bool isLoadingShare=false,isLoadingLikeOrUnLike=false;
+  int like=0;
+  Future share(img,caption,index) async{
+    setState(() {
+      UserRepository().loadingQ(context);
+    });
+    var response = await Client().get(img);
+    final bytes = response.bodyBytes;
+    Timer(Duration(seconds: 1), () async {
+      setState(() {
+        Navigator.pop(context);
+      });
+      await WcFlutterShare.share(
+        sharePopupTitle: 'Thaibah Share Sosial Media',
+        bytesOfFile:bytes,
+        subject: '',
+        text: '$caption',
+        fileName: 'share.png',
+        mimeType: 'image/png',
+
+      );
+
+    });
+
+  }
+  Future sendLikeOrUnLike(id,isLike) async{
+    var res = await SosmedProvider().sendLikeOrUnLike(id);
+    if(res.toString() == 'timeout' || res.toString() == 'error'){
+      Navigator.pop(context);
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      GagalHitProvider().fetchRequest('like or unlike','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      UserRepository().notifNoAction(_scaffoldKey, context,"Terjadi Kesalahan","failed");
+    }else{
+      if(res is General){
+        General results = res;
+        if(results.status == 'success'){
+          Navigator.pop(context);
+          _bloc.fetchListSosmed(1,perpage,'ada');
+        }else{
+          Navigator.pop(context);
+          UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+        }
+      }
+      else{
+        General results = res;
+        Navigator.pop(context);
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+      }
+    }
+
+
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -192,59 +245,59 @@ class _MyFeedState extends State<MyFeed> {
         builder: (context, AsyncSnapshot<ListSosmedModel> snapshot){
           if (snapshot.hasData) {
             return Scaffold(
-                key: _scaffoldKey,
-                appBar:UserRepository().appBarWithButton(context,"Postingan Saya",warna1,warna2,(){Navigator.of(context).pop();}, new Stack(
-                  children: <Widget>[
-                    new IconButton(
-                        icon: Icon(Icons.notifications_none),
-                        onPressed: () {
-                          deleteCountInbox();
-                          print('tap');
-                          Navigator.of(context, rootNavigator: true).push(
-                            new CupertinoPageRoute(builder: (context) => InboxSosmed()),
-                          ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
-                        }
-                    ),
-                    new Positioned(
-                      right: 11,
-                      top: 11,
-                      child: new Container(
-                        padding: EdgeInsets.all(2),
-                        decoration: new BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
-                        child: Text('${snapshot.data.result.notif}', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+              key: _scaffoldKey,
+              appBar:UserRepository().appBarWithButton(context,"Postingan Saya",warna1,warna2,(){Navigator.of(context).pop();}, new Stack(
+                children: <Widget>[
+                  new IconButton(
+                      icon: Icon(Icons.notifications_none),
+                      onPressed: () {
+                        deleteCountInbox();
+                        print('tap');
+                        Navigator.of(context, rootNavigator: true).push(
+                          new CupertinoPageRoute(builder: (context) => InboxSosmed()),
+                        ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
+                      }
+                  ),
+                  new Positioned(
+                    right: 11,
+                    top: 11,
+                    child: new Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: new BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                    )
-                  ],
-                ),),
-                body: Column(
-                  children: [
-                    writeSomething(context),
-                    buildContent(snapshot, context)
-                  ],
-                ),
-                floatingActionButton: new FloatingActionButton(
-                    elevation: 0.0,
-                    child: new Icon(FontAwesomeIcons.penAlt),
-                    backgroundColor: new Color(0xFF30cc23),
-                    onPressed: (){_lainnyaModalBottomSheet(context);}
-                )
-
+                      constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
+                      // child: Text('${snapshot.data.result.notif}', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+                      child: UserRepository().textQ('${snapshot.data.result.notif}', 8, Colors.white, FontWeight.bold, TextAlign.center),
+                    ),
+                  )
+                ],
+              ),),
+              body: Column(
+                children: [
+                  writeSomething(context),
+                  SizedBox(height:10),
+                  Expanded(
+                      child:buildContent(snapshot, context)
+                  )
+                ],
+              ),
             );
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return _loading();
+          return Scaffold(
+            body: UserRepository().loadingWidget(),
+          );
         }
     );
   }
-
   Widget buildContent(AsyncSnapshot<ListSosmedModel> snapshot, BuildContext context){
-    return snapshot.data.result.data.length > 0 ? isLoading ?_loading():  Container(
-      child:  RefreshIndicator(
+    return snapshot.data.result.data.length > 0 ? isLoading ?UserRepository().loadingWidget():  Container(
+      child:  LiquidPullToRefresh(
+        color: Colors.transparent,
+        backgroundColor:ThaibahColour.primary2,
         key: _refresh,
         onRefresh:refresh,
         child: LoadMoreQ(
@@ -255,8 +308,8 @@ class _MyFeedState extends State<MyFeed> {
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
                 String caption = '';
-                if(snapshot.data.result.data[index].caption.length > 100){
-                  caption = snapshot.data.result.data[index].caption.substring(0,100)+ " ....";
+                if(snapshot.data.result.data[index].caption.length > 400){
+                  caption = snapshot.data.result.data[index].caption.substring(0,400)+ " ....";
                 }else{
                   caption = snapshot.data.result.data[index].caption;
                 }
@@ -271,153 +324,126 @@ class _MyFeedState extends State<MyFeed> {
                         ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
                       },
                       child: Container(
-                        padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
+                        padding: EdgeInsets.all(15.0),
                         child: Column(
                           children: <Widget>[
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
-                                Container(
-                                  child: Flexible(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Container(
-                                            child:Linkify(
-                                              onOpen: (link) async {
-                                                if (await canLaunch(link.url)) {
-                                                  await launch(link.url);
-                                                } else {
-                                                  throw 'Could not launch $link';
-                                                }
-                                              },
-                                              text: caption,
-                                              style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
-                                              linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-                                            ),
-//
-//                                            child: Html(
-//                                              data:caption, defaultTextStyle:TextStyle(fontSize:12.0,color:Colors.black,fontFamily:'Rubik',fontWeight:FontWeight.bold),
-//                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                CircleAvatar(
+                                  backgroundImage: NetworkImage(snapshot.data.result.data[index].penulisPicture),
+                                  radius: 20.0,
+                                ),
+                                SizedBox(width: 7.0),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    UserRepository().textQ(snapshot.data.result.data[index].penulis, 14, Colors.black,FontWeight.bold,TextAlign.left),
+                                    SizedBox(height: 5.0),
+                                    UserRepository().textQ(snapshot.data.result.data[index].createdAt, 12, Colors.grey,FontWeight.bold,TextAlign.left),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 20.0),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                child:Linkify(
+                                  onOpen: (link) async {
+                                    if (await canLaunch(link.url)) {
+                                      await launch(link.url);
+                                    } else {
+                                      throw 'Could not launch $link';
+                                    }
+                                  },
+                                  text: removeAllHtmlTags(caption),
+                                  style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:ThaibahFont().fontQ),
+                                  linkStyle: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10.0),
+                            InkWell(
+                                onDoubleTap: (){
+                                  setState(() {
+                                    UserRepository().loadingQ(context);
+                                  });
+                                  sendLikeOrUnLike(snapshot.data.result.data[index].id,snapshot.data.result.data[index].isLike);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10.0),
+                                        topRight: Radius.circular( 10.0)
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(left: 0.0),
-                                  child: Stack(
-                                    children: <Widget>[
-                                      Container(
-                                        margin: EdgeInsets.only(top: 3.0),
-                                        height: 80.0,
-                                        width: 100.0,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(12.0),
-                                        ),
-                                        child: CachedNetworkImage(
-                                          imageUrl: snapshot.data.result.data[index].picture,
-                                          placeholder: (context, url) => Center(
-                                            child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-                                          ),
-                                          errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                          imageBuilder: (context, imageProvider) => Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: new BorderRadius.circular(10.0),
-                                              color: Colors.grey,
-                                              image: DecorationImage(
-                                                image: imageProvider,
-                                                fit: BoxFit.fill,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                    ],
+                                  child: Center(
+                                      child:Image.network(
+                                        snapshot.data.result.data[index].picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
+                                      )
                                   ),
-                                ),
-
-                              ],
+                                )
                             ),
+
+                            SizedBox(height: 10.0),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                      child: Row(
-                                        children: <Widget>[
-                                          Icon(FontAwesomeIcons.penAlt,color: Colors.grey,size: 12.0),
-                                          SizedBox(width: 5.0),
-                                          Text(snapshot.data.result.data[index].penulis,style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
-                                        ],
-                                      )
-                                  ),
+                                Row(
+                                  children: <Widget>[
+
+                                    InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          UserRepository().loadingQ(context);
+                                        });
+                                        sendLikeOrUnLike(snapshot.data.result.data[index].id,snapshot.data.result.data[index].isLike);
+                                      },
+                                      child:Icon(FontAwesomeIcons.thumbsUp, size: 15.0, color: Colors.blue),
+                                    ),
+                                    UserRepository().textQ(' ${snapshot.data.result.data[index].likes}', 12, Colors.grey,FontWeight.bold,TextAlign.left),
+                                  ],
                                 ),
-                                SizedBox(width: 10.0),
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                      child: Row(
-                                        children: <Widget>[
-                                          Icon(FontAwesomeIcons.comment,color: Colors.grey,size: 12.0),
-                                          SizedBox(width: 5.0),
-                                          Text(snapshot.data.result.data[index].comments+" komentar",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
-                                        ],
-                                      )
-                                  ),
-                                ),
-                                SizedBox(width: 10.0),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Container(
-                                      child: Row(
-                                        children: <Widget>[
-                                          Icon(FontAwesomeIcons.clock,color: Colors.grey,size: 12.0),
-                                          SizedBox(width: 5.0),
-                                          Text("${snapshot.data.result.data[index].createdAt}",style:TextStyle(fontSize:10.0,color:Colors.grey,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold)),
-                                        ],
-                                      )
-                                  ),
+                                Row(
+                                  children: <Widget>[
+                                    UserRepository().textQ('${snapshot.data.result.data[index].comments} comments  •  ', 12, Colors.grey,FontWeight.bold,TextAlign.left),
+                                    InkWell(
+                                      onTap:(){
+                                        share(snapshot.data.result.data[index].picture,snapshot.data.result.data[index].caption,index);
+                                      },
+                                      child:Icon(FontAwesomeIcons.share, size: 20.0,color: Colors.grey,),
+                                    )
+                                  ],
                                 ),
                               ],
                             ),
-                            Divider()
+                            SizedBox(height: 10.0),
+                            Container(
+                              color: Colors.grey[400],
+                              width: MediaQuery.of(context).size.width,
+                              height: 5.0,
+
+                            )
+
                           ],
                         ),
                       ),
                     ),
                     background: slideLeftBackground(),
                     confirmDismiss: (direction) async {
-                      final bool res = await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: Text("Anda Yakin Akan Menghapus Data Ini ???",style: TextStyle(fontFamily: ThaibahFont().fontQ),),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text("Cancel", style: TextStyle(color: Colors.black)),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              FlatButton(
-                                child: Text("Delete", style: TextStyle(color: Colors.red,fontFamily: ThaibahFont().fontQ),),
-                                onPressed: () async {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-                                  deleteFeed(snapshot.data.result.data[index].id);
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                      return UserRepository().notifAlertQ(context, "warning","Perhatian","Anda yakin akan mengahpus status ini", "Batal","Oke", (){
+                        Navigator.of(context).pop();
+                      }, (){
+                        Navigator.of(context).pop();
+                        setState(() {
+                          UserRepository().loadingQ(context);
+                        });
+                        deleteFeed(snapshot.data.result.data[index].id);
+
+                      });
+
                     }
                 );
               }
@@ -429,7 +455,7 @@ class _MyFeedState extends State<MyFeed> {
           onLoadMore: _loadMore,
         ),
       ),
-    ) : Container(child:Center(child:Text("Data Tida Tersedia",style:TextStyle(fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ))));
+    ) : UserRepository().noData();
   }
   Widget slideLeftBackground() {
     return Container(
@@ -442,15 +468,7 @@ class _MyFeedState extends State<MyFeed> {
               Icons.delete,
               color: Colors.white,
             ),
-            Text(
-              " Delete",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontFamily: ThaibahFont().fontQ
-              ),
-              textAlign: TextAlign.right,
-            ),
+            UserRepository().textQ(" Hapus", 14, Colors.white, FontWeight.bold, TextAlign.right),
             SizedBox(
               width: 20,
             ),
@@ -460,141 +478,79 @@ class _MyFeedState extends State<MyFeed> {
       ),
     );
   }
-  Widget _loading(){
-    return Scaffold(
-      appBar:UserRepository().appBarWithButton(context,"Postingan Saya",warna1,warna2,(){Navigator.of(context).pop();}, new Stack(
-        children: <Widget>[
-          new IconButton(
-              icon: Icon(Icons.notifications_none),
-              onPressed: () {
-                deleteCountInbox();
-                print('tap');
-                Navigator.of(context, rootNavigator: true).push(
-                  new CupertinoPageRoute(builder: (context) => InboxSosmed()),
-                ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
-              }
-          ),
-          new Positioned(
-            right: 11,
-            top: 11,
-            child: new Container(
-              padding: EdgeInsets.all(2),
-              decoration: new BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
-              child: Text('', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
-            ),
-          )
-        ],
-      ),),
-      body: ListView.builder(
-          primary: true,
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          itemCount: 5,
-          itemBuilder: (context,index){
-            return InkWell(
-              onTap: (){
-              },
-              child: Container(
-                padding: EdgeInsets.only(bottom: 10.0,left:15.0,right:15.0),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Container(
-                          child: Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                    child: SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 30),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(left: 0.0),
-                          child: Stack(
-                            children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.only(top: 3.0),
-                                height: 80.0,
-                                width: 100.0,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                child: SkeletonFrame(width: 100,height: 80),
-                              ),
-
-                            ],
-                          ),
-                        ),
-
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                              child: Row(
-                                children: <Widget>[
-                                  SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 15),
-                                ],
-                              )
-                          ),
-                        ),
-
-                      ],
-                    ),
-                    SizedBox(height: 10.0)
-                  ],
-                ),
-              ),
-            );
-          }
-      ),
-    );
-  }
-
   void _lainnyaModalBottomSheet(context){
     showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
         context: context,
         isScrollControlled: true,
         builder: (context){
-          return StatefulBuilder(
-            builder: (context, state){
+          return DraggableScrollableSheet(
+            initialChildSize:1, // half screen on load
+            maxChildSize: 1,       // full screen on scroll
+            minChildSize: 0.25,
+            builder: (BuildContext context, ScrollController scrollController) {
               return BottomWidget(sendFeed: (String caption, File img){
                 setState(() {
-                  isLoading = true;
+                  UserRepository().loadingQ(context);
                 });
                 sendFeed(caption,img);
-              });
-            }
+              },name:nama);
+            },
           );
+
         }
     );
   }
+  Widget writeSomething(BuildContext context){
+    return ListTile(
+      title: InkWell(
+        onTap: ()=>_lainnyaModalBottomSheet(context),
+        child: Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                border: Border.all(
+                    width: 1.0,
+                    color: Colors.grey[400]
+                ),
+                borderRadius: BorderRadius.circular(10.0)
+            ),
+            child: UserRepository().textQ("tulis status anda disini ...",12,Colors.grey,FontWeight.bold,TextAlign.left)
+        ),
+      ),
+      leading: CircleAvatar(
+          radius:20.0,
+          backgroundImage: NetworkImage('$gambar')
+      ),
 
+    );
+
+  }
+
+}
+
+
+class BottomWidget extends StatefulWidget {
+  final Function(String caption, File _image) sendFeed;
+  final String name;
+  BottomWidget({this.sendFeed,this.name});
+  @override
+  _BottomWidgetState createState() => _BottomWidgetState();
+}
+
+class _BottomWidgetState extends State<BottomWidget> {
+  var captionController = TextEditingController();
+  final FocusNode captionFocus = FocusNode();
   Future<File> file;
   String base64Image;
   File tmpFile;
   File _image;
   String fileName;
+  String nama='';
   Future<Directory> getTemporaryDirectory() async {
     return Directory.systemTemp;
   }
+
   getImageFile() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     File croppedFile = await ImageCropper.cropImage(
@@ -603,7 +559,7 @@ class _MyFeedState extends State<MyFeed> {
         CropAspectRatioPreset.square,
       ],
       androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Cropper',
+          toolbarTitle: 'Thaibah Crop Image',
           toolbarColor: Colors.green,
           toolbarWidgetColor: Colors.white,
           initAspectRatio: CropAspectRatioPreset.original,
@@ -628,280 +584,103 @@ class _MyFeedState extends State<MyFeed> {
 
     setState(() {
       _image = result;
-      print(_image.lengthSync());
-      print("############################## $_image #################################");
     });
   }
-
-  Widget writeSomething(BuildContext context){
-    return Container(
-      child: Column(
-        children: <Widget>[
-          SizedBox(height:5.0),
-          Container(
-            padding: EdgeInsets.only(left:20.0,right:20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                CircleAvatar(
-                  radius: 30.0,
-                  backgroundImage: NetworkImage('$gambar'),
-                ),
-                SizedBox(width:10.0),
-                Container(
-                  padding: const EdgeInsets.only(left:5.0,right:5.0),
-                  height: 60.0,
-                  width: MediaQuery.of(context).size.width/1.7,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          width: 1.0,
-                          color: Colors.grey[400]
-                      ),
-                      borderRadius: BorderRadius.circular(10.0)
-                  ),
-                  child: TextFormField(
-                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ().setSp(30)),
-                    textInputAction: TextInputAction.newline,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: new InputDecoration(
-                      hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-                      border: InputBorder.none,
-                      hintText: "Buat Caption Status ...",
-                    ),
-                  ),
-                ),
-                SizedBox(width:5.0),
-                InkWell(
-                  onTap: (){
-                    getImageFile();
-                  },
-                  child: _image != null ? Container(
-                    height:50.0,
-                    width: 40.0,
-                    child: Image.file(_image),
-                  ):CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    radius: 25.0,
-                    backgroundImage: NetworkImage('https://cdn.iconscout.com/icon/free/png-512/upload-data-to-cloud-458000.png'),
-                  ),
-                )
-              ],
-            ),
-          ),
-          UserRepository().buttonQ(context, ThaibahColour.primary1,ThaibahColour.primary2,(){},false,'Simpan'),
-          Divider(),
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.live_tv, size: 20.0, color: Colors.pink,),
-                    SizedBox(width: 5.0,),
-                    Text('Live', style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16.0)),
-                  ],
-                ),
-                Container(height: 20, child: VerticalDivider(color: Colors.grey[600])),
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.photo_library, size: 20.0, color: Colors.green,),
-                    SizedBox(width: 5.0),
-                    Text('Photo', style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16.0)),
-                  ],
-                ),
-                Container(height: 20, child: VerticalDivider(color: Colors.grey[600])),
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.video_call, size: 20.0, color: Colors.purple,),
-                    SizedBox(width: 5.0,),
-                    Text('Room', style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16.0)),
-                  ],
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-}
-
-
-class BottomWidget extends StatefulWidget {
-  final Function(String caption, File _image) sendFeed;
-  BottomWidget({this.sendFeed});
-  @override
-  _BottomWidgetState createState() => _BottomWidgetState();
-}
-
-class _BottomWidgetState extends State<BottomWidget> {
-  // var captionController = TextEditingController();
-  // final FocusNode captionFocus = FocusNode();
-  // Future<File> file;
-  // String base64Image;
-  // File tmpFile;
-  // File _image;
-  // String fileName;
-  // Future<Directory> getTemporaryDirectory() async {
-  //   return Directory.systemTemp;
-  // }
-  // getImageFile() async {
-  //   var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-  //   File croppedFile = await ImageCropper.cropImage(
-  //     sourcePath: image.path,
-  //     aspectRatioPresets: [
-  //       CropAspectRatioPreset.square,
-  //     ],
-  //     androidUiSettings: AndroidUiSettings(
-  //         toolbarTitle: 'Cropper',
-  //         toolbarColor: Colors.green,
-  //         toolbarWidgetColor: Colors.white,
-  //         initAspectRatio: CropAspectRatioPreset.original,
-  //         lockAspectRatio: false
-  //     ),
-  //     iosUiSettings: IOSUiSettings(
-  //       minimumAspectRatio: 1.0,
-  //     ),
-  //     maxWidth: 512,
-  //     maxHeight: 512,
-  //   );
-  //   final quality = 90;
-  //   final tmpDir = (await getTemporaryDirectory()).path;
-  //   final target ="$tmpDir/${DateTime.now().millisecondsSinceEpoch}-$quality.png";
-  //
-  //   var result = await FlutterImageCompress.compressAndGetFile(
-  //     croppedFile.path,
-  //     target,
-  //     format: CompressFormat.png,
-  //     quality: 90,
-  //   );
-  //
-  //   setState(() {
-  //     _image = result;
-  //     print(_image.lengthSync());
-  //     print("############################## $_image #################################");
-  //   });
-  // }
 
 
 
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal:18,vertical: 18 ),
-      // child: Column(
-      //   crossAxisAlignment: CrossAxisAlignment.start,
-      //   mainAxisSize: MainAxisSize.min,
-      //   children: <Widget>[
-      //     Row(
-      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //       children:<Widget>[
-      //         Container(
-      //           width: MediaQuery.of(context).size.width/1.7,
-      //           child: InkWell(
-      //             onTap: (){
-      //               getImageFile();
-      //             },
-      //             child: Container(
-      //               padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-      //               decoration: BoxDecoration(
-      //                 border: Border.all(
-      //                   color: Colors.green,
-      //                   width: 1.0,
-      //                 ),
-      //                 borderRadius: BorderRadius.all(
-      //                     Radius.circular(5.0)
-      //                 ),
-      //               ),
-      //               child: Row(
-      //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //                 children: <Widget>[
-      //                   Row(
-      //                     children: <Widget>[
-      //                       Container(
-      //                         height: 40.0,
-      //                         width: 40.0,
-      //                         child:_image != null ? Image.file(_image) :Image.network("https://vignette.wikia.nocookie.net/solo-leveling/images/5/5a/WK_No_Image.png/revision/latest?cb=20190324133049"),
-      //                       ),
-      //                       new SizedBox(width: 10.0),
-      //                       Column(
-      //                         mainAxisAlignment: MainAxisAlignment.start,
-      //                         crossAxisAlignment: CrossAxisAlignment.start,
-      //                         children: <Widget>[
-      //                           Container(
-      //                             child: Row(
-      //                               children: <Widget>[
-      //                                 Text("Upload Gambar",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-      //                                 SizedBox(width: 10.0),
-      //                                 Icon(Icons.backup,color: Colors.white,)
-      //                               ],
-      //                             ),
-      //                           )
-      //                         ],
-      //                       )
-      //                     ],
-      //                   ),
-      //                 ],
-      //               ),
-      //             ),
-      //           )
-      //         ),
-      //         SizedBox(width:10.0),
-      //         Container(
-      //             decoration: BoxDecoration(
-      //               color: Colors.green,
-      //               borderRadius: BorderRadius.all(
-      //                   Radius.circular(5.0)
-      //               ),
-      //             ),
-      //
-      //             width: MediaQuery.of(context).size.width/4,
-      //             child: InkWell(
-      //               onTap: (){
-      //                 if(captionController.text == ''){
-      //                   FocusScope.of(context).requestFocus(FocusNode());
-      //                 }else{
-      //                   Navigator.of(context).pop();
-      //                   captionFocus.unfocus();
-      //                   widget.sendFeed(captionController.text,_image);
-      //                   captionController.text = '';
-      //                   _image = null;
-      //                 }
-      //               },
-      //               child: Container(
-      //                 padding: const EdgeInsets.fromLTRB(10.0, 22.0, 10.0, 22.0),
-      //                 child:Center(child: Text("Simpan",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),),
-      //               ),
-      //             )
-      //         )
-      //       ]
-      //     ),
-      //     Padding(
-      //       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      //       child: TextFormField(
-      //         style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-      //         controller: captionController,
-      //         textInputAction: TextInputAction.newline,
-      //         keyboardType: TextInputType.multiline,
-      //         maxLines: null,
-      //         decoration: new InputDecoration(
-      //           hintStyle: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-      //           border: InputBorder.none,
-      //           hintText: "Buat Caption Status ...",
-      //         ),
-      //         focusNode: FocusNode(),
-      //         autofocus: true,
-      //       ),
-      //     ),
-      //     SizedBox(height: 10),
-      //   ],
-      // ),
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
+    return Container(
+      padding: EdgeInsets.only(top:10.0,left:0,right:0),
+      decoration: BoxDecoration(color: Colors.white,
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(0.0),topRight:Radius.circular(0.0) ),
+      ),
+      // color: Colors.white,
+      child: Column(
+        children: [
+          ListTile(
+            dense:true,
+            contentPadding: EdgeInsets.only(left: 0.0, right: 10.0),
+            title: UserRepository().textQ("buat status",14,Colors.grey,FontWeight.bold,TextAlign.left),
+            leading: InkWell(
+              onTap: ()=>Navigator.pop(context),
+              child: CircleAvatar(
+                backgroundColor: Colors.transparent,
+                child: Center(child: Icon(Icons.arrow_back_ios, color: Colors.grey)),
+              ),
+            ),
+            trailing: InkWell(
+                onTap: (){
+                  print(_image);
+                  if(captionController.text == ''){
+                    FocusScope.of(context).requestFocus(FocusNode());
+                  }else if(_image==null){
+                    UserRepository().notifAlertQ(context,"warning","Perhatian","Apakah Anda Yakin Tidak Akan Menggunakan Gambar ?", "Ambil Gambar", "Oke", (){
+                      Navigator.pop(context);
+                      getImageFile();
+                    },
+                            (){Navigator.pop(context);}
+                    );
+                  }else{
+                    Navigator.of(context).pop();
+                    captionFocus.unfocus();
+                    widget.sendFeed(captionController.text,_image);
+                    captionController.text = '';
+                    _image = null;
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.all(7.0),
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: [ThaibahColour.primary1,ThaibahColour.primary2]),
+                      borderRadius: BorderRadius.circular(6.0),
+                      boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
+                  ),
+                  child: UserRepository().textQ("simpan",14,Colors.white,FontWeight.bold,TextAlign.right),
+                )
+            ),
+          ),
+          Divider(),
+          Card(
+              elevation: 0.0,
+              color: Colors.white,
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: TextField(
+                  style: TextStyle(color:Colors.grey,fontSize: ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold),
+                  controller: captionController,
+                  focusNode: FocusNode(),
+                  autofocus: false,
+                  maxLines: 25,
+                  decoration: InputDecoration.collapsed(
+                      hintText: "apa yang kamu pikirkan, ${widget.name} ? ",
+                      hintStyle: TextStyle(color:Colors.grey,fontSize: ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)
+                  ),
+                ),
+              )
+          ),
+          Divider(),
+          InkWell(
+            onTap: () async {
+              getImageFile();
+            },
+            child: ListTile(
+              title: UserRepository().textQ("Ambil Photo",12,Colors.grey,FontWeight.bold,TextAlign.left),
+              leading: CircleAvatar(
+                backgroundColor: Colors.transparent,
+                child: _image!=null?Image.file(_image):Center(child: Icon(Icons.satellite, color: Colors.grey)),
+              ),
+              trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey,size: 20,),
+            ),
+          ),
+          Divider(),
+
+        ],
+      ),
     );
   }
 

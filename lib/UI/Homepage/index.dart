@@ -24,7 +24,6 @@ import 'package:thaibah/UI/history_ui.dart';
 import 'package:thaibah/UI/jaringan_ui.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/UI/produk_mlm_ui.dart';
-import 'package:thaibah/UI/profile_ui.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/configProvider.dart';
@@ -469,12 +468,11 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
   static const snackBarDuration = Duration(seconds: 3);
 
   final snackBar = SnackBar(
-    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+    content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(14),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
     duration: snackBarDuration,
   );
 
   DateTime backButtonPressTime;
-
 
   Future<bool> onWillPop() async {
     DateTime currentTime = DateTime.now();
@@ -521,7 +519,6 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     // TODO: implement didChangeAppLifecycleState
     super.didChangeAppLifecycleState(state);
-
     if(state == AppLifecycleState.inactive){
       print("########################### IN ACTIVE ######################");
     }
@@ -533,22 +530,6 @@ class _UpdatePageState extends State<UpdatePage> with WidgetsBindingObserver {
       final userRepository = UserRepository();
       var token = await userRepository.getDataUser('token');
       print("##################### TOKEN MODE UPDATE = $token ##############################");
-//      final checkVersion = await ConfigProvider().cekVersion();
-//      if(checkVersion is Checker) {
-//        Checker checker = checkVersion;
-//        if(checker.result.versionCode==ApiService().versionCode){
-//          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-//              new CupertinoPageRoute(builder: (BuildContext context)=>DashboardThreePage()), (Route<dynamic> route) => false
-//          );
-//        }else{
-//          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-//              new CupertinoPageRoute(builder: (BuildContext context)=>UpdatePage()), (Route<dynamic> route) => false
-//          );
-//        }
-//      }else{
-//        UserRepository().notifNoAction(scaffoldKey, context, "Terjadi Kesalahan DI Server","failed");
-//      }
-
     }
   }
   

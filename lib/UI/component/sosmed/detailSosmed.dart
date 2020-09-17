@@ -45,70 +45,70 @@ class _DetailSosmedState extends State<DetailSosmed> {
   int jmlLike = 0;
   bool isLikes = false;
   Future sendComment() async{
-    var res = await SosmedProvider().sendComment(widget.id, captionController.text);
-    if(res is GeneralInsertId){
-      GeneralInsertId results = res;
-      if(results.status == 'success'){
-        captionController.clear();
-        _blocDetail.fetchListDetailSosmed(widget.id);
-        _bloc.fetchListSosmed(1,10,'kosong');
-        setState(() {isLoading = false;});
-      }else{
-        setState(() {isLoading = false;});
-        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
-//        return showInSnackBar(results.msg);
-      }
+    UserRepository().loadingQ(context);
+    if(captionController.text.length > 255){
+      Navigator.pop(context);
+      UserRepository().notifNoAction(_scaffoldKey, context,"Komentar terlalu panjang","failed");
     }else{
-      General results = res;
-      setState(() {isLoading = false;});
-      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
-//      return showInSnackBar(results.msg);
+      var res = await SosmedProvider().sendComment(widget.id, captionController.text);
+      if(res=='error'||res=='timeout'){
+        Navigator.pop(context);
+        UserRepository().notifNoAction(_scaffoldKey, context,"Terjadi Kesalahan sistem","failed");
+      }
+      else{
+        if(res is GeneralInsertId){
+          GeneralInsertId results = res;
+          print("GENERAL INSERT ID STATUS ${res.status}");
+          if(results.status == 'success'){
+            captionController.clear();
+            _blocDetail.fetchListDetailSosmed(widget.id);
+            _bloc.fetchListSosmed(1,10,'kosong');
+            Navigator.pop(context);
+          }else{
+            Navigator.pop(context);
+            UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+          }
+        }
+        else{
+          General results = res;
+          print("GENERAL STATUS ${res.status}");
+          Navigator.pop(context);
+          UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+        }
+      }
     }
+
+
   }
 
 
   Future sendLikeOrUnLike(bool param) async{
+    UserRepository().loadingQ(context);
     var res = await SosmedProvider().sendLikeOrUnLike(widget.id);
-    print("######################## $res #######################");
     if(res.toString() == 'timeout' || res.toString() == 'error'){
-      setState(() {
-        isLoadingLikeOrUnLike = false;
-      });
+      Navigator.pop(context);
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       GagalHitProvider().fetchRequest('like or unlike','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
       UserRepository().notifNoAction(_scaffoldKey, context,"Terjadi Kesalahan","failed");
-//      return showInSnackBar("terjadi kesalah jaringan");
     }else{
       if(res is General){
         General results = res;
         if(results.status == 'success'){
-          setState(() {
-            isLoadingLikeOrUnLike = false;
-          });
+          Navigator.pop(context);
           _blocDetail.fetchListDetailSosmed(widget.id);
         }else{
-          setState(() {
-            isLoadingLikeOrUnLike = false;
-          });
+          Navigator.pop(context);
           UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
-//          return showInSnackBar(results.msg);
         }
       }
       else{
         General results = res;
-        setState(() {
-          isLoadingLikeOrUnLike = false;
-        });
+        Navigator.pop(context);
         UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
-//        return showInSnackBar(results.msg);
       }
     }
-
-
   }
-
-
 
   Future<void> refresh() async{
     Timer(Duration(seconds: 1), () {
@@ -126,15 +126,11 @@ class _DetailSosmedState extends State<DetailSosmed> {
 
   }
   Future share(img,caption) async{
-    setState(() {
-      isLoadingShare = true;
-    });
+    UserRepository().loadingQ(context);
     var response = await Client().get(img);
     final bytes = response.bodyBytes;
     Timer(Duration(seconds: 1), () async {
-      setState(() {
-        isLoadingShare = false;
-      });
+      Navigator.pop(context);
       await WcFlutterShare.share(
         sharePopupTitle: 'Thaibah Share Sosial Media',
         bytesOfFile:bytes,
@@ -191,12 +187,14 @@ class _DetailSosmedState extends State<DetailSosmed> {
                 builder: (context, AsyncSnapshot<ListDetailSosmedModel> snapshot){
                   if (snapshot.hasData) {
                     String sukai='';
-                    if(snapshot.data.result.isLike == true){
-                      sukai = 'disukai oleh anda dan ${int.parse(snapshot.data.result.likes)-1} orang lainnya ';
-                    }else{
-                      sukai = 'disukai oleh ${int.parse(snapshot.data.result.likes)} orang ';
+                    if(int.parse(snapshot.data.result.likes) > 0){
+                      sukai = 'disukai oleh ${int.parse(snapshot.data.result.likes)-1} orang';
                     }
-                    return isLoading ? _loading() : ListView(
+                    else{
+                      sukai = '0';
+                    }
+
+                    return ListView(
                       children: <Widget>[
                         Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -227,8 +225,8 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          new Text("${snapshot.data.result.penulis}",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                                          new Text("${snapshot.data.result.createdAt}",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.grey,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                          UserRepository().textQ(snapshot.data.result.penulis, 14, Colors.black,FontWeight.bold,TextAlign.left),
+                                          UserRepository().textQ(snapshot.data.result.createdAt, 12, Colors.grey,FontWeight.bold,TextAlign.left),
                                         ],
                                       )
                                     ],
@@ -237,9 +235,6 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                     margin: EdgeInsets.only(right: 10.0),
                                     child:InkWell(
                                         onTap:(){
-                                          setState(() {
-                                            isLoadingShare=true;
-                                          });
                                           share(snapshot.data.result.picture,snapshot.data.result.caption);
                                         },
                                         child:new Icon(FontAwesomeIcons.shareAlt)
@@ -271,10 +266,6 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                       SizedBox(height: 10.0),
                                       InkWell(
                                         onDoubleTap: (){
-                                          print("DOUBLE TAP");
-                                          setState(() {
-                                            isLoadingLikeOrUnLike=true;
-                                          });
                                           sendLikeOrUnLike(snapshot.data.result.isLike);
                                         },
                                         child: Container(
@@ -311,17 +302,12 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                   new Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      isLoadingLikeOrUnLike ? CircularProgressIndicator():
                                       InkWell(
                                           onTap:(){
-                                            setState(() {
-                                              isLoadingLikeOrUnLike=true;
-                                            });
                                             sendLikeOrUnLike(snapshot.data.result.isLike);
-
-                                            print(snapshot.data.result.isLike);
                                           },
-                                          child:new Icon(FontAwesomeIcons.heart,size:  ScreenUtilQ.getInstance().setSp(70),color: snapshot.data.result.isLike==true?Colors.red:Colors.black)
+                                          child:Icon(FontAwesomeIcons.thumbsUp, size: 15.0, color: Colors.black)
+                                          // child:new Icon(FontAwesomeIcons.heart,size:  ScreenUtilQ.getInstance().setSp(70),color: snapshot.data.result.isLike==true?Colors.red:Colors.black)
                                       ),
                                       new SizedBox(width: 10.0),
                                       GestureDetector(
@@ -337,20 +323,17 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                             _blocDetail.fetchListDetailSosmed(widget.id); //you get details from screen2 here
                                           });
                                         },
-                                        child:int.parse(snapshot.data.result.likes) != 0 ? Text("$sukai",style: TextStyle(decoration: TextDecoration.underline,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(26))) : Text("$sukai",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(26)),),
+                                        child:UserRepository().textQ(sukai,10, Colors.grey,FontWeight.bold,TextAlign.left),
                                       ),
                                       new SizedBox(width: 16.0),
-                                      new Icon(FontAwesomeIcons.comment,size: ScreenUtilQ.getInstance().setSp(70)),
+                                      new Icon(FontAwesomeIcons.comment,size: 15, color: Colors.black),
                                       new SizedBox(width: 10.0),
-                                      Text("${snapshot.data.result.comments}  komentar",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(26),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-
-
+                                      UserRepository().textQ("${snapshot.data.result.comments} komentar",10, Colors.grey,FontWeight.bold,TextAlign.left),
                                     ],
                                   ),
                                 ],
                               ),
                             ),
-
                             Container(padding:EdgeInsets.only(left:15.0,right:15.0),child: Divider(),),
                             buildContent(snapshot, context)
                           ],
@@ -401,7 +384,6 @@ class _DetailSosmedState extends State<DetailSosmed> {
                   autofocus: true,
                   onFieldSubmitted: (value){
                     if(captionController.text != ''){
-                      setState(() {isLoading = true;});
                       Navigator.of(context).pop();
                       sendComment();
                     }
@@ -446,8 +428,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
   Widget buildContent(AsyncSnapshot<ListDetailSosmedModel> snapshot, BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
-    return snapshot.data.result.comment.length > 0 ? isLoading ? _loading() : ListView.builder(
+    return isLoading?_loading():snapshot.data.result.comment.length > 0 ? ListView.builder(
         primary: true,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -478,11 +459,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-//                          Html(data:snapshot.data.result.comment[index].name,defaultTextStyle: TextStyle(fontSize:12.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-                          Text(
-                            snapshot.data.result.comment[index].name,
-                            style: TextStyle(color:Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(34),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ),
-                          ),
+                          UserRepository().textQ(snapshot.data.result.comment[index].name, 14, Colors.black, FontWeight.bold, TextAlign.left),
                           Linkify(
                             onOpen: (link) async {
                               if (await canLaunch(link.url)) {
@@ -492,11 +469,9 @@ class _DetailSosmedState extends State<DetailSosmed> {
                               }
                             },
                             text: snapshot.data.result.comment[index].caption,
-                            style: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
+                            style: TextStyle(color:Colors.grey,fontSize:10.0,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                             linkStyle: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
                           ),
-
-//                          Html(data: snapshot.data.result.comment[index].caption,defaultTextStyle: TextStyle(fontSize:10.0,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
                         ],
                       ),
                     ),

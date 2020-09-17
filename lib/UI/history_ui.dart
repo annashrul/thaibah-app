@@ -1,18 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:thaibah/Constants/constants.dart';
-import 'package:thaibah/UI/component/History/historyBonus.dart';
-import 'package:thaibah/UI/component/History/historyMain.dart';
-import 'package:thaibah/UI/component/History/historyPlatinum.dart';
-import 'package:thaibah/UI/component/History/historyVoucher.dart';
-import 'package:thaibah/config/api.dart';
-import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
-
-import 'Homepage/index.dart';
-import 'Widgets/pin_screen.dart';
+import 'component/History/widgetHistorySaldo.dart';
 
 
 class HistoryUI extends StatefulWidget {
@@ -74,10 +64,14 @@ class _HistoryUIState extends State<HistoryUI> with AutomaticKeepAliveClientMixi
             body: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: <Widget>[
-                  HistoryMain(),
-                  HistoryBonus(),
-                  HistoryVoucher(),
-                  HistoryPlatinum(),
+                  WidgetHistorySaldo(label: 'master'),
+                  WidgetHistorySaldo(label: 'bonus'),
+                  WidgetHistorySaldo(label: 'voucher'),
+                  WidgetHistorySaldo(label: 'platinum'),
+                  // HistoryMain(),
+                  // HistoryBonus(),
+                  // HistoryVoucher(),
+                  // HistoryPlatinum(),
                 ]
             ),
 

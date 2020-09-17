@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/detailNewsPerCategoryModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
@@ -12,6 +13,7 @@ import 'package:thaibah/UI/detail_berita_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'Widgets/loadMoreQ.dart';
@@ -80,7 +82,7 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                 floating: true,
                 elevation: 0,
                 snap: true,
-                backgroundColor: AppTheme.Colors.white,
+                backgroundColor: Colors.white,
                 brightness: Brightness.light,
                 actions: <Widget>[
                   Expanded(
@@ -92,9 +94,7 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                             icon: Icon(Icons.arrow_back_ios),
                             color: AppTheme.Colors.black,
                             onPressed: () {
-                              Navigator.of(context, rootNavigator: true).push(
-                                new CupertinoPageRoute(builder: (context) => DashboardThreePage()),
-                              );
+                              Navigator.pop(context);
                             },
                           ),
                         ),
@@ -114,12 +114,8 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-                  child: new Text(
-                    localTitle,
-                    style: new TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),color: mainColor,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),
-                    textAlign: TextAlign.left,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16.0, 15.0, 16.0, 10.0),
+                  child:UserRepository().textQ(localTitle, 14, mainColor, FontWeight.bold, TextAlign.left)
                 ),
                 new Expanded(
                   child: StreamBuilder(
@@ -205,7 +201,9 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     if(snapshot.data.result.data.length > 0){
-      return RefreshIndicator(
+      return LiquidPullToRefresh(
+        color: Colors.transparent,
+        backgroundColor:ThaibahColour.primary2,
         child: LoadMoreQ(
           isFinish: snapshot.data.result.data.length < perpage,
           child: ListView.builder(
@@ -243,7 +241,7 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                                           placeholder: (context, url) => Center(
                                             child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
                                           ),
-                                          errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                                          errorWidget: (context, url, error) => Center(child: Image.network("http://lequytong.com/Content/Images/no-image-02.png")),
                                           imageBuilder: (context, imageProvider) => Container(
                                             decoration: BoxDecoration(
                                               borderRadius: new BorderRadius.circular(10.0),
@@ -266,20 +264,17 @@ class _DetailNewsPerCategoryState extends State<DetailNewsPerCategory> with Widg
                           ),
                           new Expanded(
                               child: new Container(
-                                margin: const EdgeInsets.fromLTRB(10.0, 10.0, 16.0, 10.0),
+                                margin: const EdgeInsets.fromLTRB(10.0, 10.0, 5.0, 10.0),
                                 child: new Column(
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.all(2.0),
-                                      child: new Text(
-                                        title,
-                                        style: new TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color: Colors.black),
-                                      ),
+                                      child:UserRepository().textQ(title, 12, Colors.black, FontWeight.bold, TextAlign.left)
                                     ),
 
                                     new Padding(padding: const EdgeInsets.all(0.0)),
-                                    Html(data:caption,defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),),
-                                    Text(snapshot.data.result.data[i].createdAt,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ),)
+                                    Html(data:caption,defaultTextStyle: TextStyle(fontSize:12,fontFamily: ThaibahFont().fontQ),),
+                                    UserRepository().textQ(snapshot.data.result.data[i].createdAt, 10, Colors.grey, FontWeight.bold, TextAlign.left)
                                   ],
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                 ),

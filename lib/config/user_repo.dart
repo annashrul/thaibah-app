@@ -19,6 +19,33 @@ import 'package:thaibah/resources/gagalHitProvider.dart';
 
 class UserRepository {
 
+  noData(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          textQ("Data Tidak Tersedia",14,Colors.black,FontWeight.bold,TextAlign.center)
+        ],
+      ),
+    );
+  }
+
+  loadingWidget(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+          SizedBox(height: 10),
+          textQ("Tunggu Sebentar",14,Colors.black,FontWeight.bold,TextAlign.center)
+        ],
+      ),
+    );
+  }
+
+
   notifAlertQ(BuildContext context,param,title,desc,txtBtn1,txtBtn2,Function callback1,Function callback2){
     AlertType alertType;
     if(param=='success'){
@@ -37,12 +64,12 @@ class UserRepository {
       desc:desc,
       buttons: [
         DialogButton(
-          child:RichText(text: TextSpan(text:txtBtn1, style: TextStyle(color: Colors.white, fontSize: 20,fontFamily:  ThaibahFont().fontQ))),
+          child:RichText(text: TextSpan(text:txtBtn1, style: TextStyle(color: Colors.white, fontSize: 14,fontFamily:  ThaibahFont().fontQ))),
           onPressed:callback1,
           color: Color.fromRGBO(0, 179, 134, 1.0),
         ),
         DialogButton(
-          child:RichText(text: TextSpan(text:txtBtn2, style: TextStyle(color: Colors.white, fontSize: 20,fontFamily:  ThaibahFont().fontQ))),
+          child:RichText(text: TextSpan(text:txtBtn2, style: TextStyle(color: Colors.white, fontSize: 14,fontFamily:  ThaibahFont().fontQ))),
           onPressed:callback2,
           gradient: LinearGradient(colors: [
             Color.fromRGBO(116, 116, 191, 1.0),
@@ -231,8 +258,6 @@ class UserRepository {
       centerTitle: false,
       elevation: 0.0,
       title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.left),
-
-      // title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -260,7 +285,6 @@ class UserRepository {
       ),
       centerTitle: false,
       elevation: 0.0,
-      // title: Text(title,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
       title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.left),
       flexibleSpace: Container(
         decoration: BoxDecoration(
@@ -345,7 +369,6 @@ class UserRepository {
       ),
       centerTitle: false,
       elevation: 0.0,
-      // title: Text(title, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
       title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.left),
       bottom: TabBar(
           indicatorColor: Colors.white,

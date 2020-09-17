@@ -42,6 +42,7 @@ dependencies:
   sqflite: any
   path_provider: any
   flutter_cupertino_date_picker:
+  liquid_pull_to_refresh: ^2.0.0
 
 #  google_fonts: any
 

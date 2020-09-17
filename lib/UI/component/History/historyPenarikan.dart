@@ -42,8 +42,6 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
     setState(() {
       perpage = perpage += 20;
     });
-    DateTime today = new DateTime.now();
-    DateTime fiftyDaysAgo = today.subtract(new Duration(days: 30));
     historyPenarikanBloc.fetchHistoryPenarikan(1, perpage,_tgl_pertama.text,_tgl_kedua.text);
   }
   Future<void> refresh() async {
@@ -145,16 +143,24 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('Dari',style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(30))),
                         TextField(
                           style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                           readOnly: true,
                           controller: _tgl_pertama,
                           keyboardType: TextInputType.url,
                           decoration: InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            ),
+                            labelText: 'Dari',
+                            labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                             hintText: 'yyyy-MM-dd',
-                            hintStyle: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black26, fontWeight: FontWeight.bold, fontFamily: 'Rubik'),
                           ),
+
                           onTap: () {_showDatePicker('1');},
                           onChanged: (value) {
                             setState(() {
@@ -170,20 +176,28 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
               ),
               new Flexible(
                 child: Padding(
-                  padding: EdgeInsets.only(left:8.0,top:0.0),
+                  padding: EdgeInsets.only(left:8.0,right:15.0,top:0.0),
                   child: GestureDetector(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('Sampai',style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(30))),
+                        // Text('Sampai',style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(30))),
                         TextField(
                           style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                           readOnly: true,
                           controller: _tgl_kedua,
                           keyboardType: TextInputType.url,
                           decoration: InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            ),
+                            labelText: 'Sampai',
+                            labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                             hintText: 'yyyy-MM-dd',
-                            hintStyle: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black26, fontWeight: FontWeight.bold, fontFamily: 'Rubik'),
                           ),
                           onTap: () {_showDatePicker('2');},
                           onChanged: (value) {

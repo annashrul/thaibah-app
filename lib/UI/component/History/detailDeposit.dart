@@ -116,7 +116,7 @@ class _DetailDepositState extends State<DetailDeposit> {
     final name = await userRepository.getDataUser('name');
     var res = await DetailDepositProvider().cancelDeposit(widget.id_deposit);
     if(res.status == 'success'){
-      setState(() {isLoading=false;});
+      Navigator.pop(context);
       Timer(Duration(seconds: 5), () {
         Navigator.of(context, rootNavigator: true).push(
           new CupertinoPageRoute(builder: (context) => SaldoUI(
@@ -127,7 +127,7 @@ class _DetailDepositState extends State<DetailDeposit> {
       UserRepository().notifNoAction(scaffoldKey, context,"Berhasil !!!! \nanda akan dialihkan ke halaman deposit","success");
 
     }else{
-      setState(() {isLoading=false;});
+      Navigator.pop(context);
       UserRepository().notifNoAction(scaffoldKey, context,res.msg,"failed");
     }
   }
@@ -222,10 +222,11 @@ class _DetailDepositState extends State<DetailDeposit> {
                 ),
                 color: statusLevel!='0'?warna1:ThaibahColour.primary1,
                 onPressed: (){
-                  setState(() {
-                    isLoading = true;
+                  UserRepository().notifAlertQ(context, "warning","Perhatian","Anda yakin akan membatalkan deposit anda", "batal","oke",(){Navigator.pop(context);}, (){
+                    Navigator.pop(context);
+                    UserRepository().loadingQ(context);
+                    cancelDeposit();
                   });
-                  cancelDeposit();
                 },
                 child: Text(isLoading ? "Pengecekan data ...." : "Batalkan Deposit", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),color: Colors.white,fontFamily: ThaibahFont().fontQ)),
               )

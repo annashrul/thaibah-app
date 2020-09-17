@@ -172,77 +172,58 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0),
-                  child:Container(
-                    padding: EdgeInsets.all(0.0),
-                    decoration: new BoxDecoration(
-                      border: new Border.all(
-                          width: 2.0,
-                          color: Colors.green
+                Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16),
+                    child: Container(
+                      padding: EdgeInsets.only(top:10,bottom:10),
+                      decoration: new BoxDecoration(
+                        border: new Border.all(
+                            width: 2.0,
+                            color: Colors.green
+                        ),
+                        borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
                       ),
-                      borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: ListTile(
-                            leading: Container(
-                              alignment: Alignment.bottomCenter,
-                              width: 40.0,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Container(height: 20,width: 8.0,color: Color(0xFF30cc23)),
-                                  const SizedBox(width: 1.0),
-                                  Container(height: 25,width: 8.0, color: Colors.lightGreen),
-                                  const SizedBox(width: 1.0),
-                                  Container(height: 40,width: 8.0, color: Color(0xFF116240)),
-                                ],
-                              ),
-                            ),
-                            title: Text("Saldo Utama", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
-                            subtitle: Text(widget.saldo, style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontFamily:ThaibahFont().fontQ)),
-                          ),
+                      child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            UserRepository().textQ('Saldo Utama', 12, Colors.black,FontWeight.bold,TextAlign.center),
+                            Divider(),
+                            UserRepository().textQ(widget.saldo, 12, Colors.black,FontWeight.bold,TextAlign.center)
+                          ],
                         ),
-
-                        Expanded(
-                          child: ListTile(
-                            leading: Container(
-                              alignment: Alignment.bottomCenter,
-                              width: 45.0,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Container(height: 20,width: 8.0,color: Color(0xFF116240)),
-                                  const SizedBox(width: 1.0),
-                                  Container(height: 25,width: 8.0, color: Colors.lightGreen),
-                                  const SizedBox(width: 1.0),
-                                  Container(height: 40,width: 8.0, color: Color(0xFF30cc23)),
-                                ],
-                              ),
-                            ),
-                            title: Text("Saldo Bonus", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,color: Colors.black,fontFamily:ThaibahFont().fontQ)),
-                            subtitle: Text(widget.saldoBonus, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontFamily:ThaibahFont().fontQ)),
-                          ),
-                        ),
+                        Column(
+                          children: [
+                            UserRepository().textQ('Saldo Bonus', 12, Colors.black,FontWeight.bold,TextAlign.center),
+                            Divider(),
+                            UserRepository().textQ(widget.saldoBonus, 12, Colors.black,FontWeight.bold,TextAlign.center)
+                          ],
+                        )
                       ],
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                       TextFormField(
-                        style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                        style: TextStyle(color: Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                         controller: moneyController,
                         keyboardType: TextInputType.number,
                         maxLines: 1,
                         autofocus: false,
                         decoration: InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.green),
+                          ),
+                          labelText: 'Nominal',
+                          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
                           hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                           prefixText: 'Rp.',
                         ),

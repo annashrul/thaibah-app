@@ -28,7 +28,6 @@ class _BuktiTransferState extends State<BuktiTransfer> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   String fileName;
   Future upload() async{
-
     if(_image != null){
       fileName = _image.path.split("/").last;
       var type = fileName.split('.');
@@ -39,44 +38,13 @@ class _BuktiTransferState extends State<BuktiTransfer> {
     var res = await uploadBuktiTransferBloc.fetchUploadBuktiTransfer(widget.id_deposit, base64Image);
     if(res.status == 'success'){
       setState(() {Navigator.pop(context);});
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return RichAlertDialogQ(
-              alertTitle: richTitle("Upload Bukti Transfer Berhasil"),
-              alertSubtitle: richSubtitle("Silahkan Tunggu Konfirmasi Dari Admin"),
-              alertType: RichAlertType.SUCCESS,
-              actions: <Widget>[
-                FlatButton(
-                  child: Text("Kembali"),
-                  onPressed: (){
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-                  },
-                ),
-              ],
-            );
-          }
-      );
+      UserRepository().notifAlertQ(context, "success","Upload Bukti Transfer Berhasil", "Silahkan Tunggu Konfirmasi Dari Admin","Kembali","Beranda", ()=>Navigator.pop(context), (){
+        Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+      });
+
     }else{
       setState(() {Navigator.pop(context);});
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return RichAlertDialogQ(
-              alertTitle: richTitle("Terjadi Kesalahan"),
-              alertSubtitle: richSubtitle(res.msg),
-              alertType: RichAlertType.ERROR,
-              actions: <Widget>[
-                FlatButton(
-                  child: Text("Kembali"),
-                  onPressed: (){
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-                  },
-                ),
-              ],
-            );
-          }
-      );
+      UserRepository().notifNoAction(scaffoldKey, context,res.msg,"failed");
     }
   }
 
@@ -113,38 +81,10 @@ class _BuktiTransferState extends State<BuktiTransfer> {
         padding: EdgeInsets.all(20.0),
         child: Column(
           children: <Widget>[
-            SizedBox(
-              width: double.infinity,
-              height: ScreenUtilQ.getInstance().setHeight(170),
-              child: new OutlineButton(
-                borderSide: BorderSide(color: Colors.grey,width: 1.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(height: ScreenUtilQ.getInstance().setHeight(30),),
-                    Icon(Icons.cloud_upload),
-                    _image == null ? Text('Upload Bukti Transfer',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:Colors.red)) : Center(child: Text('$_image',textAlign:TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,color:Colors.grey))),
-                  ],
-                ),
-                onPressed: () async {
-                  try{
-                    var image = await ImagePicker.pickImage(
-                      source: ImageSource.gallery,
-                      maxHeight: 800, maxWidth: 600,
-                    );
-                    setState(() {
-                      _image = image;
-                    });
-                  }catch(e){
-                    print(e);
-                  }
-
-                },
-              ),
-            ),
+            itemContent(context),
             SizedBox(height: 10.0),
             Flexible(
-                child: _image == null ? new Center(child: Image.network("https://bandungumroh.com/sie/assets/no_image.png")): new Image.file(_image,width: 1300,height: 800,filterQuality: FilterQuality.high,)
+                child: _image == null ? new Center(child: Image.network("http://lequytong.com/Content/Images/no-image-02.png")): new Image.file(_image,width: 1300,height: 800,filterQuality: FilterQuality.high,)
             ),
           ],
         ),
@@ -188,6 +128,33 @@ class _BuktiTransferState extends State<BuktiTransfer> {
               )
           )
         ],
+      ),
+    );
+  }
+  
+  Widget itemContent(BuildContext context){
+    return InkWell(
+      onTap: () async {
+        try{
+          var image = await ImagePicker.pickImage(
+            source: ImageSource.gallery,
+            maxHeight: 800, maxWidth: 600,
+          );
+          setState(() {
+            _image = image;
+          });
+        }catch(e){
+          print(e);
+        }
+      },
+      child: ListTile(
+        contentPadding: EdgeInsets.all(0.0),
+        title: UserRepository().textQ("Upload Bukti Transfer",12,Colors.grey,FontWeight.bold,TextAlign.left),
+        leading: CircleAvatar(
+          backgroundColor: Colors.transparent,
+          child: Center(child: Icon(Icons.satellite, color: Colors.grey)),
+        ),
+        trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey,size: 20,),
       ),
     );
   }

@@ -127,7 +127,11 @@ class _CategoryNewsDetailState extends State<CategoryNewsDetail> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(14),
                   onTap: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailBeritaUI(id: snapshot.data.result.data[i].id, category: snapshot.data.result.data[i].category,)));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailBeritaUI(
+                      id: snapshot.data.result.data[i].id,
+                      category: snapshot.data.result.data[i].category,
+                      link: snapshot.data.result.data[i].link,
+                    )));
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
