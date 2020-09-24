@@ -116,10 +116,6 @@ class _SaldoUIState extends State<SaldoUI> {
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-    double screenWidth = MediaQuery.of(context).size.width;
-    var width = (screenWidth - ((_crossAxisCount - 1) * _crossAxisSpacing)) / _crossAxisCount;
-    var height = width / _aspectRatio;
-    print("SALDO ${widget.saldo}");
     return Scaffold(
         key: scaffoldKey,
         appBar: UserRepository().appBarWithButton(context, 'Top Up', warna1, warna2, (){

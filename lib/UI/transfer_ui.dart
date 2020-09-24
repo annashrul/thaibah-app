@@ -59,7 +59,7 @@ class _TransferUIState extends State<TransferUI> {
     setState(() {
       cik = test.result.transfer;
     });
-    print(cik);
+    print("IEU PRINT CIK $cik");
   }
   String barcode = "";
   Future scanCode() async {
@@ -194,12 +194,9 @@ class _TransferUIState extends State<TransferUI> {
 
   @override
   Widget build(BuildContext context) {
-    _height = MediaQuery.of(context).size.height;
-    _width = MediaQuery.of(context).size.width;
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
         // bottomNavigationBar: _bottomNavBar(),
         key: scaffoldKey,
         appBar: UserRepository().appBarWithButton(context, 'Transfer', warna1, warna2, (){Navigator.of(context).pop();}, InkWell(
@@ -214,6 +211,7 @@ class _TransferUIState extends State<TransferUI> {
           ),
         )),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
         body: ListView(
           children: <Widget>[
             Container(
@@ -240,18 +238,26 @@ class _TransferUIState extends State<TransferUI> {
                 children: <Widget>[
                   CardHeader(saldo: widget.saldo),
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
                           style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontFamily: ThaibahFont().fontQ),
                           controller: moneyMaskedTextController,
                           decoration: InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            ),
+                            labelText: 'Nominal',
+                            labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
                             hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                             prefixText: 'Rp.',
                           ),
+
                           keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.next,
                           inputFormatters: <TextInputFormatter>[
@@ -265,22 +271,13 @@ class _TransferUIState extends State<TransferUI> {
                             _fieldFocusChange(context, tfFocus, penerimaFocus);
                           },
                         ),
-
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+                        SizedBox(height:cik == 'all'?0.0:5.0),
                         StreamBuilder(
                             stream: configBloc.getResult,
                             builder: (context,AsyncSnapshot<ConfigModel> snapshot){
                               return snapshot.hasData ?  snapshot.data.result.transfer == 'all' ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text("Penerima",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                                   TextFormField(
                                     style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontFamily: ThaibahFont().fontQ),
                                     textCapitalization: TextCapitalization.sentences,
@@ -290,7 +287,16 @@ class _TransferUIState extends State<TransferUI> {
                                     },
                                     controller: penerimaController,
                                     decoration: InputDecoration(
-                                      hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.grey),
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.green),
+                                      ),
+                                      labelText: 'Penerima',
+                                      labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
+                                      hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                                      prefixText: 'Kode referral: ',
                                       suffixIcon: InkWell(
                                         onTap: scanCode,
                                         child: Padding(
@@ -302,6 +308,8 @@ class _TransferUIState extends State<TransferUI> {
                                         ),
                                       ),
                                     ),
+
+
                                     keyboardType: TextInputType.number,
                                     inputFormatters: <TextInputFormatter>[
                                       WhitelistingTextInputFormatter.digitsOnly,
@@ -323,56 +331,70 @@ class _TransferUIState extends State<TransferUI> {
                               ) : Center(child: LinearProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))));
                             }
                         ),
-                      ],
-                    ),
-                  ),
-
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text("Keterangan",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
                         TextFormField(
                           style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontFamily: ThaibahFont().fontQ),
                           controller: pesanController,
                           decoration: InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            ),
+                            labelText: 'Keterangan',
+                            labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
                             hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                            prefixText: 'pesan: ',
+
                           ),
+
                           maxLines: null,
                           keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.done,
                           focusNode: pesanFocus,
                         ),
+
+
                       ],
                     ),
                   ),
                   UserRepository().buttonQ(
-                    context,
-                    warna1,warna2,
-                    (){
-                      if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
-                        UserRepository().notifNoAction(scaffoldKey, context,"Nominal Tidak Boleh Kosong","failed");
-                      }
-                      else{
-                        if(cik == 'all'){
-                          if(penerimaController.text == ''){
-                            UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
-                          }
+                      context,
+                      warna1,warna2,
+                          (){
+                        if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
+                          UserRepository().notifNoAction(scaffoldKey, context,"Nominal Tidak Boleh Kosong","failed");
                         }
-                        if(cik=='contact'){
-                          if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
-                            UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
+                        else{
+                          if(cik == 'all'){
+                            if(penerimaController.text == ''){
+                              UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
+                            }
+                            else{
+                              setState(() {
+                                UserRepository().loadingQ(context);
+                              });
+                              sendTransferDetail();
+                            }
                           }
+                          if(cik=='contact'){
+                            if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
+                              UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
+                            }
+                            else{
+                              setState(() {
+                                UserRepository().loadingQ(context);
+                              });
+                              sendTransferDetail();
+                            }
+                          }
+
                         }
-                        setState(() {
-                          UserRepository().loadingQ(context);
-                        });
-                        sendTransferDetail();
-                      }
-                    },
-                    false,'Simpan'
+                      },
+                      false,'Simpan'
                   )
+
+
                 ],
               ),
             ),

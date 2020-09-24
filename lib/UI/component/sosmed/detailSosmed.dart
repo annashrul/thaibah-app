@@ -188,7 +188,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                   if (snapshot.hasData) {
                     String sukai='';
                     if(int.parse(snapshot.data.result.likes) > 0){
-                      sukai = 'disukai oleh ${int.parse(snapshot.data.result.likes)-1} orang';
+                      sukai = 'disukai oleh ${int.parse(snapshot.data.result.likes)} orang';
                     }
                     else{
                       sukai = '0';

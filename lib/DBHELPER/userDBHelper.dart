@@ -140,6 +140,8 @@ class DbHelper {
   static final columnStatusLevel = 'status_level';
   static final columnWarna1 = 'warna1';
   static final columnWarna2 = 'warna2';
+  static final columnLatitude = 'latitude';
+  static final columnLongitude = 'longitude';
 
   DbHelper._privateConstructor();
   static final DbHelper instance = DbHelper._privateConstructor();
@@ -183,7 +185,9 @@ class DbHelper {
             $columnStatusExitApp TEXT NOT NULL,
             $columnStatusLevel TEXT NOT NULL,
             $columnWarna1 TEXT NOT NULL,
-            $columnWarna2 TEXT NOT NULL
+            $columnWarna2 TEXT NOT NULL,
+            $columnLatitude TEXT NOT NULL,
+            $columnLongitude TEXT NOT NULL
           )
           ''');
   }
@@ -209,6 +213,7 @@ class DbHelper {
     int id = row[columnId];
     return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
   }
+
   Future<int> updateByPhone(Map<String, dynamic> row) async {
     Database db = await instance.database;
     String phone = row[columnPhone];

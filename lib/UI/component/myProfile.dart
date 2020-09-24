@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/profileModel.dart';
@@ -231,7 +232,9 @@ class _MyProfileState extends State<MyProfile> {
             ),
             Flexible(
                 flex: 1,
-                child: RefreshIndicator(
+                child: LiquidPullToRefresh(
+                  color: ThaibahColour.primary2,
+                  backgroundColor:Colors.white,
                   child: ListView(
                     padding: EdgeInsets.zero,
                     children: <Widget>[
@@ -422,8 +425,7 @@ class _MyProfileState extends State<MyProfile> {
                             SkeletonFrame(width: 100,height: 15),
                           ],
                         ),
-                        SizedBox(width:140.0),
-                        ClipOval(child: SkeletonFrame(width: 30,height: 30))
+
                       ],
                     ),
                     SizedBox(height: 25.0),
@@ -620,12 +622,11 @@ class _MyProfileState extends State<MyProfile> {
 
   }
   Future<void> refresh() async {
-    Timer(Duration(seconds: 1), () {
-      setState(() {
-        isLoading = true;
-      });
-    });
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+    setState(() {
+      isLoading = true;
+    });
+
     loadData();
   }
 }

@@ -11,15 +11,15 @@ PrayerModel prayerModelFromJson(String str) => PrayerModel.fromJson(json.decode(
 String prayerModelToJson(PrayerModel data) => json.encode(data.toJson());
 
 class PrayerModel extends BaseModel {
-    Result result;
-    String msg;
-    String status;
-
     PrayerModel({
         this.result,
         this.msg,
         this.status,
     });
+
+    Result result;
+    String msg;
+    String status;
 
     factory PrayerModel.fromJson(Map<String, dynamic> json) => PrayerModel(
         result: Result.fromJson(json["result"]),
@@ -35,25 +35,6 @@ class PrayerModel extends BaseModel {
 }
 
 class Result {
-    DateTime imsak;
-    String rawImsak;
-    DateTime sunrise;
-    String rawSunrise;
-    DateTime fajr;
-    String rawFajr;
-    DateTime dhuhr;
-    String rawDhuhr;
-    DateTime asr;
-    String rawAsr;
-    DateTime sunset;
-    String rawSunset;
-    DateTime maghrib;
-    String rawMaghrib;
-    DateTime isha;
-    String rawIsha;
-    DateTime midnight;
-    String rawMidnight;
-
     Result({
         this.imsak,
         this.rawImsak,
@@ -73,7 +54,28 @@ class Result {
         this.rawIsha,
         this.midnight,
         this.rawMidnight,
+        this.city,
     });
+
+    DateTime imsak;
+    String rawImsak;
+    DateTime sunrise;
+    String rawSunrise;
+    DateTime fajr;
+    String rawFajr;
+    DateTime dhuhr;
+    String rawDhuhr;
+    DateTime asr;
+    String rawAsr;
+    DateTime sunset;
+    String rawSunset;
+    DateTime maghrib;
+    String rawMaghrib;
+    DateTime isha;
+    String rawIsha;
+    DateTime midnight;
+    String rawMidnight;
+    String city;
 
     factory Result.fromJson(Map<String, dynamic> json) => Result(
         imsak: DateTime.parse(json["Imsak"]),
@@ -94,6 +96,7 @@ class Result {
         rawIsha: json["raw_Isha"],
         midnight: DateTime.parse(json["Midnight"]),
         rawMidnight: json["raw_Midnight"],
+        city: json["city"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -115,5 +118,6 @@ class Result {
         "raw_Isha": rawIsha,
         "Midnight": midnight.toIso8601String(),
         "raw_Midnight": rawMidnight,
+        "city": city,
     };
 }

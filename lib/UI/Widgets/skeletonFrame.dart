@@ -47,7 +47,10 @@ class _SkeletonFrameState extends State<SkeletonFrame> with SingleTickerProvider
       child: Container(
         width: widget.width,
         height: widget.height,
-        color: Colors.black26,
+        decoration: BoxDecoration(
+          color: Colors.grey[400],
+          borderRadius:  BorderRadius.circular(10.0),
+        ),
       ),
     );
   }

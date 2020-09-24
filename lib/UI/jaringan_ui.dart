@@ -34,7 +34,6 @@ class _JaringanUIState extends State<JaringanUI> {
   String name = '';
   bool isLoading=false;
   Future<void> get() async{
-
     detailDownlineBloc.fetchDetailDownlineList(kdReferral);
     print("########################## ISLOADING $isLoading ###############################");
   }

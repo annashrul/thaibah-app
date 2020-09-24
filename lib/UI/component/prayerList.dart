@@ -55,7 +55,6 @@ class _PrayerListState extends State<PrayerList> {
     setState(() {
       isPLaying = false;
     });
-
   }
   @override
   Widget build(BuildContext context) {

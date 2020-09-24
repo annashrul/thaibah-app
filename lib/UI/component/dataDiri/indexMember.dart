@@ -21,11 +21,6 @@ class IndexMember extends StatefulWidget {
 
 class _IndexMemberState extends State<IndexMember> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  var onTapRecognizer;
-  bool hasError = false;
-  String currentText = "";
-
-
   Color warna1;
   Color warna2;
   String statusLevel ='0';
@@ -44,10 +39,7 @@ class _IndexMemberState extends State<IndexMember> {
   @override
   void initState() {
     loadTheme();
-    onTapRecognizer = TapGestureRecognizer()
-      ..onTap = () {
-        Navigator.pop(context);
-      };
+
 
     super.initState();
   }
@@ -74,97 +66,38 @@ class _IndexMemberState extends State<IndexMember> {
                   builder: (context,AsyncSnapshot<MemberModel> snapshot){
                     return snapshot.hasData ? Column(
                       children: <Widget>[
-                        FlatButton(
-                            onPressed: (){
-                              Navigator.of(context, rootNavigator: true).push(
-                                new CupertinoPageRoute(builder: (context) => UpdateDataDiri(
-                                  name: snapshot.data.result.name,
-                                  nohp: snapshot.data.result.noHp,
-                                  gender: snapshot.data.result.gender,
-                                  picture: snapshot.data.result.picture,
-                                )),
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text("Data Diri", style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 16.0),),
-                                    SizedBox(height:10.0),
-                                    Text("Klik Disini Untuk Mengubah Data Diri Anda", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.normal, fontSize: 12)),
-                                  ],),
-                                Icon(Icons.arrow_right)
-                              ],
-                            )
-                        ),
+                        itemContent(context, "Data Diri","Tap Disini Untuk Mengubah Data Diri Anda",  (){
+                          Navigator.of(context, rootNavigator: true).push(
+                            new CupertinoPageRoute(builder: (context) => UpdateDataDiri(
+                              name: snapshot.data.result.name,
+                              nohp: snapshot.data.result.noHp,
+                              gender: snapshot.data.result.gender,
+                              picture: snapshot.data.result.picture,
+                            )),
+                          );
+                        }),
+
                         Divider(),
-                        FlatButton(
-                            onPressed: (){
-                              Navigator.of(context, rootNavigator: true).push(
-                                new CupertinoPageRoute(builder: (context) => Pin(saldo: '',param:'profile')),
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text("Keamanan", style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 16.0),),
-                                    SizedBox(height:10.0),
-                                    Text("Klik Disini Untuk Mengubah PIN Anda", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.normal, fontSize: 12)),
-                                  ],
-                                ),
-                                Icon(Icons.arrow_right)
-                              ],
-                            )
-                        ),
+                        itemContent(context, "Keamanan","Tap Disini Untuk Mengubah PIN Anda",  (){
+                          Navigator.of(context, rootNavigator: true).push(
+                            new CupertinoPageRoute(builder: (context) => Pin(saldo: '',param:'profile')),
+                          );
+                        }),
+
                         Divider(),
-                        FlatButton(
-                            onPressed: (){
-                              Navigator.of(context, rootNavigator: true).push(
-                                new CupertinoPageRoute(builder: (context) => IndexAddress()),
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text("Daftar Alamat", style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 16.0),),
-                                    SizedBox(height:10.0),
-                                    Text("Klik Disini Untuk Mengubah Alamat Anda", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.normal, fontSize: 12)),
-                                  ],
-                                ),
-                                Icon(Icons.arrow_right)
-                              ],
-                            )
-                        ),
+                        itemContent(context, "Daftar Alamat","Tap Disini Untuk Mengatur Alamat Anda",  (){
+                          Navigator.of(context, rootNavigator: true).push(
+                            new CupertinoPageRoute(builder: (context) => IndexAddress()),
+                          );
+                        }),
+
                         Divider(),
-                        FlatButton(
-                            onPressed: (){
-                              Navigator.of(context, rootNavigator: true).push(
-                                new CupertinoPageRoute(builder: (context) => Bank()),
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text("Akun Bank", style: TextStyle(fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: 16.0),),
-                                    SizedBox(height:10.0),
-                                    Text("Klik Disini Untuk Mengatur Akun Bank Anda", style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.normal, fontSize: 12)),
-                                  ],
-                                ),
-                                Icon(Icons.arrow_right)
-                              ],
-                            )
-                        ),
+                        itemContent(context, "Daftar Bank","Tap Disini Untuk Mengatur Akun Bank Anda",  (){
+                          Navigator.of(context, rootNavigator: true).push(
+                            new CupertinoPageRoute(builder: (context) => Bank()),
+                          );
+                        }),
+
                         Divider(),
                       ],
                     ):Column(
@@ -246,5 +179,25 @@ class _IndexMemberState extends State<IndexMember> {
       ),
     );
   }
+
+  Widget itemContent(BuildContext context,title,desc, Function callback){
+    return FlatButton(
+        onPressed:callback,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                UserRepository().textQ(title, 14, Colors.black, FontWeight.bold,TextAlign.left),
+                SizedBox(height:10.0),
+                UserRepository().textQ(desc, 12, Colors.grey, FontWeight.bold,TextAlign.left),
+              ],),
+            Icon(Icons.arrow_right)
+          ],
+        )
+    );
+  }
+
 }
 

@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:location/location.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/user_location.dart';
 
 class LocationService  with ChangeNotifier  {
@@ -13,7 +14,8 @@ class LocationService  with ChangeNotifier  {
   LocationService() {
     location.requestPermission().then((granted) {
       if (granted) {
-        location.onLocationChanged().listen((locationData) {
+        location.onLocationChanged().listen((locationData) async {
+
           if (locationData != null) {
             _locationController.add(UserLocation(
               latitude: locationData.latitude,

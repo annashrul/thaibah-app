@@ -438,6 +438,7 @@ class UserRepository {
     return RichText(
       textAlign: textAlign,
       softWrap: true,
+
       text: TextSpan(
         text:txt,
         style: TextStyle(
@@ -537,6 +538,8 @@ class UserRepository {
     String statusLevel='0';
     String warna1='';
     String warna2='';
+    String latitude='';
+    String longitude='';
     final dbHelper = DbHelper.instance;
     final allRows = await dbHelper.queryAllRows();
     print("TABLE USER $allRows");
@@ -561,6 +564,8 @@ class UserRepository {
       statusLevel = row['status_level'];
       warna1 = row['warna1'];
       warna2 = row['warna2'];
+      latitude = row['latitude'];
+      longitude = row['longitude'];
 
     });
     if(param=='id'){return id;}
@@ -583,6 +588,8 @@ class UserRepository {
     if(param=='statusLevel'){return statusLevel;}
     if(param=='warna1'){return warna1;}
     if(param=='warna2'){return warna2;}
+    if(param=='latitude'){return latitude;}
+    if(param=='longitude'){return longitude;}
   }
   Future<bool> checker() async{
     var cekMember = await ConfigProvider().checkerMember();

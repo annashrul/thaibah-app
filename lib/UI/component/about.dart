@@ -146,7 +146,6 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
           }
 
           return InkWell(
-
             child: new Card(
               elevation: 2.0,
               margin: const EdgeInsets.all(5.0),
@@ -188,17 +187,6 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
                     rating:snapshot.data.result.data[index].rating.toString()
                 )),
               );
-//              Navigator.of(context, rootNavigator: true).push(
-//                new CupertinoPageRoute(builder: (context) => DetailPromosiUI(
-//                    id:snapshot.data.result.data[index].id,
-//                    title: snapshot.data.result.data[index].name,
-//                    picture: snapshot.data.result.data[index].thumbnail,
-//                    caption: snapshot.data.result.data[index].caption,
-//                    penulis: snapshot.data.result.data[index].name,
-//                    createdAt: snapshot.data.result.data[index].createdAt.toString(),
-//                    link:snapshot.data.result.data[index].rating.toString()
-//                )),
-//              );
             },
           );
         },

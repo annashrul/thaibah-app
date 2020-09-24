@@ -13,6 +13,7 @@ import 'package:thaibah/Model/onboardingModel.dart' as Prefix2;
 import 'package:thaibah/Model/pageViewModel.dart';
 import 'package:thaibah/Model/user_location.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/UI/loginPhone.dart';
 import 'package:thaibah/UI/splash/introViews.dart';
 import 'package:thaibah/config/api.dart';
@@ -83,7 +84,8 @@ class SplashState extends State<Splash> {
   bool isLoading = false;
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+      // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex()), (Route<dynamic> route) => false);
     }
     else{
       showDialog(
@@ -115,7 +117,8 @@ class SplashState extends State<Splash> {
     final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
     final statusLogin = await userRepository.getDataUser('status');
     final statusExitApp = await userRepository.getDataUser('statusExitApp');
-
+    final lat = await userRepository.getDataUser('latitude');
+    print("LATITUDE LOCAL DB $lat");
     if(checkVersion is Checker){
       Checker checker = checkVersion;
       setState(() {isLoading=false;});
@@ -140,6 +143,7 @@ class SplashState extends State<Splash> {
             setState(() {isLoading=false;});
             Navigator.of(context, rootNavigator: true).pushReplacement(
                 new CupertinoPageRoute(builder: (context) => IntroScreen())
+                // new CupertinoPageRoute(builder: (context) => WidgetIndex())
             );
           }else{
             setState(() {
@@ -176,7 +180,8 @@ class SplashState extends State<Splash> {
           if(statusLogin=='1'){
             setState(() {isLoading=false;});
             Navigator.of(context, rootNavigator: true).pushReplacement(
-                new CupertinoPageRoute(builder: (context) => DashboardThreePage())
+                new CupertinoPageRoute(builder: (context) => WidgetIndex())
+                // new CupertinoPageRoute(builder: (context) => DashboardThreePage())
             );
           }else{
             setState(() {isLoading=false;});
@@ -357,6 +362,23 @@ class _IntroScreenState extends State<IntroScreen> {
     return new Scaffold(
         body: isLoading?Container(child: Center(child: CircularProgressIndicator(),),):wrapOnboarding!=[]?Stack(
           children: <Widget>[
+            // Column(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   crossAxisAlignment: CrossAxisAlignment.center,
+            //   children: [
+            //     ClipRRect(
+            //       borderRadius: BorderRadius.circular(8),
+            //       child: Container(
+            //         height: 10,
+            //         child: LinearProgressIndicator(
+            //           value: 0.90, // percent filled
+            //           valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary2),
+            //           backgroundColor: Color(0xFFFFDAB8),
+            //         ),
+            //       ),
+            //     )
+            //   ],
+            // ),
             IntroViewsFlutter(
               wrapOnboarding,
               onTapDoneButton: (){
@@ -374,6 +396,7 @@ class _IntroScreenState extends State<IntroScreen> {
             Positioned(
                 top: 20.0,
                 left: MediaQuery.of(context).size.width/2 - 50,
+                // child: Image.asset('assets/images/logoOnBoardTI.png', width: 100,)
                 child: Image.asset('assets/images/logoOnBoardTI.png', width: 100,)
             )
           ],
@@ -381,6 +404,8 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 }
+
+
 
 
 

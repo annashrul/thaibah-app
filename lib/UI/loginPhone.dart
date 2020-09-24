@@ -12,8 +12,10 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/authModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/typeOtpModel.dart';
+import 'package:thaibah/Model/user_location.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/UI/regist_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:thaibah/bloc/authBloc.dart';
@@ -23,6 +25,7 @@ import 'dart:math' as math;
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/location_service.dart';
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:http/http.dart' as http;
 import 'package:thaibah/Model/userLocalModel.dart';
@@ -68,7 +71,10 @@ class _LoginPhoneState extends State<LoginPhone> {
     }
   }
   UserLocalModel userLocalModel;
+  final serviceLocation = LocationService();
+  double lat,lng;
   Future login() async{
+    print("LONGITUDE LATITUDE $lat $lng");
     String _valType='';
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -126,6 +132,8 @@ class _LoginPhoneState extends State<LoginPhone> {
                 levelStatus:result.result.levelStatus.toString(),
                 warna1:result.result.tema.warna1,
                 warna2:result.result.tema.warna2,
+                latitude:lat,
+                longitude:lng,
               )), (Route<dynamic> route) => false
           );
         }
@@ -145,6 +153,12 @@ class _LoginPhoneState extends State<LoginPhone> {
   SharedPreferences preferences;
   @override
   void initState(){
+    serviceLocation.locationStream.listen((event) {
+      setState(() {
+        lat = event.latitude;
+        lng = event.longitude;
+      });
+    });
     super.initState();
     loadData();
 
@@ -427,6 +441,7 @@ class _LoginPhoneState extends State<LoginPhone> {
 
 class SecondScreen extends StatefulWidget {
   final String otp,id,name,address,email,picture,cover,socketid,kdReferral,kdUnique,token,pin,noHp,ktp,levelStatus,warna1,warna2;
+  final double latitude,longitude;
   SecondScreen({
     Key key,
     @required this.otp,
@@ -446,6 +461,8 @@ class SecondScreen extends StatefulWidget {
     @required this.levelStatus,
     @required this.warna1,
     @required this.warna2,
+    @required this.latitude,
+    @required this.longitude,
   }) : super(key: key);
   @override
   _SecondScreenState createState() => _SecondScreenState();
@@ -530,6 +547,8 @@ class _SecondScreenState extends State<SecondScreen> {
         DbHelper.columnStatusLevel  : widget.levelStatus,
         DbHelper.columnWarna1  : widget.warna1.toString(),
         DbHelper.columnWarna2  : widget.warna2.toString(),
+        DbHelper.columnLatitude  : widget.latitude.toString(),
+        DbHelper.columnLongitude  : widget.longitude.toString(),
       };
       final countRow = await dbHelper.queryRowCount();
       print("COUNT ROW DATABASE $countRow");
@@ -544,9 +563,8 @@ class _SecondScreenState extends State<SecondScreen> {
         setState(() {isLoading=false;});
       }
       print("COUNT ROW DATABASE $countRow");
-
-
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+      // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex()), (Route<dynamic> route) => false);
     } else {
       setState(() {
         Navigator.of(context).pop();

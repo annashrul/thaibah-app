@@ -111,29 +111,7 @@ class _IndexAddressState extends State<IndexAddress> {
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return Column(
-            children: <Widget>[
-              Expanded(
-                child: ListView.builder(
-                    itemCount: 10,
-                    itemBuilder: (context,index){
-                      return Card(
-                        elevation: 0.0,
-                        margin: new EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
-                        child: Container(
-                          decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                            title: SkeletonFrame(width: MediaQuery.of(context).size.width/1,height: 20),
-                          ),
-                        ),
-                      );
-                    }
-                ),
-              )
-
-            ],
-          );
+          return UserRepository().loadingWidget();
         },
       ),
     );
@@ -163,9 +141,8 @@ class _IndexAddressState extends State<IndexAddress> {
                               decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
                               child: ListTile(
                                 contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                                title: Text(
-                                  snapshot.data.result[index].mainAddress,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),
-                                ),
+                                title: UserRepository().textQ(snapshot.data.result[index].mainAddress, 12, Colors.black, FontWeight.bold, TextAlign.left),
+                                // title: Text(snapshot.data.result[index].mainAddress,style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),),
                               ),
                             )
                           ),
@@ -179,7 +156,7 @@ class _IndexAddressState extends State<IndexAddress> {
                                   kd_kota: snapshot.data.result[index].kdKota,
                                   kd_kec: snapshot.data.result[index].kdKec,
                                   id: snapshot.data.result[index].id,
-                                )));
+                                ))).whenComplete(() => addressBloc.fetchAddressList());
                               },
                               child: Icon(Icons.edit),
                             )
@@ -195,7 +172,7 @@ class _IndexAddressState extends State<IndexAddress> {
                         kd_kota: snapshot.data.result[index].kdKota,
                         kd_kec: snapshot.data.result[index].kdKec,
                         id: snapshot.data.result[index].id,
-                      )));
+                      ))).whenComplete(() => addressBloc.fetchAddressList());
                     }
                   );
                 }
@@ -208,9 +185,7 @@ class _IndexAddressState extends State<IndexAddress> {
       return Column(
         children: <Widget>[
           (!_addNewCard) ? Text('') : _buildNewCard(),
-          Container(
-              child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily:ThaibahFont().fontQ),))
-          ),
+          UserRepository().noData()
         ],
       );
     }
@@ -270,9 +245,7 @@ class _IndexAddressState extends State<IndexAddress> {
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-//                child: _isLoading ? Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white))):Center(
                   child: Text("Daftar",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: 16,fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-//                ),
               ),
               color: Color(0xFF116240),
             )
@@ -423,14 +396,7 @@ class _IndexAddressState extends State<IndexAddress> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            Text(
-              " Ubah Data Alamat",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ
-              ),
-              textAlign: TextAlign.center,
-            ),
+            UserRepository().textQ(" Ubah Data Alamat", 12, Colors.black, FontWeight.bold,  TextAlign.center),
             SizedBox(
               width: 20,
             ),

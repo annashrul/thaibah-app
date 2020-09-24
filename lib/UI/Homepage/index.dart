@@ -72,7 +72,6 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
     AudioPlayer audioPlayer = AudioPlayer();
     await audioPlayer.play('https://thaibah.com/assets/adzan_.mp3');
   }
-
   PageController pageController = PageController(initialPage: 0);
   StreamController<int> indexcontroller = StreamController<int>.broadcast();
   int index = 0;
@@ -83,9 +82,7 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
     content: Text('Tekan Kembali Untuk Keluar',style:TextStyle(fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
     duration: snackBarDuration,
   );
-
   DateTime backButtonPressTime;
-
   Future<bool> onWillPop() async {
     DateTime currentTime = DateTime.now();
     bool backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
@@ -107,9 +104,7 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
     print("################################# KALUAR APLIKASI $statusExitApp ##############################");
     return true;
   }
-
   bool modeUpdate = false;
-
   Future checkModeUpdate() async{
     final pin = await userRepository.getDataUser('pin');
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -122,7 +117,6 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
       GagalHitProvider().fetchRequest('index','kondisi = DATA SQLITE KOSONG, brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
     }
   }
-
   // Our first view
   @override
   void initState() {
@@ -206,8 +200,6 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
 
 
   }
-
-
   @override
   void dispose() {
     indexcontroller.close();
@@ -215,7 +207,6 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
     WidgetsBinding.instance.removeObserver(this);
 
   }
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // TODO: implement didChangeAppLifecycleState
@@ -232,7 +223,6 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
 
     }
   }
-
   int currentTab = 0; // to keep track of active tab index
   final List<Widget> screens = [
     Beranda(lat: latitude,lng: longitude),
@@ -243,7 +233,6 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
   ]; // to store nested tabs
   final PageStorageBucket bucket = PageStorageBucket();
   Widget currentScreen =  Beranda();
-
   void cekPath(){
     if(widget.param == 'beranda' || widget.param == ''){
       setState(() {
@@ -277,7 +266,6 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
           bucket: bucket,
         ),
       ),
-//      floatingActionButton: _buildFab(context),
       floatingActionButton: FloatingActionButton(
         backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
         child: SvgPicture.asset(

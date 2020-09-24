@@ -14,6 +14,7 @@ import 'package:thaibah/Model/depositManual/detailDepositModel.dart';
 import 'package:thaibah/Model/depositManual/historyDepositModel.dart';
 import 'package:thaibah/Model/depositManual/listAvailableBank.dart';
 import 'package:thaibah/Model/detailNewsPerCategoryModel.dart';
+import 'package:thaibah/Model/donasi/listDonasiModel.dart';
 import 'package:thaibah/Model/downlineModel.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
@@ -91,6 +92,8 @@ import 'package:thaibah/resources/transferProvider.dart';
 import 'package:thaibah/resources/virtualAccount/virtualAccountProvider.dart';
 import 'package:thaibah/resources/withdrawProvider.dart';
 
+import 'donasi/donasiProvider.dart';
+
 export 'promosiProvider.dart';
 
 class Repository{
@@ -130,6 +133,7 @@ class Repository{
   final ppobPascaProvider = PpobPascaProvider();
   final ppobPraProvider = PpobPraProvider();
   final sosmedProvider = SosmedProvider();
+  final donasiProvider = DonasiProvider();
 
   Future<NearbyMosqueModel> fetchAllNearbyMosque(var lat, var lng) => nearbyMosqueProvider.fetchNearbyMosque(lat, lng);
   Future fetchConfig() => configProvider.fetchConfig();
@@ -239,6 +243,9 @@ class Repository{
   Future<ListInboxSosmedModel> fetchListInboxSosmed(var page, var limit) => sosmedProvider.fetchListInboxSosmed(page,limit);
   Future<ListDetailSosmedModel> fetchListDetailSosmed(var id) => sosmedProvider.fetchListDetailSosmed(id);
   Future<ListLikeSosmedModel> fetchListLikeSosmed(var id) => sosmedProvider.fetchListLikeSosmed(id);
+  //######################################### DONASI #################################################//
+
+  Future<ListDonasiModel> fetchListDonasi(var where) => donasiProvider.fetchListDonasi(where);
 
 
 }
