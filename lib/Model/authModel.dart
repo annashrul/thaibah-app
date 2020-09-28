@@ -52,6 +52,7 @@ class Result {
     this.otp,
     this.statusOtp,
     this.levelStatus,
+    this.status,
     this.tema,
   });
 
@@ -71,6 +72,7 @@ class Result {
   String otp;
   String statusOtp;
   int levelStatus;
+  int status;
   Tema tema;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
@@ -90,6 +92,7 @@ class Result {
     otp: json["otp"],
     statusOtp: json["status_otp"],
     levelStatus: json["level_status"],
+    status: json["status"],
     tema: Tema.fromJson(json["tema"]),
   );
 
@@ -110,6 +113,7 @@ class Result {
     "otp": otp,
     "status_otp": statusOtp,
     "level_status": levelStatus,
+    "status": status,
     "tema": tema.toJson(),
   };
 }

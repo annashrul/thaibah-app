@@ -121,8 +121,7 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    checkModeUpdate();
-    cekPath();
+
     location.onLocationChanged().listen((value) {
       if(mounted){
         setState(() {
@@ -140,7 +139,8 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
 
     isLoading = true;
     isLoading2 = true;
-
+    checkModeUpdate();
+    cekPath();
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
     var settings = {
       OSiOSSettings.autoPrompt: false,
@@ -149,9 +149,6 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
     OneSignal.shared.init("6a4c55fd-d96d-427f-8634-d2c4b9d96d69", iOSSettings: settings);
     OneSignal.shared.setNotificationOpenedHandler((notification) {
       var notify = notification.notification.payload.additionalData;
-      print("################################################################################");
-      print(notify);
-      print("################################################################################");
       if (notify["type"] == "berita") {
         Navigator.push(context, MaterialPageRoute(builder: (context) => DetailBeritaUI(id: notify['id'],category: notify['category'])));
       }
@@ -192,10 +189,6 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
       if (notify["type"] == "blocked_member") {
         blockedMember();
       }
-      if(notify['type'] == 'adzan'){
-        play();
-      }
-
     });
 
 
@@ -220,7 +213,9 @@ class _DashboardThreePageState extends State<DashboardThreePage>  with WidgetsBi
     }
     if(state == AppLifecycleState.resumed){
       print("########################### RESUME ######################");
-
+    }
+    if(state == AppLifecycleState.detached){
+      print("########################### DETACHED ######################");
     }
   }
   int currentTab = 0; // to keep track of active tab index

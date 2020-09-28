@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
+import 'dart:isolate';
+import 'dart:math';
+import 'dart:ui';
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:thaibah/Model/onboardingModel.dart' as Prefix2;
 import 'package:thaibah/Model/pageViewModel.dart';
 import 'package:thaibah/Model/user_location.dart';
@@ -19,20 +22,14 @@ import 'package:thaibah/UI/splash/introViews.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:http/http.dart' show Client, Response;
 import 'package:thaibah/config/user_repo.dart';
-import 'package:thaibah/resources/configProvider.dart' as Prefix1;
 import 'package:thaibah/resources/configProvider.dart';
-import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/location_service.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:thaibah/config/user_repo.dart';
-
 import 'Constants/constants.dart';
 import 'Model/checkerModel.dart';
 import 'UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'UI/Widgets/pin_screen.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async {
   runApp(MyApp());
 }
 
@@ -43,17 +40,41 @@ class MyApp extends StatefulWidget {
 }
 
 
-class _MyAppState extends State<MyApp>  {
+class _MyAppState extends State<MyApp>  with WidgetsBindingObserver, SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin  {
+  @override
+  bool get wantKeepAlive => true;
+
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+  Timer _timer;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+
+    if(state == AppLifecycleState.inactive){
+      print("########################### IN ACTIVE ######################");
+    }
+    if(state == AppLifecycleState.paused){
+      print("########################### PAUSED ######################");
+    }
+    if(state == AppLifecycleState.resumed){
+      print("########################### RESUME ######################");
+    }
+    if(state == AppLifecycleState.detached){
+      print("########################### DETACHED ######################");
+    }
   }
 
 
@@ -67,11 +88,21 @@ class _MyAppState extends State<MyApp>  {
 
     return StreamProvider<UserLocation>(
         create: (context) => LocationService().locationStream,
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home:  Splash(),
+        child: WillPopScope(
+          child: MaterialApp(
+            color: Colors.white,
+            // theme: new ThemeData(scaffoldBackgroundColor: const Color(0xFFEFEFEF)),
+            debugShowCheckedModeBanner: false,
+            home:  Splash(),
+          ),
+          onWillPop: _onWillPop
         )
     );
+  }
+  Future<bool> _onWillPop() async {
+    return (
+        UserRepository().notifAlertQ(context, "info ", "Keluar", "Kamu yakin akan keluar dari aplikasi ?", "Ya", "Batal", ()=>SystemNavigator.pop(), ()=>Navigator.of(context).pop(false))
+    ) ?? false;
   }
 }
 
@@ -150,7 +181,6 @@ class SplashState extends State<Splash> {
               label='status User';
             });
             if(statusLogin=='1'){
-
               setState(() {isLoading=false;});
               Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                   new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(callback: _callBackPin)), (Route<dynamic> route) => false
@@ -204,7 +234,7 @@ class SplashState extends State<Splash> {
         if(statusLogin=='1'){
           setState(() {isLoading=false;});
           Navigator.of(context, rootNavigator: true).pushReplacement(
-              new CupertinoPageRoute(builder: (context) => DashboardThreePage())
+              new CupertinoPageRoute(builder: (context) => WidgetIndex(param: '',))
           );
         }else{
           setState(() {isLoading=false;});

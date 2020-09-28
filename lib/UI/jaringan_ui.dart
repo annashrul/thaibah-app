@@ -87,9 +87,11 @@ class _JaringanUIState extends State<JaringanUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context,"Jaringan Member ${widget.name}",warna1,warna2,(){
-        Navigator.of(context).pop(true);
-      },Container()),
+      appBar: UserRepository().appBarWithButton(context, "Jaringan Member ${widget.name}",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Jaringan Member ${widget.name}",warna1,warna2,(){
+      //   Navigator.of(context).pop(true);
+      // },Container()),
       body: StreamBuilder(
           stream: detailDownlineBloc.allDetailDownline,
           builder: (context, AsyncSnapshot<DownlineModel> snapshot) {

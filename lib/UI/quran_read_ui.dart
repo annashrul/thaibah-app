@@ -228,7 +228,9 @@ class QuranReadUIState extends State<QuranReadUI> {
   Widget build(BuildContext context) {
     return  Scaffold(
       key: scaffoldKey,
-      appBar: UserRepository().appBarWithButton(context, param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param', warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param',(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar: UserRepository().appBarWithButton(context, param == 'detail' ? 'Daftar ${widget.param1}' : 'Hasil Pencarian $param', warna1,warna2,(){Navigator.pop(context);},Container()),
       body: StreamBuilder(
         stream: ayatBloc.allAyat,
         builder: (context, AsyncSnapshot<AyatModel> snapshot) {

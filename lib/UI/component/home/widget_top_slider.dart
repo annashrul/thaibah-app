@@ -49,7 +49,7 @@ class _WidgetTopSliderState extends State<WidgetTopSlider> with AutomaticKeepAli
 
   Widget buildContent(AsyncSnapshot<NewsModel> snapshot, BuildContext context){
     return Container(
-      height: MediaQuery.of(context).size.height/3.5,
+      height: MediaQuery.of(context).size.height/4,
       color: Colors.transparent,
       padding: EdgeInsets.only(left:15.0,right:15.0),
       child: Swiper(
@@ -72,7 +72,7 @@ class _WidgetTopSliderState extends State<WidgetTopSlider> with AutomaticKeepAli
             child: Column(
               children: <Widget>[
                 Container(
-                  height:  MediaQuery.of(context).size.height/3.5,
+                  height:  MediaQuery.of(context).size.height/4,
                   width: double.infinity,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0),bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),

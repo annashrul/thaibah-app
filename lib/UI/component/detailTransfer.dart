@@ -13,6 +13,8 @@ import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/style.dart';
 import 'package:thaibah/config/user_repo.dart';
 
+import 'home/widget_index.dart';
+
 class DetailTransfer extends StatefulWidget {
   final String nominal;
   final String fee_charge;
@@ -60,9 +62,11 @@ class _DetailTransferState extends State<DetailTransfer> {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
-        appBar: UserRepository().appBarWithButton(context,'Konfirmasi Transfer', warna1, warna2,(){
-          Navigator.of(context).pop();
-        }, Container()),
+        appBar: UserRepository().appBarWithButton(context, "Konfirmasi Transfer",(){Navigator.pop(context);},<Widget>[]),
+
+        // appBar: UserRepository().appBarWithButton(context,'Konfirmasi Transfer', warna1, warna2,(){
+        //   Navigator.of(context).pop();
+        // }, Container()),
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -380,7 +384,7 @@ class _DetailTransferState extends State<DetailTransfer> {
                   FlatButton(
                     child: Text("Kembali"),
                     onPressed: (){
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
                     },
                   ),
                 ],

@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -39,7 +40,7 @@ class _BuktiTransferState extends State<BuktiTransfer> {
     if(res.status == 'success'){
       setState(() {Navigator.pop(context);});
       UserRepository().notifAlertQ(context, "success","Upload Bukti Transfer Berhasil", "Silahkan Tunggu Konfirmasi Dari Admin","Kembali","Beranda", ()=>Navigator.pop(context), (){
-        Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+        Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
       });
 
     }else{
@@ -76,7 +77,9 @@ class _BuktiTransferState extends State<BuktiTransfer> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
 
     return Scaffold(
-      appBar:UserRepository().appBarWithButton(context,'Upload Bukti Transfer',warna1,warna2,(){Navigator.of(context).pop();},Container()),
+        appBar: UserRepository().appBarWithButton(context, "Upload Bukti Transfer",(){Navigator.pop(context);},<Widget>[]),
+
+        // appBar:UserRepository().appBarWithButton(context,'Upload Bukti Transfer',warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: Container(
         padding: EdgeInsets.all(20.0),
         child: Column(

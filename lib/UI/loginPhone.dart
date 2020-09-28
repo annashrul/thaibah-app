@@ -61,6 +61,7 @@ class _LoginPhoneState extends State<LoginPhone> {
         setState(() {
           typeOtp=typeOtpModel.result.typeOtp;
         });
+        print(typeOtp);
       } else {
         throw Exception('Failed to load info');
       }
@@ -134,6 +135,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                 warna2:result.result.tema.warna2,
                 latitude:lat,
                 longitude:lng,
+                status:result.result.status.toString(),
               )), (Route<dynamic> route) => false
           );
         }
@@ -154,10 +156,13 @@ class _LoginPhoneState extends State<LoginPhone> {
   @override
   void initState(){
     serviceLocation.locationStream.listen((event) {
-      setState(() {
-        lat = event.latitude;
-        lng = event.longitude;
-      });
+      if(mounted){
+        setState(() {
+          lat = event.latitude;
+          lng = event.longitude;
+        });
+      }
+
     });
     super.initState();
     loadData();
@@ -281,29 +286,21 @@ class _LoginPhoneState extends State<LoginPhone> {
                                   SizedBox(height:typeOtp==true?10.0:0.0),
 
                                   typeOtp==true?Text("Kirim OTP Via ${_switchValue?'SMS':'WhatsApp'}", style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold),):Text(''),
-                                  SizedBox(height:typeOtp!=true?5.0:0.0),
-                                  typeOtp==true?Row(
-                                    children: [
-                                      btnSwitch(context),
-                                    ],
+                                  SizedBox(height:typeOtp==true?5.0:0.0),
+                                  typeOtp==true?SizedBox(
+                                      width: 70,
+                                      height: 10,
+                                      child: Switch(
+                                        activeColor: ThaibahColour.primary2,
+                                        value: _switchValue,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _switchValue = value;
+                                          });
+                                        },
+                                      )
                                   ):Container()
-                                  // typeOtp==true?DropdownButton(
-                                  //   isDense: true,
-                                  //   isExpanded: true,
-                                  //   hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontFamily: 'Rubik'),),
-                                  //   value: _valType,
-                                  //   items: _type.map((value) {
-                                  //     return DropdownMenuItem(
-                                  //       child: Html(data:value,defaultTextStyle: TextStyle(fontFamily: 'Rubik')),
-                                  //       value: value,
-                                  //     );
-                                  //   }).toList(),
-                                  //   onChanged: (value) {
-                                  //     setState(() {
-                                  //       _valType = value;
-                                  //     });
-                                  //   },
-                                  // ):Container(),
+
                                 ],
                               ),
                             ),
@@ -317,41 +314,21 @@ class _LoginPhoneState extends State<LoginPhone> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              InkWell(
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width/1,
-                                  height: ScreenUtilQ.getInstance().setHeight(150),
-                                  decoration: BoxDecoration(
-                                      gradient: LinearGradient(colors: [Color(0xFF116240),Color(0xFF30CC23)]),
-                                      borderRadius: BorderRadius.circular(6.0),
-                                      boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-                                  ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () async {
-                                        final checkConnection = await userRepository.check();
-                                        if(checkConnection == false){
-                                          UserRepository().notifNoAction(_scaffoldKey, context, "Anda Tidak Terhubung Dengan Internet","failed");
-                                        }else{
-                                          if(_noHpController.text == ''){
-                                            UserRepository().notifNoAction(_scaffoldKey, context, "Anda Belum Memasukan No WhatsApp","failed");
-                                          }else{
-                                            setState(() {
-                                              UserRepository().loadingQ(context);
-                                            });
-                                            login();
-                                          }
-                                        }
-
-                                      },
-                                      child:Center(
-                                        child: Text("Masuk",style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(45),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
+                              UserRepository().buttonQ(context,()async{
+                                final checkConnection = await userRepository.check();
+                                if(checkConnection == false){
+                                  UserRepository().notifNoAction(_scaffoldKey, context, "Anda Tidak Terhubung Dengan Internet","failed");
+                                }else{
+                                  if(_noHpController.text == ''){
+                                    UserRepository().notifNoAction(_scaffoldKey, context, "Anda Belum Memasukan No WhatsApp","failed");
+                                  }else{
+                                    setState(() {
+                                      UserRepository().loadingQ(context);
+                                    });
+                                    login();
+                                  }
+                                }
+                              },'Masuk')
                             ],
                           ),
                           SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
@@ -368,37 +345,15 @@ class _LoginPhoneState extends State<LoginPhone> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              InkWell(
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width/1,
-                                  height: ScreenUtilQ.getInstance().setHeight(150),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.green,
-                                        width: 3.0
-                                    ),
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(5.0) //
-                                    ),
+                              UserRepository().buttonQ(context,(){
+                                Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                    builder: (context) => Regist(),
                                   ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => Regist(),
-                                          ),
-                                        );
-                                      },
-                                      child: Center(
-                                        child: Text("Daftar",style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(45),fontWeight: FontWeight.bold,letterSpacing: 1.0)),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
+                                );
+                              },'Daftar')
+
                             ],
                           ),
 
@@ -440,7 +395,7 @@ class _LoginPhoneState extends State<LoginPhone> {
 
 
 class SecondScreen extends StatefulWidget {
-  final String otp,id,name,address,email,picture,cover,socketid,kdReferral,kdUnique,token,pin,noHp,ktp,levelStatus,warna1,warna2;
+  final String otp,id,name,address,email,picture,cover,socketid,kdReferral,kdUnique,token,pin,noHp,ktp,levelStatus,warna1,warna2,status;
   final double latitude,longitude;
   SecondScreen({
     Key key,
@@ -461,6 +416,7 @@ class SecondScreen extends StatefulWidget {
     @required this.levelStatus,
     @required this.warna1,
     @required this.warna2,
+    @required this.status,
     @required this.latitude,
     @required this.longitude,
   }) : super(key: key);
@@ -549,6 +505,7 @@ class _SecondScreenState extends State<SecondScreen> {
         DbHelper.columnWarna2  : widget.warna2.toString(),
         DbHelper.columnLatitude  : widget.latitude.toString(),
         DbHelper.columnLongitude  : widget.longitude.toString(),
+        DbHelper.columnIsStatus  : widget.status.toString(),
       };
       final countRow = await dbHelper.queryRowCount();
       print("COUNT ROW DATABASE $countRow");
@@ -563,8 +520,15 @@ class _SecondScreenState extends State<SecondScreen> {
         setState(() {isLoading=false;});
       }
       print("COUNT ROW DATABASE $countRow");
-      // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex()), (Route<dynamic> route) => false);
+
+      // if(widget.status=='1'){
+      //   // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+      //
+      // }
+      // else{
+      //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+      // }
     } else {
       setState(() {
         Navigator.of(context).pop();

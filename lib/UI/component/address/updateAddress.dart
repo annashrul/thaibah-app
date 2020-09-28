@@ -130,7 +130,8 @@ class _UpdateAddressState extends State<UpdateAddress> {
         key: _scaffoldKey,
         backgroundColor: Colors.white,
         resizeToAvoidBottomPadding: true,
-        appBar:UserRepository().appBarWithButton(context,"Ubah Alamat",warna1,warna2,(){Navigator.pop(context);},Container()),
+        appBar: UserRepository().appBarWithButton(context, "Ubah Alamat",(){Navigator.pop(context);},<Widget>[]),
+
         body: ListView(
           children: <Widget>[
             Container(
@@ -224,7 +225,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
                       ],
                     ),
                   ),
-                  UserRepository().buttonQ(context,warna1,warna2,(){
+                  UserRepository().buttonQ(context,(){
                     mainAddressFocus.unfocus();
                     if(mainAddressController.text == ''){
                       UserRepository().notifNoAction(_scaffoldKey, context,"Detail Alamat Harus Diisi","failed");
@@ -240,7 +241,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
                       UserRepository().loadingQ(context);
                       update();
                     }
-                  }, false,'Simpan')
+                  },'Simpan')
                 ],
               ),
             ),

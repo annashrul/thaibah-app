@@ -174,6 +174,7 @@ class _DetailBeritaUIState extends State<DetailBeritaUI> with WidgetsBindingObse
                               child: Column(
                                 children: <Widget>[
                                   Html(data:removeAllHtmlTags(snapshot.data.result.caption),defaultTextStyle: TextStyle(fontFamily: ThaibahFont().fontQ),),
+                                  SizedBox(height: 20),
                                   widget.link!='-'?YoutubePlayer(controller: _controller1):Container()
                                 ],
                               ),

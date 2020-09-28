@@ -42,7 +42,7 @@ class _CardHeaderState extends State<CardHeader> {
       decoration: new BoxDecoration(
         border: new Border.all(
             width: 2.0,
-            color: statusLevel!='0'?warna1:Colors.green
+            color: Colors.grey[200]
         ),
         borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
       ),

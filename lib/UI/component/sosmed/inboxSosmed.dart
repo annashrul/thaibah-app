@@ -82,7 +82,9 @@ class _InboxSosmedState extends State<InboxSosmed> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: UserRepository().appBarWithButton(context,"Pesan Masuk",ThaibahColour.primary1,ThaibahColour.primary2, (){Navigator.pop(context);}, Container()),
+      appBar: UserRepository().appBarWithButton(context, "Pesan Masuk",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar: UserRepository().appBarWithButton(context,"Pesan Masuk",ThaibahColour.primary1,ThaibahColour.primary2, (){Navigator.pop(context);}, Container()),
         body: Container(
         margin: EdgeInsets.only(top:5.0),
         child: StreamBuilder(

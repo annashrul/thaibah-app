@@ -314,16 +314,16 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                   child: Container(height: 1.0,color: Colors.white),
                 ),
               ),
-              levelPlatinumRaw==0?CardSaldo(
-                  saldoMain: _saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
-                  saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
-                  saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
-                  saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
-              ):cardSaldoNoPlatinum(
-                  context,_saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
-                  _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
-                  _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
-                  _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"),
+              // levelPlatinumRaw==0?CardSaldo(
+              //     saldoMain: _saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
+              //     saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
+              //     saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
+              //     saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
+              // ):cardSaldoNoPlatinum(
+              //     context,_saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
+              //     _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
+              //     _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
+              //     _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"),
               SizedBox(height:ScreenUtilQ.getInstance().setSp(20)),
               Container(
                   padding: const EdgeInsets.only(left:0.0,right:0.0),
@@ -381,10 +381,15 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                             mainAxisSize:MainAxisSize.min ,
                             children: <Widget>[
                               CardEmoney(imgUrl:'Icon_Utama_Baca_Alquran',title:'Al-Quran',xFunction: (){
-                                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));}),
-                              CardEmoney(imgUrl:'Icon_Utama_Waktu_Shalat',title:'Waktu Shalat',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)));},),
+                                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));
+                              }),
+                              CardEmoney(imgUrl:'Icon_Utama_Waktu_Shalat',title:'Waktu Shalat',xFunction: (){
+                                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)));
+                                },),
                               CardEmoney(imgUrl:'Icon_Utama_Masjid_Terdekat',title:'Masjid',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>  MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));},),
-                              CardEmoney(imgUrl:'Icon_Utama_Doa_Harian',title:'Doa Harian',xFunction: (){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));},),
+                              CardEmoney(imgUrl:'Icon_Utama_Doa_Harian',title:'Doa Harian',xFunction: (){
+                                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));
+                                },),
                             ],
                           ),
                           Row(
@@ -407,9 +412,9 @@ class BerandaState extends State<Beranda> with WidgetsBindingObserver{
                                       actions: <Widget>[
                                         Container(
                                           width: MediaQuery.of(context).size.width/3,
-                                          child: UserRepository().buttonQ(context, warna1, warna2, (){
+                                          child: UserRepository().buttonQ(context, (){
                                             Navigator.pop(context);
-                                          }, false, 'OKE'),
+                                          }, 'OKE'),
                                         )
                                       ],
                                     );
@@ -1071,11 +1076,10 @@ class _CardSaldoNoPlatinumState extends State<CardSaldoNoPlatinum> {
 
 
 class CardSaldo extends StatefulWidget {
-  final String saldoMain;
-  final String saldoBonus;
-  final String saldoVoucher;
-  final String saldoPlatinum;
-  CardSaldo({this.saldoMain,this.saldoBonus,this.saldoVoucher,this.saldoPlatinum});
+  final String title;
+  final String desc;
+  final double wdt;
+  CardSaldo({this.title,this.desc,this.wdt});
   @override
   _CardSaldoState createState() => _CardSaldoState();
 }
@@ -1085,64 +1089,28 @@ class _CardSaldoState extends State<CardSaldo> {
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
+    BorderStyle borderStyle;
+    if(widget.wdt==0.0){
+      borderStyle = BorderStyle.none;
+    }
+    else{
+      borderStyle = BorderStyle.solid;
+    }
     return Container(
-        padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Saldo Utama',
-                  style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,),
-                  maxLines: 2,
-                ),
-                SizedBox(height:2.0),
-                Text(
-                    widget.saldoMain,
-                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
-                    maxLines: 2
-                ),
-              ],
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                    'Saldo Bonus',
-                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),
-                    maxLines: 2
-                ),
-                SizedBox(height:2.0),
-                Text(widget.saldoBonus,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
-              ],
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text('Saldo Voucher',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
-                SizedBox(height:2.0),
-                Text(widget.saldoVoucher,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
-              ],
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text('Saldo Platinum',style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
-                SizedBox(height:2.0),
-                Text(widget.saldoPlatinum,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.yellowAccent,fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold),maxLines: 2),
-              ],
-            ),
-          ],
-        )
+      width: MediaQuery.of(context).size.width/2.5,
+      padding: EdgeInsets.only(top:5.0,bottom:5.0),
+      decoration: BoxDecoration(
+          border: BorderDirectional(end: BorderSide(width:widget.wdt,color: Colors.white,style:borderStyle))
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          UserRepository().textQ(widget.title,12,Colors.black.withOpacity(0.7),FontWeight.bold,TextAlign.center),
+          SizedBox(height:2.0),
+          UserRepository().textQ(widget.desc,12,Colors.green,FontWeight.bold,TextAlign.center)
+        ],
+      ),
     );
   }
 }
@@ -1165,23 +1133,28 @@ class _CardEmoneyState extends State<CardEmoney> {
         onTap: (){
           widget.xFunction();
         },
-        child:ListTile(
-          contentPadding: EdgeInsets.only(left:10.0,right:10,top:10,bottom:10),
-          title: Center(child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize:MainAxisSize.min ,
-            children: <Widget>[
-              SvgPicture.network(
-                ApiService().iconUrl+widget.imgUrl+'.svg',
-                placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
-                height: ScreenUtilQ.getInstance().setHeight(70),
-                width: ScreenUtilQ.getInstance().setWidth(70),
-              ),
-              SizedBox(height: 5.0),
-              Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+        child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              // mainAxisSize:MainAxisSize.min ,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100.0),
+                      color: Colors.grey[200]
+                  ),
+                  child: CircleAvatar(
+                      radius: ScreenUtilQ.getInstance().setHeight(40),
+                      backgroundImage: NetworkImage(ApiService().noImage)
+                  ),
+                ),
+                SizedBox(height: 5.0),
+                UserRepository().textQ(widget.title, 12, Colors.grey,FontWeight.bold,TextAlign.center),
+            // Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ],
-          )),
+          ) 
         ),
       ),
     );

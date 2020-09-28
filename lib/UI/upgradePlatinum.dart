@@ -14,6 +14,7 @@ import 'package:thaibah/config/api.dart';
 
 import 'Homepage/index.dart';
 import 'Widgets/pin_screen.dart';
+import 'component/home/widget_index.dart';
 
 class UpgradePlatinum extends StatefulWidget {
   @override
@@ -114,7 +115,7 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
               child: IntroViewsFlutter(
                 wrapOnboarding,
                 onTapDoneButton: (){
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage(param:'produk')), (Route<dynamic> route) => false);
+                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) =>WidgetIndex(param: 'produk',)), (Route<dynamic> route) => false);
                 },
                 showSkipButton: true,
                 doneText: Text("Mulai",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Rubik')),

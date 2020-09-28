@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
 
@@ -285,7 +286,7 @@ class _CheckoutMlmUIState extends State<CheckoutMlmUI> with SingleTickerProvider
                     child: Text("Kembali"),
                     onPressed: (){
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => DashboardThreePage()
+                          builder: (context) => WidgetIndex(param: '',)
                       ));
                     },
                   ),

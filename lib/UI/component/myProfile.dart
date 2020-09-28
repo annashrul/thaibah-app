@@ -11,6 +11,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/profileModel.dart';
+import 'package:thaibah/UI/Homepage/beranda.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/alertq.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
@@ -19,6 +20,8 @@ import 'package:thaibah/UI/component/History/historyDeposit.dart';
 import 'package:thaibah/UI/component/History/historyPenarikan.dart';
 import 'package:thaibah/UI/component/History/indexHistory.dart';
 import 'package:thaibah/UI/component/dataDiri/indexMember.dart';
+import 'package:thaibah/UI/component/donasi/history_donasi.dart';
+import 'package:thaibah/UI/component/penarikan.dart';
 import 'package:thaibah/UI/component/penukaranBonus.dart';
 import 'package:thaibah/UI/component/privacyPolicy.dart';
 import 'package:thaibah/UI/component/sosmed/myFeed.dart';
@@ -34,6 +37,11 @@ import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'dart:ui' as ui;
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
 
+import '../history_ui.dart';
+import '../saldo_ui.dart';
+import '../transfer_ui.dart';
+import '../upgradePlatinum.dart';
+
 class MyProfile extends StatefulWidget {
   @override
   _MyProfileState createState() => _MyProfileState();
@@ -43,15 +51,39 @@ class _MyProfileState extends State<MyProfile> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final formatter = new NumberFormat("#,###");
   final userRepository = UserRepository();
-
   bool isLoading=false, modeUpdate=false,moreThenOne=false,isLoadingShare=false,retry=false;
   int jumlahJaringan=0,counterHit=0;
-  String name='',picture='',qr='',kdReferral='',saldo='',rawSaldo='',saldoMain='',saldoBonus='',downline='';
+  String name='',picture='',qr='',kdReferral='',saldo='',rawSaldo='',saldoMain='',saldoBonus='',saldoVoucher='',saldoPlatinum='',downline='';
   String kaki1='',kaki2='',kaki3='',privacyPolicy='',omsetJaringan='',id='';
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
+  String sponsor='';
+  Future<void> loadData() async{
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    var res = await ProfileProvider().fetchProfile();
+    if(res is ProfileModel){
+      setState(() {
+        isLoading = false; retry = false;
+        var result = res.result;
+        jumlahJaringan=result.jumlahJaringan;
+        name=result.name;picture=result.picture;qr=result.qr;kdReferral=result.kdReferral;saldo=result.saldo;
+        rawSaldo=result.rawSaldo;
+        saldoMain=result.saldoMain;
+        saldoBonus=result.saldoBonus;
+        saldoVoucher=result.saldoVoucher;
+        saldoPlatinum=result.saldoPlatinum;
+        downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
+        id=result.id;
+        sponsor=result.sponsor;
+      });
+    }
+    else{
+      GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+      setState(() {
+        isLoading = false;retry = true;
+      });
+    }
 
+  }
   @override
   void initState() {
     super.initState();
@@ -64,481 +96,107 @@ class _MyProfileState extends State<MyProfile> {
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.light, statusBarColor: Colors.transparent));
-    var ratio = ui.window.devicePixelRatio;
-    double mq;
-    int fl;
 
-    if(ratio>=4.0){
-      mq = MediaQuery.of(context).size.height/20;
-    }else if(ratio >= 3.5 && ratio < 4.0){
-
-    }else if(ratio >= 3.0 && ratio <3.5){
-      mq = MediaQuery.of(context).size.height/16;
-    }else if(ratio >= 2.5 && ratio <3.0){
-      mq = MediaQuery.of(context).size.height/30;
-      mq = MediaQuery.of(context).size.height/35;
-    }else if(ratio >= 2.0 && ratio <2.5){
-      mq = MediaQuery.of(context).size.height/15;
-    }
-   
     return Scaffold(
       key: scaffoldKey,
-      body: isLoading?_loading():Container(
-        child: Column(
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                Container(height: 250.0,width: double.infinity,color: statusLevel!='0'?warna2.withOpacity(0.5):ThaibahColour.primary2,),
-                Positioned(
-                  bottom: 50.0,
-                  right: 100.0,
-                  child: Container(
-                    width: 400.0,
-                    height: 400.0,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color:  statusLevel!='0'?warna2.withOpacity(0.5):ThaibahColour.primary2.withOpacity(0.5)),
-                  ),
-                ),
-                Positioned(
-                  bottom: 100.0,
-                  left: 150.0,
-                  child: Container(
-                    width: 300.0,
-                    height: 300.0,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200.0),color:  statusLevel!='0'?warna2.withOpacity(0.5):ThaibahColour.primary2.withOpacity(0.5)),
-                  ),
-                ),
-                Column(
-                  children: <Widget>[
-                    SizedBox(height: 30.0,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(width: 30.0),
-                        Container(
-                          width: 75.0,
-                          height: 75.0,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white,style: BorderStyle.solid,width: 2.0),
-                          ),
-                          child:CircleAvatar(
-                            radius: 32.0,
-                            child: CachedNetworkImage(
-                              imageUrl: picture,
-                              imageBuilder: (context, imageProvider) => Container(
-                                width: 100.0,
-                                height: 100.0,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                ),
-                              ),
-                              placeholder: (context, url) => SkeletonFrame(width: 80.0,height: 80.0),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                            ),
-                          ),
-                        ),
-                        SizedBox( width: 10.0,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('$name',style: TextStyle(color: Colors.white, fontFamily:ThaibahFont().fontQ, fontSize:ScreenUtilQ.getInstance().setSp(30), fontWeight: FontWeight.bold)),
-                            GestureDetector(
-                              child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Text('$kdReferral',style: TextStyle(
-                                        fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold, color: Colors.white,fontFamily:ThaibahFont().fontQ,
-                                        shadows: [Shadow(blurRadius: 5.0,color: Colors.black,offset: Offset(0.0, 1.0))]
-                                    )),
-                                    SizedBox(width: 5),
-                                    Icon(Icons.content_copy, color: Colors.white, size: 15,),
-                                  ]
-                              ),
-                              onTap: () {
-                                Clipboard.setData(new ClipboardData(text: '$kdReferral'));
-                                UserRepository().notifNoAction(scaffoldKey, context,"Kode Referral Berhasil Disalin","success");
-//                                scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Kode Referral Berhasil Disalin",style: TextStyle(fontFamily: ),)));
-                              },
-                            ),
-                          ],
-                        ),
-
-                      ],
-                    ),
-                    SizedBox(height: 25.0,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        customCardOneFour('jaringan_rev', 'Jaringan Saya', '$jumlahJaringan ( Orang )'),
-                        customCardOneFour('kaki_1', 'Kaki Besar 1', '$kaki1 ( STP )'),
-                        customCardOneFour('kaki_2', 'Kaki Besar 2', '$kaki2 ( STP )'),
-                        customCardOneFour('kaki_3', 'Kaki Besar 3', '$kaki3 ( STP )'),
-                      ],
-                    ),
-                    SizedBox(height: 15.0),
-                    Column(
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Material(
-                              elevation: 5.0,
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: InkWell(
-                                onTap: (){
-                                  setState(() {isLoadingShare=true;});
-                                  share('$kdReferral');
-                                },
-                                child: Container(
-                                  padding:EdgeInsets.all(15.0),
-                                  width: (MediaQuery.of(context).size.width / 3.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 0.0),
-                                        child: Center(
-                                            child:isLoadingShare?CircularProgressIndicator(strokeWidth:10,valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)):SvgPicture.network(ApiService().iconUrl+"share_rev.svg", height: MediaQuery.of(context).size.height/20,)
-                                        ),
-                                      ),
-                                      SizedBox(height: 5.0),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 0.0),
-                                        child: Center(
-                                          child: Text('Bagikan Link',textAlign: TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontWeight: FontWeight.bold)),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            customCards('png','QR Code',  '$qr',(){_lainnyaModalBottomSheet(context,'barcode','$qr');}),
-                            customCards('','Rp ${formatter.format(int.parse(omsetJaringan))}',  'wallet_rev',(){}),
-                          ],
-                        ),
-                        SizedBox(height: 5.0,)
-                      ],
-                    )
-                  ],
-                )
-              ],
+      backgroundColor: Colors.white,
+      appBar:AppBar(
+        elevation: 1.0,
+        backgroundColor: Colors.white, // status bar color
+        brightness: Brightness.light,
+        title:ListTile(
+          contentPadding: EdgeInsets.only(top:10,bottom:10),
+          title: UserRepository().textQ(name,14,Colors.black.withOpacity(0.7),FontWeight.bold,TextAlign.left),
+          subtitle: GestureDetector(
+            child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  UserRepository().textQ(kdReferral,12,Colors.grey.withOpacity(0.7),FontWeight.bold,TextAlign.left),
+                  SizedBox(width: 5),
+                  Icon(Icons.content_copy, color: Colors.grey, size: 15,),
+                ]
             ),
-            Flexible(
-                flex: 1,
-                child: LiquidPullToRefresh(
-                  color: ThaibahColour.primary2,
-                  backgroundColor:Colors.white,
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: <Widget>[
-                      customlistDetails('','Penukaran Bonus', Icons.monetization_on, Colors.green[100], Colors.red[400],PenukaranBonus(saldo: saldoMain, saldoBonus:saldoBonus)),
-                      customlistDetails('','Riwayat Penarikan', Icons.history, Colors.red[50], Colors.red[300],HistoryPenarikan()),
-                      customlistDetails('','Riwayat Pembelian', Icons.history, Colors.amber[200], Colors.white,IndexHistory()),
-                      customlistDetails('','Riwayat Top Up', Icons.history, Colors.blue[100], Colors.white,HistoryDeposit(saldo: saldoMain)),
-                      customlistDetails('','Sosial Media', Icons.perm_media, Colors.green, Colors.white,MyFeed()),
-                      customlistDetails('','Kebijakan & Privasi', Icons.lock, Colors.orange[100], Colors.orange[300],PrivacyPolicy(privasi: privacyPolicy)),
-                      customlistDetails('','Pengaturan', Icons.settings, Colors.black, Colors.white,IndexMember(id: id)),
-                      customlistDetails('function','Keluar', Icons.power_settings_new, Colors.green[100], Colors.green[300],LoginPhone())
-                    ],
-                  ),
-                  onRefresh: refresh
-                )
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget customCardOneFour(String pathImg, String titleOne, String titleTwo){
-    return InkWell(
-      onTap: () => Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => JaringanUI(kdReferral: kdReferral,name:name))),
-      child: Column(
-        children: <Widget>[
-          SvgPicture.network(ApiService().iconUrl+'icon_'+pathImg+'.svg', height: 35,width:35),
-          SizedBox(height: 5.0,),
-          Text('$titleOne',style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(30))),
-          SizedBox(height: 5.0,),
-          Text('$titleTwo',style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize:ScreenUtilQ.getInstance().setSp(30))),
-        ],
-      ),
-    );
-  }
-
-  Widget customCards(String param,String title,String imagePath,Function callback) {
-    return Material(
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(8.0),
-      child: InkWell(
-        onTap: callback,
-        child: Container(
-          padding:EdgeInsets.all(15.0),
-          width: (MediaQuery.of(context).size.width / 3.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: 0.0),
-                child: Center(
-                  child:param=='png'?Image.network(imagePath,height: MediaQuery.of(context).size.height/20):SvgPicture.network(ApiService().iconUrl+imagePath+'.svg', height: MediaQuery.of(context).size.height/20,)
-                ),
-              ),
-              SizedBox(height: 5.0),
-              Padding(
-                padding: EdgeInsets.only(left: 0.0),
-                child: Center(
-                  child: Text(title,textAlign: TextAlign.center,style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.black,fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ],
+            onTap: () {
+              Clipboard.setData(new ClipboardData(text: '$kdReferral'));
+              UserRepository().notifNoAction(scaffoldKey, context,"Kode Referral Berhasil Disalin","success");
+            },
           ),
+          leading: CircleAvatar(
+              radius:20.0,
+              backgroundImage: NetworkImage(picture)
+          ),
+
         ),
+
       ),
-    );
-  }
+      body: isLoading?UserRepository().loadingWidget():Container(
+        padding: EdgeInsets.only(top:10.0),
+        color: Colors.white,
 
-  Widget customlistDetails(String param,String title, IconData icon, Color backgroundColor, Color iconColor,Widget xWidget) {
-    return InkWell(
-      onTap: () async {
-        param == 'function' ? showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return RichAlertDialogQ(
-                alertTitle: richTitle("Keluar"),
-                alertSubtitle: richSubtitle("Anda Yakin Akan Keluar Aplikasi ?"),
-                alertType: RichAlertType.WARNING,
-                actions: <Widget>[
-                  Container(
-                    color: Colors.green,
-                    child: FlatButton(
-                      child: Text("YA", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-                      onPressed: () async {
-                        setState(() {
-                          showDialog(
-                            barrierDismissible: false,
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ConstrainedBox(
-                                  constraints: BoxConstraints(maxHeight: 100.0),
-                                  child: AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                                        SizedBox(height:5.0),
-                                        Text("Tunggu Sebentar .....",style:TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
-                                      ],
-                                    ),
-                                  )
-                              );
-
-                            },
-                          );
-                        });
-                        var res = await MemberProvider().logout();
-                        if(res.status == 'success'){
-                          setState(() {
-                            Navigator.pop(context);
-                          });
-                          final dbHelper = DbHelper.instance;
-                          final id = await userRepository.getDataUser('id');
-                          final statusLogin = await userRepository.getDataUser('status');
-                          final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
-                          Map<String, dynamic> row = {
-                            DbHelper.columnId   : id,
-                            DbHelper.columnStatus : '0',
-                            DbHelper.columnStatusOnBoarding  : "1",
-                            DbHelper.columnStatusExitApp  : "1"
-                          };
-                          final rowsAffected = await dbHelper.update(row);
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await prefs.clear();
-                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => xWidget), (Route<dynamic> route) => false);
-                        }else{
-                          setState(() {
-                            Navigator.pop(context);
-                          });
-                          UserRepository().notifNoAction(scaffoldKey, context, res.msg,"failed");
-                        }
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 10.0),
-                  Container(
-                    color:Colors.red,
-                    child: FlatButton(
-                      child: Text("TIDAK", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-                      onPressed: () async {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  )
-                ],
-              );
-            }
-        ) : Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => xWidget));
-      },
-      child: ListTile(
-        title: Text(title,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30))),
-        leading: CircleAvatar(
-          backgroundColor: backgroundColor,
-          child: Center(child: Icon(icon, color: iconColor)),
-        ),
-        trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey,size: 20,),
-      ),
-    );
-  }
-
-  Widget _loading(){
-    return ListView(
-      children: <Widget>[
-        Column(
-          children: <Widget>[
-            Stack(
+        child: LiquidPullToRefresh(
+            color: ThaibahColour.primary2,
+            backgroundColor:Colors.white,
+            child: ListView(
+              padding: EdgeInsets.zero,
               children: <Widget>[
-                Container( child: SkeletonFrame(width: double.infinity,height: 250.0)),
+                customlistDetails(context,'Bisnis','halaman dashboard bisnis anda',ProfileBisnis(
+                  id:id,
+                  qr:qr,
+                  name:name,
+                  kdReferral: kdReferral,
+                  picture: picture,
+                  privacyPolicy: privacyPolicy,
+                  saldoUtama: saldoMain,
+                  saldoBonus: saldoBonus,
+                  saldoVoucher: saldoVoucher,
+                  saldoPlatinum: saldoPlatinum,
+                  jmlJaringan: jumlahJaringan.toString(),
+                  omsetJaringan: omsetJaringan.toString(),
+                  downline: downline.toString(),
+                  sponsor: sponsor,
+                  membership: saldoBonus,
+                  levelRoyalti: saldoBonus,
+                ), (){}),
+                customlistDetails(context,'Donasi','halaman riwayat donasi anda',HistoryDonasi(),(){}),
+                customlistDetails(context,'Sosial Media','posting kegiatan anda',MyFeed(),(){}),
+                customlistDetails(context,'Kebijakan & Privasi','kebijakan & privasi aplikasi thaibah',PrivacyPolicy(privasi: privacyPolicy),(){}),
+                customlistDetails(context,'Pengaturan','atur identitas dan keamanan akun anda',IndexMember(id: id),(){}),
+                customlistDetails(context,'Keluar','keluar aplikasi thaibah',null,()async{
+                  UserRepository().loadingQ(context);
+                  var res = await MemberProvider().logout();
+                  if(res.status == 'success'){
+                    setState(() {
+                      Navigator.pop(context);
+                    });
+                    final dbHelper = DbHelper.instance;
+                    final id = await userRepository.getDataUser('id');
+                    Map<String, dynamic> row = {
+                      DbHelper.columnId   : id,
+                      DbHelper.columnStatus : '0',
+                      DbHelper.columnStatusOnBoarding  : "1",
+                      DbHelper.columnStatusExitApp  : "1"
+                    };
+                    await dbHelper.update(row);
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    await prefs.clear();
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+                  }else{
+                    setState(() {
+                      Navigator.pop(context);
+                    });
+                    UserRepository().notifNoAction(scaffoldKey, context, res.msg,"failed");
+                  }
 
-                Column(
-                  children: <Widget>[
 
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 10.0),
-                        Container(
-                          width: 75.0,
-                          height: 75.0,
-                          child:ClipOval(child: SkeletonFrame(width: 75,height: 75)),
-                        ),
-                        SizedBox(width: 10.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SkeletonFrame(width: 100,height: 15),
-                            SizedBox(height: 10.0),
-                            SkeletonFrame(width: 100,height: 15),
-                          ],
-                        ),
-
-                      ],
-                    ),
-                    SizedBox(height: 25.0),
-                    Padding(
-                      padding: EdgeInsets.only(left:10.0,right:10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              ClipOval(child: SkeletonFrame(width: 50,height: 50)),
-                              SizedBox(height:10.0),
-                              SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0)
-                            ],
-                          ),
-
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              ClipOval(child: SkeletonFrame(width: 50,height: 50)),
-                              SizedBox(height:10.0),
-                              SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0)
-                            ],
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              ClipOval(child: SkeletonFrame(width: 50,height: 50)),
-                              SizedBox(height:10.0),
-                              SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0)
-                            ],
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              ClipOval(child: SkeletonFrame(width: 50,height: 50)),
-                              SizedBox(height:10.0),
-                              SkeletonFrame(width: MediaQuery.of(context).size.width/5,height:12.0)
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 15.0,),
-                    Column(
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            SkeletonFrame(width: (MediaQuery.of(context).size.width / 3.5),height: 70),
-                            SizedBox(width: 5.0),
-                            SkeletonFrame(width: (MediaQuery.of(context).size.width / 3.5),height: 70),
-                            SizedBox(width: 5.0),
-                            SkeletonFrame(width: (MediaQuery.of(context).size.width / 3.5),height: 70),
-                            SizedBox(width: 5.0),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5.0,
-                        )
-                      ],
-                    )
-                  ],
-                )
+                })
               ],
             ),
-            SizedBox(height: 10.0,),
-            ListTile(
-              title: SkeletonFrame(width: 150.0,height: 15,),
-              leading: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-              trailing: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-            ),
-            ListTile(
-              title: SkeletonFrame(width: 150.0,height: 15,),
-              leading: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-              trailing: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-            ),
-            ListTile(
-              title: SkeletonFrame(width: 150.0,height: 15,),
-              leading: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-              trailing: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-            ),
-            ListTile(
-              title: SkeletonFrame(width: 150.0,height: 15,),
-              leading: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-              trailing: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-            ),
-            ListTile(
-              title: SkeletonFrame(width: 150.0,height: 15,),
-              leading: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-              trailing: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-            ),
-            ListTile(
-              title: SkeletonFrame(width: 150.0,height: 15,),
-              leading: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-              trailing: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-            ),
-            ListTile(
-              title: SkeletonFrame(width: 150.0,height: 15,),
-              leading: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-              trailing: ClipOval(child: SkeletonFrame(width: 30,height: 30)),
-            ),
-          ],
-        )
-      ],
+            onRefresh: refresh
+        ),
+      ),
+
     );
   }
-
   void _lainnyaModalBottomSheet(context, String param,String _qr){
     showModalBottomSheet(
         isScrollControlled: param == 'barcode' ? false : true,
@@ -571,15 +229,9 @@ class _MyProfileState extends State<MyProfile> {
         }
     );
   }
-
   Future share(param) async{
-    setState(() {
-      isLoadingShare = true;
-    });
     Timer(Duration(seconds: 1), () async {
-      setState(() {
-        isLoadingShare = false;
-      });
+      Navigator.of(context).pop(false);
       await WcFlutterShare.share(
         sharePopupTitle: 'Thaibah Share Link',
         subject: 'Thaibah Share Link',
@@ -589,38 +241,7 @@ class _MyProfileState extends State<MyProfile> {
     });
 
   }
-  Future<void> loadData() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
 
-    setState(() {
-      warna1 = color1==''?ThaibahColour.primary1:hexToColors(color1);
-      warna2 = color2==''?ThaibahColour.primary2:hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-    final prefs = await SharedPreferences.getInstance();
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    var res = await ProfileProvider().fetchProfile();
-    if(res is ProfileModel){
-      setState(() {
-        isLoading = false; retry = false;
-        var result = res.result;
-        jumlahJaringan=result.jumlahJaringan;
-        name=result.name;picture=result.picture;qr=result.qr;kdReferral=result.kdReferral;saldo=result.saldo;rawSaldo=result.rawSaldo;saldoMain=result.saldoMain;
-        saldoBonus=result.saldoBonus;downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
-        id=result.id;
-      });
-    }
-    else{
-      GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
-      setState(() {
-        isLoading = false;retry = true;
-      });
-    }
-
-  }
   Future<void> refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     setState(() {
@@ -631,3 +252,313 @@ class _MyProfileState extends State<MyProfile> {
   }
 }
 
+
+
+class ProfileBisnis extends StatefulWidget {
+  final String id;
+  final String qr;
+  final String name;
+  final String kdReferral;
+  final String picture;
+  final String privacyPolicy;
+  final String saldoUtama;
+  final String saldoBonus;
+  final String saldoVoucher;
+  final String saldoPlatinum;
+  final String jmlJaringan;
+  final String omsetJaringan;
+  final String downline;
+  final String sponsor;
+  final String membership;
+  final String levelRoyalti;
+  ProfileBisnis({
+    this.id,
+    this.qr,
+    this.name,
+    this.kdReferral,
+    this.picture,
+    this.privacyPolicy,
+    this.saldoUtama,
+    this.saldoBonus,
+    this.saldoVoucher,
+    this.saldoPlatinum,
+    this.jmlJaringan,
+    this.omsetJaringan,
+    this.downline,
+    this.sponsor,
+    this.membership,
+    this.levelRoyalti,
+  });
+  @override
+  _ProfileBisnisState createState() => _ProfileBisnisState();
+}
+
+class _ProfileBisnisState extends State<ProfileBisnis> {
+  var scaffoldKey = GlobalKey<ScaffoldState>();
+  final formatter = new NumberFormat("#,###");
+
+  var titleJaringan=['Omset Jaringan','Jumlah Jaringan','Downline','Sponsor'];
+  var valueJaringan=[];
+  var titleSaldo=['Saldo Utama','Saldo Bonus','Saldo Voucher','Saldo Platinum'];
+  var valueSaldo=[];
+  loadArr(){
+    valueJaringan.add(widget.omsetJaringan);
+    valueJaringan.add("${widget.jmlJaringan} Orang");
+    valueJaringan.add("${widget.downline} Orang");
+    valueJaringan.add("${widget.sponsor} Orang");
+
+    valueSaldo.add(widget.saldoUtama);
+    valueSaldo.add(widget.saldoBonus);
+    valueSaldo.add(widget.saldoVoucher);
+    valueSaldo.add(widget.saldoPlatinum);
+
+  }
+
+  Future<void> refresh() async {
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadArr();
+
+
+    print(titleJaringan);
+  }
+  final _scrollController1 = ScrollController();
+  final _scrollController2 = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
+
+    return Scaffold(
+      key: scaffoldKey,
+      backgroundColor: Colors.white,
+      appBar:AppBar(
+        elevation: 0.0,
+        backgroundColor: Colors.white, // status bar color
+        brightness: Brightness.light,
+        centerTitle: false,
+        automaticallyImplyLeading: false,
+        title: ListTile(
+          contentPadding: EdgeInsets.only(left:0.0),
+          title: GestureDetector(
+           child:  Row(
+             children: [
+               UserRepository().textQ(widget.name,14,Colors.black.withOpacity(0.7),FontWeight.bold,TextAlign.left),
+               SizedBox(width: 5),
+               Container(
+                   padding: EdgeInsets.all(2),
+                   decoration: new BoxDecoration(
+                     color: Colors.red,
+                     borderRadius: BorderRadius.circular(6),
+                   ),
+                   constraints: BoxConstraints(
+                     minWidth: 14,
+                     minHeight: 14,
+                   ),
+                   child:UserRepository().textQ('upgrade',10,Colors.white,FontWeight.bold,TextAlign.center),
+               )
+               // Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)
+               // Icon(Icons.content_copy, color: Colors.grey, size: 15,),
+             ],
+           ),
+          ),
+          subtitle: GestureDetector(
+            child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  UserRepository().textQ(widget.kdReferral,12,Colors.grey.withOpacity(0.7),FontWeight.bold,TextAlign.left),
+                  SizedBox(width: 5),
+                  Icon(Icons.content_copy, color: Colors.grey, size: 15,),
+                ]
+            ),
+            onTap: () {
+              Clipboard.setData(new ClipboardData(text: '${widget.name}'));
+              UserRepository().notifNoAction(scaffoldKey, context,"Kode Referral Berhasil Disalin","success");
+            },
+          ),
+          leading: CircleAvatar(
+              radius:20.0,
+              backgroundImage: NetworkImage(widget.picture)
+          ),
+          trailing: InkWell(
+            child: Icon(Icons.share,color: Colors.grey),
+            onTap: (){
+              UserRepository().loadingQ(context);
+              // share(kdReferral);
+            },
+          ),
+        ),
+
+        actions: [
+          InkWell(
+            child: Container(
+              padding: EdgeInsets.only(right:10),
+              child: Icon(Icons.settings_overscan,color: Colors.grey),
+            ),
+            onTap: (){
+              UserRepository().loadingQ(context);
+
+            },
+          ),
+        ],//
+      ),
+      body:Column(
+        children: <Widget>[
+          Stack(
+            overflow: Overflow.visible,
+            children: <Widget>[
+              Container(
+                height:MediaQuery.of(context).size.height/3,width: double.infinity,
+                decoration: BoxDecoration(
+                  color:Colors.grey[200],
+                  borderRadius: BorderRadius.only(
+                    topLeft:Radius.circular(20.0),
+                    topRight:Radius.circular(20.0),
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(left:10.0,right:10.0,top:10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height/13,
+                      child: Scrollbar(
+                        controller: _scrollController1,
+                        isAlwaysShown: true,
+                        child: ListView.builder(
+                          padding: EdgeInsets.only(bottom:5.0),
+                          physics: ClampingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: titleJaringan.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            double wdt;
+                            wdt = titleJaringan.length-1 == index?0.0:1.5;
+
+                            return CardSaldo(
+                              title: titleJaringan[index],
+                              desc: valueJaringan[index],
+                              wdt: wdt,
+                            );
+                          },
+                        )
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                      child: SizedBox(
+                        child: Container(height: 1.0,color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Scrollbar(
+                      controller: _scrollController1,
+                      isAlwaysShown: true,
+                      child: SizedBox(
+                          height: MediaQuery.of(context).size.height/13,
+                        child: ListView.builder(
+                          padding: EdgeInsets.only(bottom:5.0),
+                          physics: ClampingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: titleSaldo.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            double wdt;
+                            wdt = titleJaringan.length-1 == index?0.0:1.5;
+                            return CardSaldo(
+                              title: titleSaldo[index],
+                              desc: valueSaldo[index],
+                              wdt: wdt,
+                            );
+                          },
+                        )
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top:10,bottom:10,left:0,right:10),
+                        height: MediaQuery.of(context).size.height/1.6,
+                      decoration: new BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      child:ListView(
+                        padding: EdgeInsets.only(bottom:5.0),
+                        physics: ClampingScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        children: [
+                          customlistDetails(context,'Top Up','lakukan top up untuk belanja produk', SaldoUI(saldo: widget.saldoUtama,name:widget.name),(){}),
+                          customlistDetails(context,'Transfer','halaman transfer saldo anda', TransferUI(saldo:widget.saldoUtama,qr:widget.qr),(){}),
+                          customlistDetails(context,'Penarikan','halaman penarikan saldo anda', Penarikan(saldoMain: widget.saldoUtama),(){}),
+                          customlistDetails(context,'Penukaran Bonus','penukaran saldo bonus ke saldo utama', PenukaranBonus(saldo: widget.saldoUtama, saldoBonus:widget.saldoBonus),(){}),
+                          customlistDetails(context,'Riwayat Transaksi','lihat riwayat transaksi anda', HistoryUI(page: 'home'),(){}),
+                          customlistDetails(context,'Riwayat Penarikan','lihat riwayat penarikan anda', HistoryPenarikan(),(){}),
+                          customlistDetails(context,'Riwayat Pembelian','lihat riwayat pembelian produk anda',IndexHistory(),(){}),
+                          customlistDetails(context,'Riwayat Top Up','lihat riwayat top up anda',HistoryDeposit(saldo: widget.saldoUtama),(){}),
+                        ],
+                      )
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+
+        ],
+      ),
+    );
+  }
+}
+
+customlistDetails(BuildContext context,String title,String desc,Widget xWidget,Function callback) {
+  return InkWell(
+    onTap: () async {
+      title == 'Keluar' ? showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return RichAlertDialogQ(
+              alertTitle: richTitle("Keluar"),
+              alertSubtitle: richSubtitle("Anda Yakin Akan Keluar Aplikasi ?"),
+              alertType: RichAlertType.WARNING,
+              actions: <Widget>[
+                Container(
+                  color: Colors.green,
+                  child: FlatButton(
+                    child: Text("YA", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                    onPressed:callback
+                  ),
+                ),
+                SizedBox(width: 10.0),
+                Container(
+                  color:Colors.red,
+                  child: FlatButton(
+                    child: Text("TIDAK", style: TextStyle(color: Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                )
+              ],
+            );
+          }
+      ) : Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => xWidget));
+    },
+    child: ListTile(
+      title: UserRepository().textQ(title,14,Colors.black.withOpacity(0.7),FontWeight.bold,TextAlign.left),
+      subtitle: UserRepository().textQ(desc,12,Colors.grey.withOpacity(0.7),FontWeight.normal,TextAlign.left),
+      leading: CircleAvatar(
+        backgroundColor: Colors.grey[200],
+        child: Center(child: Icon(Icons.list, color: Color(0xFF333333))),
+      ),
+      trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey),
+    ),
+  );
+}

@@ -154,7 +154,7 @@ class _AddAddressState extends State<AddAddress> {
         key: _scaffoldKey,
         backgroundColor: Colors.white,
         resizeToAvoidBottomPadding: true,
-        appBar:UserRepository().appBarWithButton(context,"Tambah Alamat",warna1,warna2,(){Navigator.of(context).pop();},Container()),
+        appBar: UserRepository().appBarWithButton(context, "Tambah Alamat",(){Navigator.pop(context);},<Widget>[]),
         body: ListView(
           children: <Widget>[
             Container(
@@ -274,7 +274,7 @@ class _AddAddressState extends State<AddAddress> {
                       ],
                     ),
                   ),
-                  UserRepository().buttonQ(context,warna1,warna2,(){
+                  UserRepository().buttonQ(context,(){
                     mainAddressFocus.unfocus();
                     if(mainAddressController.text == ''){
                       return showInSnackBar("Detail Alamat Harus Diisi");
@@ -291,7 +291,7 @@ class _AddAddressState extends State<AddAddress> {
                       });
                       create();
                     }
-                  }, _isLoading,'Simpan')
+                  }, 'Simpan')
 
                 ],
               ),

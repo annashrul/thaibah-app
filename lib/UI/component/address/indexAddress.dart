@@ -102,7 +102,9 @@ class _IndexAddressState extends State<IndexAddress> {
     addressBloc.fetchAddressList();
     return Scaffold(
       key: scaffoldKey,
-      appBar: row>=1?UserRepository().appBarWithButton(context,"Daftar Alamat",warna1,warna2,(){Navigator.pop(context);},Container()):UserRepository().appBarWithButton(context, "Daftar Alamat",warna1,warna2,(){Navigator.pop(context);}, _buildAddCardButton()),
+      appBar: row>=1?UserRepository().appBarWithButton(context, "Tambah Alamat",(){Navigator.pop(context);},<Widget>[]):UserRepository().appBarWithButton(context, "Tambah Alamat",(){Navigator.pop(context);},<Widget>[_buildAddCardButton()]),
+
+      // appBar: row>=1?UserRepository().appBarWithButton(context,"Daftar Alamat",warna1,warna2,(){Navigator.pop(context);},Container()):UserRepository().appBarWithButton(context, "Daftar Alamat",warna1,warna2,(){Navigator.pop(context);}, _buildAddCardButton()),
       body: StreamBuilder(
         stream: addressBloc.allAddress,
         builder: (context, AsyncSnapshot<AddressModel> snapshot) {

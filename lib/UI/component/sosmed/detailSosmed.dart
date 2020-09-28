@@ -179,7 +179,9 @@ class _DetailSosmedState extends State<DetailSosmed> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: _scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context,"Detail Postingan",warna1,warna2,(){Navigator.pop(context);},Container()),
+        appBar: UserRepository().appBarWithButton(context, "Detail Postingan",(){Navigator.pop(context);},<Widget>[]),
+
+        // appBar:UserRepository().appBarWithButton(context,"Detail Postingan",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Scrollbar(
           child: RefreshIndicator(
             child: StreamBuilder(

@@ -130,7 +130,9 @@ class _HistoryDepositState extends State<HistoryDeposit> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: UserRepository().appBarWithButton(context,"Riwayat Top Up",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Riwayat Top Up",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar: UserRepository().appBarWithButton(context,"Riwayat Top Up",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Padding(padding: EdgeInsets.only(top:10)),
@@ -215,9 +217,9 @@ class _HistoryDepositState extends State<HistoryDeposit> {
           ),
           Padding(
             padding: EdgeInsets.only(left:0.0,right:0.0,top:0.0),
-            child: UserRepository().buttonQ(context, warna1, warna2,(){
+            child: UserRepository().buttonQ(context, (){
               _search();
-            }, false,'cari'),
+            },'cari'),
           ),
           Expanded(
             child: StreamBuilder(

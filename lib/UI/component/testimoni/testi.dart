@@ -81,7 +81,7 @@ class _TestimoniState extends State<Testimoni> with SingleTickerProviderStateMix
           length: 2,
           child: Scaffold(
             key: scaffoldKey,
-            appBar: UserRepository().appBarWithTab(context, 'Testimoni', warna1, warna2,row),
+            appBar: UserRepository().appBarWithTab(context, 'Testimoni',row),
             body: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: <Widget>[

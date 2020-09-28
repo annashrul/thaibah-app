@@ -11,6 +11,7 @@ import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/component/dataDiri/indexMember.dart';
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
@@ -113,13 +114,13 @@ class _PinState extends State<Pin> {
           if(widget.param == 'beranda'){
             Timer(Duration(seconds: 3), () {
               Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
-                  builder: (BuildContext context) => DashboardThreePage()
+                  builder: (BuildContext context) => WidgetIndex(param: '',)
               ), (Route<dynamic> route) => false);
             });
           }else{
             Timer(Duration(seconds: 3), () {
               Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
-                  builder: (BuildContext context) => widget.param=='topup' ? SaldoUI(saldo: widget.saldo,name: name) : DashboardThreePage()
+                  builder: (BuildContext context) => widget.param=='topup' ? SaldoUI(saldo: widget.saldo,name: name) : WidgetIndex(param: '',)
               ), (Route<dynamic> route) => false);
             });
           }

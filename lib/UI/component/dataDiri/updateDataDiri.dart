@@ -15,6 +15,7 @@ import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -180,7 +181,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
         await dbHelper.update(row);
         setState(() {_isLoading = false;});
         Timer(Duration(seconds: 1), () {
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
         });
         UserRepository().notifNoAction(_scaffoldKey, context,res.msg,"success");
 
@@ -296,7 +297,9 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: UserRepository().appBarWithButton(context,"Data Diri",warna1,warna2,(){Navigator.of(context).pop();},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Data Diri",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar: UserRepository().appBarWithButton(context,"Data Diri",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
       body: _form(),
@@ -485,7 +488,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                   ],
                 ),
               ),
-              UserRepository().buttonQ(context,warna1,warna2,(){
+              UserRepository().buttonQ(context,(){
                 if (nameController.text == "") {
                   UserRepository().notifNoAction(_scaffoldKey, context,"Nama Harus Diisi","failed");
 //                          return showInSnackBar("Nama Harus Disi",'gagal');
@@ -499,7 +502,7 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                   setState(() {_isLoading = true;});
                   update();
                 }
-              }, _isLoading,'Simpan')
+              }, 'Simpan')
 //              Align(
 //                  alignment: Alignment.centerRight,
 //                  child: Container(

@@ -1,7 +1,7 @@
 class ApiService {
 // final String baseUrl     = "http://thaibah.com:3000/api/v1/";
-//  final String baseUrl   = "http://thaibah.com:3010/api/v1/";
-final String baseUrl   = "http://192.168.100.10:3010/api/v1/";
+ final String baseUrl   = "http://thaibah.com:3010/api/v1/";
+// final String baseUrl   = "http://192.168.100.10:3010/api/v1/";
  final String assetsLocal = "assets/images/";
  final String baseAssets  = "http://thaibah.com:3000/assets/";
  final String noImage = 'https://icon-library.com/images/no-image-icon/no-image-icon-13.jpg';

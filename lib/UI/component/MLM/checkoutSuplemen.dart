@@ -21,6 +21,7 @@ import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/History/detailHistorySuplemen.dart';
 import 'package:thaibah/UI/component/MLM/produkCheckoutSuplemen.dart';
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart' as prefix4;
@@ -644,7 +645,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
         }
         Navigator.of(context).pop();
         UserRepository().notifAlertQ(context,'success', 'Transaksi Berhasil', 'Terimakasih Telah Melakukan Transaksi', 'Kembali','Lihat Riwayat',(){
-            Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+            Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
           },(){
           Navigator.push(context, CupertinoPageRoute(builder: (context) =>   DetailHistorySuplemen(
               id: result.result.id.toString(),
@@ -679,7 +680,9 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       key: scaffoldKey,
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      appBar:UserRepository().appBarWithButton(context,"Form Pengiriman",warna1,warna2,(){Navigator.of(context).pop();},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Form Pengiriman",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Form Pengiriman",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       bottomNavigationBar: _bottomNavBarBeli(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Container(

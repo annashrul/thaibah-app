@@ -21,6 +21,7 @@ import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/transferProvider.dart';
 
 import 'Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'Widgets/skeletonFrame.dart';
 
 class TransferUI extends StatefulWidget {
   final String saldo, qr;
@@ -199,17 +200,19 @@ class _TransferUIState extends State<TransferUI> {
     return Scaffold(
         // bottomNavigationBar: _bottomNavBar(),
         key: scaffoldKey,
-        appBar: UserRepository().appBarWithButton(context, 'Transfer', warna1, warna2, (){Navigator.of(context).pop();}, InkWell(
-          onTap: (){_lainnyaModalBottomSheet(context);},
-          child: Container(
-            margin: EdgeInsets.only(left: 10.0,right:20.0),
-            child: Image.network(
-              widget.qr,
-              height: ScreenUtilQ.getInstance().setHeight(60),
-              width: ScreenUtilQ.getInstance().setWidth(60),
+        appBar: UserRepository().appBarWithButton(context, 'Transfer', (){Navigator.of(context).pop();}, <Widget>[
+          InkWell(
+            onTap: (){_lainnyaModalBottomSheet(context);},
+            child: Container(
+              margin: EdgeInsets.only(left: 10.0,right:20.0),
+              child: Image.network(
+                widget.qr,
+                height: ScreenUtilQ.getInstance().setHeight(60),
+                width: ScreenUtilQ.getInstance().setWidth(60),
+              ),
             ),
-          ),
-        )),
+          )
+        ]),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
         body: ListView(
@@ -238,90 +241,110 @@ class _TransferUIState extends State<TransferUI> {
                 children: <Widget>[
                   CardHeader(saldo: widget.saldo),
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 8),
+                    padding: EdgeInsets.only(left: 10, right: 10, top: 16, bottom: 8),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        TextFormField(
-                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontFamily: ThaibahFont().fontQ),
-                          controller: moneyMaskedTextController,
-                          decoration: InputDecoration(
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green),
-                            ),
-                            labelText: 'Nominal',
-                            labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
-                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                            prefixText: 'Rp.',
+                      children: [
+                        UserRepository().textQ("Nominal",10,Colors.black,FontWeight.bold,TextAlign.left),
+                        SizedBox(height: 10.0),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10)
                           ),
-
-                          keyboardType: TextInputType.number,
-                          textInputAction: TextInputAction.next,
-                          inputFormatters: <TextInputFormatter>[
-                            LengthLimitingTextInputFormatter(13),
-                            WhitelistingTextInputFormatter.digitsOnly,
-                            BlacklistingTextInputFormatter.singleLineFormatter,
-                          ],
-                          focusNode: tfFocus,
-                          onFieldSubmitted: (term){
-                            tfFocus.unfocus();
-                            _fieldFocusChange(context, tfFocus, penerimaFocus);
-                          },
+                          child: TextFormField(
+                            style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                            controller: moneyMaskedTextController,
+                            keyboardType: TextInputType.streetAddress,
+                            maxLines: 1,
+                            autofocus: false,
+                            decoration: InputDecoration(
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey[200]),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              prefixText: 'Rp.',
+                              hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                            ),
+                            textInputAction: TextInputAction.done,
+                            focusNode: tfFocus,
+                            inputFormatters: <TextInputFormatter>[
+                              LengthLimitingTextInputFormatter(13),
+                              WhitelistingTextInputFormatter.digitsOnly,
+                              BlacklistingTextInputFormatter.singleLineFormatter,
+                            ],
+                            onFieldSubmitted: (term){
+                              tfFocus.unfocus();
+                              _fieldFocusChange(context, tfFocus, penerimaFocus);
+                            },
+                          ),
                         ),
-                        SizedBox(height:cik == 'all'?0.0:5.0),
+                        SizedBox(height: 10.0),
                         StreamBuilder(
                             stream: configBloc.getResult,
                             builder: (context,AsyncSnapshot<ConfigModel> snapshot){
                               return snapshot.hasData ?  snapshot.data.result.transfer == 'all' ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  TextFormField(
-                                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontFamily: ThaibahFont().fontQ),
-                                    textCapitalization: TextCapitalization.sentences,
-                                    onChanged: (value) {
-                                      if (penerimaController.text != value.toUpperCase())
-                                        penerimaController.value = penerimaController.value.copyWith(text: value.toUpperCase());
-                                    },
-                                    controller: penerimaController,
-                                    decoration: InputDecoration(
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.grey),
-                                      ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.green),
-                                      ),
-                                      labelText: 'Penerima',
-                                      labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
-                                      hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                                      prefixText: 'Kode referral: ',
-                                      suffixIcon: InkWell(
-                                        onTap: scanCode,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only( top: 0, left: 0, right: 0, bottom: 0),
-                                          child: new SizedBox(
-                                            height: 7,
-                                            child: Image.network('https://images.vexels.com/media/users/3/157862/isolated/preview/5fc76d9e8d748db3089a489cdd492d4b-barcode-scanning-icon-by-vexels.png'),
+                                  UserRepository().textQ("Penerima",10,Colors.black,FontWeight.bold,TextAlign.left),
+                                  SizedBox(height: 10.0),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: TextFormField(
+                                      style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                                      controller: penerimaController,
+                                      maxLines: 1,
+                                      autofocus: false,
+                                      decoration: InputDecoration(
+                                        prefixText: 'Kode referral: ',
+                                        suffixIcon: InkWell(
+                                          onTap: scanCode,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only( top: 0, left: 0, right: 0, bottom: 0),
+                                            child: new SizedBox(
+                                              height: 2,
+                                              child: Image.network('https://images.vexels.com/media/users/3/157862/isolated/preview/5fc76d9e8d748db3089a489cdd492d4b-barcode-scanning-icon-by-vexels.png',height: 10,),
+                                            ),
                                           ),
                                         ),
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.grey[200]),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                                       ),
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: <TextInputFormatter>[
+                                        WhitelistingTextInputFormatter.digitsOnly,
+                                        BlacklistingTextInputFormatter.singleLineFormatter,
+                                      ],
+                                      textInputAction: TextInputAction.next,
+                                      focusNode: penerimaFocus,
+                                      onFieldSubmitted: (term){
+                                        penerimaFocus.unfocus();
+                                        _fieldFocusChange(context, penerimaFocus, pesanFocus);
+                                      },
+
+                                      textCapitalization: TextCapitalization.sentences,
+                                      onChanged: (value) {
+                                        if (penerimaController.text != value.toUpperCase())
+                                          penerimaController.value = penerimaController.value.copyWith(text: value.toUpperCase());
+                                      },
                                     ),
+                                  ),
 
-
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[
-                                      WhitelistingTextInputFormatter.digitsOnly,
-                                      BlacklistingTextInputFormatter.singleLineFormatter,
-                                    ],
-                                    textInputAction: TextInputAction.next,
-                                    focusNode: penerimaFocus,
-                                    onFieldSubmitted: (term){
-                                      penerimaFocus.unfocus();
-                                      _fieldFocusChange(context, penerimaFocus, pesanFocus);
-                                    },
-                                  )
                                 ],
                               ) : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,70 +354,74 @@ class _TransferUIState extends State<TransferUI> {
                               ) : Center(child: LinearProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))));
                             }
                         ),
-                        TextFormField(
-                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color: Colors.grey,fontFamily: ThaibahFont().fontQ),
-                          controller: pesanController,
-                          decoration: InputDecoration(
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green),
-                            ),
-                            labelText: 'Keterangan',
-                            labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
-                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                            prefixText: 'pesan: ',
-
+                        SizedBox(height: 10.0),
+                        UserRepository().textQ("Pesan",10,Colors.black,FontWeight.bold,TextAlign.left),
+                        SizedBox(height: 10.0),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10)
                           ),
-
-                          maxLines: null,
-                          keyboardType: TextInputType.text,
-                          textInputAction: TextInputAction.done,
-                          focusNode: pesanFocus,
+                          child: TextFormField(
+                            style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                            controller: pesanController,
+                            keyboardType: TextInputType.streetAddress,
+                            maxLines: 3,
+                            autofocus: false,
+                            decoration: InputDecoration(
+                              prefixText: 'pesan: ',
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey[200]),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                            ),
+                            textInputAction: TextInputAction.done,
+                          ),
                         ),
+                        SizedBox(height: 10.0),
+                        UserRepository().buttonQ(
+                            context,
 
+                                (){
+                              if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
+                                UserRepository().notifNoAction(scaffoldKey, context,"Nominal Tidak Boleh Kosong","failed");
+                              }
+                              else{
+                                if(cik == 'all'){
+                                  if(penerimaController.text == ''){
+                                    UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
+                                  }
+                                  else{
+                                    setState(() {
+                                      UserRepository().loadingQ(context);
+                                    });
+                                    sendTransferDetail();
+                                  }
+                                }
+                                if(cik=='contact'){
+                                  if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
+                                    UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
+                                  }
+                                  else{
+                                    setState(() {
+                                      UserRepository().loadingQ(context);
+                                    });
+                                    sendTransferDetail();
+                                  }
+                                }
 
+                              }
+                            },
+                            'Simpan'
+                        )
                       ],
                     ),
                   ),
-                  UserRepository().buttonQ(
-                      context,
-                      warna1,warna2,
-                          (){
-                        if(moneyMaskedTextController.text == null || moneyMaskedTextController.text=='0.00'){
-                          UserRepository().notifNoAction(scaffoldKey, context,"Nominal Tidak Boleh Kosong","failed");
-                        }
-                        else{
-                          if(cik == 'all'){
-                            if(penerimaController.text == ''){
-                              UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
-                            }
-                            else{
-                              setState(() {
-                                UserRepository().loadingQ(context);
-                              });
-                              sendTransferDetail();
-                            }
-                          }
-                          if(cik=='contact'){
-                            if(_currentItemSelectedContact == '' || _currentItemSelectedContact == null){
-                              UserRepository().notifNoAction(scaffoldKey, context,"Penerima Tidak Boleh Kosong","failed");
-                            }
-                            else{
-                              setState(() {
-                                UserRepository().loadingQ(context);
-                              });
-                              sendTransferDetail();
-                            }
-                          }
-
-                        }
-                      },
-                      false,'Simpan'
-                  )
-
-
                 ],
               ),
             ),
@@ -416,27 +443,28 @@ class _TransferUIState extends State<TransferUI> {
 
         FocusScope.of(context).requestFocus(new FocusNode());
       },
-      child: StreamBuilder(
-          stream:contactBloc.getResult,
+      child:StreamBuilder(
+          stream: contactBloc.getResult,
           builder: (context,AsyncSnapshot<prefix0.ContactModel> snapshot) {
             if(snapshot.hasError) print(snapshot.error);
             if(snapshot.hasData){
+              _currentItemSelectedContact= _currentItemSelectedContact==''?snapshot.data.result[0].referral:_currentItemSelectedContact;
+              // BankCodeController = snapshot.data.result[0].code + " | "+ snapshot.data.result[0].name;
               if(snapshot.data.result.length > 0){
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Html(data:"Penerima",defaultTextStyle: TextStyle(fontSize:12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                    DropdownButton(
+                return Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
+                    ),
+                    child: DropdownButton<String>(
                       isDense: true,
                       isExpanded: true,
-                      hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
                       value: _currentItemSelectedContact,
-                      items: snapshot.data.result.map((prefix0.Result items){
-                        return new DropdownMenuItem<String>(
-                          value: "${items.referral}",
-                          child: Html(data:"${items.name} | ${items.referral}",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik')),
-                        );
-                      }).toList(),
+                      icon: Icon(Icons.arrow_drop_down),
+                      iconSize: 20,
+                      underline: SizedBox(),
                       onChanged: (String newValue) {
                         setState(() {
                           tfFocus.unfocus();
@@ -444,35 +472,29 @@ class _TransferUIState extends State<TransferUI> {
                           _onDropDownItemSelectedContact(newValue);
                         });
                       },
+                      items: snapshot.data.result.map((prefix0.Result items){
+                        var name = "";
+                        if(items.name.length > 30){
+                          name = "${items.name.substring(0,30)}..";
+                        }else{
+                          name = items.name;
+                        }
+                        return new DropdownMenuItem<String>(
+                          value: "${items.referral}",
+                          child: Row(
+                            children: [
+                              Image.network(items.picture,width: 50,height: 10,),
+                              SizedBox(width: 10.0),
+                              UserRepository().textQ(name,10,Colors.black,FontWeight.bold,TextAlign.left)
+                            ],
+                          ),
+                        );
+                      }).toList(),
+
                     )
-                  ],
                 );
-                // return new InputDecorator(
-                //   decoration: const InputDecoration(
-                //     labelText: 'Penerima',
-                //   ),
-                //   isEmpty: _currentItemSelectedContact == null,
-                //   child: new DropdownButtonHideUnderline(
-                //     child: new DropdownButton<String>(
-                //       value: _currentItemSelectedContact,
-                //       isDense: true,
-                //       onChanged: (String newValue) {
-                //         setState(() {
-                //           tfFocus.unfocus();
-                //           FocusScope.of(context).requestFocus(new FocusNode());
-                //           _onDropDownItemSelectedContact(newValue);
-                //         });
-                //       },
-                //       items: snapshot.data.result.map((prefix0.Result items){
-                //         return new DropdownMenuItem<String>(
-                //           value: "${items.referral}",
-                //           child: Text("${items.name} | ${items.referral}"),
-                //         );
-                //       }).toList(),
-                //     ),
-                //   ),
-                // );
-              }else{
+              }
+              else{
                 return Card(
                   color: Colors.white,
                   elevation: 1.0,
@@ -489,12 +511,89 @@ class _TransferUIState extends State<TransferUI> {
                 );
               }
 
-            }else{
-              return Center(child: LinearProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))));
             }
-
+            return SkeletonFrame(width: double.infinity,height: 50);
           }
       ),
+      // child: StreamBuilder(
+      //     stream:contactBloc.getResult,
+      //     builder: (context,AsyncSnapshot<prefix0.ContactModel> snapshot) {
+      //       if(snapshot.hasError) print(snapshot.error);
+      //       if(snapshot.hasData){
+      //         if(snapshot.data.result.length > 0){
+      //           return Column(
+      //             crossAxisAlignment: CrossAxisAlignment.start,
+      //             children: [
+      //               Html(data:"Penerima",defaultTextStyle: TextStyle(fontSize:12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+      //               DropdownButton(
+      //                 isDense: true,
+      //                 isExpanded: true,
+      //                 hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
+      //                 value: _currentItemSelectedContact,
+      //                 items: snapshot.data.result.map((prefix0.Result items){
+      //                   return new DropdownMenuItem<String>(
+      //                     value: "${items.referral}",
+      //                     child: Html(data:"${items.name} | ${items.referral}",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik')),
+      //                   );
+      //                 }).toList(),
+      //                 onChanged: (String newValue) {
+      //                   setState(() {
+      //                     tfFocus.unfocus();
+      //                     FocusScope.of(context).requestFocus(new FocusNode());
+      //                     _onDropDownItemSelectedContact(newValue);
+      //                   });
+      //                 },
+      //               )
+      //             ],
+      //           );
+      //           // return new InputDecorator(
+      //           //   decoration: const InputDecoration(
+      //           //     labelText: 'Penerima',
+      //           //   ),
+      //           //   isEmpty: _currentItemSelectedContact == null,
+      //           //   child: new DropdownButtonHideUnderline(
+      //           //     child: new DropdownButton<String>(
+      //           //       value: _currentItemSelectedContact,
+      //           //       isDense: true,
+      //           //       onChanged: (String newValue) {
+      //           //         setState(() {
+      //           //           tfFocus.unfocus();
+      //           //           FocusScope.of(context).requestFocus(new FocusNode());
+      //           //           _onDropDownItemSelectedContact(newValue);
+      //           //         });
+      //           //       },
+      //           //       items: snapshot.data.result.map((prefix0.Result items){
+      //           //         return new DropdownMenuItem<String>(
+      //           //           value: "${items.referral}",
+      //           //           child: Text("${items.name} | ${items.referral}"),
+      //           //         );
+      //           //       }).toList(),
+      //           //     ),
+      //           //   ),
+      //           // );
+      //         }else{
+      //           return Card(
+      //             color: Colors.white,
+      //             elevation: 1.0,
+      //             child: Padding(
+      //                 padding: EdgeInsets.all(20),
+      //                 child: Column(
+      //                   children: <Widget>[
+      //                     Center(
+      //                       child: Text('Anda Belum Mempuya Downline',style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold,fontSize: 18.0),),
+      //                     ),
+      //                   ],
+      //                 )
+      //             ),
+      //           );
+      //         }
+      //
+      //       }else{
+      //         return Center(child: LinearProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))));
+      //       }
+      //
+      //     }
+      // ),
     );
   }
 

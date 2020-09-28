@@ -280,7 +280,9 @@ class _RegistState extends State<Regist> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      appBar:UserRepository().appBarWithButton(context, "Form Pendaftaran",warna1,warna2,(){Navigator.of(context).pop();},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Form Pendaftaran",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context, "Form Pendaftaran",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: ListView(
           children: <Widget>[
             Container(
@@ -498,13 +500,13 @@ class _RegistState extends State<Regist> {
                     ),
                   ):Container(),
                   SizedBox(height: 20.0),
-                  UserRepository().buttonQ(context, warna1,warna2,()async{
+                  UserRepository().buttonQ(context,()async{
                     setState(() {
                       UserRepository().loadingQ(context);
                     });
                     create();
 
-                  }, false,'Simpan')
+                  },'Simpan')
 
                 ],
               ),

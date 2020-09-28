@@ -11,6 +11,7 @@ import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
@@ -78,9 +79,8 @@ class _DetailDepositState extends State<DetailDeposit> {
                   child: Text("Kembali"),
                   onPressed: (){
                     Navigator.of(context, rootNavigator: true).push(
-                      new CupertinoPageRoute(builder: (context) => DashboardThreePage()),
+                      new CupertinoPageRoute(builder: (context) =>WidgetIndex(param: '',)),
                     );
-
                   },
                 ),
               ],
@@ -101,7 +101,7 @@ class _DetailDepositState extends State<DetailDeposit> {
                   child: Text("Kembali"),
                   onPressed: (){
                     Navigator.of(context, rootNavigator: true).push(
-                      new CupertinoPageRoute(builder: (context) => DashboardThreePage()),
+                      new CupertinoPageRoute(builder: (context) =>WidgetIndex(param: '',)),
                     );
                   },
                 ),
@@ -164,7 +164,9 @@ class _DetailDepositState extends State<DetailDeposit> {
     }
     return Scaffold(
         key: scaffoldKey,
-        appBar:UserRepository().appBarWithButton(context,'Riwayat Top Up', warna1,warna2,(){Navigator.of(context).pop();},Container()),
+        appBar: UserRepository().appBarWithButton(context, "Riwayat Top Up",(){Navigator.pop(context);},<Widget>[]),
+
+        // appBar:UserRepository().appBarWithButton(context,'Riwayat Top Up', warna1,warna2,(){Navigator.of(context).pop();},Container()),
         body: Container(
           color: Color(0xFFf7f8fc),
           child: ListView(

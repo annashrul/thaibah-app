@@ -130,7 +130,9 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
-      appBar:UserRepository().appBarWithButton(context,"Riwayat Penarikan",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Riwayat Penarikan",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Riwayat Penarikan",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Padding(padding: EdgeInsets.only(top:10)),
@@ -215,12 +217,12 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
           ),
           Padding(
             padding: EdgeInsets.only(left:0.0,right:0.0,top:0.0),
-            child: UserRepository().buttonQ(context, warna1, warna2,(){
+            child: UserRepository().buttonQ(context,(){
               setState(() {
                 isLoading=true;
               });
               _search();
-              }, isLoading,'cari'),
+              }, 'cari'),
           ),
           Expanded(
             child: StreamBuilder(

@@ -60,7 +60,9 @@ class _ResiState extends State<Resi> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context, 'Lacak Resi ${widget.resi}',warna1,warna2,(){Navigator.of(context).pop();},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Lacak Resi ${widget.resi}",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context, 'Lacak Resi ${widget.resi}',warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: Stack(
         children: <Widget>[
           _buildTimeline(),

@@ -112,7 +112,8 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
 
     return  Scaffold(
         key: scaffoldKey,
-        appBar: UserRepository().appBarWithButton(context, 'Metode Pembayaran',warna1,warna2,(){Navigator.of(context).pop();},Container()),
+        appBar: UserRepository().appBarWithButton(context, "Metode Pembayaran",(){Navigator.pop(context);},<Widget>[]),
+
         body: StreamBuilder(
           stream: listAvailableBankBloc.getResult,
           builder: (context, AsyncSnapshot<ListAvailableBankModel> snapshot) {

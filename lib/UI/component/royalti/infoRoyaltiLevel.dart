@@ -46,7 +46,9 @@ class _InfoRoyaltiLevelState extends State<InfoRoyaltiLevel> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      appBar:UserRepository().appBarWithButton(context,"Info Jenjang Karir",warna1,warna2,(){Navigator.of(context).pop();},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Info Jenjang Karir",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Info Jenjang Karir",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,

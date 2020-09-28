@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -6,26 +5,28 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
+import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/History/buktiTransfer.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/donasi/donasiProvider.dart';
 
-class DetailTopUp extends StatefulWidget {
+class ScreenSuccessDonasi extends StatefulWidget {
   final String amount,raw_amount,unique,bank_name,atas_nama,no_rekening,picture,id_deposit,bank_code;
-  DetailTopUp({
+  ScreenSuccessDonasi({
     this.amount,this.raw_amount,this.unique,this.bank_name,this.atas_nama,this.no_rekening,this.picture,this.id_deposit,this.bank_code
   });
   @override
-  _DetailTopUpState createState() => _DetailTopUpState();
+  _ScreenSuccessDonasiState createState() => _ScreenSuccessDonasiState();
 }
 
-class _DetailTopUpState extends State<DetailTopUp> {
+class _ScreenSuccessDonasiState extends State<ScreenSuccessDonasi> {
   double _height;
   double _width;
   File _image;
@@ -39,70 +40,61 @@ class _DetailTopUpState extends State<DetailTopUp> {
   var bulan = DateFormat.M().format( DateTime.now());
   var tahun = DateFormat.y().format( DateTime.now());
 
-  Future upload() async{
-    setState(() {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: LinearProgressIndicator(),
-          );
-        },
-      );
-    });
-    if(_image != null){
-      fileName = _image.path.split("/").last;
+  Future upload(File img) async{
+    UserRepository().loadingQ(context);
+    if(img != null){
+      fileName = img.path.split("/").last;
       var type = fileName.split('.');
-      base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(_image.readAsBytesSync());
+      base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(img.readAsBytesSync());
     }else{
       base64Image = "";
     }
-    var res = await uploadBuktiTransferBloc.fetchUploadBuktiTransfer(widget.id_deposit, base64Image);
-    if(res.status == 'success'){
-      setState(() {Navigator.pop(context);});
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return RichAlertDialogQ(
-              alertTitle: richTitle("Pengisian Topup Anda Akan Segera Diproses"),
-              alertSubtitle: richSubtitle("Harap Menuggu Paling Lambat 15 Menit"),
-              alertType: RichAlertType.SUCCESS,
-              actions: <Widget>[
-                FlatButton(
-                  child: Text("Kembali"),
-                  onPressed: (){
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
-                  },
-                ),
-              ],
-            );
-          }
-      );
-    }else{
-      setState(() {Navigator.pop(context);});
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return RichAlertDialogQ(
-              alertTitle: richTitle("Error"),
-              alertSubtitle: richSubtitle("Terjadi Kesalahan"),
-              alertType: RichAlertType.ERROR,
-              actions: <Widget>[
-                FlatButton(
-                  child: Text("Kembali"),
-                  onPressed: (){
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
-                  },
-                ),
-              ],
-            );
-          }
-      );
+    var res = await CheckoutDonasiProvider().uploadBuktiTransferDonasi(widget.id_deposit,base64Image);
+    if(res is General){
+      General result = res;
+      if(result.status=='success'){
+        setState(() {Navigator.pop(context);});
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return RichAlertDialogQ(
+                alertTitle: richTitle("Donasi Anda Akan Segera Di Proses"),
+                alertSubtitle: richSubtitle("Harap Menuggu Paling Lambat 15 Menit"),
+                alertType: RichAlertType.SUCCESS,
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text("Kembali"),
+                    onPressed: (){
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
+                    },
+                  ),
+                ],
+              );
+            }
+        );
+      }
+      else{
+        setState(() {Navigator.pop(context);});
+        setState(() {Navigator.pop(context);});
+        UserRepository().notifNoAction(scaffoldKey, context,result.msg,"failed");
+      }
     }
   }
 
-
+  void _lainnyaModalBottomSheet(context){
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+        backgroundColor: Colors.white,
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal:18,vertical: 10 ),
+          child: WidgetUploadBuktiTransferDonasi(callback: (File img){
+            upload(img);
+          }),
+        )
+    );
+  }
 
 
   final userRepository = UserRepository();
@@ -128,9 +120,7 @@ class _DetailTopUpState extends State<DetailTopUp> {
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
         },<Widget>[]),
 
-        // appBar: UserRepository().appBarWithButton(context, 'Transaksi Berhasil',ThaibahColour.primary1,ThaibahColour.primary2,(){
-        //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-        // }, Container()),
+
         resizeToAvoidBottomInset: false,
 
         body: Scrollbar(
@@ -297,11 +287,11 @@ class _DetailTopUpState extends State<DetailTopUp> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Container(
-            width: MediaQuery.of(context).size.width/1,
+              width: MediaQuery.of(context).size.width/1,
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [ThaibahColour.primary1,ThaibahColour.primary2]),
-                borderRadius: BorderRadius.circular(0.0),
-                boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
+                  gradient: LinearGradient(colors: [ThaibahColour.primary1,ThaibahColour.primary2]),
+                  borderRadius: BorderRadius.circular(0.0),
+                  boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
               ),
               height: kBottomNavigationBarHeight,
               child: FlatButton(
@@ -310,9 +300,10 @@ class _DetailTopUpState extends State<DetailTopUp> {
                 ),
                 color:ThaibahColour.primary2,
                 onPressed: (){
-                  Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => BuktiTransfer(id_deposit: widget.id_deposit)),
-                  );
+                  _lainnyaModalBottomSheet(context);
+                  // Navigator.of(context, rootNavigator: true).push(
+                  //   new CupertinoPageRoute(builder: (context) => BuktiTransfer(id_deposit: widget.id_deposit)),
+                  // );
                 },
                 child: Text("SAYA SUDAH TRANSFER", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
               )
@@ -321,6 +312,75 @@ class _DetailTopUpState extends State<DetailTopUp> {
       ),
     );
   }
-
-
 }
+
+class WidgetUploadBuktiTransferDonasi extends StatefulWidget {
+  final Function(File bukti) callback;
+  WidgetUploadBuktiTransferDonasi({this.callback});
+  @override
+  _WidgetUploadBuktiTransferDonasiState createState() => _WidgetUploadBuktiTransferDonasiState();
+}
+
+class _WidgetUploadBuktiTransferDonasiState extends State<WidgetUploadBuktiTransferDonasi> {
+  File _image;
+  Future<File> file;
+  String base64Image;
+  File tmpFile;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        SizedBox(height:10.0),
+        Container(
+          padding: EdgeInsets.only(top:10.0),
+          width: 50,
+          height: 10.0,
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius:  BorderRadius.circular(10.0),
+          ),
+        ),
+        InkWell(
+          onTap: () async {
+            try{
+              var image = await ImagePicker.pickImage(
+                source: ImageSource.gallery,
+                maxHeight: 800, maxWidth: 600,
+              );
+              setState(() {
+                _image = image;
+              });
+            }catch(e){
+              print(e);
+            }
+          },
+          child: ListTile(
+            contentPadding: EdgeInsets.all(0.0),
+            title: UserRepository().textQ("Upload Bukti Transfer",12,Colors.grey,FontWeight.bold,TextAlign.left),
+            leading: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              child: Center(child: Icon(Icons.satellite, color: Colors.grey)),
+            ),
+            trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey,size: 20,),
+          ),
+        ),
+        Divider(),
+        Container(
+          padding:EdgeInsets.all(5.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius:  BorderRadius.circular(100.0),
+          ),
+          child: _image == null ?Image.network("http://lequytong.com/Content/Images/no-image-02.png"): new Image.file(_image,width: 1300,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high,),
+        ),
+        UserRepository().buttonQ(context, ()=>widget.callback(_image),'Simpan')
+      ],
+    );
+
+
+  }
+}
+

@@ -60,7 +60,9 @@ class AsmaUIState extends State<AsmaUI> {
     List colors = [Colors.red, Colors.green, Colors.blue];
     Random random = new Random();
     return Scaffold(
-        appBar: UserRepository().appBarWithButton(context,"Asmaul Husna",ThaibahColour.primary1,ThaibahColour.primary2, (){Navigator.pop(context);}, Container()),
+        appBar: UserRepository().appBarWithButton(context, "Asmaul Husna",(){Navigator.pop(context);},<Widget>[]),
+
+        // appBar: UserRepository().appBarWithButton(context,"Asmaul Husna",ThaibahColour.primary1,ThaibahColour.primary2, (){Navigator.pop(context);}, Container()),
         body: isLoading ? ListView.builder(
           itemCount: 10,
           itemBuilder: (context, index) {

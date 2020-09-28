@@ -65,7 +65,9 @@ class _SubDoaHadistState extends State<SubDoaHadist> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context,"${title.toUpperCase()}",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, title.toUpperCase(),(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"${title.toUpperCase()}",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Flexible(

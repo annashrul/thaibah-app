@@ -18,6 +18,10 @@ import 'package:thaibah/resources/gagalHitProvider.dart';
 
 
 class UserRepository {
+  fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
+  }
 
   noData(){
     return Center(
@@ -251,95 +255,78 @@ class UserRepository {
       ),
     );
   }
-  appBarNoButton(BuildContext context, title,Color color1, Color color2){
+  appBarNoButton(BuildContext context, title,List<Widget> widget){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-    var cek =  AppBar(
-      centerTitle: false,
+    return AppBar(
       elevation: 0.0,
-      title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.left),
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: <Color>[
-              color1 != null?color1:ThaibahColour.primary1,
-              color2 != null?color2:ThaibahColour.primary2,
-            ],
-          ),
+      backgroundColor: Colors.white, // status bar color
+      brightness: Brightness.light,
+      title:ListTile(
+        contentPadding: EdgeInsets.only(top:10,bottom:10),
+        title: UserRepository().textQ(title,18,Colors.black,FontWeight.bold,TextAlign.left),
+
+        leading: CircleAvatar(
+            radius:20.0,
+            backgroundImage: AssetImage('assets/images/logoOnBoardTI.png')
         ),
-      ),
+      ),//
+
+      actions:widget,// status bar brightness
     );
-    return cek;
+
   }
-  appBarWithButton(BuildContext context, title,Color color1, Color color2,Function callback,Widget action){
+  appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-    var cek =  AppBar(
+
+
+    return  AppBar(
+      elevation: 0.0,
+      backgroundColor: Colors.white, // status bar color
+      brightness: Brightness.light,
+      title:UserRepository().textQ(title,18,Colors.black,FontWeight.bold,TextAlign.left),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios,color: Colors.white),
+        icon: Icon(Icons.arrow_back_ios,color: Colors.black),
         onPressed: (){
           callback();
         },
       ),
-      centerTitle: false,
-      elevation: 0.0,
-      title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.left),
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: <Color>[
-              color1 != null?color1:ThaibahColour.primary1,
-              color2 != null?color2:ThaibahColour.primary2,
-            ],
-          ),
-        ),
-      ),
-      actions: <Widget>[
-        action
-      ]
+      actions:widget,// status bar brightness
     );
-    return cek;
   }
-  appBarWithTab(BuildContext context, title,Color color1, Color color2,Map<String,dynamic> lbl){
+  appBarWithTab(BuildContext context, title,Map<String,dynamic> lbl){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     List<Tab> tab = new List();
     lbl.forEach((key, value) {
       tab.add(Tab(text: value));
     });
-    var cek = new AppBar(
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: <Color>[
-              color1 != null?color1:ThaibahColour.primary1,
-              color2 != null?color2:ThaibahColour.primary2,
-            ],
-          ),
-        ),
-      ),
-      centerTitle: false,
+
+    return AppBar(
       elevation: 0.0,
-      title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.center),
+      backgroundColor: Colors.white, // status bar color
+      brightness: Brightness.light,
+      title:ListTile(
+        contentPadding: EdgeInsets.only(top:10,bottom:10),
+        title: UserRepository().textQ(title,18,Colors.black,FontWeight.bold,TextAlign.left),
+        leading: CircleAvatar(
+            radius:20.0,
+            backgroundImage: AssetImage('assets/images/logoOnBoardTI.png')
+        ),
+      ),//
+      //
       bottom: TabBar(
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
+          indicatorColor: Colors.green,
+          labelColor: Colors.green,
           unselectedLabelColor: Colors.grey[400],
           indicatorWeight: 2,
           labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(36)),
           tabs: tab
-      ),
-      actions: <Widget>[
-        //Add the dropdown widget to the `Action` part of our appBar. it can also be among the `leading` part
-      ],
+      ),// status bar brightness
     );
-    return cek;
+
+
   }
   appBarWithTabButton(BuildContext context, title,Color color1, Color color2,Map<String,dynamic> lbl,Function callback){
     List<Tab> tab = new List();
@@ -384,36 +371,32 @@ class UserRepository {
     );
     return cek;
   }
-  buttonQ(BuildContext context,Color color1,Color color2,Function callback,bool isLoading,label){
+  buttonQ(BuildContext context,Function callback,label){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    var cek = Container(
-      margin: EdgeInsets.all(16),
-      width: MediaQuery.of(context).size.width/1,
-      height: ScreenUtilQ.getInstance().setHeight(150),
-      decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [color1!=null?color1:ThaibahColour.primary1,color2!=null?color2:ThaibahColour.primary2]),
-          borderRadius: BorderRadius.circular(6.0),
-          boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap:callback,
-          child: Center(
-            child:  isLoading ? CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF))):
-            textQ(label, 14, Colors.white, FontWeight.bold, TextAlign.center)
+    var btn = InkWell(
+      onTap:callback,
+      child: Center(
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [Colors.green,Colors.green]),
+              borderRadius: BorderRadius.circular(10.0),
           ),
+          child: UserRepository().textQ(label,14,Colors.white,FontWeight.bold,TextAlign.center),
         ),
       ),
     );
-    return cek;
+
+    return btn;
   }
   buttonLoadQ(BuildContext context,Color color1,Color color2,Function callback,bool isLoading){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     var cek = Container(
-      margin: EdgeInsets.all(16),
+      padding: EdgeInsets.all(10.0),
+      // margin: EdgeInsets.all(16),
       width: MediaQuery.of(context).size.width/1,
       height: ScreenUtilQ.getInstance().setHeight(100),
       decoration: BoxDecoration(
@@ -540,6 +523,7 @@ class UserRepository {
     String warna2='';
     String latitude='';
     String longitude='';
+    String isStatus='';
     final dbHelper = DbHelper.instance;
     final allRows = await dbHelper.queryAllRows();
     print("TABLE USER $allRows");
@@ -566,6 +550,7 @@ class UserRepository {
       warna2 = row['warna2'];
       latitude = row['latitude'];
       longitude = row['longitude'];
+      isStatus = row['isStatus'];
 
     });
     if(param=='id'){return id;}
@@ -590,6 +575,7 @@ class UserRepository {
     if(param=='warna2'){return warna2;}
     if(param=='latitude'){return latitude;}
     if(param=='longitude'){return longitude;}
+    if(param=='isStatus'){return isStatus;}
   }
   Future<bool> checker() async{
     var cekMember = await ConfigProvider().checkerMember();

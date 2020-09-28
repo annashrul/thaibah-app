@@ -48,7 +48,9 @@ class _MasjidTerdekatState extends State<MasjidTerdekat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:UserRepository().appBarWithButton(context,"Masjid Terdekat",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Masjid Terdekat",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Masjid Terdekat",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: StreamBuilder(
         stream: nearbyMosqueBloc.getResult,
         builder: (context, AsyncSnapshot<NearbyMosqueModel> snapshot) {

@@ -13,6 +13,7 @@ import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/bank/indexBank.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
 import 'package:thaibah/bloc/withdrawBloc.dart';
@@ -21,6 +22,7 @@ import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 
 import '../saldo_ui.dart';
+import 'home/widget_index.dart';
 
 class Penarikan extends StatefulWidget {
   final String saldoMain;
@@ -102,7 +104,9 @@ class _PenarikanState extends State<Penarikan> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return Scaffold(
         key: scaffoldKey,
-        appBar:UserRepository().appBarWithButton(context,'Penarikan',warna1,warna2,(){Navigator.of(context).pop();},Container()),
+        appBar: UserRepository().appBarWithButton(context, "Penarikan",(){Navigator.pop(context);},<Widget>[]),
+
+        // appBar:UserRepository().appBarWithButton(context,'Penarikan',warna1,warna2,(){Navigator.of(context).pop();},Container()),
         body: ListView(
           children: <Widget>[
             Container(
@@ -121,103 +125,204 @@ class _PenarikanState extends State<Penarikan> {
                   )
               ),
               alignment: Alignment.topCenter,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 8),
-                    child:CardHeader(saldo: widget.saldoMain),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 8),
-                    child: _bank(context),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                        TextFormField(
-                          controller: moneyController,
-                          keyboardType: TextInputType.number,
-                          maxLines: 1,
-                          style: TextStyle(color:Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                          autofocus: false,
-                          decoration: InputDecoration(
-                            hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30)),
-                            prefixText: 'Rp.',
+              child:Padding(
+                padding: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CardHeader(saldo: widget.saldoMain),
+                    Padding(
+                      padding: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 8),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          UserRepository().textQ("Bank",10,Colors.black,FontWeight.bold,TextAlign.left),
+                          SizedBox(height: 10.0),
+                         _bank(context),
+                          SizedBox(height: 10.0),
+                          UserRepository().textQ("Nominal",10,Colors.black,FontWeight.bold,TextAlign.left),
+                          SizedBox(height: 10.0),
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                            decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(10)
+                            ),
+                            child: TextFormField(
+                              style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                              controller: moneyController,
+                              keyboardType: TextInputType.number,
+                              autofocus: false,
+                              decoration: InputDecoration(
+                                prefixText: 'Rp.',
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey[200]),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                              ),
+                              textInputAction: TextInputAction.done,
+                              focusNode: saldoFocus,
+                              onFieldSubmitted: (value){
+                                saldoFocus.unfocus();
+                                if(moneyController.text == '0.00' || moneyController.text == null || bankCodeController == '' || bankCodeController == null){
+                                  UserRepository().notifNoAction(scaffoldKey, context,"Lengkapi Form Yang SUdah Tersedia","failed");
+                                }
+                                else{
+                                  setState(() {
+                                    _isLoading = true;
+                                  });
+                                  _pinBottomSheet(context);
+                                }
+                              },
+                            ),
                           ),
-                          inputFormatters: <TextInputFormatter>[
-                            WhitelistingTextInputFormatter.digitsOnly
-                          ],
-                          textInputAction: TextInputAction.done,
-                          focusNode: saldoFocus,
-                          onFieldSubmitted: (value){
-                            saldoFocus.unfocus();
-                            if(moneyController.text == '0.00' || moneyController.text == null || bankCodeController == '' || bankCodeController == null){
-                              UserRepository().notifNoAction(scaffoldKey, context,"Lengkapi Form Yang SUdah Tersedia","failed");
+                          SizedBox(height: 10.0),
+                          UserRepository().textQ("Pilih nominal cepat",10,Colors.black,FontWeight.bold,TextAlign.left),
+                          GridView.builder(
+                            padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: _crossAxisCount,
+                              crossAxisSpacing: _crossAxisSpacing,
+                              mainAxisSpacing: _mainAxisSpacing,
+                              childAspectRatio: _aspectRatio,
+                            ),
+                            itemCount: sampleData.length,
+                            itemBuilder: (BuildContext context, int index){
+                              return new InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    sampleData.forEach((element) => element.isSelected = false);
+                                    sampleData[index].isSelected = true;
+                                    FocusScope.of(context).requestFocus(FocusNode());
+                                  });
+                                  allReplace(sampleData[index].buttonText);
+                                },
+                                child: RadioItem(sampleData[index]),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 10.0),
+                          UserRepository().buttonQ(context,(){
+                            if(moneyController.text == '0.00' || moneyController.text == null ||  bankCodeController == '' || bankCodeController == null){
+                              UserRepository().notifNoAction(scaffoldKey, context, "Lengkapi Form Yang Tersedia", "failed");
                             }
                             else{
-                              setState(() {
-                                _isLoading = true;
-                              });
+
                               _pinBottomSheet(context);
                             }
-                          },
-                        )
-                      ],
-                    ),
-                  ),
+                          },'Simpan')
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+            )
 
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text("Pilih Nominal Cepat",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                        GridView.builder(
-                          padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: _crossAxisCount,
-                            crossAxisSpacing: _crossAxisSpacing,
-                            mainAxisSpacing: _mainAxisSpacing,
-                            childAspectRatio: _aspectRatio,
-                          ),
-                          itemCount: sampleData.length,
-                          itemBuilder: (BuildContext context, int index){
-                            return new InkWell(
-                              onTap: () {
-                                setState(() {
-                                  sampleData.forEach((element) => element.isSelected = false);
-                                  sampleData[index].isSelected = true;
-                                  FocusScope.of(context).requestFocus(FocusNode());
-                                });
-                                allReplace(sampleData[index].buttonText);
-                              },
-                              child: RadioItem(sampleData[index]),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  UserRepository().buttonQ(context,warna1,warna2,(){
-                    if(moneyController.text == '0.00' || moneyController.text == null ||  bankCodeController == '' || bankCodeController == null){
-                      UserRepository().notifNoAction(scaffoldKey, context, "Lengkapi Form Yang Tersedia", "failed");
-                    }
-                    else{
-
-                      _pinBottomSheet(context);
-                    }
-                  }, false,'Simpan')
-
-                ],
-              ),
+              // child: Column(
+              //   mainAxisAlignment: MainAxisAlignment.start,
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   mainAxisSize: MainAxisSize.min,
+              //   children: <Widget>[
+              //     Padding(
+              //       padding: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 8),
+              //       child:CardHeader(saldo: widget.saldoMain),
+              //     ),
+              //     Padding(
+              //       padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 8),
+              //       child: _bank(context),
+              //     ),
+              //     Padding(
+              //       padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+              //       child: Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: <Widget>[
+              //           Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+              //           TextFormField(
+              //             controller: moneyController,
+              //             keyboardType: TextInputType.number,
+              //             maxLines: 1,
+              //             style: TextStyle(color:Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+              //             autofocus: false,
+              //             decoration: InputDecoration(
+              //               hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30)),
+              //               prefixText: 'Rp.',
+              //             ),
+              //             inputFormatters: <TextInputFormatter>[
+              //               WhitelistingTextInputFormatter.digitsOnly
+              //             ],
+              //             textInputAction: TextInputAction.done,
+              //             focusNode: saldoFocus,
+              //             onFieldSubmitted: (value){
+              //               saldoFocus.unfocus();
+              //               if(moneyController.text == '0.00' || moneyController.text == null || bankCodeController == '' || bankCodeController == null){
+              //                 UserRepository().notifNoAction(scaffoldKey, context,"Lengkapi Form Yang SUdah Tersedia","failed");
+              //               }
+              //               else{
+              //                 setState(() {
+              //                   _isLoading = true;
+              //                 });
+              //                 _pinBottomSheet(context);
+              //               }
+              //             },
+              //           )
+              //         ],
+              //       ),
+              //     ),
+              //
+              //     Padding(
+              //       padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+              //       child: Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: <Widget>[
+              //           Text("Pilih Nominal Cepat",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+              //           GridView.builder(
+              //             padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
+              //             physics: NeverScrollableScrollPhysics(),
+              //             shrinkWrap: true,
+              //             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              //               crossAxisCount: _crossAxisCount,
+              //               crossAxisSpacing: _crossAxisSpacing,
+              //               mainAxisSpacing: _mainAxisSpacing,
+              //               childAspectRatio: _aspectRatio,
+              //             ),
+              //             itemCount: sampleData.length,
+              //             itemBuilder: (BuildContext context, int index){
+              //               return new InkWell(
+              //                 onTap: () {
+              //                   setState(() {
+              //                     sampleData.forEach((element) => element.isSelected = false);
+              //                     sampleData[index].isSelected = true;
+              //                     FocusScope.of(context).requestFocus(FocusNode());
+              //                   });
+              //                   allReplace(sampleData[index].buttonText);
+              //                 },
+              //                 child: RadioItem(sampleData[index]),
+              //               );
+              //             },
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //     UserRepository().buttonQ(context,(){
+              //       if(moneyController.text == '0.00' || moneyController.text == null ||  bankCodeController == '' || bankCodeController == null){
+              //         UserRepository().notifNoAction(scaffoldKey, context, "Lengkapi Form Yang Tersedia", "failed");
+              //       }
+              //       else{
+              //
+              //         _pinBottomSheet(context);
+              //       }
+              //     },'Simpan')
+              //
+              //   ],
+              // ),
             ),
           ],
         )
@@ -243,29 +348,71 @@ class _PenarikanState extends State<Penarikan> {
           if(snapshot.hasError) print(snapshot.error);
           if(snapshot.hasData){
             if(snapshot.data.result.length > 0){
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Html(data:"Bank",defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                  DropdownButton(
+              bankCodeController= bankCodeController==''?snapshot.data.result[0].id:bankCodeController;
+              return Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: DropdownButton<String>(
                     isDense: true,
                     isExpanded: true,
-                    hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
                     value: bankCodeController,
-                    items: snapshot.data.result.map((prefix0.Result items){
-                      return new DropdownMenuItem<String>(
-                          value: items.id,
-                          child: Html(data:items.bankname!=''?items.bankname:'kosong',defaultTextStyle: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ))
-                      );
-                    }).toList(),
+                    icon: Icon(Icons.arrow_drop_down),
+                    iconSize: 20,
+                    underline: SizedBox(),
                     onChanged: (String newValue) {
                       setState(() {
                         _onDropDownItemSelectedBank(newValue);
                       });
                     },
+                    items: snapshot.data.result.map((prefix0.Result items){
+                      var name = "";
+                      if(items.bankname.length > 30){
+                        name = "${items.bankname.substring(0,30)}..";
+                      }else{
+                        name = items.bankname;
+                      }
+                      return new DropdownMenuItem<String>(
+                        value: items.id,
+                        child: Row(
+                          children: [
+                            Image.network(items.picture,width: 50,height: 10,),
+
+                            SizedBox(width: 10.0),
+                            UserRepository().textQ(name,10,Colors.black,FontWeight.bold,TextAlign.left)
+                          ],
+                        ),
+                      );
+                    }).toList(),
+
                   )
-                ],
               );
+              // return Column(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     Html(data:"Bank",defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+              //     DropdownButton(
+              //       isDense: true,
+              //       isExpanded: true,
+              //       hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
+              //       value: bankCodeController,
+              //       items: snapshot.data.result.map((prefix0.Result items){
+              //         return new DropdownMenuItem<String>(
+              //             value: items.id,
+              //             child: Html(data:items.bankname!=''?items.bankname:'kosong',defaultTextStyle: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ))
+              //         );
+              //       }).toList(),
+              //       onChanged: (String newValue) {
+              //         setState(() {
+              //           _onDropDownItemSelectedBank(newValue);
+              //         });
+              //       },
+              //     )
+              //   ],
+              // );
             }else{
               return Card(
                 color: Colors.white,
@@ -345,7 +492,7 @@ class _PenarikanState extends State<Penarikan> {
                   FlatButton(
                     child: Text("Kembali",style:TextStyle(fontFamily: ThaibahFont().fontQ)),
                     onPressed: (){
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
                     },
                   ),
                 ],

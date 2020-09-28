@@ -81,7 +81,9 @@ class _DoaHarianState extends State<DoaHarian> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context,"Kategori $title",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Kategori",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Kategori $title",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Flexible(

@@ -246,34 +246,65 @@ class _MyFeedState extends State<MyFeed> {
           if (snapshot.hasData) {
             return Scaffold(
               key: _scaffoldKey,
-              appBar:UserRepository().appBarWithButton(context,"Postingan Saya",warna1,warna2,(){Navigator.of(context).pop();}, new Stack(
-                children: <Widget>[
-                  new IconButton(
-                      icon: Icon(Icons.notifications_none),
-                      onPressed: () {
-                        deleteCountInbox();
-                        print('tap');
-                        Navigator.of(context, rootNavigator: true).push(
-                          new CupertinoPageRoute(builder: (context) => InboxSosmed()),
-                        ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
-                      }
-                  ),
-                  new Positioned(
-                    right: 11,
-                    top: 11,
-                    child: new Container(
-                      padding: EdgeInsets.all(2),
-                      decoration: new BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
-                      // child: Text('${snapshot.data.result.notif}', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
-                      child: UserRepository().textQ('${snapshot.data.result.notif}', 8, Colors.white, FontWeight.bold, TextAlign.center),
+              appBar: UserRepository().appBarWithButton(context, "Postingan Saya",(){Navigator.pop(context);},<Widget>[
+                Stack(
+                  children: <Widget>[
+                    new IconButton(
+                        icon: Icon(Icons.notifications_none),
+                        onPressed: () {
+                          deleteCountInbox();
+                          print('tap');
+                          Navigator.of(context, rootNavigator: true).push(
+                            new CupertinoPageRoute(builder: (context) => InboxSosmed()),
+                          ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
+                        }
                     ),
-                  )
-                ],
-              ),),
+                    new Positioned(
+                      right: 11,
+                      top: 11,
+                      child: new Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: new BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
+                        // child: Text('${snapshot.data.result.notif}', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+                        child: UserRepository().textQ('${snapshot.data.result.notif}', 8, Colors.white, FontWeight.bold, TextAlign.center),
+                      ),
+                    )
+                  ],
+                )
+              ]),
+
+              // appBar:UserRepository().appBarWithButton(context,"Postingan Saya",warna1,warna2,(){Navigator.of(context).pop();}, new Stack(
+              //   children: <Widget>[
+              //     new IconButton(
+              //         icon: Icon(Icons.notifications_none),
+              //         onPressed: () {
+              //           deleteCountInbox();
+              //           print('tap');
+              //           Navigator.of(context, rootNavigator: true).push(
+              //             new CupertinoPageRoute(builder: (context) => InboxSosmed()),
+              //           ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
+              //         }
+              //     ),
+              //     new Positioned(
+              //       right: 11,
+              //       top: 11,
+              //       child: new Container(
+              //         padding: EdgeInsets.all(2),
+              //         decoration: new BoxDecoration(
+              //           color: Colors.red,
+              //           borderRadius: BorderRadius.circular(6),
+              //         ),
+              //         constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
+              //         // child: Text('${snapshot.data.result.notif}', style: TextStyle(color: Colors.white, fontSize: 8,), textAlign: TextAlign.center),
+              //         child: UserRepository().textQ('${snapshot.data.result.notif}', 8, Colors.white, FontWeight.bold, TextAlign.center),
+              //       ),
+              //     )
+              //   ],
+              // ),),
               body: Column(
                 children: [
                   writeSomething(context),

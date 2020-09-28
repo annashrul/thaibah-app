@@ -142,6 +142,7 @@ class DbHelper {
   static final columnWarna2 = 'warna2';
   static final columnLatitude = 'latitude';
   static final columnLongitude = 'longitude';
+  static final columnIsStatus = 'isStatus';
 
   DbHelper._privateConstructor();
   static final DbHelper instance = DbHelper._privateConstructor();
@@ -187,7 +188,8 @@ class DbHelper {
             $columnWarna1 TEXT NOT NULL,
             $columnWarna2 TEXT NOT NULL,
             $columnLatitude TEXT NOT NULL,
-            $columnLongitude TEXT NOT NULL
+            $columnLongitude TEXT NOT NULL,
+            $columnIsStatus TEXT NOT NULL
           )
           ''');
   }

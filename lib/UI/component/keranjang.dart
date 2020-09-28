@@ -110,7 +110,9 @@ class _KeranjangState extends State<Keranjang> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context, "Keranjang Belanja",warna1,warna2,(){Navigator.of(context).pop();},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Keranjang Belanja",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context, "Keranjang Belanja",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: StreamBuilder(
         key: _refreshIndicatorKey,
         stream: listCartBloc.getResult,

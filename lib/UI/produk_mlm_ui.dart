@@ -175,68 +175,36 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
 
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                statusLevel!='0'?warna1:ThaibahColour.primary1,
-                statusLevel!='0'?warna2:ThaibahColour.primary2
-              ],
-            ),
-          ),
-        ),
-
-        actions: <Widget>[
-          new Stack(
-            children: <Widget>[
-              GestureDetector(
-                onTap: (){
-                  if(total!=0){
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => Keranjang()
-                      ),
-                    ).whenComplete(countCart);
-//                    Navigator.of(context).push(new MaterialPageRoute(builder: (_) => Keranjang())).whenComplete(countCart);
-                  }
-                },
-                child: Container(
-                  margin:EdgeInsets.only(top:10.0),
-                  child: SvgPicture.asset(
-                    ApiService().assetsLocal+"Icon_Utama_Produk_abu.svg",
-                    height: ScreenUtilQ.getInstance().setHeight(60),
-                    width: ScreenUtilQ.getInstance().setWidth(60),
-                    color: Colors.white,
-                  ),
-                ),
-
+      appBar: UserRepository().appBarNoButton(context,"Produk",<Widget>[
+        Stack(
+          children: <Widget>[
+            GestureDetector(
+              onTap: (){
+                if(total!=0){
+                  Navigator.push(context, CupertinoPageRoute(builder: (context) => Keranjang())).whenComplete(countCart);
+                }
+              },
+              child: Container(
+                margin:EdgeInsets.only(top:16.0,right:10),
+                child: Icon(Icons.shopping_cart,color: Colors.grey),
               ),
-
-              total != 0 ?new Positioned(
-                right: 5,
-                top: 11,
-                child: new Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: new BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  constraints: BoxConstraints(minWidth: 14, minHeight: 14,),
-                  child: Text('$total', style: TextStyle(color: Colors.white, fontSize: ScreenUtilQ.getInstance().setSp(24),fontFamily:ThaibahFont().fontQ), textAlign: TextAlign.center,),
+            ),
+            total != 0 ?new Positioned(
+              right: 5,
+              top: 11,
+              child: new Container(
+                padding: EdgeInsets.all(2),
+                decoration: new BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(100),
                 ),
-              ):Container()
-            ],
-          ),
-        ],
-        centerTitle: false,
-        elevation: 0.0,
-        automaticallyImplyLeading: false,
-        title: new Text("Produk Kami", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(60),color:Colors.white,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-      ),
+                constraints: BoxConstraints(minWidth: 13, minHeight: 13,),
+                child: UserRepository().textQ("$total",12,Colors.white,FontWeight.bold,TextAlign.center),
+              ),
+            ):Container()
+          ],
+        ),
+      ]),
       body: buildContent(context)
     );
   }
@@ -246,7 +214,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return  isLoading ? _loading() :  productMlmSuplemenModel.result.data.length > 0 ? RefreshIndicator(
       child: Padding(
-          padding: const EdgeInsets.only(top:20.0,left:5.0,right:5.0,bottom:5.0),
+          padding: const EdgeInsets.only(top:0.0,left:10.0,right:10.0,bottom:5.0),
           child: LoadMoreQ(
             child: ListView.builder(
               key: PageStorageKey<String>('some-list-key'),

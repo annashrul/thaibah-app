@@ -38,7 +38,9 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context,"Kebijakan & Privasi",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Kebijakan & Privasi",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Kebijakan & Privasi",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Scrollbar(
         child: Container(
           padding: EdgeInsets.all(20.0),

@@ -14,6 +14,7 @@ import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/alertq.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/MLM/resi.dart';
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/bloc/historyPembelianBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -70,7 +71,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
         UserRepository().notifAlertQ(context,'success', 'Selesai', 'Terimakasih Telah Melakukan Transaksi', 'Kembali','Beranda',(){
           Navigator.pop(context);
         },(){
-          Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+          Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
         });
       }else{
         setState(() {Navigator.pop(context);});
@@ -115,13 +116,21 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: UserRepository().appBarWithButton(context, 'Detail Pesanan',warna1,warna2,(){
+      appBar: UserRepository().appBarWithButton(context, "Data Diri",(){
         if(widget.param == 'checkout'){
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
         }else{
           Navigator.of(context).pop();
         }
-      }, Container()),
+      },<Widget>[]),
+
+      // appBar: UserRepository().appBarWithButton(context, 'Detail Pesanan',warna1,warna2,(){
+      //   if(widget.param == 'checkout'){
+      //     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+      //   }else{
+      //     Navigator.of(context).pop();
+      //   }
+      // }, Container()),
       body: StreamBuilder(
           stream: detailHistoryPembelianSuplemenBloc.getResult,
           builder: (context,AsyncSnapshot<DetailHistoryPembelianSuplemenModel> snapshot){

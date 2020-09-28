@@ -118,9 +118,11 @@ class _SaldoUIState extends State<SaldoUI> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return Scaffold(
         key: scaffoldKey,
-        appBar: UserRepository().appBarWithButton(context, 'Top Up', warna1, warna2, (){
-          Navigator.of(context).pop();
-        },Container()),
+        appBar: UserRepository().appBarWithButton(context, "Top Up",(){Navigator.pop(context);},<Widget>[]),
+        //
+        // appBar: UserRepository().appBarWithButton(context, 'Top Up', warna1, warna2, (){
+        //   Navigator.of(context).pop();
+        // },Container()),
         body: ListView(
           children: <Widget>[
             Container(
@@ -147,53 +149,60 @@ class _SaldoUIState extends State<SaldoUI> {
                 children: <Widget>[
                   CardHeader(saldo: widget.saldo),
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 8),
+                    padding: EdgeInsets.only(left: 10, right: 10, top: 16, bottom: 8),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        // Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-                        TextFormField(
-                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
-                          controller: moneyController,
-                          keyboardType: TextInputType.number,
-                          maxLines: 1,
-                          autofocus: false,
-                          decoration: InputDecoration(
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green),
-                            ),
-                            labelText: 'Nominal',
-                            labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
-                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                            prefixText: 'Rp.',
+                      children: [
+                        UserRepository().textQ("Nominal",10,Colors.black,FontWeight.bold,TextAlign.left),
+                        SizedBox(height: 10.0),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10)
                           ),
-                          inputFormatters: <TextInputFormatter>[
-                            LengthLimitingTextInputFormatter(13),
-                            WhitelistingTextInputFormatter.digitsOnly,
-                            BlacklistingTextInputFormatter.singleLineFormatter,
-                          ],
-                          textInputAction: TextInputAction.done,
-                          focusNode: saldoFocus,
-                          onFieldSubmitted: (value){
-                            saldoFocus.unfocus();
-                            setState(() {
-                              isLoading = true;
-                            });
-                            getBank();
-                          },
-                          onChanged: (par){
-                            sampleData.forEach((element) => element.isSelected = false);
-                          },
-                        )
+                          child: TextFormField(
+                            style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                            controller: moneyController,
+                            keyboardType: TextInputType.streetAddress,
+                            maxLines: 1,
+                            autofocus: false,
+                            decoration: InputDecoration(
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey[200]),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              prefixText: 'Rp.',
+                              hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                            ),
+                            textInputAction: TextInputAction.done,
+                            focusNode: saldoFocus,
+                            inputFormatters: <TextInputFormatter>[
+                              LengthLimitingTextInputFormatter(13),
+                              WhitelistingTextInputFormatter.digitsOnly,
+                              BlacklistingTextInputFormatter.singleLineFormatter,
+                            ],
+                            onFieldSubmitted: (value){
+                              saldoFocus.unfocus();
+                              setState(() {
+                                isLoading = true;
+                              });
+                              getBank();
+                            },
+                            onChanged: (par){
+                              sampleData.forEach((element) => element.isSelected = false);
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
-
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                    padding: EdgeInsets.only(left: 10, right: 10, top: 16, bottom: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -226,10 +235,13 @@ class _SaldoUIState extends State<SaldoUI> {
                       ],
                     ),
                   ),
-                  UserRepository().buttonQ(context, warna1, warna2, (){
-                    setState(() {isLoading = true;});
-                    getBank();
-                  }, isLoading,'Simpan')
+                  Padding(
+                    padding: EdgeInsets.only(left:10,right:10),
+                    child: UserRepository().buttonQ(context, (){
+                      setState(() {isLoading = true;});
+                      getBank();
+                    }, 'Simpan'),
+                  )
 
                 ],
               ),

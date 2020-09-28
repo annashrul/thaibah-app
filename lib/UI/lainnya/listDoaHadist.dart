@@ -97,7 +97,9 @@ class _ListDoaHadistState extends State<ListDoaHadist> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context, titleApp,warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, titleApp,(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context, titleApp,warna1,warna2,(){Navigator.pop(context);},Container()),
       body: StreamBuilder(
         stream:doaBloc.getResult,
         builder: (context, AsyncSnapshot<DoaModel> snapshot) {

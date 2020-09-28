@@ -108,7 +108,7 @@ class _AboutState extends State<About> with SingleTickerProviderStateMixin,Autom
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: scaffoldKey,
-      appBar:  UserRepository().appBarNoButton(context,'Tentang Thaibah',warna1,warna2),
+      appBar:  UserRepository().appBarNoButton(context,'Tentang Thaibah',<Widget>[]),
       body: StreamBuilder(
           stream: testiBloc.getResult,
           builder: (context, AsyncSnapshot<TestimoniModel> snapshot) {

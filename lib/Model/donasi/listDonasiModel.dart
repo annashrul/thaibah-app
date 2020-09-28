@@ -46,7 +46,7 @@ class Result {
     this.data,
   });
 
-  dynamic total;
+  int total;
   int perPage;
   int offset;
   int to;

@@ -213,9 +213,9 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
         ),
         Padding(
           padding: EdgeInsets.only(left:0.0,right:0.0,top:0.0),
-          child: UserRepository().buttonQ(context, warna1, warna2,(){setState(() {
+          child: UserRepository().buttonQ(context,(){setState(() {
             isLoading=true;
-          });_search();}, isLoading,'cari'),
+          });_search();},'cari'),
         ),
 
         Expanded(

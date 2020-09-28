@@ -10,6 +10,7 @@ import 'package:thaibah/resources/addressProvider.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
 
 import 'Widgets/alertq.dart';
+import 'component/home/widget_index.dart';
 
 class DetailProdukMlmSuplemeniUI extends StatefulWidget {
   final String id,penjual,title,type,price,satuan,qty,picture,descriptions,category,total_ppn;
@@ -285,7 +286,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> with SingleTickerPr
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DashboardThreePage(),
+                  builder: (context) => WidgetIndex(param: '',)
                 ),
               )
             },

@@ -38,8 +38,8 @@ class QuranListUIState extends State<QuranListUI> {
   bool isLoading = false;
   List colors = [Color(0xFF3f51b5), Color(0xFF116240), Colors.green, Colors.blue];
   Random random = new Random();
-  Widget appBarTitle = Html(data:'Daftar Surat',defaultTextStyle: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
-  Icon actionIcon = new Icon(Icons.search, color: Colors.white,);
+  Widget appBarTitle = Html(data:'Daftar Surat',defaultTextStyle: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
+  Icon actionIcon = new Icon(Icons.search, color: Colors.black,);
   final key = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
 
@@ -315,7 +315,7 @@ class QuranListUIState extends State<QuranListUI> {
   Widget buildBar(BuildContext context) {
     return new AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios,color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios,color: Colors.black),
           onPressed: (){
             Navigator.of(context).pop();
           },
@@ -326,8 +326,7 @@ class QuranListUIState extends State<QuranListUI> {
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: <Color>[
-                statusLevel!='0'?warna1:ThaibahColour.primary1,
-                statusLevel!='0'?warna2:ThaibahColour.primary2,
+                Colors.white,Colors.white
 //                Color(0xFF30cc23)
               ],
             ),
@@ -335,25 +334,26 @@ class QuranListUIState extends State<QuranListUI> {
         ),
         centerTitle: false,
         title: appBarTitle,
+        elevation: 0.0,
         actions: <Widget>[
           new IconButton(icon: actionIcon, onPressed: () {
             setState(() {
               if (this.actionIcon.icon == Icons.search) {
-                this.actionIcon = new Icon(Icons.close, color: Colors.white,);
+                this.actionIcon = new Icon(Icons.close, color: Colors.black,);
                 this.appBarTitle = new TextFormField(
                   controller: _searchQuery,
                   autofocus: true,
                   style: new TextStyle(
-                    color: Colors.white,fontFamily: ThaibahFont().fontQ
+                    color: Colors.black,fontFamily: ThaibahFont().fontQ
                   ),
                   decoration: new InputDecoration(
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: BorderSide(color: Colors.black),
                       ),
-                      focusColor: Colors.white,
+                      focusColor: Colors.black,
 //                      prefixIcon: new Icon(Icons.search, color: Colors.white),
                       hintText: "Tulis Sesuatu Disini ...",
-                      hintStyle: new TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ)
+                      hintStyle: new TextStyle(color: Colors.black,fontFamily: ThaibahFont().fontQ)
                   ),
                   onFieldSubmitted: (value){
                     setState(() {
@@ -382,8 +382,8 @@ class QuranListUIState extends State<QuranListUI> {
 
   void _handleSearchEnd() {
     setState(() {
-      this.actionIcon = new Icon(Icons.search, color: Colors.white,);
-      this.appBarTitle = Html(data:'Daftar Surat',defaultTextStyle: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
+      this.actionIcon = new Icon(Icons.search, color: Colors.black,);
+      this.appBarTitle = Html(data:'Daftar Surat',defaultTextStyle: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold));
       _IsSearching = false;
       _searchQuery.clear();
 

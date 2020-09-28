@@ -60,7 +60,9 @@ class _PrayerListState extends State<PrayerList> {
   Widget build(BuildContext context) {
     prayerBloc.fetchPrayerList(widget.lng, widget.lat);
     return Scaffold(
-      appBar:UserRepository().appBarWithButton(context,"Jadwal Sholat",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Jadwal Sholat",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Jadwal Sholat",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: StreamBuilder(
           stream: prayerBloc.allPrayer,
           builder: (context, AsyncSnapshot<PrayerModel> snapshot) {

@@ -240,7 +240,7 @@ class _WidgetHistorySaldoState extends State<WidgetHistorySaldo> {
         ),
         Padding(
           padding: EdgeInsets.only(left:0.0,right:0.0,top:0.0),
-          child: UserRepository().buttonQ(context, ThaibahColour.primary1,ThaibahColour.primary2,(){_search();}, isLoading,'cari'),
+          child: UserRepository().buttonQ(context,(){_search();},'cari'),
         ),
         Expanded(
             child:  StreamBuilder(

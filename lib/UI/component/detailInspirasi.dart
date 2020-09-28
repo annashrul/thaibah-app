@@ -82,7 +82,9 @@ class _DetailInspirasiState extends State<DetailInspirasi> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: _scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context,"Detail ${widget.param}",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Detail ${widget.param}",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Detail ${widget.param}",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Column(
         children: <Widget>[
           Expanded(

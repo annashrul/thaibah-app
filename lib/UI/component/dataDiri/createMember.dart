@@ -263,7 +263,9 @@ class _CreateMemberState extends State<CreateMember> {
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: UserRepository().appBarWithButton(context, "Tambah Jaringan",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Tambah Jaringan",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar: UserRepository().appBarWithButton(context, "Tambah Jaringan",warna1,warna2,(){Navigator.pop(context);},Container()),
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
       body: _form(),
@@ -466,7 +468,7 @@ class _CreateMemberState extends State<CreateMember> {
                   ],
                 ),
               ),
-              UserRepository().buttonQ(context,warna1,warna2,(){
+              UserRepository().buttonQ(context,(){
                 if (nameController.text == "") {
                   UserRepository().notifNoAction(_scaffoldKey, context,"Nama Harus Diisi","failed");
                 }else if(noHpController.text == ""){
@@ -484,7 +486,7 @@ class _CreateMemberState extends State<CreateMember> {
                     create();
                   }
                 }
-              }, _isLoading,'Simpan')
+              }, 'Simpan')
             ],
           ),
         ),

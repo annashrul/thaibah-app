@@ -17,6 +17,8 @@ import 'package:thaibah/config/flutterMaskedText.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 
+import 'home/widget_index.dart';
+
 
 String pin = "";
 
@@ -144,7 +146,9 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: scaffoldKey,
-      appBar:UserRepository().appBarWithButton(context,"Penukaran Bonus",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Penukaran Bonus",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar:UserRepository().appBarWithButton(context,"Penukaran Bonus",warna1,warna2,(){Navigator.pop(context);},Container()),
       resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
@@ -279,9 +283,9 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                     ],
                   ),
                 ),
-                UserRepository().buttonQ(context,warna1,warna2,(){
+                UserRepository().buttonQ(context,(){
                   save();
-                }, false,'Simpan')
+                },'Simpan')
 
               ],
             ),
@@ -347,7 +351,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                       color: Colors.green,
                       child: Text("Kembali", style: TextStyle(fontFamily:ThaibahFont().fontQ,color:Colors.white,fontWeight: FontWeight.bold)),
                       onPressed: (){
-                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
                       },
                     ),
                   ],

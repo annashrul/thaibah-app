@@ -14,6 +14,8 @@ import 'package:thaibah/Model/depositManual/detailDepositModel.dart';
 import 'package:thaibah/Model/depositManual/historyDepositModel.dart';
 import 'package:thaibah/Model/depositManual/listAvailableBank.dart';
 import 'package:thaibah/Model/detailNewsPerCategoryModel.dart';
+import 'package:thaibah/Model/donasi/detailDonasiModel.dart';
+import 'package:thaibah/Model/donasi/historyDonasiModel.dart';
 import 'package:thaibah/Model/donasi/listDonasiModel.dart';
 import 'package:thaibah/Model/downlineModel.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
@@ -246,6 +248,8 @@ class Repository{
   //######################################### DONASI #################################################//
 
   Future<ListDonasiModel> fetchListDonasi(var where) => donasiProvider.fetchListDonasi(where);
+  Future<DetailDonasiModel> fetchDetailDonasi(var id) async => donasiProvider.fetchDetailDonasi(id);
+  Future<HistoryDonasiModel> fetchHistoryDonasi(var where) async => donasiProvider.fetchHistoryDonasi(where);
 
 
 }

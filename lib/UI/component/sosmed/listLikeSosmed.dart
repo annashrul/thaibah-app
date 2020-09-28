@@ -47,7 +47,9 @@ class _ListLikeSosmedState extends State<ListLikeSosmed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: UserRepository().appBarWithButton(context, "Daftar Orang Yang Menykaui Status Anda",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Daftar Orang Yang Menykaui Status Anda",(){Navigator.pop(context);},<Widget>[]),
+
+      // appBar: UserRepository().appBarWithButton(context, "Daftar Orang Yang Menykaui Status Anda",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: StreamBuilder(
         stream: _bloc.getResult,
         builder: (context, AsyncSnapshot<ListLikeSosmedModel> snapshot){

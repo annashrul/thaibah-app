@@ -111,7 +111,9 @@ class _BankState extends State<Bank> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: UserRepository().appBarWithButton(context,"Daftar Bank",warna1,warna2,(){Navigator.pop(context);},_buildAddCardButton()),
+      appBar: UserRepository().appBarWithButton(context, "Daftar Bank",(){Navigator.pop(context);},<Widget>[_buildAddCardButton()]),
+
+      // appBar: UserRepository().appBarWithButton(context,"Daftar Bank",warna1,warna2,(){Navigator.pop(context);},_buildAddCardButton()),
       body: StreamBuilder(
         stream: myBankBloc.allBank,
         builder: (context, AsyncSnapshot<MyBankModel> snapshot) {

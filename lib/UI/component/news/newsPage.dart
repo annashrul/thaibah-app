@@ -8,6 +8,7 @@ import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
+import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/UI/detail_berita_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
 import 'package:thaibah/config/api.dart';
@@ -76,7 +77,7 @@ class _NewsPageState extends State<NewsPage> {
                           child: IconButton(
                             icon: Icon(Icons.keyboard_backspace,color: Colors.black),
                             onPressed: (){
-                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
+                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
                             },
                           ),
                         ),

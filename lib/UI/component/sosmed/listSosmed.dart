@@ -11,6 +11,7 @@ import 'package:http/http.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -30,7 +31,6 @@ class ListSosmed extends StatefulWidget {
 class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMixin{
   @override
   bool get wantKeepAlive => true;
-
   bool isLoading = false;
   bool isLoading1 = false;
 
@@ -45,20 +45,7 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
     });
     _bloc.fetchListSosmed(1,perpage,'kosong');
   }
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
-  final userRepository = UserRepository();
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
+
   Future loadData() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int page=prefs.getInt("perpage");
@@ -70,7 +57,6 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
   int like=0;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   Future share(img,caption,index) async{
-    UserRepository().loadingQ(context);
     var response = await Client().get(img);
     final bytes = response.bodyBytes;
     Timer(Duration(seconds: 1), () async {
@@ -82,17 +68,15 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
         text: '$caption',
         fileName: 'share.png',
         mimeType: 'image/png',
-
       );
-
     });
 
   }
-  Future sendLikeOrUnLike(id,isLike) async{
-    UserRepository().loadingQ(context);
+  Future sendLikeOrUnLike(id,isLike,BuildContext context) async{
+
     var res = await SosmedProvider().sendLikeOrUnLike(id);
     if(res.toString() == 'timeout' || res.toString() == 'error'){
-      Navigator.pop(context);
+      Navigator.of(context).pop(false);
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       GagalHitProvider().fetchRequest('like or unlike','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
@@ -101,11 +85,17 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
       if(res is General){
         General results = res;
         if(results.status == 'success'){
-          Navigator.pop(context);
+          print("sukses");
           loadData();
+          // Navigator.pop(context);
+          setState(() {
+            Navigator.of(context).pop(false);
+          });
+
         }else{
-          Navigator.pop(context);
-          UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+          print("gagal");
+          // Navigator.pop(context);
+          // UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
         }
       }
       else{
@@ -117,11 +107,11 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
 
 
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadTheme();
     if(mounted){
       loadData();
     }
@@ -198,11 +188,11 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                     loadData(); //you get details from screen2 here
                   });
                 },
-                child: Container(
-                  padding: EdgeInsets.all(15.0),
-                  child: Column(
-                    children: <Widget>[
-                      Row(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(left:15,right:15,top:10),
+                      child: Row(
                         children: <Widget>[
                           CircleAvatar(
                             backgroundImage: NetworkImage(snapshot.data.result.data[index].picture),
@@ -213,16 +203,19 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(snapshot.data.result.data[index].penulis, style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize:ScreenUtilQ.getInstance().setSp(40))),
+                              UserRepository().textQ(snapshot.data.result.data[index].penulis, 14, Colors.black,FontWeight.bold, TextAlign.left),
                               SizedBox(height: 5.0),
-                              Text(snapshot.data.result.data[index].createdAt, style: TextStyle(color:Colors.grey,fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize:ScreenUtilQ.getInstance().setSp(30)))
+                              UserRepository().textQ(snapshot.data.result.data[index].createdAt, 12, Colors.grey,FontWeight.normal, TextAlign.left),
                             ],
                           ),
                         ],
                       ),
+                    ),
 
-                      SizedBox(height: 20.0),
-                      Align(
+                    SizedBox(height: 20.0),
+                    Container(
+                      padding: EdgeInsets.only(left:15,right:15),
+                      child: Align(
                         alignment: Alignment.centerLeft,
                         child: Container(
                           child:Linkify(
@@ -239,49 +232,57 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                           ),
                         ),
                       ),
-                      SizedBox(height: 10.0),
-                      InkWell(
-                          onDoubleTap: (){
-                            sendLikeOrUnLike(snapshot.data.result.data[index].id,snapshot.data.result.data[index].isLike);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(10.0),
-                                  topRight: Radius.circular( 10.0)
-                              ),
+                    ),
+                    SizedBox(height: 10.0),
+                    InkWell(
+                        onDoubleTap: (){
+                          UserRepository().loadingQ(context);
+                          sendLikeOrUnLike(snapshot.data.result.data[index].id,snapshot.data.result.data[index].isLike,context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10.0),
+                                topRight: Radius.circular( 10.0)
                             ),
-                            child: Center(
-                                child:Image.network(
-                                  snapshot.data.result.data[index].picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
-                                )
-                            ),
-                          )
-                      ),
+                          ),
+                          child: Center(
+                              child:Image.network(
+                                snapshot.data.result.data[index].picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
+                              )
+                          ),
+                        )
+                    ),
 
-                      SizedBox(height: 10.0),
-                      Row(
+                    SizedBox(height: 10.0),
+                    Container(
+                      padding: EdgeInsets.only(left:15,right:15),
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Row(
                             children: <Widget>[
 
                               InkWell(
-                                onTap:(){
-                                  sendLikeOrUnLike(snapshot.data.result.data[index].id,snapshot.data.result.data[index].isLike);
-                                },
-                                child:Icon(FontAwesomeIcons.thumbsUp, size: 15.0, color: Colors.black)
+                                  onTap:(){
+                                    UserRepository().loadingQ(context);
+                                    sendLikeOrUnLike(snapshot.data.result.data[index].id,snapshot.data.result.data[index].isLike,context);
+                                  },
+                                  child:Icon(FontAwesomeIcons.thumbsUp, size: 15.0, color: Colors.black)
                               ),
-
-                              Text(' $sukai', style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize:ScreenUtilQ.getInstance().setSp(30))),
+                              UserRepository().textQ(' $sukai', 10, Colors.black, FontWeight.bold,TextAlign.left)
+                              // Text(' $sukai', style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize:ScreenUtilQ.getInstance().setSp(30))),
                             ],
                           ),
                           Row(
                             children: <Widget>[
-                              Text('${snapshot.data.result.data[index].comments} komentar  •  ', style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize:ScreenUtilQ.getInstance().setSp(30))),
+                              UserRepository().textQ('${snapshot.data.result.data[index].comments} komentar  •  ', 10, Colors.black, FontWeight.bold,TextAlign.left),
+
+                              // Text('${snapshot.data.result.data[index].comments} komentar  •  ', style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize:ScreenUtilQ.getInstance().setSp(30))),
 
                               InkWell(
                                 onTap:(){
+                                  UserRepository().loadingQ(context);
                                   share(snapshot.data.result.data[index].picture,snapshot.data.result.data[index].caption,index);
                                 },
                                 child:Icon(FontAwesomeIcons.share, size: 15.0,color: Colors.black,),
@@ -290,23 +291,26 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                           ),
                         ],
                       ),
-                      SizedBox(height: 10.0),
-                      Container(
-                        color: Colors.grey[400],
-                        width: MediaQuery.of(context).size.width,
-                        height: 5.0,
+                    ),
+                    SizedBox(height: 10.0),
+                    Container(
+                      color: Colors.grey[200],
+                      width: MediaQuery.of(context).size.width,
+                      height: 3.0,
 
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               );
             }
         ),
-        snapshot.data.result.count == int.parse(snapshot.data.result.perpage) ? UserRepository().buttonLoadQ(context, warna1, warna2,(){
-          UserRepository().loadingQ(context);
-          load();
-        }, false):Container()
+        // snapshot.data.result.count == int.parse(snapshot.data.result.perpage) ? Container(
+        //   padding: EdgeInsets.all(15.0),
+        //   child: UserRepository().buttonLoadQ(context, warna1, warna2,(){
+        //     UserRepository().loadingQ(context);
+        //     load();
+        //   }, false),
+        // ):Container()
       ],
     ):UserRepository().noData();
 
