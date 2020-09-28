@@ -1140,14 +1140,14 @@ class _CardEmoneyState extends State<CardEmoney> {
               // mainAxisSize:MainAxisSize.min ,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(10.0),
+                  padding: EdgeInsets.all(5.0),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100.0),
                       color: Colors.grey[200]
                   ),
                   child: CircleAvatar(
-                      radius: ScreenUtilQ.getInstance().setHeight(40),
-                      backgroundImage: NetworkImage(ApiService().noImage)
+                      radius: 20,
+                      backgroundImage: NetworkImage("${ApiService().assetsServer}${widget.imgUrl}")
                   ),
                 ),
                 SizedBox(height: 5.0),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info/device_info.dart';
@@ -56,6 +57,7 @@ class _MyProfileState extends State<MyProfile> {
   String name='',picture='',qr='',kdReferral='',saldo='',rawSaldo='',saldoMain='',saldoBonus='',saldoVoucher='',saldoPlatinum='',downline='';
   String kaki1='',kaki2='',kaki3='',privacyPolicy='',omsetJaringan='',id='';
   String sponsor='';
+  int levelPlatinum=0;
   Future<void> loadData() async{
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -74,6 +76,7 @@ class _MyProfileState extends State<MyProfile> {
         downline=result.downline;kaki1=result.kaki1;kaki2=result.kaki2;kaki3=result.kaki3;privacyPolicy=result.privacy;omsetJaringan=result.omsetJaringan;
         id=result.id;
         sponsor=result.sponsor;
+        levelPlatinum = result.levelPlatinumRaw;
       });
     }
     else{
@@ -104,7 +107,16 @@ class _MyProfileState extends State<MyProfile> {
         elevation: 1.0,
         backgroundColor: Colors.white, // status bar color
         brightness: Brightness.light,
-        title:ListTile(
+        title: isLoading?ListTile(
+          contentPadding: EdgeInsets.only(top:10,bottom:10),
+          title: SkeletonFrame(width: 50,height:15),
+          subtitle: SkeletonFrame(width: 50,height:15),
+          leading: CircleAvatar(
+              radius:20.0,
+              backgroundImage: NetworkImage(ApiService().noImage)
+          ),
+
+        ):ListTile(
           contentPadding: EdgeInsets.only(top:10,bottom:10),
           title: UserRepository().textQ(name,14,Colors.black.withOpacity(0.7),FontWeight.bold,TextAlign.left),
           subtitle: GestureDetector(
@@ -125,9 +137,7 @@ class _MyProfileState extends State<MyProfile> {
               radius:20.0,
               backgroundImage: NetworkImage(picture)
           ),
-
         ),
-
       ),
       body: isLoading?UserRepository().loadingWidget():Container(
         padding: EdgeInsets.only(top:10.0),
@@ -156,6 +166,7 @@ class _MyProfileState extends State<MyProfile> {
                   sponsor: sponsor,
                   membership: saldoBonus,
                   levelRoyalti: saldoBonus,
+                  levelPlatinum: levelPlatinum,
                 ), (){}),
                 customlistDetails(context,'Donasi','halaman riwayat donasi anda',HistoryDonasi(),(){}),
                 customlistDetails(context,'Sosial Media','posting kegiatan anda',MyFeed(),(){}),
@@ -197,50 +208,6 @@ class _MyProfileState extends State<MyProfile> {
 
     );
   }
-  void _lainnyaModalBottomSheet(context, String param,String _qr){
-    showModalBottomSheet(
-        isScrollControlled: param == 'barcode' ? false : true,
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (BuildContext bc){
-          return Wrap(
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width/1,
-                child: Material(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
-                    elevation: 5.0,
-                    color:Colors.grey[50],
-                    child: Column(
-                        children: <Widget>[
-                          SizedBox(height: 20,),
-                          Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-                          SizedBox(height: 10.0,),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: Image.network(_qr,fit: BoxFit.contain,),
-                          )
-                        ]
-                    )
-                ),
-              )
-            ],
-          );
-        }
-    );
-  }
-  Future share(param) async{
-    Timer(Duration(seconds: 1), () async {
-      Navigator.of(context).pop(false);
-      await WcFlutterShare.share(
-        sharePopupTitle: 'Thaibah Share Link',
-        subject: 'Thaibah Share Link',
-        text: "https://thaibah.com/signup/$param\n\n\nAyo Buruan daftar",
-        mimeType: 'text/plain'
-      );
-    });
-
-  }
 
   Future<void> refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
@@ -271,6 +238,7 @@ class ProfileBisnis extends StatefulWidget {
   final String sponsor;
   final String membership;
   final String levelRoyalti;
+  final int levelPlatinum;
   ProfileBisnis({
     this.id,
     this.qr,
@@ -288,6 +256,7 @@ class ProfileBisnis extends StatefulWidget {
     this.sponsor,
     this.membership,
     this.levelRoyalti,
+    this.levelPlatinum,
   });
   @override
   _ProfileBisnisState createState() => _ProfileBisnisState();
@@ -313,7 +282,18 @@ class _ProfileBisnisState extends State<ProfileBisnis> {
     valueSaldo.add(widget.saldoPlatinum);
 
   }
+  Future share() async{
+    Timer(Duration(seconds: 1), () async {
+      Navigator.of(context).pop(false);
+      await WcFlutterShare.share(
+          sharePopupTitle: 'Thaibah Share Link',
+          subject: 'Thaibah Share Link',
+          text: "https://thaibah.com/signup/${widget.kdReferral}\n\n\nAyo Buruan daftar",
+          mimeType: 'text/plain'
+      );
+    });
 
+  }
   Future<void> refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
   }
@@ -345,12 +325,12 @@ class _ProfileBisnisState extends State<ProfileBisnis> {
         automaticallyImplyLeading: false,
         title: ListTile(
           contentPadding: EdgeInsets.only(left:0.0),
-          title: GestureDetector(
+          title:GestureDetector(
            child:  Row(
              children: [
                UserRepository().textQ(widget.name,14,Colors.black.withOpacity(0.7),FontWeight.bold,TextAlign.left),
                SizedBox(width: 5),
-               Container(
+               widget.levelPlatinum == 0 ?Container(
                    padding: EdgeInsets.all(2),
                    decoration: new BoxDecoration(
                      color: Colors.red,
@@ -361,7 +341,8 @@ class _ProfileBisnisState extends State<ProfileBisnis> {
                      minHeight: 14,
                    ),
                    child:UserRepository().textQ('upgrade',10,Colors.white,FontWeight.bold,TextAlign.center),
-               )
+               ):(widget.levelPlatinum == 1 ? Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)) :
+               Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
                // Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)
                // Icon(Icons.content_copy, color: Colors.grey, size: 15,),
              ],
@@ -389,7 +370,7 @@ class _ProfileBisnisState extends State<ProfileBisnis> {
             child: Icon(Icons.share,color: Colors.grey),
             onTap: (){
               UserRepository().loadingQ(context);
-              // share(kdReferral);
+              share();
             },
           ),
         ),
@@ -400,10 +381,9 @@ class _ProfileBisnisState extends State<ProfileBisnis> {
               padding: EdgeInsets.only(right:10),
               child: Icon(Icons.settings_overscan,color: Colors.grey),
             ),
-            onTap: (){
-              UserRepository().loadingQ(context);
-
-            },
+            onTap:(){
+              _lainnyaModalBottomSheet(context,'barcode',widget.qr);
+            }
           ),
         ],//
       ),
@@ -495,6 +475,7 @@ class _ProfileBisnisState extends State<ProfileBisnis> {
                         scrollDirection: Axis.vertical,
                         shrinkWrap: true,
                         children: [
+                          customlistDetails(context,'Jaringan Saya','lihat siapa saja jaringan di bawah anda', JaringanUI(kdReferral: widget.kdReferral,name:widget.name),(){}),
                           customlistDetails(context,'Top Up','lakukan top up untuk belanja produk', SaldoUI(saldo: widget.saldoUtama,name:widget.name),(){}),
                           customlistDetails(context,'Transfer','halaman transfer saldo anda', TransferUI(saldo:widget.saldoUtama,qr:widget.qr),(){}),
                           customlistDetails(context,'Penarikan','halaman penarikan saldo anda', Penarikan(saldoMain: widget.saldoUtama),(){}),
@@ -514,6 +495,38 @@ class _ProfileBisnisState extends State<ProfileBisnis> {
 
         ],
       ),
+    );
+  }
+  void _lainnyaModalBottomSheet(context, String param,String _qr){
+    showModalBottomSheet(
+        isScrollControlled: param == 'barcode' ? false : true,
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext bc){
+          return Wrap(
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width/1,
+                child: Material(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
+                    elevation: 5.0,
+                    color:Colors.grey[50],
+                    child: Column(
+                        children: <Widget>[
+                          SizedBox(height: 20,),
+                          Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+                          SizedBox(height: 10.0,),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: Image.network(_qr,fit: BoxFit.contain,),
+                          )
+                        ]
+                    )
+                ),
+              )
+            ],
+          );
+        }
     );
   }
 }
@@ -561,4 +574,6 @@ customlistDetails(BuildContext context,String title,String desc,Widget xWidget,F
       trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey),
     ),
   );
+
+
 }

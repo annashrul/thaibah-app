@@ -8,8 +8,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/Model/user_location.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
 import 'package:thaibah/UI/component/about.dart';
@@ -25,6 +27,7 @@ import 'package:thaibah/UI/produk_mlm_ui.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
+import 'package:thaibah/resources/location_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../detail_berita_ui.dart';
@@ -92,11 +95,23 @@ class _WidgetIndexState extends State<WidgetIndex>{
     prefs.setString('id', null);
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
   }
+  final serviceLocation = LocationService();
+  double lat,lng;
+
+  loadLocation()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final latLog = prefs.getDouble('lat');
+    final lngLog = prefs.getDouble('lng');
+    print("LATITUDE LONGITU $latLog $lngLog");
+
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     currentScreen = ScreenHome();
+    loadLocation();
     cekPath();
     checkModeUpdate();
     cekPath();
@@ -149,7 +164,15 @@ class _WidgetIndexState extends State<WidgetIndex>{
         blockedMember();
       }
     });
+    serviceLocation.locationStream.listen((event) {
+      if(mounted){
+        setState(() {
+          lat = event.latitude;
+          lng = event.longitude;
+        });
+      }
 
+    });
   }
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   showNotification(String title, desc, ) async {
@@ -179,148 +202,158 @@ class _WidgetIndexState extends State<WidgetIndex>{
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
-
-    return Scaffold(
-      key: scaffoldKey,
-      body: PageStorage(
-        child: currentScreen,
-        bucket: bucket,
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
-        child: SvgPicture.asset(
-          ApiService().assetsLocal+"t.svg",
-          height: ScreenUtilQ.getInstance().setHeight(50),
-          width: ScreenUtilQ.getInstance().setWidth(50),
-          color: currentTab == 2 ? Colors.white : Colors.green,
-        ),
-        onPressed: () {
-          setState(() {
-            currentScreen = About();// if user taps on this dashboard tab will be active
-            currentTab = 2;
-          });
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 10,
-        child: Container(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      setState(() {
-                        currentScreen = ScreenHome(); // if user taps on this dashboard tab will be active
-                        currentTab = 0;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        currentTab == 0 ? SvgPicture.asset(
-                          ApiService().assetsLocal+"Icon_Utama_Home_Warna.svg",
-                          height: ScreenUtilQ.getInstance().setHeight(50),
-                          width: ScreenUtilQ.getInstance().setWidth(50),
-                        ) : SvgPicture.asset(
-                          ApiService().assetsLocal+"Icon_Utama_Home_Abu.svg",
-                          height: ScreenUtilQ.getInstance().setHeight(50),
-                          width: ScreenUtilQ.getInstance().setWidth(50),
-                        )
-                      ],
-                    ),
-                  ),
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      setState(() {
-                        currentScreen = ProdukMlmUI(); // if user taps on this dashboard tab will be active
-                        currentTab = 1;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        currentTab == 1 ? SvgPicture.asset(
-                          ApiService().assetsLocal+"Icon_Utama_Produk_Warna.svg",
-                          height: ScreenUtilQ.getInstance().setHeight(50),
-                          width: ScreenUtilQ.getInstance().setWidth(50),
-                        ) : SvgPicture.asset(
-                          ApiService().assetsLocal+"Icon_Utama_Produk_abu.svg",
-                          height: ScreenUtilQ.getInstance().setHeight(50),
-                          width: ScreenUtilQ.getInstance().setWidth(50),
-                        )
-                      ],
-                    ),
-                  )
-                ],
+    return StreamProvider<UserLocation>(
+        create: (context) => LocationService().locationStream,
+        child: WillPopScope(
+            child: Scaffold(
+              key: scaffoldKey,
+              body: PageStorage(
+                child: currentScreen,
+                bucket: bucket,
               ),
-              // Right Tab bar icons
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      setState(() {
-                        currentScreen = Testimoni(); // if user taps on this dashboard tab will be active
-                        currentTab = 3;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        currentTab == 3 ? SvgPicture.asset(
-                          ApiService().assetsLocal+"Icon_Utama_Testimoni_Warna.svg",
-                          height: ScreenUtilQ.getInstance().setHeight(50),
-                          width: ScreenUtilQ.getInstance().setWidth(50),
-                        ) : SvgPicture.asset(
-                          ApiService().assetsLocal+"Icon_Utama_Testimoni_Abu.svg",
-                          height: ScreenUtilQ.getInstance().setHeight(50),
-                          width: ScreenUtilQ.getInstance().setWidth(50),
-                        )
-                      ],
-                    ),
+              floatingActionButton: FloatingActionButton(
+                backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
+                child: SvgPicture.asset(
+                  ApiService().assetsLocal+"t.svg",
+                  height: ScreenUtilQ.getInstance().setHeight(50),
+                  width: ScreenUtilQ.getInstance().setWidth(50),
+                  color: currentTab == 2 ? Colors.white : Colors.green,
+                ),
+                onPressed: () {
+                  setState(() {
+                    currentScreen = About();// if user taps on this dashboard tab will be active
+                    currentTab = 2;
+                  });
+                },
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+              bottomNavigationBar: BottomAppBar(
+                shape: CircularNotchedRectangle(),
+                notchMargin: 10,
+                child: Container(
+                  height: 60,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          MaterialButton(
+                            minWidth: 40,
+                            onPressed: () {
+                              setState(() {
+                                currentScreen = ScreenHome(); // if user taps on this dashboard tab will be active
+                                currentTab = 0;
+                              });
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                currentTab == 0 ? SvgPicture.asset(
+                                  ApiService().assetsLocal+"Icon_Utama_Home_Warna.svg",
+                                  height: ScreenUtilQ.getInstance().setHeight(50),
+                                  width: ScreenUtilQ.getInstance().setWidth(50),
+                                ) : SvgPicture.asset(
+                                  ApiService().assetsLocal+"Icon_Utama_Home_Abu.svg",
+                                  height: ScreenUtilQ.getInstance().setHeight(50),
+                                  width: ScreenUtilQ.getInstance().setWidth(50),
+                                )
+                              ],
+                            ),
+                          ),
+                          MaterialButton(
+                            minWidth: 40,
+                            onPressed: () {
+                              setState(() {
+                                currentScreen = ProdukMlmUI(); // if user taps on this dashboard tab will be active
+                                currentTab = 1;
+                              });
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                currentTab == 1 ? SvgPicture.asset(
+                                  ApiService().assetsLocal+"Icon_Utama_Produk_Warna.svg",
+                                  height: ScreenUtilQ.getInstance().setHeight(50),
+                                  width: ScreenUtilQ.getInstance().setWidth(50),
+                                ) : SvgPicture.asset(
+                                  ApiService().assetsLocal+"Icon_Utama_Produk_abu.svg",
+                                  height: ScreenUtilQ.getInstance().setHeight(50),
+                                  width: ScreenUtilQ.getInstance().setWidth(50),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                      // Right Tab bar icons
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          MaterialButton(
+                            minWidth: 40,
+                            onPressed: () {
+                              setState(() {
+                                currentScreen = Testimoni(); // if user taps on this dashboard tab will be active
+                                currentTab = 3;
+                              });
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                currentTab == 3 ? SvgPicture.asset(
+                                  ApiService().assetsLocal+"Icon_Utama_Testimoni_Warna.svg",
+                                  height: ScreenUtilQ.getInstance().setHeight(50),
+                                  width: ScreenUtilQ.getInstance().setWidth(50),
+                                ) : SvgPicture.asset(
+                                  ApiService().assetsLocal+"Icon_Utama_Testimoni_Abu.svg",
+                                  height: ScreenUtilQ.getInstance().setHeight(50),
+                                  width: ScreenUtilQ.getInstance().setWidth(50),
+                                )
+                              ],
+                            ),
+                          ),
+                          MaterialButton(
+                            minWidth: 40,
+                            onPressed: () {
+                              setState(() {
+                                currentScreen = MyProfile(); // if user taps on this dashboard tab will be active
+                                currentTab = 4;
+                              });
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                currentTab == 4 ? SvgPicture.asset(
+                                  ApiService().assetsLocal+"Icon_Utama_Profile_Warna.svg",
+                                  height: ScreenUtilQ.getInstance().setHeight(50),
+                                  width: ScreenUtilQ.getInstance().setWidth(50),
+                                ) : SvgPicture.asset(
+                                  ApiService().assetsLocal+"Icon_Utama_Profile_abu.svg",
+                                  height: ScreenUtilQ.getInstance().setHeight(50),
+                                  width: ScreenUtilQ.getInstance().setWidth(50),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      )
+
+                    ],
                   ),
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      setState(() {
-                        currentScreen = MyProfile(); // if user taps on this dashboard tab will be active
-                        currentTab = 4;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        currentTab == 4 ? SvgPicture.asset(
-                          ApiService().assetsLocal+"Icon_Utama_Profile_Warna.svg",
-                          height: ScreenUtilQ.getInstance().setHeight(50),
-                          width: ScreenUtilQ.getInstance().setWidth(50),
-                        ) : SvgPicture.asset(
-                          ApiService().assetsLocal+"Icon_Utama_Profile_abu.svg",
-                          height: ScreenUtilQ.getInstance().setHeight(50),
-                          width: ScreenUtilQ.getInstance().setWidth(50),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              )
-
-            ],
-          ),
-        ),
-      ),
+                ),
+              ),
+            ),
+            onWillPop: _onWillPop
+        )
     );
-  }
 
+  }
+  Future<bool> _onWillPop() async {
+    return (
+        UserRepository().notifAlertQ(context, "info ", "Keluar", "Kamu yakin akan keluar dari aplikasi ?", "Ya", "Batal", ()=>SystemNavigator.pop(), ()=>Navigator.of(context).pop(false))
+    ) ?? false;
+  }
 
 
 }

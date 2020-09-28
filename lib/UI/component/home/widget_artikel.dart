@@ -23,7 +23,9 @@ class ScreenArtikel extends StatefulWidget {
   _ScreenArtikelState createState() => _ScreenArtikelState();
 }
 
-class _ScreenArtikelState extends State<ScreenArtikel> {
+class _ScreenArtikelState extends State<ScreenArtikel> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   int perpage=5;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
@@ -52,63 +54,16 @@ class _ScreenArtikelState extends State<ScreenArtikel> {
 
   @override
   Widget build(BuildContext context) {
-    if(widget.noScaffold!=''){
-      return Scaffold(
-        key: _scaffoldKey,
-        appBar: UserRepository().appBarWithButton(context, "Artikel",(){Navigator.pop(context);},<Widget>[]),
+    super.build(context);
 
-        // appBar: UserRepository().appBarWithButton(context,'Artikel',ThaibahColour.primary1,ThaibahColour.primary2,(){
-        //   Navigator.pop(context);
-        // }, Container()),
-        body: StreamBuilder(
-            stream: newsBloc.allNews,
-            builder: (context,AsyncSnapshot<NewsModel> snapshot){
-              if(snapshot.hasData){
-                return snapshot.data.result.data.length>0?LiquidPullToRefresh(
-                  color: ThaibahColour.primary2,
-                  backgroundColor:Colors.white,
-                  key: _refresh,
-                  onRefresh:refresh,
-                  child: Padding(
-                    padding: EdgeInsets.only(left:5.0,right:5.0),
-                    child: LoadMoreQ(
-                      child: ListView.builder(
-                          primary: true,
-                          shrinkWrap: true,
-                          // physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemCount: snapshot.data.result.data.length,
-                          itemBuilder:(context,index){
-                            return WidgetArtikel(
-                              id: snapshot.data.result.data[index].id,
-                              category: snapshot.data.result.data[index].category,
-                              image:snapshot.data.result.data[index].picture ,
-                              title:snapshot.data.result.data[index].title ,
-                              desc:snapshot.data.result.data[index].caption ,
-                              link: snapshot.data.result.data[index].link,
-                            );
-                          }
-                      ),
-                      whenEmptyLoad: true,
-                      delegate: DefaultLoadMoreDelegate(),
-                      textBuilder: DefaultLoadMoreTextBuilder.english,
-                      isFinish: snapshot.data.result.data.length < perpage,
-                      onLoadMore: _loadMore,
-                    ),
-                  ),
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: UserRepository().appBarWithButton(context, "Artikel",(){Navigator.pop(context);},<Widget>[]),
 
-                ):UserRepository().noData();
-              }
-              else if(snapshot.hasError){
-                return Text(snapshot.error.toString());
-              }
-              return LoadingArtikel();
-            }
-        ),
-      );
-    }
-    else{
-      return StreamBuilder(
+      // appBar: UserRepository().appBarWithButton(context,'Artikel',ThaibahColour.primary1,ThaibahColour.primary2,(){
+      //   Navigator.pop(context);
+      // }, Container()),
+      body: StreamBuilder(
           stream: newsBloc.allNews,
           builder: (context,AsyncSnapshot<NewsModel> snapshot){
             if(snapshot.hasData){
@@ -152,8 +107,8 @@ class _ScreenArtikelState extends State<ScreenArtikel> {
             }
             return LoadingArtikel();
           }
-      );
-    }
+      ),
+    );
   }
 }
 

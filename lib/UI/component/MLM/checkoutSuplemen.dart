@@ -19,6 +19,7 @@ import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/History/detailHistorySuplemen.dart';
 import 'package:thaibah/UI/component/MLM/produkCheckoutSuplemen.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
@@ -245,27 +246,43 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Pilih Alamat",style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-          DropdownButton(
-            isDense: true,
-            isExpanded: true,
-            hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
-            value: dropdownValue,
-            items: <String>['Saya', 'Lainnya'].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value,style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize:ScreenUtilQ.getInstance().setSp(30)),),
-              );
-            }).toList(),
-            onChanged: (newValue) {
-              setState(() {
-                dropdownValue  = newValue;
-                _onDropDownItemSelectedProvinsi(null);
-                _onDropDownItemSelectedKurir(null);
-                _onDropDownItemSelectedJasa(null);
-              });
-              pilih();
-            },
+          UserRepository().textQ("Pilih Alamat",12,Colors.black,FontWeight.bold,TextAlign.left),
+          SizedBox(height: 10.0),
+          Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(10)
+              ),
+              child: DropdownButton<String>(
+                isDense: true,
+                isExpanded: true,
+                value: dropdownValue,
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 20,
+                underline: SizedBox(),
+                onChanged: (newValue) {
+                  setState(() {
+                    dropdownValue  = newValue;
+                    _onDropDownItemSelectedProvinsi(null);
+                    _onDropDownItemSelectedKurir(null);
+                    _onDropDownItemSelectedJasa(null);
+                  });
+                  pilih();
+                },
+                items: <String>['Saya', 'Lainnya'].map<DropdownMenuItem<String>>((String value) {
+                  return new DropdownMenuItem<String>(
+                    value: value,
+                    child: Row(
+                      children: [
+                        UserRepository().textQ(value,10,Colors.black,FontWeight.bold,TextAlign.left)
+                      ],
+                    ),
+                  );
+                }).toList(),
+
+              )
           )
         ],
       ),
@@ -292,10 +309,16 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          UserRepository().textQ("Provinsi",12,Colors.black,FontWeight.bold,TextAlign.left),
+          SizedBox(height: 10.0),
           _provinsi(context),
-          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+          SizedBox(height: 10.0),
+          UserRepository().textQ("Kota",12,Colors.black,FontWeight.bold,TextAlign.left),
+          SizedBox(height: 10.0),
           _kota(context),
-          SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+          SizedBox(height: 10.0),
+          UserRepository().textQ("Kecamatan",12,Colors.black,FontWeight.bold,TextAlign.left),
+          SizedBox(height: 10.0),
           _kecamatan(context),
         ],
       ),
@@ -305,23 +328,22 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     return StreamBuilder(
         stream: provinsiBloc.allProvinsi,
         builder: (context,AsyncSnapshot<ProvinsiModel> snapshot) {
+          if(snapshot.hasError) print(snapshot.error);
           if(snapshot.hasData){
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Html(data:"Provinsi",defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                DropdownButton(
+            return Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: DropdownButton<String>(
                   isDense: true,
                   isExpanded: true,
-                  hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
                   value: _currentItemSelectedProvinsi,
-                  items: snapshot.data.result.map((prefix0.Result items) {
-                    String cek = "${items.id.toString()}|${items.name}";
-                    return new DropdownMenuItem<String>(
-                      value: "${cek}",
-                      child: Html(data:items.name,defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12),),
-                    );
-                  }).toList(),
+                  icon: Icon(Icons.arrow_drop_down),
+                  iconSize: 20,
+                  underline: SizedBox(),
                   onChanged: (newValue) {
                     setState(() {
                       var cik = newValue.split("|");
@@ -332,41 +354,45 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       tProvinsi = ", Provinsi "+cik[1];
                     });
                   },
+                  items: snapshot.data.result.map((prefix0.Result items){
+                    String cek = "${items.id.toString()}|${items.name}";
+                    return new DropdownMenuItem<String>(
+                      value: "$cek",
+                      child: Row(
+                        children: [
+                          UserRepository().textQ(items.name,10,Colors.black,FontWeight.bold,TextAlign.left)
+                        ],
+                      ),
+                    );
+                  }).toList(),
                 )
-              ],
             );
-          }else if(snapshot.hasError){
-            return Text(snapshot.error);
           }
-          return Center(
-              child: new LinearProgressIndicator(
-                valueColor:new AlwaysStoppedAnimation<Color>(Colors.green),
-              )
-          );
+          return SkeletonFrame(width: double.infinity,height: 50);
         }
     );
+
   }
   Widget _kota(BuildContext context) {
     return StreamBuilder(
         stream: kotaBloc.allKota,
         builder: (context,AsyncSnapshot<KotaModel> snapshot) {
           if(snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Html(data:"Kota",defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                DropdownButton(
+          if(snapshot.hasData){
+            return Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: DropdownButton<String>(
                   isDense: true,
                   isExpanded: true,
-                  hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
                   value: _currentItemSelectedKota,
-                  items: snapshot.data.result.map((prefix1.Result items) {
-                    String cek = "${items.id}|${items.name}";
-                    return new DropdownMenuItem<String>(
-                      value: "$cek",
-                      child: new Html(data:items.name,defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12)),
-                    );
-                  }).toList(),
+                  icon: Icon(Icons.arrow_drop_down),
+                  iconSize: 20,
+                  underline: SizedBox(),
                   onChanged: (newValue) {
                     setState(() {
                       var cik = newValue.split("|");
@@ -376,46 +402,67 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       tKota = ", Kota "+cik[1];
                     });
                   },
+                  items: snapshot.data.result.map((prefix1.Result items){
+                    String cek = "${items.id.toString()}|${items.name}";
+                    return new DropdownMenuItem<String>(
+                      value: "$cek",
+                      child: Row(
+                        children: [
+                          UserRepository().textQ(items.name,10,Colors.black,FontWeight.bold,TextAlign.left)
+                        ],
+                      ),
+                    );
+                  }).toList(),
                 )
-
-              ],
-            ) :Container();
-
+            );
+          }
+          return SkeletonFrame(width: double.infinity,height: 50);
         }
     );
+
   }
   Widget _kecamatan(BuildContext context) {
     return StreamBuilder(
         stream: kecamatanBloc.allKecamatan,
         builder: (context,AsyncSnapshot<prefix2.KecamatanModel> snapshot) {
           if(snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData?Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Html(data:"Kecamatan",defaultTextStyle: TextStyle(fontSize: 12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-              DropdownButton(
-                isDense: true,
-                isExpanded: true,
-                hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
-                value: _currentItemSelectedKecamatan,
-                items: snapshot.data.result.map((prefix2.Result items) {
-                  String cek = "${items.subdistrictId}|${items.subdistrictName}";
-                  return new DropdownMenuItem<String>(
-                    value: "$cek",
-                    child: new Html(data:items.subdistrictName,defaultTextStyle: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12)),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    var cik = newValue.split("|");
-                    tKecamatan = ", Kecamatan "+cik[1];
-                    _onDropDownItemSelectedKecamatan(newValue);
-                  });
-                },
-              )
-
-            ],
-          ):Container();
+          if(snapshot.hasData){
+            return Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: DropdownButton<String>(
+                  isDense: true,
+                  isExpanded: true,
+                  value: _currentItemSelectedKecamatan,
+                  icon: Icon(Icons.arrow_drop_down),
+                  iconSize: 20,
+                  underline: SizedBox(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      var cik = newValue.split("|");
+                      tKecamatan = ", Kecamatan "+cik[1];
+                      _onDropDownItemSelectedKecamatan(newValue);
+                    });
+                  },
+                  items: snapshot.data.result.map((prefix2.Result items){
+                    String cek = "${items.subdistrictId}|${items.subdistrictName}";
+                    return new DropdownMenuItem<String>(
+                      value: "$cek",
+                      child: Row(
+                        children: [
+                          UserRepository().textQ(items.subdistrictName,10,Colors.black,FontWeight.bold,TextAlign.left)
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                )
+            );
+          }
+          return SkeletonFrame(width: double.infinity,height: 50);
         }
     );
   }
@@ -423,23 +470,22 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
     return StreamBuilder(
         stream: detailChekoutSuplemenBloc.getResult,
         builder: (context,AsyncSnapshot<GetDetailChekoutSuplemenModel> snapshot) {
-
+          if(snapshot.hasError) print(snapshot.error);
           if(snapshot.hasData){
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Html(data:"Kurir",defaultTextStyle: TextStyle(fontSize:12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                DropdownButton(
+            return Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: DropdownButton<String>(
                   isDense: true,
                   isExpanded: true,
-                  hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
                   value: _currentItemSelectedKurir,
-                  items: snapshot.data.result.kurir.map((prefix4.Kurir items){
-                    return new DropdownMenuItem<String>(
-                      value: "${items.kurir}",
-                      child: Html(data:"${items.kurir}",defaultTextStyle:TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12)),
-                    );
-                  }).toList(),
+                  icon: Icon(Icons.arrow_drop_down),
+                  iconSize: 20,
+                  underline: SizedBox(),
                   onChanged: (newValue) {
                     setState(() {
                       _onDropDownItemSelectedKurir(newValue);
@@ -450,43 +496,47 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       _onDropDownItemSelectedJasa(null);
                     });
                   },
+                  items: snapshot.data.result.kurir.map((prefix4.Kurir items){
+                    return new DropdownMenuItem<String>(
+                      value: "${items.kurir}",
+                      child: Row(
+                        children: [
+                          UserRepository().textQ(items.kurir,10,Colors.black,FontWeight.bold,TextAlign.left)
+                        ],
+                      ),
+                    );
+                  }).toList(),
                 )
-              ],
             );
-
           }else if(snapshot.hasError){
             print(snapshot.error);
           }
-          return new Center(
-              child: new LinearProgressIndicator(
-                valueColor:new AlwaysStoppedAnimation<Color>(Colors.green),
-              )
-          );
+          return SkeletonFrame(width: double.infinity,height: 50);
         }
     );
+
   }
   Widget _jasa(BuildContext context) {
     return _currentItemSelectedKurir != 'COD' ? StreamBuilder(
         stream: ongkirBloc.allOngkir,
         builder: (context,AsyncSnapshot<prefix3.OngkirModel> snapshot) {
+          if(snapshot.hasError) print(snapshot.error);
           if(snapshot.hasData){
             jasper = snapshot.data.result.kurir;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Html(data:"Jenis Layanan",defaultTextStyle: TextStyle(fontSize:12,fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
-                DropdownButton(
+            return Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: DropdownButton<String>(
                   isDense: true,
                   isExpanded: true,
-                  hint: Html(data: "Pilih",defaultTextStyle: TextStyle(fontSize:12.0,fontFamily: 'Rubik'),),
                   value: _currentItemSelectedJasa,
-                  items: snapshot.data.result.ongkir.map((prefix3.Ongkir items) {
-                    jasper = "${items.description}|${items.cost}";
-                    return new DropdownMenuItem<String>(
-                      value: "$jasper",
-                      child: Html(data:"${snapshot.data.result.kurir} - ${items.description} | ${formatter.format(items.cost)} | ${items.estimasi} (hari)",defaultTextStyle:TextStyle(fontFamily:ThaibahFont().fontQ,fontSize:12)),
-                    );
-                  }).toList(),
+                  icon: Icon(Icons.arrow_drop_down),
+                  iconSize: 20,
+                  underline: SizedBox(),
                   onChanged: (newValue) {
                     setState(() {
                       _onDropDownItemSelectedJasa(newValue);
@@ -495,17 +545,26 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       totOngkir = int.parse(paket[1]);
                     });
                   },
+                  items: snapshot.data.result.ongkir.map((prefix3.Ongkir items) {
+                    jasper = "${items.description}|${items.cost}";
+                    return new DropdownMenuItem<String>(
+                      value: "$jasper",
+                      child: Row(
+                        children: [
+                          UserRepository().textQ("${snapshot.data.result.kurir} - ${items.description} | ${formatter.format(items.cost)} | ${items.estimasi} (hari)",10,Colors.black,FontWeight.bold,TextAlign.left)
+                        ],
+                      ),
+                    );
+                  }).toList(),
                 )
-              ],
             );
-
-          }else if(snapshot.hasError) {
-            return Text(snapshot.error);
+          }else if(snapshot.hasError){
+            print(snapshot.error);
           }
-
-          return Center();
+          return SkeletonFrame(width: double.infinity,height: 50);
         }
     ):Container();
+
   }
 
   Widget _bottomNavBarBeli(BuildContext context){
@@ -715,9 +774,13 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  UserRepository().textQ("Kurir",12,Colors.black,FontWeight.bold,TextAlign.left),
+                  SizedBox(height:10.0),
                   _kurir(context),
-                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
-                  _jasa(context),
+                  SizedBox(height:10.0),
+                  _currentItemSelectedKurir != 'COD' ? UserRepository().textQ("Jenis Layanan",12,Colors.black,FontWeight.bold,TextAlign.left):Container(),
+                  _currentItemSelectedKurir != 'COD' ?SizedBox(height:10.0):Container(),
+                  _currentItemSelectedKurir != 'COD' ?_jasa(context):Container(),
                 ],
               ),
             ),
@@ -736,22 +799,38 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                         ]
                     ),
                   ),
-                  TextField(
-                    style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik'),
-                    controller: vouncher,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      hintText: 'contoh : COD200812W4',
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30))
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
                     ),
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.done,
-                    onChanged: (value) {
-                      if (vouncher.text != value.toUpperCase())
-                        vouncher.value = vouncher.value.copyWith(text: value.toUpperCase());
-                    },
-                  ),
+                    child: TextFormField(
+                      textCapitalization: TextCapitalization.sentences,
+                      style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                      controller: vouncher,
+                      keyboardType: TextInputType.streetAddress,
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        hintText: 'contoh : COD200812W4',
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey[200]),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                      ),
+                      textInputAction: TextInputAction.done,
+                      onChanged: (value) {
+                        if (vouncher.text != value.toUpperCase())
+                          vouncher.value = vouncher.value.copyWith(text: value.toUpperCase());
+                      },
+                    ),
+                  )
+
                 ],
               ),
             ):Container(),
@@ -770,19 +849,34 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                         ]
                     ),
                   ),
-                  TextField(
-                    style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30)),
-                    controller: otherAddress,
-                    decoration: InputDecoration(
-                      hintText: 'contoh : nama jalan, rt, rw, blok, no rumah,kelurahan',
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30))
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
                     ),
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.done,
-                    onChanged: (v){
-                      setState(() {});
-                    },
+                    child: TextFormField(
+                      style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                      controller: otherAddress,
+                      keyboardType: TextInputType.streetAddress,
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        hintText: 'contoh : nama jalan, rt, rw, blok, no rumah,kelurahan',
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey[200]),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                      ),
+                      textInputAction: TextInputAction.done,
+                      onChanged: (v){
+                        setState(() {});
+                      },
+                    ),
                   ),
                   SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
                   RichText(
@@ -794,20 +888,36 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                         ]
                     ),
                   ),
-                  TextField(
-                    style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize:  ScreenUtilQ.getInstance().setSp(30)),
-                    controller: kodePos,
-                    decoration: InputDecoration(
-                      hintText: 'contoh : 4207081',
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30))
+                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
                     ),
-                    maxLines: null,
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.done,
-                    onChanged: (v){
-                      setState(() {});
-                    },
+                    child: TextFormField(
+                      style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                      controller: kodePos,
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        hintText: 'contoh : 4207081',
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey[200]),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.done,
+                      onChanged: (v){
+                        setState(() {});
+                      },
+                    ),
                   ),
+
                   SizedBox(height:10.0),
                   Text("Alamat Pengiriman :", style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ,color: Colors.green)),
                   Text("${otherAddress.text}$tKecamatan$tKota$tProvinsi, ${kodePos.text}", style: TextStyle(color:Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold, fontFamily:ThaibahFont().fontQ))
@@ -830,9 +940,10 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
+                    padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 0.0, right: 10.0),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
+                      color: Colors.grey[200],
+                      // border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
                     child: Row(
@@ -879,9 +990,9 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   ) : Container(),
                   showPlatinum == true ? SizedBox(height: 5.0) : SizedBox(height: 0.0),
                   showPlatinum == true ? Container(
-                    padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
+                    padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 0.0, right: 10.0),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
+                      color: Colors.grey[200],
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
                     child: Row(
@@ -904,9 +1015,9 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                   ) : Container(),
                   showPlatinum == true ? SizedBox(height: 5.0) : SizedBox(height: 0.0),
                   showPlatinum == true ? Container(
-                    padding:EdgeInsets.only(top: 5.0, bottom: 5.0, left: 0.0, right: 10.0),
+                    padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 0.0, right: 10.0),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
+                      color: Colors.grey[200],
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
                     child: Row(

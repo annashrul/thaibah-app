@@ -212,7 +212,7 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
           ],
         ),
         Padding(
-          padding: EdgeInsets.only(left:0.0,right:0.0,top:0.0),
+          padding: EdgeInsets.only(left:10.0,right:10.0,top:10.0),
           child: UserRepository().buttonQ(context,(){setState(() {
             isLoading=true;
           });_search();},'cari'),
@@ -300,7 +300,7 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
         ),
 
       ],
-    ) : Container(child:Center(child:Text("Data Tidak Tersedia",style:TextStyle(fontFamily: 'Rubik',fontWeight: FontWeight.bold))));
+    ) : UserRepository().noData();
   }
 
   Widget _loading(){

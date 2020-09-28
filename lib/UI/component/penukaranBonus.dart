@@ -69,17 +69,11 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
 
   Future save() async{
     if(moneyController.text == null || moneyController.text == '0.00'){
-      print('cek');
       UserRepository().notifNoAction(scaffoldKey, context,"Nominal Harus Diisi","failed");
     }else{
       final ktp = await userRepository.getDataUser('ktp');
       print(ktp);
       if(ktp == '-' || ktp == ''){
-//        UserRepository().notifWithAction(scaffoldKey, context, 'Silahkan Upload KTP Anda Untuk Melanjutkan Transaksi','failed',"UPLOAD KTP",(){
-//          Navigator.of(context, rootNavigator: true).push(
-//            new CupertinoPageRoute(builder: (context) => UpdateKtp(saldo: widget.saldo,saldoBonus: widget.saldoBonus)),
-//          );
-//        });
         FocusScope.of(context).requestFocus(new FocusNode());
         scaffoldKey.currentState?.removeCurrentSnackBar();
         scaffoldKey.currentState.showSnackBar(new SnackBar(
@@ -183,7 +177,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                       decoration: new BoxDecoration(
                         border: new Border.all(
                             width: 2.0,
-                            color: Colors.green
+                            color: Colors.grey[200]
                         ),
                         borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
                       ),
@@ -213,48 +207,50 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      TextFormField(
-                        style: TextStyle(color: Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                        controller: moneyController,
-                        keyboardType: TextInputType.number,
-                        maxLines: 1,
-                        autofocus: false,
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                          labelText: 'Nominal',
-                          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
-                          hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                          prefixText: 'Rp.',
+
+                      UserRepository().textQ("Nominal",10,Colors.black,FontWeight.bold,TextAlign.left),
+                      SizedBox(height: 10.0),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                        decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(10)
                         ),
-                        inputFormatters: <TextInputFormatter>[
-                          LengthLimitingTextInputFormatter(13),
-                          WhitelistingTextInputFormatter.digitsOnly,
-                          BlacklistingTextInputFormatter.singleLineFormatter,
-                        ],
-                        textInputAction: TextInputAction.done,
-                        focusNode: saldoFocus,
-                        onFieldSubmitted: (value){
-                          saldoFocus.unfocus();
-                          save();
-                        },
-                        onChanged: (par){
-                          sampleData.forEach((element) => element.isSelected = false);
-                        },
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
+                        child: TextFormField(
+                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                          controller: moneyController,
+                          keyboardType: TextInputType.number,
+                          autofocus: false,
+                          decoration: InputDecoration(
+                            prefixText: 'Rp.',
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey[200]),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                          ),
+                          focusNode: saldoFocus,
+                          inputFormatters: <TextInputFormatter>[
+                            LengthLimitingTextInputFormatter(13),
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            BlacklistingTextInputFormatter.singleLineFormatter,
+                          ],
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (value){
+                            saldoFocus.unfocus();
+                            save();
+                          },
+                          onChanged: (par){
+                            sampleData.forEach((element) => element.isSelected = false);
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 10.0),
                       Text("Pilih Nominal Cepat",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(34),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                      SizedBox(height: 10.0),
                       GridView.builder(
                         padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
                         physics: NeverScrollableScrollPhysics(),
@@ -280,13 +276,13 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                           );
                         },
                       ),
+                      SizedBox(height: 10.0),
+                      UserRepository().buttonQ(context,(){
+                        save();
+                      },'Simpan')
                     ],
                   ),
                 ),
-                UserRepository().buttonQ(context,(){
-                  save();
-                },'Simpan')
-
               ],
             ),
           )
@@ -308,31 +304,9 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
 
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
-      setState(() {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 100.0),
-                child: AlertDialog(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                      SizedBox(height:5.0),
-                      Text("Tunggu Sebentar .....",style:TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
-                    ],
-                  ),
-                )
-            );
-
-          },
-        );
-      });
+      UserRepository().loadingQ(context);
       var rplcComa = moneyController.text.replaceAll(",", "");
       var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
-      print("##################################### $sbtrLast3 #####################################");
       var res = await transferBonusBloc.fetchTransferBonus(sbtrLast3);
       if(res is GeneralInsertId){
         GeneralInsertId results = res;

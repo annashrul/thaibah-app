@@ -116,7 +116,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: UserRepository().appBarWithButton(context, "Data Diri",(){
+      appBar: UserRepository().appBarWithButton(context, "Detail Pesanan",(){
         if(widget.param == 'checkout'){
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
         }else{

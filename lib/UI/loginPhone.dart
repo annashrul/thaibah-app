@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:thaibah/Constants/constants.dart';
@@ -15,6 +16,7 @@ import 'package:thaibah/Model/typeOtpModel.dart';
 import 'package:thaibah/Model/user_location.dart';
 import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/UI/regist_ui.dart';
 import 'package:flutter/services.dart';
@@ -74,8 +76,69 @@ class _LoginPhoneState extends State<LoginPhone> {
   UserLocalModel userLocalModel;
   final serviceLocation = LocationService();
   double lat,lng;
+  String otp='',id='',name='',address='',email='',picture='',cover='',socketid='',kdReferral='';
+  String kdUnique='',token='',pin='',noHp='',ktp='',levelStatus='',warna1='',warna2='';
+  String isStatus='';
+  _callBackPin(BuildContext context, bool isTrue) async{
+    if(isTrue){
+      final dbHelper = DbHelper.instance;
+      Map<String, dynamic> row = {
+        DbHelper.columnIdServer  : id.toString(),
+        DbHelper.columnName  : name.toString(),
+        DbHelper.columnAddress  : address.toString(),
+        DbHelper.columnEmail : email.toString(),
+        DbHelper.columnPicture :picture.toString(),
+        DbHelper.columnCover  : cover.toString(),
+        DbHelper.columnSocketId  : socketid.toString(),
+        DbHelper.columnKdUnique  : kdUnique.toString(),
+        DbHelper.columnToken  :  token.toString(),
+        DbHelper.columnPhone  : noHp.toString(),
+        DbHelper.columnPin  :  pin.toString(),
+        DbHelper.columnReferral  : kdReferral.toString(),
+        DbHelper.columnKtp  : ktp.toString(),
+        DbHelper.columnStatus  : "1",
+        DbHelper.columnStatusOnBoarding  : "1",
+        DbHelper.columnStatusExitApp  : "1",
+        DbHelper.columnStatusLevel  : levelStatus,
+        DbHelper.columnWarna1  : warna1.toString(),
+        DbHelper.columnWarna2  : warna2.toString(),
+        DbHelper.columnIsStatus  : isStatus.toString(),
+      };
+      final countRow = await dbHelper.queryRowCount();
+      if(countRow==0){
+        await dbHelper.insert(row);
+      }
+      else{
+        await dbHelper.deleteAll();
+        await dbHelper.insert(row);
+      }
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
+    }
+    else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("Pin Salah!",style:TextStyle(fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+            content: new Text("Masukan pin yang sesuai.",style:TextStyle(fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Close",style:TextStyle(fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   Future login() async{
+    final dbHelper = DbHelper.instance;
     print("LONGITUDE LATITUDE $lat $lng");
+
     String _valType='';
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -113,31 +176,54 @@ class _LoginPhoneState extends State<LoginPhone> {
           setState(() {
             Navigator.pop(context);
             _noHpController.clear();
+            otp=result.result.otp.toString();
+            id=result.result.id.toString();
+            name= result.result.name.toString();
+            address= result.result.address.toString();
+            email=result.result.email.toString();
+            picture= result.result.picture.toString();
+            cover=result.result.cover.toString();
+            socketid= result.result.socketid.toString();
+            kdReferral= result.result.kdReferral.toString();
+            kdUnique=result.result.kdUnique.toString();
+            token=result.result.token.toString();
+            pin=result.result.pin.toString();
+            noHp=result.result.noHp.toString();
+            ktp=result.result.ktp.toString();
+            levelStatus=result.result.levelStatus.toString();
+            warna1=result.result.tema.warna1;
+            warna2=result.result.tema.warna2;
+            isStatus=result.result.status.toString();
           });
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-              new CupertinoPageRoute(builder: (BuildContext context)=>SecondScreen(
-                otp: result.result.otp.toString(),
-                id:result.result.id.toString(),
-                name: result.result.name.toString(),
-                address: result.result.address.toString(),
-                email: result.result.email.toString(),
-                picture: result.result.picture.toString(),
-                cover: result.result.cover.toString(),
-                socketid: result.result.socketid.toString(),
-                kdReferral: result.result.kdReferral.toString(),
-                kdUnique: result.result.kdUnique.toString(),
-                token: result.result.token.toString(),
-                pin: result.result.pin.toString(),
-                noHp: result.result.noHp.toString(),
-                ktp: result.result.ktp.toString(),
-                levelStatus:result.result.levelStatus.toString(),
-                warna1:result.result.tema.warna1,
-                warna2:result.result.tema.warna2,
-                latitude:lat,
-                longitude:lng,
-                status:result.result.status.toString(),
+              new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(param: result.result.otp.toString(),
+                  callback: _callBackPin
               )), (Route<dynamic> route) => false
           );
+          // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+          //     new CupertinoPageRoute(builder: (BuildContext context)=>SecondScreen(
+          //       otp: result.result.otp.toString(),
+          //       id:result.result.id.toString(),
+          //       name: result.result.name.toString(),
+          //       address: result.result.address.toString(),
+          //       email: result.result.email.toString(),
+          //       picture: result.result.picture.toString(),
+          //       cover: result.result.cover.toString(),
+          //       socketid: result.result.socketid.toString(),
+          //       kdReferral: result.result.kdReferral.toString(),
+          //       kdUnique: result.result.kdUnique.toString(),
+          //       token: result.result.token.toString(),
+          //       pin: result.result.pin.toString(),
+          //       noHp: result.result.noHp.toString(),
+          //       ktp: result.result.ktp.toString(),
+          //       levelStatus:result.result.levelStatus.toString(),
+          //       warna1:result.result.tema.warna1,
+          //       warna2:result.result.tema.warna2,
+          //       latitude:lat,
+          //       longitude:lng,
+          //       status:result.result.status.toString(),
+          //     )), (Route<dynamic> route) => false
+          // );
         }
         else{
           print("######### STATUS ${result.status}");
@@ -424,63 +510,99 @@ class SecondScreen extends StatefulWidget {
   _SecondScreenState createState() => _SecondScreenState();
 }
 
-class _SecondScreenState extends State<SecondScreen> {
+class _SecondScreenState extends State<SecondScreen>  with WidgetsBindingObserver, SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin   {
+  @override
+  bool get wantKeepAlive => true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool alreadyLogin = false;
   bool isLoading = false;
   var currentText;
+  final serviceLocation = LocationService();
+  double lat,lng;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    serviceLocation.locationStream.listen((event) {
+      if(mounted){
+        setState(() {
+          lat = event.latitude;
+          lng = event.longitude;
+        });
+      }
+
+    });
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        key: _scaffoldKey,
-        body: isLoading?Container(
-          child:Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                CircularProgressIndicator(strokeWidth: 10)
-              ],
-            ),
-          )
-        ):
-        LockScreenQ(
-            title: "Keamanan",
-            passLength: 4,
-            bgImage: "assets/images/bg.jpg",
-            borderColor: Colors.black,
-            showWrongPassDialog: true,
-            wrongPassContent: "Kode OTP Tidak Sesuai",
-            wrongPassTitle: "Opps!",
-            wrongPassCancelButtonText: "Batal",
-            deskripsi: 'Masukan Kode OTP Yang Telah Kami Kirim Melalui Pesan WhatsApp ${ApiService().showCode == true ? widget.otp : ""}',
-            passCodeVerify: (passcode) async {
-              var concatenate = StringBuffer();
-              passcode.forEach((item){
-                concatenate.write(item);
-              });
-              setState(() {
-                currentText = concatenate.toString();
-              });
-              if(currentText != widget.otp){
-                return false;
-              }
-              return true;
-            },
-            onSuccess: () {
-              setState(() {
-                isLoading = true;
-              });
+    super.build(context);
+    return StreamProvider<UserLocation>(
+        create: (context) => LocationService().locationStream,
+        child: Scaffold(
+          key: _scaffoldKey,
+          body: isLoading?Container(
+              child:Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(strokeWidth: 10)
+                  ],
+                ),
+              )
+          ):
+          LockScreenQ(
+              title: "Keamanan",
+              passLength: 4,
+              bgImage: "assets/images/bg.jpg",
+              borderColor: Colors.black,
+              showWrongPassDialog: true,
+              wrongPassContent: "Kode OTP Tidak Sesuai",
+              wrongPassTitle: "Opps!",
+              wrongPassCancelButtonText: "Batal",
+              deskripsi: 'Masukan Kode OTP Yang Telah Kami Kirim Melalui Pesan WhatsApp ${ApiService().showCode == true ? widget.otp : ""}',
+              passCodeVerify: (passcode) async {
+                var concatenate = StringBuffer();
+                passcode.forEach((item){
+                  concatenate.write(item);
+                });
+                setState(() {
+                  currentText = concatenate.toString();
+                });
+                if(currentText != widget.otp){
+                  return false;
+                }
+                return true;
+              },
+              onSuccess: () {
+                setState(() {
+                  isLoading = true;
+                });
 
-              _check(currentText, context);
-            }
-        ),
+                _check(currentText, context);
+              }
+          ),
+        )
     );
+
   }
 
 
 
   Future _check(String txtOtp, BuildContext context) async {
+
+    print("PIN LOGIN $lat");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setDouble('latLog',widget.latitude);
+    prefs.setDouble('lngLog',widget.longitude);
     final dbHelper = DbHelper.instance;
     if (widget.otp == txtOtp) {
       Map<String, dynamic> row = {
@@ -503,33 +625,27 @@ class _SecondScreenState extends State<SecondScreen> {
         DbHelper.columnStatusLevel  : widget.levelStatus,
         DbHelper.columnWarna1  : widget.warna1.toString(),
         DbHelper.columnWarna2  : widget.warna2.toString(),
-        DbHelper.columnLatitude  : widget.latitude.toString(),
-        DbHelper.columnLongitude  : widget.longitude.toString(),
+        // DbHelper.columnLatitude  : widget.latitude==null?'':widget.latitude.toString(),
+        // DbHelper.columnLongitude  : widget.longitude==null?'':widget.longitude.toString(),
         DbHelper.columnIsStatus  : widget.status.toString(),
       };
+
       final countRow = await dbHelper.queryRowCount();
-      print("COUNT ROW DATABASE $countRow");
-      if(countRow >= 1){
-        setState(() {isLoading=false;});
+      if(countRow==0){
+        await dbHelper.insert(row);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
+      }
+      else{
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
         await dbHelper.deleteAll();
         await dbHelper.insert(row);
-        setState(() {isLoading=false;});
-      }else{
-        print("CREATE");
-        await dbHelper.insert(row);
-        setState(() {isLoading=false;});
       }
+      print("ROW DATABASE $row");
       print("COUNT ROW DATABASE $countRow");
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex()), (Route<dynamic> route) => false);
+      // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
 
-      // if(widget.status=='1'){
-      //   // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-      //
-      // }
-      // else{
-      //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-      // }
-    } else {
+    }
+    else {
       setState(() {
         Navigator.of(context).pop();
       });

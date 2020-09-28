@@ -12,7 +12,9 @@ class ProdukCheckoutSuplemen extends StatefulWidget {
   _ProdukCheckoutSuplemenState createState() => _ProdukCheckoutSuplemenState();
 }
 
-class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> {
+class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> with AutomaticKeepAliveClientMixin  {
+  @override
+  bool get wantKeepAlive => true;
   var totBar = '';
   final formatter = new NumberFormat("#,###");
 
@@ -132,7 +134,7 @@ class _ProdukCheckoutSuplemenState extends State<ProdukCheckoutSuplemen> {
       child: ListView.builder(
         physics: NeverScrollableScrollPhysics(),
         scrollDirection: Axis.vertical,
-        itemCount: 3,
+        itemCount: 1,
         shrinkWrap: true,
         itemBuilder: (context, i) {
           return new FlatButton(

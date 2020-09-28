@@ -239,7 +239,7 @@ class _WidgetHistorySaldoState extends State<WidgetHistorySaldo> {
           ],
         ),
         Padding(
-          padding: EdgeInsets.only(left:0.0,right:0.0,top:0.0),
+          padding: EdgeInsets.only(left:10.0,right:10.0,top:10.0),
           child: UserRepository().buttonQ(context,(){_search();},'cari'),
         ),
         Expanded(

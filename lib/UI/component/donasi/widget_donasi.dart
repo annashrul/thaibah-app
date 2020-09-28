@@ -24,7 +24,9 @@ class WidgetDonasi extends StatefulWidget {
   _WidgetDonasiState createState() => _WidgetDonasiState();
 }
 
-class _WidgetDonasiState extends State<WidgetDonasi> {
+class _WidgetDonasiState extends State<WidgetDonasi> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
   int perpage=10;
@@ -64,58 +66,12 @@ class _WidgetDonasiState extends State<WidgetDonasi> {
   @override
   Widget build(BuildContext context) {
     // return MyFeed();
-    if(widget.noScaffold!=''){
-      return Scaffold(
-        key: _scaffoldKey,
-        appBar: UserRepository().appBarWithButton(context, title,(){Navigator.pop(context);},<Widget>[]),
+    super.build(context);
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: UserRepository().appBarWithButton(context, title,(){Navigator.pop(context);},<Widget>[]),
 
-        body:StreamBuilder(
-          stream: listDonasiBloc.getResult,
-          builder: (context, AsyncSnapshot<ListDonasiModel> snapshot) {
-            if (snapshot.hasData) {
-              return snapshot.data.result.data.length>0?LiquidPullToRefresh(
-                color: ThaibahColour.primary2,
-                backgroundColor:Colors.white,
-                key: _refresh,
-                onRefresh:refresh,
-                child: Padding(
-                    padding: EdgeInsets.only(left:5.0,right:5.0,top:10.0),
-                    child: LoadMoreQ(
-                      whenEmptyLoad: true,
-                      delegate: DefaultLoadMoreDelegate(),
-                      textBuilder: DefaultLoadMoreTextBuilder.english,
-                      isFinish: snapshot.data.result.data.length < perpage,
-                      onLoadMore: _loadMore,
-                      child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemCount: snapshot.data.result.data.length,
-                          itemBuilder: (context,index){
-                            return DonasiContent(
-                              id: snapshot.data.result.data[index].id,
-                              gambar: snapshot.data.result.data[index].gambar,
-                              title: snapshot.data.result.data[index].title,
-                              penggalang: snapshot.data.result.data[index].penggalang,
-                              persentase: snapshot.data.result.data[index].persentase,
-                              todeadline: snapshot.data.result.data[index].todeadline,
-                              verifikasiPenggalang: snapshot.data.result.data[index].verifikasiPenggalang.toString(),
-                              terkumpul: snapshot.data.result.data[index].terkumpul,
-                              callback: ()=>load(),
-                            );
-                          }
-                      ),
-                    )
-                ),
-              ):UserRepository().noData();
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-            return Padding(padding: EdgeInsets.only(top:10.0),child: LoadingDonasi());
-          },
-        ),
-      );
-    }
-    else{
-      return StreamBuilder(
+      body:StreamBuilder(
         stream: listDonasiBloc.getResult,
         builder: (context, AsyncSnapshot<ListDonasiModel> snapshot) {
           if (snapshot.hasData) {
@@ -145,6 +101,7 @@ class _WidgetDonasiState extends State<WidgetDonasi> {
                             todeadline: snapshot.data.result.data[index].todeadline,
                             verifikasiPenggalang: snapshot.data.result.data[index].verifikasiPenggalang.toString(),
                             terkumpul: snapshot.data.result.data[index].terkumpul,
+                            callback: ()=>load(),
                           );
                         }
                     ),
@@ -156,8 +113,8 @@ class _WidgetDonasiState extends State<WidgetDonasi> {
           }
           return Padding(padding: EdgeInsets.only(top:10.0),child: LoadingDonasi());
         },
-      );
-    }
+      ),
+    );
 
   }
 

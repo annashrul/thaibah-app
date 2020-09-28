@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/donasi/listDonasiModel.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
@@ -21,6 +22,7 @@ import 'package:thaibah/UI/component/donasi/widget_donasi.dart';
 import 'package:thaibah/UI/component/home/widget_artikel.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/UI/component/home/widget_top_slider.dart';
+import 'package:thaibah/UI/component/sosmed/exploreFeed.dart';
 import 'package:thaibah/UI/component/sosmed/listSosmed.dart';
 import 'package:thaibah/UI/component/sosmed/myFeed.dart';
 import 'package:thaibah/UI/lainnya/doaHarian.dart';
@@ -53,6 +55,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   final userRepository = UserRepository();
   static String latitude = '';
   static String longitude = '';
+  static String name= '';
   bool isLoading=false;
 
   Future<void> loadArtikel() async {
@@ -65,7 +68,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   Future<void> loadDonasi() async {
     final lat = await userRepository.getDataUser('latitude');
     final lng = await userRepository.getDataUser('longitude');
-    print("STATUS PRAYER ${ApiService().baseUrl+'islamic/jadwalsholat?long=$lng&lat=$lat'}");
+    print("STATUS PRAYER ${ApiService().baseUrl+'islamic/jadwalsholat?long=107.61861&lat=-6.90389'}");
     await listDonasiBloc.fetchListDonasi('&perpage=4');
     setState(() {
       isLoading=false;
@@ -85,21 +88,23 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     await flutterLocalNotificationsPlugin.show(0, '$title', '$desc', platform,payload: 'Nitish Kumar Singh is part time Youtuber');
   }
 
-
   Future<void> loadPrayer() async {
-    final lat = await userRepository.getDataUser('latitude');
-    final lng = await userRepository.getDataUser('longitude');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final lat = prefs.getDouble('lat');
+    final lng = prefs.getDouble('lng');
     final token = await userRepository.getDataUser('token');
+    final nama = await userRepository.getDataUser('name');
     var jsonString = await http.get(
-        ApiService().baseUrl+'islamic/jadwalsholat?long=$lng&lat=$lat',
+        ApiService().baseUrl+'islamic/jadwalsholat?long=${lng.toString()}&lat=${lat.toString()}',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (jsonString.statusCode == 200) {
       final jsonResponse = json.decode(jsonString.body);
       prayerModel = new PrayerModel.fromJson(jsonResponse);
       setState(() {
-        latitude = lat;
-        longitude = lng;
+        name = nama;
+        latitude = lat.toString();
+        longitude = lng.toString();
         sekarang = new DateFormat('HHmmss').format(DateTime.now());
         shubuh = new DateFormat('HHmmss').format(prayerModel.result.fajr);
         sunrise = new DateFormat('HHmmss').format(prayerModel.result.sunrise);
@@ -133,36 +138,60 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     final String formattedDateTime = DateFormat('hh:mm:ss').format(now);
     final String timeLocal = new DateFormat('HHmmss').format(now);
     print("SEKARANG $timeLocal");
-    if(int.parse(sekarang)==125400){
-      showNotification('Selamat Menunaikan Sholat Isya','Sentuh untuk mematikan suara');
+    if(int.parse(timeLocal)==int.parse(shubuh)){
+      showNotification('Hai $name','Selamat Menunaikan Sholat Shubuh');
+    }
+    if(int.parse(timeLocal)==int.parse(dzuhur)){
+      showNotification('Hai $name','Selamat Menunaikan Sholat Dzuhur');
+    }
+    if(int.parse(timeLocal)==int.parse(ashar)){
+      showNotification('Hai $name','Selamat Menunaikan Sholat Ashar');
+    }
+    if(int.parse(timeLocal)==int.parse(magrib)){
+      showNotification('Hai $name','Selamat Menunaikan Sholat Maghrib');
+    }
+    if(int.parse(timeLocal)==int.parse(isya)){
+      showNotification('Hai $name','Selamat Menunaikan Sholat Isya');
     }
     setState(() {
       _timeString = formattedDateTime;
     });
-    if(int.parse(sekarang) > int.parse(isya) && int.parse(sekarang) < 2359){
-      echoKetWaktu='Isya';
-      echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.isha);
+    if(int.parse(timeLocal) > int.parse(isya) && int.parse(timeLocal) < 235900){
+      setState(() {
+        echoKetWaktu='Isya';
+        echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.isha);
+      });
     }
-    if(int.parse(sekarang) < int.parse(shubuh) && int.parse(sekarang) > 0000){
-      echoKetWaktu='Tahajud';
-      echoWaktu = new DateFormat('HH:mm').format(DateTime.now());
+    if(int.parse(timeLocal) < int.parse(shubuh) && int.parse(timeLocal) > 000000){
+     setState(() {
+       echoKetWaktu='Tahajud';
+       echoWaktu = new DateFormat('HH:mm').format(DateTime.now());
 
+     });
     }
-    if(int.parse(sekarang) >= int.parse(shubuh) && int.parse(sekarang) < int.parse(sunrise)){
-      echoKetWaktu='Shubuh';
-      echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.fajr);
+    if(int.parse(timeLocal) >= int.parse(shubuh) && int.parse(timeLocal) < int.parse(sunrise)){
+      setState(() {
+        echoKetWaktu='Shubuh';
+        echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.fajr);
+      });
     }
-    if(int.parse(sekarang) >= int.parse(dzuhur) && int.parse(sekarang) < int.parse(ashar)){
-      echoKetWaktu='Dzuhur';
-      echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.dhuhr);
+    if(int.parse(timeLocal) >= int.parse(dzuhur) && int.parse(timeLocal) < int.parse(ashar)){
+      setState(() {
+        echoKetWaktu='Dzuhur';
+        echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.dhuhr);
+      });
     }
-    if(int.parse(sekarang) >= int.parse(ashar) && int.parse(sekarang) < int.parse(magrib)){
-      echoKetWaktu='Ashar';
-      echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.asr);
+    if(int.parse(timeLocal) >= int.parse(ashar) && int.parse(timeLocal) < int.parse(magrib)){
+      setState(() {
+        echoKetWaktu='Ashar';
+        echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.asr);
+      });
     }
-    if(int.parse(sekarang) >= int.parse(magrib) && int.parse(sekarang) < int.parse(isya)){
-      echoKetWaktu='Maghrib';
-      echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.maghrib);
+    if(int.parse(timeLocal) >= int.parse(magrib) && int.parse(timeLocal) < int.parse(isya)){
+      setState(() {
+        echoKetWaktu='Maghrib';
+        echoWaktu = new DateFormat('HH:mm').format(prayerModel.result.maghrib);
+      });
     }
     // loadPrayer();
 
@@ -188,7 +217,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     loadPrayer();
     isLoading=true;
     _timeString = DateFormat('hh:mm:ss').format(DateTime.now());
-    // _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
+    _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
   }
 
   @override
@@ -285,7 +314,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
               Container(
                 padding: EdgeInsets.only(left:15,right:15),
                 child: UserRepository().buttonQ(context,(){
-                  Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => WidgetIndex(param: 'donasi')));
+                  Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => WidgetDonasi(any:'',noScaffold: '',))).whenComplete(() => loadDonasi());
                 },"Lihat Semua"),
               ),
               SizedBox(height: 10.0),
@@ -306,8 +335,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                       ),
                       InkWell(
                         onTap: (){
-                          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => WidgetIndex(param: 'artikel')));
-
+                          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ScreenArtikel(noScaffold: '',))).whenComplete(() => loadArtikel());
                         },
                         child: UserRepository().textQ("Lihat Semua",14,Colors.green,FontWeight.bold,TextAlign.left),
                       )
@@ -333,7 +361,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                       ),
                       InkWell(
                         onTap: (){
-                          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => WidgetIndex(param: 'artikel')));
+                          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ExploreFeed()));
 
                         },
                         child: UserRepository().textQ("Lihat Semua",14,Colors.green,FontWeight.bold,TextAlign.left),
@@ -376,18 +404,18 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        CardEmoney(imgUrl:'Icon_Utama_Baca_Alquran',title:'Al-Quran',xFunction: (){
+        CardEmoney(imgUrl:'ALQURAN.png',title:'Al-Quran',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));
 
         }),
-        CardEmoney(imgUrl:'Icon_Utama_Doa_Harian',title:'Doa Harian',xFunction: (){
+        CardEmoney(imgUrl:'DOA.png',title:'Doa Harian',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));
 
         },),
-        CardEmoney(imgUrl:'Icon_Utama_Hadits',title:'Hadits',xFunction: (){
+        CardEmoney(imgUrl:'HADIS.png',title:'Hadits',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));
         },),
-        CardEmoney(imgUrl:'Icon_Utama_Asmaul_Husna',title:'Asma Allah',xFunction: (){
+        CardEmoney(imgUrl:'ASMA.png',title:'Asma Allah',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));
         },),
       ],
@@ -431,7 +459,8 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                     SizedBox(height: 10.0),
                     UserRepository().textQ("Waktu Sholat $echoKetWaktu",14,Colors.white,FontWeight.bold,TextAlign.left),
                     SizedBox(height: 10.0),
-                    UserRepository().textQ(_timeString,24,Colors.white,FontWeight.bold,TextAlign.left),
+                    UserRepository().textQ(echoWaktu,24,Colors.white,FontWeight.bold,TextAlign.left),
+                    UserRepository().textQ(_timeString,12,Colors.white,FontWeight.bold,TextAlign.left),
                     // SizedBox(height: 10.0),
                     // UserRepository().textQ("-1 Jam : 32 Menit menuju Ashar",12,Colors.white,FontWeight.bold,TextAlign.left),
                     SizedBox(height: 10.0),

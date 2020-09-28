@@ -216,7 +216,7 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
             ],
           ),
           Padding(
-            padding: EdgeInsets.only(left:0.0,right:0.0,top:0.0),
+            padding: EdgeInsets.only(left:10.0,right:10.0,top:10.0),
             child: UserRepository().buttonQ(context,(){
               setState(() {
                 isLoading=true;
@@ -293,81 +293,81 @@ class _HistoryPenarikanState extends State<HistoryPenarikan> {
   Widget buildContent(AsyncSnapshot<HistoryPenarikanModel> snapshot, BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    return RefreshIndicator(
+    return snapshot.data.result.data.length>0?RefreshIndicator(
       child: Column(
         children: [
           Expanded(
-            child: Container(
-              margin: EdgeInsets.all(15.0),
-              child: LoadMoreQ(
-                isFinish: snapshot.data.result.data.length < perpage,
-                child: ListView.builder(
-                    itemCount:  snapshot.data.result.data.length,
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (context, index) {
-                      var cek; Color warna;
-                      if(snapshot.data.result.data[index].status == 0){
-                        cek = 'Pending';
-                        warna = Colors.blueAccent;
-                      }else if(snapshot.data.result.data[index].status == 1){
-                        cek = 'Diterima';
-                        warna = Colors.green;
-                      }else{
-                        cek = 'Ditolak';
-                        warna = Colors.red;
-                      }
-                      return GestureDetector(
-                        onTap: (){
+              child: Container(
+                margin: EdgeInsets.all(15.0),
+                child: LoadMoreQ(
+                  isFinish: snapshot.data.result.data.length < perpage,
+                  child: ListView.builder(
+                      itemCount:  snapshot.data.result.data.length,
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        var cek; Color warna;
+                        if(snapshot.data.result.data[index].status == 0){
+                          cek = 'Pending';
+                          warna = Colors.blueAccent;
+                        }else if(snapshot.data.result.data[index].status == 1){
+                          cek = 'Diterima';
+                          warna = Colors.green;
+                        }else{
+                          cek = 'Ditolak';
+                          warna = Colors.red;
+                        }
+                        return GestureDetector(
+                          onTap: (){
 
-                        },
-                        child: Card(
-                          elevation: 0.0,
-                          margin: new EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
-                          child: Container(
-                            decoration: BoxDecoration(color: Colors.white),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                              title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  RichText(
-                                    text: TextSpan(
-                                        text: '${snapshot.data.result.data[index].accHolderName}',
-                                        style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
-                                        children: <TextSpan>[
-                                          TextSpan(text: ' (${snapshot.data.result.data[index].accNumber})',style: TextStyle(color: Colors.grey, fontSize: 10,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-                                        ]
+                          },
+                          child: Card(
+                            elevation: 0.0,
+                            margin: new EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
+                            child: Container(
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    RichText(
+                                      text: TextSpan(
+                                          text: '${snapshot.data.result.data[index].accHolderName}',
+                                          style: TextStyle(fontSize: 12,fontFamily:ThaibahFont().fontQ,color: Colors.black,fontWeight: FontWeight.bold),
+                                          children: <TextSpan>[
+                                            TextSpan(text: ' (${snapshot.data.result.data[index].accNumber})',style: TextStyle(color: Colors.grey, fontSize: 10,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                                          ]
+                                      ),
                                     ),
-                                  ),
-                                  RichText(text: TextSpan(text: '$cek', style: TextStyle(fontSize:12.0,fontFamily:ThaibahFont().fontQ,color:warna, fontWeight: FontWeight.bold),),),
-                                ],
-                              ),
-                              subtitle: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  RichText(text: TextSpan(text:"Rp ${formatter.format(int.parse(snapshot.data.result.data[index].amount))}", style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.red, fontWeight: FontWeight.bold))),
-                                  RichText(text: TextSpan(text:"${DateFormat.yMd().add_jm().format(snapshot.data.result.data[index].createdAt.toLocal())}", style:TextStyle(fontSize:12.0,fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontWeight: FontWeight.bold))),
-                                ],
+                                    RichText(text: TextSpan(text: '$cek', style: TextStyle(fontSize:12.0,fontFamily:ThaibahFont().fontQ,color:warna, fontWeight: FontWeight.bold),),),
+                                  ],
+                                ),
+                                subtitle: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    RichText(text: TextSpan(text:"Rp ${formatter.format(int.parse(snapshot.data.result.data[index].amount))}", style: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.red, fontWeight: FontWeight.bold))),
+                                    RichText(text: TextSpan(text:"${DateFormat.yMd().add_jm().format(snapshot.data.result.data[index].createdAt.toLocal())}", style:TextStyle(fontSize:12.0,fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontWeight: FontWeight.bold))),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    }
+                        );
+                      }
+                  ),
+                  onLoadMore: _loadMore,
+                  whenEmptyLoad: true,
+                  delegate: DefaultLoadMoreDelegate(),
+                  textBuilder: DefaultLoadMoreTextBuilder.english,
                 ),
-                onLoadMore: _loadMore,
-                whenEmptyLoad: true,
-                delegate: DefaultLoadMoreDelegate(),
-                textBuilder: DefaultLoadMoreTextBuilder.english,
-              ),
-            )
+              )
           )
         ],
       ),
       onRefresh: refresh,
       key: _refresh,
-    );
+    ):UserRepository().noData();
   }
 }

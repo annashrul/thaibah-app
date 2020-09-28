@@ -337,7 +337,7 @@ class UserRepository {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     var cek = new AppBar(
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios,color: Colors.white),
+        icon: Icon(Icons.arrow_back_ios,color: Colors.black),
         onPressed: (){
           callback!=null?callback():Navigator.of(context).pop();
         },
@@ -348,18 +348,18 @@ class UserRepository {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
             colors: <Color>[
-              color1 != null?color1:ThaibahColour.primary1,
-              color2 != null?color2:ThaibahColour.primary2,
+              Colors.white,
+              Colors.white,
             ],
           ),
         ),
       ),
       centerTitle: false,
       elevation: 0.0,
-      title:textQ(title,14,Colors.white,FontWeight.bold,TextAlign.left),
+      title:textQ(title,18,Colors.black,FontWeight.bold,TextAlign.left),
       bottom: TabBar(
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
+          indicatorColor: Colors.green,
+          labelColor: Colors.green,
           unselectedLabelColor: Colors.grey[400],
           indicatorWeight: 5 ,
           labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(40)),
@@ -521,8 +521,8 @@ class UserRepository {
     String statusLevel='0';
     String warna1='';
     String warna2='';
-    String latitude='';
-    String longitude='';
+    // String latitude='';
+    // String longitude='';
     String isStatus='';
     final dbHelper = DbHelper.instance;
     final allRows = await dbHelper.queryAllRows();
@@ -548,8 +548,8 @@ class UserRepository {
       statusLevel = row['status_level'];
       warna1 = row['warna1'];
       warna2 = row['warna2'];
-      latitude = row['latitude'];
-      longitude = row['longitude'];
+      // latitude = row['latitude'];
+      // longitude = row['longitude'];
       isStatus = row['isStatus'];
 
     });
@@ -573,8 +573,8 @@ class UserRepository {
     if(param=='statusLevel'){return statusLevel;}
     if(param=='warna1'){return warna1;}
     if(param=='warna2'){return warna2;}
-    if(param=='latitude'){return latitude;}
-    if(param=='longitude'){return longitude;}
+    // if(param=='latitude'){return latitude;}
+    // if(param=='longitude'){return longitude;}
     if(param=='isStatus'){return isStatus;}
   }
   Future<bool> checker() async{

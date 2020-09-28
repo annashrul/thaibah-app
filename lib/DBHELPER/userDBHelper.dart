@@ -140,8 +140,8 @@ class DbHelper {
   static final columnStatusLevel = 'status_level';
   static final columnWarna1 = 'warna1';
   static final columnWarna2 = 'warna2';
-  static final columnLatitude = 'latitude';
-  static final columnLongitude = 'longitude';
+  // static final columnLatitude = 'latitude';
+  // static final columnLongitude = 'longitude';
   static final columnIsStatus = 'isStatus';
 
   DbHelper._privateConstructor();
@@ -187,8 +187,6 @@ class DbHelper {
             $columnStatusLevel TEXT NOT NULL,
             $columnWarna1 TEXT NOT NULL,
             $columnWarna2 TEXT NOT NULL,
-            $columnLatitude TEXT NOT NULL,
-            $columnLongitude TEXT NOT NULL,
             $columnIsStatus TEXT NOT NULL
           )
           ''');

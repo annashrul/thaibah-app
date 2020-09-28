@@ -25,6 +25,7 @@ import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/location_service.dart';
 import 'Constants/constants.dart';
+import 'DBHELPER/userDBHelper.dart';
 import 'Model/checkerModel.dart';
 import 'UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'UI/Widgets/pin_screen.dart';
@@ -43,12 +44,27 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp>  with WidgetsBindingObserver, SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin  {
   @override
   bool get wantKeepAlive => true;
+  final dbHelper = DbHelper.instance;
+  final serviceLocation = LocationService();
+  double lat,lng;
 
-
+  loadLocation()async{
+    print("LATITUDE $lat");
+  }
   @override
   void initState() {
     super.initState();
+    loadLocation();
     WidgetsBinding.instance.addObserver(this);
+    serviceLocation.locationStream.listen((event) {
+      if(mounted){
+        setState(() {
+          lat = event.latitude;
+          lng = event.longitude;
+        });
+      }
+
+    });
   }
 
   @override
@@ -115,8 +131,12 @@ class SplashState extends State<Splash> {
   bool isLoading = false;
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
+      print("LATITUDE IN PIN $lat");
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setDouble('latPin',lat);
+      prefs.setDouble('lngPin',lng);
       // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex()), (Route<dynamic> route) => false);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
     }
     else{
       showDialog(
@@ -148,8 +168,8 @@ class SplashState extends State<Splash> {
     final statusOnBoarding = await userRepository.getDataUser('statusOnBoarding');
     final statusLogin = await userRepository.getDataUser('status');
     final statusExitApp = await userRepository.getDataUser('statusExitApp');
-    final lat = await userRepository.getDataUser('latitude');
-    print("LATITUDE LOCAL DB $lat");
+    // final lat = await userRepository.getDataUser('latitude');
+    // print("LATITUDE LOCAL DB $lat");
     if(checkVersion is Checker){
       Checker checker = checkVersion;
       setState(() {isLoading=false;});
@@ -174,7 +194,7 @@ class SplashState extends State<Splash> {
             setState(() {isLoading=false;});
             Navigator.of(context, rootNavigator: true).pushReplacement(
                 new CupertinoPageRoute(builder: (context) => IntroScreen())
-                // new CupertinoPageRoute(builder: (context) => WidgetIndex())
+              // new CupertinoPageRoute(builder: (context) => WidgetIndex())
             );
           }else{
             setState(() {
@@ -211,7 +231,7 @@ class SplashState extends State<Splash> {
             setState(() {isLoading=false;});
             Navigator.of(context, rootNavigator: true).pushReplacement(
                 new CupertinoPageRoute(builder: (context) => WidgetIndex())
-                // new CupertinoPageRoute(builder: (context) => DashboardThreePage())
+              // new CupertinoPageRoute(builder: (context) => DashboardThreePage())
             );
           }else{
             setState(() {isLoading=false;});
@@ -244,14 +264,23 @@ class SplashState extends State<Splash> {
         }
       }
     }
-
   }
-
+  final serviceLocation = LocationService();
+  double lat,lng;
   @override
   void initState() {
     super.initState();
     isLoading=true;
     checkFirstSeen();
+    serviceLocation.locationStream.listen((event) {
+      if(mounted){
+        setState(() {
+          lat = event.latitude;
+          lng = event.longitude;
+        });
+      }
+
+    });
   }
 
   @override

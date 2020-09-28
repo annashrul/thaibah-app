@@ -215,7 +215,6 @@ class _PenarikanState extends State<Penarikan> {
                               UserRepository().notifNoAction(scaffoldKey, context, "Lengkapi Form Yang Tersedia", "failed");
                             }
                             else{
-
                               _pinBottomSheet(context);
                             }
                           },'Simpan')
@@ -225,104 +224,6 @@ class _PenarikanState extends State<Penarikan> {
                   ],
                 ),
             )
-
-              // child: Column(
-              //   mainAxisAlignment: MainAxisAlignment.start,
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   mainAxisSize: MainAxisSize.min,
-              //   children: <Widget>[
-              //     Padding(
-              //       padding: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 8),
-              //       child:CardHeader(saldo: widget.saldoMain),
-              //     ),
-              //     Padding(
-              //       padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 8),
-              //       child: _bank(context),
-              //     ),
-              //     Padding(
-              //       padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
-              //       child: Column(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: <Widget>[
-              //           Text("Nominal",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-              //           TextFormField(
-              //             controller: moneyController,
-              //             keyboardType: TextInputType.number,
-              //             maxLines: 1,
-              //             style: TextStyle(color:Colors.grey,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-              //             autofocus: false,
-              //             decoration: InputDecoration(
-              //               hintStyle: TextStyle(fontFamily:ThaibahFont().fontQ,color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30)),
-              //               prefixText: 'Rp.',
-              //             ),
-              //             inputFormatters: <TextInputFormatter>[
-              //               WhitelistingTextInputFormatter.digitsOnly
-              //             ],
-              //             textInputAction: TextInputAction.done,
-              //             focusNode: saldoFocus,
-              //             onFieldSubmitted: (value){
-              //               saldoFocus.unfocus();
-              //               if(moneyController.text == '0.00' || moneyController.text == null || bankCodeController == '' || bankCodeController == null){
-              //                 UserRepository().notifNoAction(scaffoldKey, context,"Lengkapi Form Yang SUdah Tersedia","failed");
-              //               }
-              //               else{
-              //                 setState(() {
-              //                   _isLoading = true;
-              //                 });
-              //                 _pinBottomSheet(context);
-              //               }
-              //             },
-              //           )
-              //         ],
-              //       ),
-              //     ),
-              //
-              //     Padding(
-              //       padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
-              //       child: Column(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: <Widget>[
-              //           Text("Pilih Nominal Cepat",style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
-              //           GridView.builder(
-              //             padding: EdgeInsets.only(top:10, bottom: 10, right: 2),
-              //             physics: NeverScrollableScrollPhysics(),
-              //             shrinkWrap: true,
-              //             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              //               crossAxisCount: _crossAxisCount,
-              //               crossAxisSpacing: _crossAxisSpacing,
-              //               mainAxisSpacing: _mainAxisSpacing,
-              //               childAspectRatio: _aspectRatio,
-              //             ),
-              //             itemCount: sampleData.length,
-              //             itemBuilder: (BuildContext context, int index){
-              //               return new InkWell(
-              //                 onTap: () {
-              //                   setState(() {
-              //                     sampleData.forEach((element) => element.isSelected = false);
-              //                     sampleData[index].isSelected = true;
-              //                     FocusScope.of(context).requestFocus(FocusNode());
-              //                   });
-              //                   allReplace(sampleData[index].buttonText);
-              //                 },
-              //                 child: RadioItem(sampleData[index]),
-              //               );
-              //             },
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //     UserRepository().buttonQ(context,(){
-              //       if(moneyController.text == '0.00' || moneyController.text == null ||  bankCodeController == '' || bankCodeController == null){
-              //         UserRepository().notifNoAction(scaffoldKey, context, "Lengkapi Form Yang Tersedia", "failed");
-              //       }
-              //       else{
-              //
-              //         _pinBottomSheet(context);
-              //       }
-              //     },'Simpan')
-              //
-              //   ],
-              // ),
             ),
           ],
         )

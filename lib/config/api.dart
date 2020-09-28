@@ -3,6 +3,7 @@ class ApiService {
  final String baseUrl   = "http://thaibah.com:3010/api/v1/";
 // final String baseUrl   = "http://192.168.100.10:3010/api/v1/";
  final String assetsLocal = "assets/images/";
+ final String assetsServer = "https://thaibah.com/assets/icon/baru/";
  final String baseAssets  = "http://thaibah.com:3000/assets/";
  final String noImage = 'https://icon-library.com/images/no-image-icon/no-image-icon-13.jpg';
  final String token       = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZWEyNDQ0ZC0zZDZiLTQyNGItYTQ3YS00OTBiY2I3NTYwYjgiLCJpYXQiOjE1NzEwNDI0OTEsImV4cCI6MTU3MzYzNDQ5MX0.lvRR9rU3cdLbJ9Gi0Ryucwl_7IMK6NF7BTblIQUDA9Q";

@@ -1,17 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/component/pin/resendAuth.dart';
+import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/location_service.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 import 'package:thaibah/Constants/constants.dart';
 
 class PinScreen extends StatefulWidget {
+  final String param;
   final Function(BuildContext context, bool isTrue) callback;
-  PinScreen({this.callback});
+  PinScreen({this.param,this.callback});
 
   @override
   PinScreenState createState() => new PinScreenState();
@@ -31,6 +35,8 @@ class PinScreenState extends State<PinScreen> {
     });
     print("############## PIN ABI = $pinQ $cek #######################");
   }
+
+
 
   Future biometrics() async {
     setState(() {
@@ -83,8 +89,8 @@ class PinScreenState extends State<PinScreen> {
     }
 
   }
-
-
+  final serviceLocation = LocationService();
+  double lat,lng;
 
   @override
   void initState() {
@@ -94,16 +100,25 @@ class PinScreenState extends State<PinScreen> {
     });
     isLoading=false;
     super.initState();
+    serviceLocation.locationStream.listen((event) {
+      if(mounted){
+        setState(() {
+          lat = event.latitude;
+          lng = event.longitude;
+        });
+      }
+
+    });
   }
   final userRepository = UserRepository();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
+  var currentText;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: LockScreenQ(
+      body: widget.param==''||widget.param==null?LockScreenQ(
         showFingerPass: true,
         forgotPin: 'Lupa Pin ? Klik Disini',
         fingerFunction: biometrics,
@@ -130,11 +145,43 @@ class PinScreenState extends State<PinScreen> {
           });
           _check(context);
         }
+      ):LockScreenQ(
+          title: "Keamanan",
+          passLength: 4,
+          bgImage: "assets/images/bg.jpg",
+          borderColor: Colors.black,
+          showWrongPassDialog: true,
+          wrongPassContent: "Kode OTP Tidak Sesuai",
+          wrongPassTitle: "Opps!",
+          wrongPassCancelButtonText: "Batal",
+          deskripsi: 'Masukan Kode OTP Yang Telah Kami Kirim Melalui Pesan WhatsApp ${ApiService().showCode == true ? widget.param : ""}',
+          passCodeVerify: (passcode) async {
+            var concatenate = StringBuffer();
+            passcode.forEach((item){
+              concatenate.write(item);
+            });
+            setState(() {
+              currentText = concatenate.toString();
+            });
+            if(currentText != widget.param){
+              return false;
+            }
+            return true;
+          },
+          onSuccess: () {
+            setState(() {
+              isLoading = true;
+            });
+            _check(context);
+          }
       ),
     );
   }
 
   Future _check(/*String txtPin,*/ BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setDouble('lat',lat);
+    prefs.setDouble('lng',lng);
     widget.callback(context, true);
   }
 
