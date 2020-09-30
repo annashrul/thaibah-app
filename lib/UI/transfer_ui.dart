@@ -440,7 +440,6 @@ class _TransferUIState extends State<TransferUI> {
         if (!currentFocus.hasPrimaryFocus) {
           tfFocus.unfocus();
         }
-
         FocusScope.of(context).requestFocus(new FocusNode());
       },
       child:StreamBuilder(

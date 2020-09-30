@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +11,7 @@ import 'package:http/http.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
@@ -21,6 +24,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'detailSosmed.dart';
+import 'myFeed.dart';
 
 class ExploreFeed extends StatefulWidget {
   @override
@@ -36,20 +40,44 @@ class _ExploreFeedState extends State<ExploreFeed> {
   bool isLoading1 = false;
   int perpage = 10;
   final _bloc = SosmedBloc();
-  load() async{
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    perpage = perpage += 10;
-    // await prefs.setInt('perpage', perpage);
-    _bloc.fetchListSosmed(1,perpage,'kosong');
+  String gambar='',nama='';
+  final userRepository = UserRepository();
+  Future<File> file;
+  String base64Image;
+  File tmpFile;
+  File _image;
+  String fileName;
+  Future sendFeed(caption,img) async{
+    if(img != null){
+      fileName = img.path.split("/").last;
+      var type = fileName.split('.');
+      base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(img.readAsBytesSync());
+    }
+    else{
+      base64Image = "";
+    }
+    var res = await SosmedProvider().sendFeed(caption, base64Image);
+    if(res is GeneralInsertId){
+      GeneralInsertId results = res;
+      if(results.status == 'success'){
+        _bloc.fetchListSosmed(1,perpage,'kosong');
+        Navigator.pop(context);
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"success");
+      }
+      else{
+        Navigator.pop(context);
+        print(results.msg);
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+      }
+    }
+    else{
+      General results = res;
+      print(results.msg);
+      Navigator.pop(context);
+
+      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
+    }
   }
-
-  Future loadData() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int page=prefs.getInt("perpage");
-    _bloc.fetchListSosmed(1,page==null?10:page,'kosong');
-  }
-
-
   Future share(img,caption,index) async{
     var response = await Client().get(img);
     final bytes = response.bodyBytes;
@@ -80,7 +108,7 @@ class _ExploreFeedState extends State<ExploreFeed> {
         General results = res;
         if(results.status == 'success'){
           print("sukses");
-          loadData();
+          load();
           // Navigator.pop(context);
           setState(() {
             Navigator.of(context).pop(false);
@@ -101,6 +129,28 @@ class _ExploreFeedState extends State<ExploreFeed> {
 
 
   }
+  Future<bool> _loadMore() async {
+    print("onLoadMore");
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+    load();
+    return true;
+  }
+
+  Future loadUser() async{
+    final img = await userRepository.getDataUser('picture');
+    final name = await userRepository.getDataUser('name');
+    setState(() {
+      gambar=img;
+      nama=name;
+    });
+  }
+
+  void load() {
+    perpage = perpage += 10;
+    print("PERPAGE ${perpage}");
+    setState(() {});
+    _bloc.fetchListSosmed(1,perpage,'kosong');
+  }
   Future<void> refresh() async {
     setState(() {
       isLoading=true;
@@ -111,19 +161,12 @@ class _ExploreFeedState extends State<ExploreFeed> {
       isLoading=false;
     });
   }
-  Future<bool> _loadMore() async {
-    print("onLoadMore");
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    load();
-    return true;
-  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(mounted){
-      loadData();
-    }
+    loadUser();
+    _bloc.fetchListSosmed(1,perpage,'kosong');
   }
 
   @override
@@ -139,17 +182,44 @@ class _ExploreFeedState extends State<ExploreFeed> {
       key: _scaffoldKey,
       appBar: UserRepository().appBarWithButton(context,"Explore",(){
         Navigator.pop(context);
-      },<Widget>[]),
-      body: StreamBuilder(
-          stream: _bloc.getResult,
-          builder: (context, AsyncSnapshot<ListSosmedModel> snapshot){
-            if (snapshot.hasData) {
-              return itemContext(snapshot, context);
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-            return UserRepository().loadingWidget();
-          }
+      },<Widget>[
+        Stack(
+          children: <Widget>[
+            GestureDetector(
+              onTap: (){
+                Navigator.of(context, rootNavigator: true).push(
+                    new CupertinoPageRoute(
+                        builder: (context) =>MyFeed()
+                    )
+                );
+              },
+              child: Container(
+                margin:EdgeInsets.only(top:16.0,right:10),
+                child: Icon(Icons.account_circle,color: Colors.grey),
+              ),
+            ),
+
+          ],
+        ),
+      ]),
+      body: Column(
+        children: [
+          writeSomething(context),
+          SizedBox(height:10),
+          Expanded(
+              child:StreamBuilder(
+                  stream: _bloc.getResult,
+                  builder: (context, AsyncSnapshot<ListSosmedModel> snapshot){
+                    if (snapshot.hasData) {
+                      return itemContext(snapshot, context);
+                    } else if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    }
+                    return UserRepository().loadingWidget();
+                  }
+              )
+          )
+        ],
       ),
     );
   }
@@ -157,14 +227,14 @@ class _ExploreFeedState extends State<ExploreFeed> {
   Widget itemContext(AsyncSnapshot<ListSosmedModel> snapshot, BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    return snapshot.data.result.data.length>0?LiquidPullToRefresh(
+    return snapshot.data.result.data.length>0?Container(
+      child: LiquidPullToRefresh(
         color: Colors.transparent,
         backgroundColor:ThaibahColour.primary2,
         key: _refresh,
         onRefresh:refresh,
         child: LoadMoreQ(
           child: ListView.builder(
-
               scrollDirection: Axis.vertical,
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
@@ -201,33 +271,39 @@ class _ExploreFeedState extends State<ExploreFeed> {
                         ),
                       ),
                     ).then((val){
-                      loadData(); //you get details from screen2 here
+                      load(); //you get details from screen2 here
                     });
                   },
                   child: Column(
                     children: <Widget>[
                       Container(
-                        padding: EdgeInsets.only(left:15,right:15,top:10),
-                        child: Row(
-                          children: <Widget>[
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(snapshot.data.result.data[index].picture),
-                              radius: 20.0,
-                            ),
-                            SizedBox(width: 7.0),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                UserRepository().textQ(snapshot.data.result.data[index].penulis, 14, Colors.black,FontWeight.bold, TextAlign.left),
-                                SizedBox(height: 5.0),
-                                UserRepository().textQ(snapshot.data.result.data[index].createdAt, 12, Colors.grey,FontWeight.normal, TextAlign.left),
-                              ],
-                            ),
-                          ],
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(snapshot.data.result.data[index].penulisPicture),
+                            radius: 20.0,
+                          ),
+                          title: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              UserRepository().textQ(snapshot.data.result.data[index].penulis, 14, Colors.black,FontWeight.bold, TextAlign.left),
+                              SizedBox(height: 5.0),
+                              UserRepository().textQ(snapshot.data.result.data[index].createdAt, 12, Colors.grey,FontWeight.normal, TextAlign.left),
+                            ],
+                          ),
+                          trailing: Container(
+                              margin: EdgeInsets.only(right: 10.0),
+                              child:InkWell(
+                                  onTap:(){
+                                    UserRepository().loadingQ(context);
+                                    share(snapshot.data.result.data[index].picture,snapshot.data.result.data[index].caption,index);
+                                    // share(snapshot.data.result.picture,snapshot.data.result.caption);
+                                  },
+                                  child:new Icon(FontAwesomeIcons.shareAlt)
+                              )
+                          ),
                         ),
                       ),
-
                       SizedBox(height: 20.0),
                       Container(
                         padding: EdgeInsets.only(left:15,right:15),
@@ -291,14 +367,9 @@ class _ExploreFeedState extends State<ExploreFeed> {
                             ),
                             Row(
                               children: <Widget>[
-                                UserRepository().textQ('${snapshot.data.result.data[index].comments} komentar  •  ', 10, Colors.black, FontWeight.bold,TextAlign.left),
-                                InkWell(
-                                  onTap:(){
-                                    UserRepository().loadingQ(context);
-                                    share(snapshot.data.result.data[index].picture,snapshot.data.result.data[index].caption,index);
-                                  },
-                                  child:Icon(FontAwesomeIcons.share, size: 15.0,color: Colors.black,),
-                                )
+                                Icon(FontAwesomeIcons.comments, size: 15.0, color: Colors.black),
+                                SizedBox(width: 5.0,),
+                                UserRepository().textQ('${snapshot.data.result.data[index].comments} komentar', 10, Colors.black, FontWeight.bold,TextAlign.left),
                               ],
                             ),
                           ],
@@ -322,7 +393,57 @@ class _ExploreFeedState extends State<ExploreFeed> {
           isFinish: snapshot.data.result.data.length < perpage,
           onLoadMore: _loadMore,
         ),
+      ),
     ):UserRepository().noData();
 
+  }
+
+  Widget writeSomething(BuildContext context){
+    return ListTile(
+      title: InkWell(
+        onTap: ()=>_lainnyaModalBottomSheet(context),
+        child: Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                border: Border.all(
+                    width: 1.0,
+                    color: Colors.grey[400]
+                ),
+                borderRadius: BorderRadius.circular(10.0)
+            ),
+            child: UserRepository().textQ("tulis status anda disini ...",12,Colors.grey,FontWeight.bold,TextAlign.left)
+        ),
+      ),
+      leading: CircleAvatar(
+          radius:20.0,
+          backgroundImage: NetworkImage('$gambar')
+      ),
+
+    );
+
+  }
+  void _lainnyaModalBottomSheet(context){
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+        backgroundColor: Colors.white,
+        context: context,
+        isScrollControlled: true,
+        builder: (context){
+          return DraggableScrollableSheet(
+            initialChildSize:1, // half screen on load
+            maxChildSize: 1,       // full screen on scroll
+            minChildSize: 0.25,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return BottomWidget(sendFeed: (String caption, File img){
+                setState(() {
+                  UserRepository().loadingQ(context);
+                });
+                sendFeed(caption,img);
+              },name:nama);
+            },
+          );
+
+        }
+    );
   }
 }

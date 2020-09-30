@@ -172,7 +172,6 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
     return Scaffold(
       key: scaffoldKey,
       appBar: UserRepository().appBarNoButton(context,"Produk",<Widget>[

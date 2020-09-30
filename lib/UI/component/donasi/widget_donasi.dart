@@ -102,6 +102,7 @@ class _WidgetDonasiState extends State<WidgetDonasi> with AutomaticKeepAliveClie
                             verifikasiPenggalang: snapshot.data.result.data[index].verifikasiPenggalang.toString(),
                             terkumpul: snapshot.data.result.data[index].terkumpul,
                             callback: ()=>load(),
+                            noDeadline: snapshot.data.result.data[index].nodeadline,
                           );
                         }
                     ),
@@ -132,6 +133,7 @@ class DonasiContent extends StatefulWidget {
   final String verifikasiPenggalang;
   final String terkumpul;
   final Function callback;
+  final int noDeadline;
   DonasiContent({
     this.id,
     this.gambar,
@@ -141,7 +143,8 @@ class DonasiContent extends StatefulWidget {
     this.todeadline,
     this.verifikasiPenggalang,
     this.terkumpul,
-    this.callback
+    this.callback,
+    this.noDeadline
   });
   @override
   _DonasiContentState createState() => _DonasiContentState();
@@ -157,7 +160,7 @@ class _DonasiContentState extends State<DonasiContent> {
       onTap: (){
         Navigator.of(context, rootNavigator: true).push(
             new CupertinoPageRoute(
-                builder: (context) => ScreenDetailDonasi(id:widget.id)
+                builder: (context) => ScreenDetailDonasi(id:widget.id,noDeadline:widget.noDeadline,toDeadline:widget.todeadline)
             )
         ).whenComplete(() => widget.callback());
       },
@@ -227,7 +230,7 @@ class _DonasiContentState extends State<DonasiContent> {
                             height: 5,
                             child: LinearProgressIndicator(
                               value: widget.persentase, // percent filled
-                              valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary2),
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                               backgroundColor: Colors.grey[200],
                             ),
                           ),
@@ -235,7 +238,7 @@ class _DonasiContentState extends State<DonasiContent> {
                         SizedBox(height: 5.0),
                         UserRepository().textQ('Rp ${formatter.format(int.parse(widget.terkumpul))}', 12, Colors.green, FontWeight.bold, TextAlign.left),
                         SizedBox(height: 5.0),
-                        UserRepository().textQ(widget.todeadline, 10, Colors.grey, FontWeight.normal, TextAlign.left),
+                        widget.noDeadline==1?Icon(Icons.all_inclusive,color: Colors.grey[400]):UserRepository().textQ(widget.todeadline, 10, Colors.grey, FontWeight.normal, TextAlign.left),
                       ],
                       crossAxisAlignment: CrossAxisAlignment.start,
                     ),

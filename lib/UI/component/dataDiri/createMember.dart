@@ -22,22 +22,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/config/user_repo.dart';
-Future<Response> post(String url,var body)async{
-  return await http
-      .post(Uri.encodeFull(url), body: body, headers: {"Accept":"application/json"})
-      .then((http.Response response) {
 
-    final int statusCode = response.statusCode;
-
-    if (statusCode < 200 || statusCode > 400 || json == null) {
-      throw new Exception("Error while fetching data");
-    }
-    return Response.fromJson(json.decode(response.body));
-  });
-}
-
-
-enum SingingCharacter { lafayette, jefferson }
 
 class CreateMember extends StatefulWidget {
   CreateMember({this.kdReff,this.nama}) : super();
@@ -53,11 +38,6 @@ class _CreateMemberState extends State<CreateMember> {
   Future<File> file;
   String base64Image;
   File tmpFile;
-  double _height;
-  double _width;
-  double _pixelRatio;
-  bool _large;
-  bool _medium;
   var pinController   = TextEditingController();
   var confirmPinController   = TextEditingController();
   var nameController = TextEditingController();
@@ -166,12 +146,12 @@ class _CreateMemberState extends State<CreateMember> {
         );
       }else{
         setState(() {_isLoading = false;});
-        return showInSnackBar(result.msg);
+        UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
       }
     }else{
       General results = res;
       setState(() {_isLoading = false;});
-      return showInSnackBar(results.msg);
+      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
     }
 
   }
@@ -239,23 +219,7 @@ class _CreateMemberState extends State<CreateMember> {
     super.dispose();
   }
 
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Rubik"),
-      ),
-      backgroundColor: Colors.redAccent,
-      duration: Duration(seconds: 3),
-    ));
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -264,8 +228,6 @@ class _CreateMemberState extends State<CreateMember> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: UserRepository().appBarWithButton(context, "Tambah Jaringan",(){Navigator.pop(context);},<Widget>[]),
-
-      // appBar: UserRepository().appBarWithButton(context, "Tambah Jaringan",warna1,warna2,(){Navigator.pop(context);},Container()),
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
       body: _form(),
@@ -281,7 +243,7 @@ class _CreateMemberState extends State<CreateMember> {
     return ListView(
       children: <Widget>[
         Container(
-          padding:EdgeInsets.all(10.0),
+          padding:EdgeInsets.only(left:15.0,right:15.0,bottom: 10.0),
           decoration: BoxDecoration(
               boxShadow: [
                 new BoxShadow(

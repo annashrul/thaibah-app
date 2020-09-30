@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/user_location.dart';
 
@@ -21,6 +22,12 @@ class LocationService  with ChangeNotifier  {
               latitude: locationData.latitude,
               longitude: locationData.longitude,
             ));
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setDouble('lat',locationData.latitude);
+            prefs.setDouble('lng',locationData.longitude);
+
+
+            print("LATITUDE DAN LONGITUDE ${prefs.getDouble('lat')} - ${prefs.getDouble('lng')}");
           }
         });
       }

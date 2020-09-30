@@ -60,15 +60,20 @@ class _RegistState extends State<Regist> {
 
 
   bool _secureText = true;
+  bool _secureText1 = true;
   showHide() {
     setState(() {
       _secureText = !_secureText;
     });
   }
+  showHide1() {
+    setState(() {
+      _secureText1 = !_secureText1;
+    });
+  }
 
 
   Future create() async {
-
     final checkConnection = await userRepository.check();
     if(checkConnection == false){
       setState(() {_isLoading = false;});
@@ -78,42 +83,64 @@ class _RegistState extends State<Regist> {
       if (nameController.text == "") {
         setState(() {Navigator.pop(context);});
         UserRepository().notifNoAction(_scaffoldKey, context,"Nama Harurs Diisi","failed");
+        await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
+        nameFocus.requestFocus();
       }
       else if(noHpController.text == ""){
         setState(() {Navigator.pop(context);});
         UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Harus Diisi","failed");
+        await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
+        nohpFocus.requestFocus();
       }
       else if(pinController.text == ""){
         setState(() {Navigator.pop(context);});
         UserRepository().notifNoAction(_scaffoldKey, context,"PIN Harus Diisi","failed");
+        await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
+        pinFocus.requestFocus();
       }
-      else if(pinController.text == ""){
+      else if(confirmPinController.text == ""){
         setState(() {Navigator.pop(context);});
         UserRepository().notifNoAction(_scaffoldKey, context,"Konfirmasi PIN Harus Diisi","failed");
+        await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
+        confirmPinFocus.requestFocus();
       }
       else if(reffController.text == ""){
         setState(() {Navigator.pop(context);});
         UserRepository().notifNoAction(_scaffoldKey, context,"Kode Referral Harus Diisi","failed");
+        await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
+        reffFocus.requestFocus();
       }
       else if(pinController.text != confirmPinController.text){
         setState(() {Navigator.pop(context);});
         pinController.clear();
         confirmPinController.clear();
         UserRepository().notifNoAction(_scaffoldKey, context,"PIN Yang Anda Masuka Tidak Sesuai","failed");
+        await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
+        confirmPinFocus.requestFocus();
 
       }
       else{
         if(pinController.text.length > 6 || pinController.text.length < 6){
           setState(() {Navigator.pop(context);});
+          pinController.clear();
           UserRepository().notifNoAction(_scaffoldKey, context,"PIN Tidak Boleh Lebih atau kurang Dari 6 Digit","failed");
+          await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
+          pinFocus.requestFocus();
         }
         else if(confirmPinController.text.length > 6 || confirmPinController.text.length < 6){
           setState(() {Navigator.pop(context);});
+          confirmPinController.clear();
           UserRepository().notifNoAction(_scaffoldKey, context,"Konfirmasi PIN Tidak Boleh Lebih atau kurang Dari 6 Digit","failed");
+          await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
+          confirmPinFocus.requestFocus();
         }
         else if(pinController.text[0]=='0' || confirmPinController.text[0]=='0'){
           setState(() {Navigator.pop(context);});
-          UserRepository().notifNoAction(_scaffoldKey, context,"PIN dan Konfirmasi Tidak Boleh Diawali Angka 0","failed");
+          pinController.clear();
+          confirmPinController.clear();
+          UserRepository().notifNoAction(_scaffoldKey, context,"PIN dan Konfirmasi PIN Tidak Boleh Diawali Angka 0","failed");
+          await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
+          pinFocus.requestFocus();
         }
         else{
           if(codeCountry == ''){
@@ -243,7 +270,6 @@ class _RegistState extends State<Regist> {
   String _valType='whatsapp' ;  //Ini untuk menyimpan value data friend
   List _type = ["whatsapp", "sms"];  //Array My Friend
   Future<void> loadData() async {
-
     try{
       var jsonString = await http.get(
           ApiService().baseUrl+'info/typeotp'
@@ -281,12 +307,10 @@ class _RegistState extends State<Regist> {
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
       appBar: UserRepository().appBarWithButton(context, "Form Pendaftaran",(){Navigator.pop(context);},<Widget>[]),
-
-      // appBar:UserRepository().appBarWithButton(context, "Form Pendaftaran",warna1,warna2,(){Navigator.of(context).pop();},Container()),
       body: ListView(
           children: <Widget>[
             Container(
-              padding:EdgeInsets.only(left:10.0,right:10.0),
+              padding:EdgeInsets.only(left:15.0,right:15.0,bottom: 10.0),
               decoration: BoxDecoration(
                   boxShadow: [
                     new BoxShadow(
@@ -307,207 +331,251 @@ class _RegistState extends State<Regist> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text("Lengkapi Form Dibawah Ini ..",style: TextStyle(fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(40))),
-                      ],
+                  UserRepository().textQ("Nama",10,Colors.black,FontWeight.bold,TextAlign.left),
+                  SizedBox(height: 10.0),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Divider()
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text("Nama",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30))),
-                        TextFormField(
-                          style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ),
-                          autofocus: false,
-                          controller: nameController,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize: ScreenUtilQ.getInstance().setSp(30))),
-                          focusNode: nameFocus,
-                          onFieldSubmitted: (term){
-                            _fieldFocusChange(context, nameFocus, nohpFocus);
-                          },
-                          textInputAction: TextInputAction.next,
+                    child: TextFormField(
+                      style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                      controller: nameController,
+                      maxLines: 1,
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey[200]),
                         ),
-                        SizedBox(height: ScreenUtilQ.getInstance().setHeight(50)),
-                        RichText(
-                          text: TextSpan(
-                            text: 'No WhatsApp ',
-                            style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize:12),
-                            children: <TextSpan>[
-                              TextSpan(text: '( Silahkan Masukan No WhatsApp Yang Akan Anda Daftarkan )', style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
-                            ],
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                      ),
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      focusNode: nameFocus,
+                      onFieldSubmitted: (term){
+                        _fieldFocusChange(context, nameFocus, nohpFocus);
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  UserRepository().textQ("Masukan No WhatsApp Yang Akan Anda Daftarkan",10,Colors.black,FontWeight.bold,TextAlign.left),
+                  SizedBox(height: 10.0),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
+                    ),
+                    child:  Row(
+                      children: <Widget>[
+                        Container(
+                          child: CountryCodePicker(
+                            onChanged: (CountryCode  countryCode){
+                              setState(() {
+                                codeCountry = "${countryCode.dialCode.replaceAll('+', '')}";
+                              });
+                            },
+                            initialSelection: 'ID',
+                            favorite: ['+62','ID'],
+                            showCountryOnly: true,
+                            showOnlyCountryWhenClosed: false,
+                            alignLeft: true,
+                            textStyle: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik'),
                           ),
+                          width: MediaQuery.of(context).size.width/3.1-30.0,
                         ),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              child: CountryCodePicker(
-                                onChanged: (CountryCode  countryCode){
-                                  setState(() {
-                                    codeCountry = "${countryCode.dialCode.replaceAll('+', '')}";
-                                  });
-                                },
-                                initialSelection: 'ID',
-                                favorite: ['+62','ID'],
-                                showCountryOnly: true,
-                                showOnlyCountryWhenClosed: false,
-                                alignLeft: true,
-                                textStyle: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik'),
+                        Container(
+                          width: MediaQuery.of(context).size.width/1.5-18.0,
+                          child: TextFormField(
+                            style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                            controller: noHpController,
+                            maxLines: 1,
+                            autofocus: false,
+                            decoration: InputDecoration(
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey[200]),
                               ),
-                              width: MediaQuery.of(context).size.width/3.1-30.0,
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width/1.5-18.0,
-                              child: TextFormField(
-                                style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ),
-                                controller: noHpController,
-                                keyboardType: TextInputType.number,
-                                focusNode: nohpFocus,
-                                onFieldSubmitted: (term){
-                                  _fieldFocusChange(context, nohpFocus, pinFocus);
-                                },
-                                inputFormatters: <TextInputFormatter>[
-                                  WhitelistingTextInputFormatter.digitsOnly
-                                ],
-                                textInputAction: TextInputAction.next,
-                                decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30))),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide.none,
                               ),
+                              hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                             ),
+                            keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.next,
+                            focusNode: nohpFocus,
+                            onFieldSubmitted: (term){
+                              _fieldFocusChange(context, nohpFocus, pinFocus);
+                            },
+                            inputFormatters: <TextInputFormatter>[
+                              WhitelistingTextInputFormatter.digitsOnly
+                            ],
+                          ),
+                        ),
 
-                          ],
-                        ),
-                        SizedBox(height: ScreenUtilQ.getInstance().setHeight(50)),
-                        RichText(
-                          text: TextSpan(
-                            text: 'PIN ',
-                            style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize:12),
-                            children: <TextSpan>[
-                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        TextFormField(
-                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ),
-                          obscureText: _secureText,
-                          maxLengthEnforced: true,
-                          controller: pinController,
-                          decoration: InputDecoration(
-                            suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
-                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30)),
-                          ),
-                          keyboardType: TextInputType.number,
-                          focusNode: pinFocus,
-                          onFieldSubmitted: (term){
-                            _fieldFocusChange(context, pinFocus, confirmPinFocus);
-                          },
-                          textInputAction: TextInputAction.next,
-                        ),
-                        SizedBox(height: ScreenUtilQ.getInstance().setHeight(50)),
-                        RichText(
-                          text: TextSpan(
-                            text: 'Konfirmasi PIN',
-                            style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontSize:12),
-                            children: <TextSpan>[
-//                              TextSpan(text: '( buat pin sebanyak 6 digit )', style: TextStyle(fontFamily: "Rubik",fontSize: 10,color:Colors.green,fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        TextFormField(
-                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ),
-                          obscureText: _secureText,
-                          maxLengthEnforced: true,
-                          controller: confirmPinController,
-                          decoration: InputDecoration(
-                            suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility)),
-                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30)),
-                          ),
-                          keyboardType: TextInputType.number,
-                          focusNode: confirmPinFocus,
-                          onFieldSubmitted: (term){
-                            _fieldFocusChange(context, pinFocus, reffFocus);
-                          },
-                          textInputAction: TextInputAction.next,
-                        ),
-                        SizedBox(height: ScreenUtilQ.getInstance().setHeight(50)),
-                        Text("Kode Referral",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30))),
-                        TextFormField(
-                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ),
-                          maxLengthEnforced: true,
-                          textCapitalization: TextCapitalization.sentences,
-                          decoration: InputDecoration(
-                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30)),
-                          ),
-                          onChanged: (value) {
-                            if (reffController.text != value.toUpperCase())
-                              reffController.value = reffController.value.copyWith(text: value.toUpperCase());
-                          },
-                          controller: reffController,
-                          keyboardType: TextInputType.number,
-                          focusNode: reffFocus,
-                          onFieldSubmitted: (term){
-                            reffFocus.unfocus();
-                          },
-                          textInputAction: TextInputAction.done,
-                        )
                       ],
                     ),
                   ),
-
-
-
-
-                  typeOtp==true? Padding(
-                    padding: EdgeInsets.only(left:16.0,right:16.0,top:16.0,bottom:0.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text("Kirim OTP Via ?", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),),
-                        SizedBox(height:10.0),
-                        DropdownButton(
-                          isDense: true,
-                          isExpanded: true,
-                          hint: Text("Kirim OTP Via ?",style: TextStyle(fontFamily: 'Rubik'),),
-                          value: _valType,
-                          items: _type.map((value) {
-                            return DropdownMenuItem(
-                              child: Text(value,style: TextStyle(fontFamily: 'Rubik',fontSize: ScreenUtilQ.getInstance().setSp(30))),
-                              value: value,
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _valType = value;
-                            });
-                          },
-                        )
-                      ],
+                  SizedBox(height: 10.0),
+                  UserRepository().textQ("PIN Harus 6 Digit",10,Colors.black,FontWeight.bold,TextAlign.left),
+                  SizedBox(height: 10.0),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
                     ),
-                  ):Container(),
-                  SizedBox(height: 20.0),
+                    child: TextFormField(
+                      maxLength: 6,
+                      style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                      controller: pinController,
+                      obscureText: _secureText,
+                      maxLengthEnforced: true,
+                      maxLines: 1,
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        counterText: '',
+                        suffixIcon: IconButton(onPressed: showHide,icon: Icon(_secureText? Icons.visibility_off: Icons.visibility, color: Colors.black,)),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey[200]),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.next,
+                      focusNode: pinFocus,
+                      onFieldSubmitted: (term){
+                        _fieldFocusChange(context, pinFocus, confirmPinFocus);
+                      },
+
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  UserRepository().textQ("Konfirmasi PIN",10,Colors.black,FontWeight.bold,TextAlign.left),
+                  SizedBox(height: 10.0),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
+                    ),
+                    child: TextFormField(
+                      maxLength: 6,
+                      style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                      controller: confirmPinController,
+                      obscureText: _secureText1,
+                      maxLengthEnforced: true,
+                      maxLines: 1,
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        counterText: '',
+                        suffixIcon: IconButton(onPressed: showHide1,icon: Icon(_secureText1? Icons.visibility_off: Icons.visibility, color: Colors.black,)),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey[200]),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.next,
+                      focusNode: confirmPinFocus,
+                      onFieldSubmitted: (term){
+                        _fieldFocusChange(context, confirmPinFocus, reffFocus);
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  UserRepository().textQ("Kode Referral",10,Colors.black,FontWeight.bold,TextAlign.left),
+                  SizedBox(height: 10.0),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
+                    ),
+                    child: TextFormField(
+                      style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                      controller: reffController,
+                      textCapitalization: TextCapitalization.sentences,
+                      maxLengthEnforced: true,
+                      maxLines: 1,
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey[200]),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.done,
+                      focusNode: reffFocus,
+                      onFieldSubmitted: (term){
+                        reffFocus.unfocus();
+                      },
+                      onChanged: (value) {
+                        if (reffController.text != value.toUpperCase())
+                          reffController.value = reffController.value.copyWith(text: value.toUpperCase());
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  typeOtp==false?Container():UserRepository().textQ("Kirim OTP Via ??",12,Colors.black,FontWeight.bold,TextAlign.left),
+                  typeOtp==false?Container():SizedBox(height: 10.0),
+                  typeOtp==false?Container():Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      child: DropdownButton<String>(
+                        isDense: true,
+                        isExpanded: true,
+                        value: _valType,
+                        icon: Icon(Icons.arrow_drop_down),
+                        iconSize: 20,
+                        underline: SizedBox(),
+                        onChanged: (value) {
+                          setState(() {
+                            _valType = value;
+                          });
+                        },
+                        items: <String>['whatsapp', 'sms'].map<DropdownMenuItem<String>>((String value) {
+                          return new DropdownMenuItem<String>(
+                            value: value,
+                            child: Row(
+                              children: [
+                                UserRepository().textQ(value,10,Colors.black,FontWeight.bold,TextAlign.left)
+                              ],
+                            ),
+                          );
+                        }).toList(),
+
+                      )
+                  ),
+                  SizedBox(height: typeOtp==false?0.0:10.0),
                   UserRepository().buttonQ(context,()async{
                     setState(() {
                       UserRepository().loadingQ(context);
                     });
                     create();
-
                   },'Simpan')
-
                 ],
               ),
             ),

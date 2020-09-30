@@ -1146,6 +1146,7 @@ class _CardEmoneyState extends State<CardEmoney> {
                       color: Colors.grey[200]
                   ),
                   child: CircleAvatar(
+                      foregroundColor: Colors.grey,
                       radius: 20,
                       backgroundImage: NetworkImage("${ApiService().assetsServer}${widget.imgUrl}")
                   ),

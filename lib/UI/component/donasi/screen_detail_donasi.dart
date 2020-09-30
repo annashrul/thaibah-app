@@ -21,7 +21,9 @@ import 'package:thaibah/resources/donasi/donasiProvider.dart';
 class ScreenDetailDonasi extends StatefulWidget {
 
   final String id;
-  ScreenDetailDonasi({this.id});
+  final int noDeadline;
+  final String toDeadline;
+  ScreenDetailDonasi({this.id,this.noDeadline,this.toDeadline});
   @override
   _ScreenDetailDonasiState createState() => _ScreenDetailDonasiState();
 }
@@ -47,6 +49,7 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
         stream: detailDonasiBloc.getResult,
         builder: (context, AsyncSnapshot<DetailDonasiModel> snapshot){
           if (snapshot.hasData) {
+
             return NestedScrollView(
               headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                 return <Widget>[
@@ -122,7 +125,8 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               UserRepository().textQ("${snapshot.data.result.donatur.length.toString()} Donatur", 10, Colors.grey, FontWeight.bold, TextAlign.left),
-                              UserRepository().textQ(snapshot.data.result.todeadline, 10, Colors.grey, FontWeight.bold, TextAlign.left),
+                              widget.noDeadline==1?Icon(Icons.all_inclusive,color: Colors.grey):UserRepository().textQ("${snapshot.data.result.todeadline}", 10, Colors.grey, FontWeight.bold, TextAlign.left),
+                              // UserRepository().textQ("${widget.noDeadline==1?'unlimited':snapshot.data.result.todeadline}", 10, Colors.grey, FontWeight.bold, TextAlign.left),
                             ],
                           ),
                           SizedBox(height: 5),
@@ -132,7 +136,7 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
                               height: 5,
                               child: LinearProgressIndicator(
                                 value: snapshot.data.result.persentase, // percent filled
-                                valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary2),
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                                 backgroundColor: Colors.grey[200],
                               ),
                             ),
@@ -283,7 +287,9 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
       ),
       bottomNavigationBar:InkWell(
         onTap: (){
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDonasi(id: widget.id))).whenComplete(() => detailDonasiBloc.fetchDetailDonasi(widget.id));
+          if(widget.noDeadline!=0&&widget.toDeadline.toLowerCase()!='selesai'){
+            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDonasi(id: widget.id))).whenComplete(() => detailDonasiBloc.fetchDetailDonasi(widget.id));
+          }
         },
         child: Container(
           height: kBottomNavigationBarHeight,

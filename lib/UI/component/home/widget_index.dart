@@ -69,9 +69,17 @@ class _WidgetIndexState extends State<WidgetIndex>{
         currentScreen = About();
       });
     }
+    if(widget.param == 'profile'){
+      setState(() {
+        currentTab = 4;
+        currentScreen = MyProfile();
+      });
+    }
   }
   Future checkModeUpdate() async{
+    final token = await userRepository.getDataUser('token');
     final pin = await userRepository.getDataUser('pin');
+    print("################ TOKE $token ######################");
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     if(pin == null || pin == '') {
@@ -204,7 +212,7 @@ class _WidgetIndexState extends State<WidgetIndex>{
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return StreamProvider<UserLocation>(
         create: (context) => LocationService().locationStream,
-        child: WillPopScope(
+        child: modeUpdate == true ? UserRepository().modeUpdate(context) : WillPopScope(
             child: Scaffold(
               key: scaffoldKey,
               body: PageStorage(

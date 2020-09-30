@@ -39,6 +39,7 @@ class _FormDonasiState extends State<FormDonasi> {
     setState(() {
       name = nama;
     });
+    print("NAMA SAYA ADALAH $nama");
   }
 
   Future donasi() async{
@@ -74,8 +75,7 @@ class _FormDonasiState extends State<FormDonasi> {
                 bank_code : bankCodeController
             )),
           );
-          // await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
-          // Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ScreenDetailDonasi(id: widget.id)));
+
         }
         else{
           Navigator.pop(context);
@@ -109,7 +109,6 @@ class _FormDonasiState extends State<FormDonasi> {
       body: ListView(
         padding: EdgeInsets.all(10.0),
         children: [
-
           UserRepository().textQ("Bank",10,Colors.black,FontWeight.bold,TextAlign.left),
           SizedBox(height: 10.0),
           StreamBuilder(
@@ -165,119 +164,117 @@ class _FormDonasiState extends State<FormDonasi> {
               }
           ),
           Divider(color:Colors.white),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    UserRepository().textQ("Nominal",10,Colors.black,FontWeight.bold,TextAlign.left),
-                    SizedBox(height: 10.0),
-                    Container(
-                      width: MediaQuery.of(context).size.width/2.3,
-                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                      decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(10)
+                UserRepository().textQ("Nominal",10,Colors.black,FontWeight.bold,TextAlign.left),
+                SizedBox(height: 10.0),
+                Container(
+                  width: MediaQuery.of(context).size.width/2.3,
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                  decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: TextFormField(
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                    controller: nominalController,
+                    keyboardType: TextInputType.number,
+                    maxLines: 1,
+                    autofocus: false,
+                    decoration: InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey[200]),
                       ),
-                      child: TextFormField(
-                        style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
-                        controller: nominalController,
-                        keyboardType: TextInputType.number,
-                        maxLines: 1,
-                        autofocus: false,
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey[200]),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                        ),
-                        textInputAction: TextInputAction.next,
-                        focusNode: nominalFocus,
-
-                        onFieldSubmitted: (term){
-                          UserRepository().fieldFocusChange(context, nominalFocus,nameFocus);
-                        },
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
                       ),
+                      hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
                     ),
-                  ],
+                    textInputAction: TextInputAction.next,
+                    focusNode: nominalFocus,
+
+                    onFieldSubmitted: (term){
+                      UserRepository().fieldFocusChange(context, nominalFocus,nameFocus);
+                    },
+                  ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        UserRepository().textQ("nama",10,Colors.black,FontWeight.bold,TextAlign.left),
-                        SizedBox(
-                            width: 70,
-                            height: 10,
-                            child: Switch(
-                              activeColor: ThaibahColour.primary2,
-                              value: _switchValue,
-                              onChanged: (bool value) {
-                                print(value);
-                                setState(() {
-                                  _switchValue = value;
-                                  if(_switchValue){
-                                    setState(() {
-                                      nameController.text='Hamba Allah';
-                                    });
-                                  }
-                                  else{
-                                    setState(() {
-                                      nameController.text = name;
-                                    });
-
-                                  }
-                                });
-                              },
-                            )
-                        )
-                      ],
-                    ),
-
-                    SizedBox(height: 10.0),
-                    Container(
-                      width: MediaQuery.of(context).size.width/2.3,
-                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                      decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-                      child: TextFormField(
-                        style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
-                        controller: nameController,
-                        keyboardType: TextInputType.text,
-                        maxLines: 1,
-                        autofocus: false,
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey[200]),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                        ),
-                        textInputAction: TextInputAction.next,
-                        focusNode: nameFocus,
-                        onFieldSubmitted: (term){
-                          UserRepository().fieldFocusChange(context, nameFocus,msgFocus);
-                        },
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
-          ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    UserRepository().textQ("nama",10,Colors.black,FontWeight.bold,TextAlign.left),
+                    SizedBox(
+                        width: 70,
+                        height: 10,
+                        child: Switch(
+                          activeColor: ThaibahColour.primary2,
+                          value: _switchValue,
+                          onChanged: (bool value) {
+                            print(value);
+                            setState(() {
+                              _switchValue = value;
+                              if(_switchValue){
+                                setState(() {
+                                  nameController.text='Hamba Allah';
+                                });
+                              }
+                              else{
+                                setState(() {
+                                  nameController.text = name;
+                                });
+
+                              }
+                            });
+                          },
+                        )
+                    )
+                  ],
+                ),
+
+                SizedBox(height: 10.0),
+                Container(
+                  width: MediaQuery.of(context).size.width/2.3,
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                  decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: TextFormField(
+                    style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                    controller: nameController,
+                    keyboardType: TextInputType.text,
+                    maxLines: 1,
+                    autofocus: false,
+                    decoration: InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey[200]),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                    ),
+                    textInputAction: TextInputAction.next,
+                    focusNode: nameFocus,
+                    onFieldSubmitted: (term){
+                      UserRepository().fieldFocusChange(context, nameFocus,msgFocus);
+                    },
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
           Divider(color:Colors.white),
           UserRepository().textQ("Pesan",10,Colors.black,FontWeight.bold,TextAlign.left),
           SizedBox(height: 10.0),

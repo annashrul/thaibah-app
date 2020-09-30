@@ -1,8 +1,13 @@
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/memberModel.dart';
+import 'package:thaibah/Model/resendOtpModel.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/address/indexAddress.dart';
 import 'package:thaibah/UI/component/bank/indexBank.dart';
@@ -11,6 +16,7 @@ import 'package:thaibah/UI/component/pin/indexPin.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/memberProvider.dart';
 
 class IndexMember extends StatefulWidget {
   final String id;
@@ -21,26 +27,8 @@ class IndexMember extends StatefulWidget {
 
 class _IndexMemberState extends State<IndexMember> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
-  final userRepository = UserRepository();
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
-
   @override
   void initState() {
-    loadTheme();
-
-
     super.initState();
   }
 
@@ -56,8 +44,6 @@ class _IndexMemberState extends State<IndexMember> {
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
       appBar: UserRepository().appBarWithButton(context, "Pengaturan",(){Navigator.pop(context);},<Widget>[]),
-
-      // appBar:UserRepository().appBarWithButton(context,"Pengaturan",warna1,warna2,(){Navigator.pop(context);},Container()),
       body: Container(
           margin: EdgeInsets.only(top:10),
           color: Colors.white,
@@ -84,8 +70,9 @@ class _IndexMemberState extends State<IndexMember> {
                           Navigator.of(context, rootNavigator: true).push(
                             new CupertinoPageRoute(builder: (context) => Pin(saldo: '',param:'profile')),
                           );
+                          // UserRepository().loadingQ(context);
+                          // sendOtp();
                         }),
-
                         Divider(),
                         itemContent(context, "Daftar Alamat","Tap Disini Untuk Mengatur Alamat Anda",  (){
                           Navigator.of(context, rootNavigator: true).push(

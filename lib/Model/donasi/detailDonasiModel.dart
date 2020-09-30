@@ -46,6 +46,7 @@ class Result {
     this.video,
     this.status,
     this.nodeadline,
+    this.idPenggalangDana,
     this.penggalang,
     this.pictPenggalang,
     this.verifikasiPenggalang,
@@ -65,6 +66,7 @@ class Result {
   String video;
   int status;
   int nodeadline;
+  String idPenggalangDana;
   String penggalang;
   String pictPenggalang;
   int verifikasiPenggalang;
@@ -84,6 +86,7 @@ class Result {
     video: json["video"],
     status: json["status"],
     nodeadline: json["nodeadline"],
+    idPenggalangDana: json["id_penggalang_dana"],
     penggalang: json["penggalang"],
     pictPenggalang: json["pict_penggalang"],
     verifikasiPenggalang: json["verifikasi_penggalang"],
@@ -104,6 +107,7 @@ class Result {
     "video": video,
     "status": status,
     "nodeadline": nodeadline,
+    "id_penggalang_dana": idPenggalangDana,
     "penggalang": penggalang,
     "pict_penggalang": pictPenggalang,
     "verifikasi_penggalang": verifikasiPenggalang,
@@ -131,7 +135,7 @@ class Donatur {
   String name;
   String picture;
   String nominal;
-  String rawNominal;
+  int rawNominal;
   String nohp;
   String pesan;
   DateTime createdAt;

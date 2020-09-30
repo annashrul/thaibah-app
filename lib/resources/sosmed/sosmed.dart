@@ -33,21 +33,21 @@ class SosmedProvider {
     if (response.statusCode == 200) {
       return compute(listSosmedModelFromJson,response.body);
     } else {
+      // return 'gagal';
       throw Exception('Failed to load list sosmed');
     }
   }
 
-  Future<ListInboxSosmedModel> fetchListInboxSosmed(var page,var limit) async{
+  Future<ListInboxModel> fetchListInboxSosmed(var where) async{
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
-        ApiService().baseUrl+'notif?page=$page&limit=$limit',
+        ApiService().baseUrl+'notif?page=1$where',
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print("###########################################################Inbox Sosial Media###############################################################");
-    print('socmed?page=$page&limit=$limit');
     print(response.body);
     if (response.statusCode == 200) {
-      return compute(listInboxSosmedModelFromJson,response.body);
+      return compute(listInboxModelFromJson,response.body);
     } else {
       throw Exception('Failed to load list sosmed');
     }

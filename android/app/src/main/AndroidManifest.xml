@@ -50,6 +50,8 @@
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="android.intent.action.com.thaibah"/>
+
             </intent-filter>
         </receiver>
         <service

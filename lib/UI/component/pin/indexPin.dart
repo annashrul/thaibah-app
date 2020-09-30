@@ -86,7 +86,6 @@ class _PinState extends State<Pin> {
               new CupertinoPageRoute(builder: (context) => OtpUpdate(pin:txtPin,otp:result.result.otp)),
             );
           });
-//          print(result.result.otp);
           UserRepository().notifNoAction(_scaffoldKey, context,result.msg,'success');
         }else{
           UserRepository().notifNoAction(_scaffoldKey, context,result.msg,'failed');

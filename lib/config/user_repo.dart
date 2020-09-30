@@ -1,9 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/checkerMemberModel.dart';
@@ -226,7 +231,6 @@ class UserRepository {
                     onTap: () async {
                       final dbHelper = DbHelper.instance;
                       final id = await getDataUser('id');
-
                       Map<String, dynamic> row = {
                         DbHelper.columnId   : id,
                         DbHelper.columnStatus : '0',
@@ -262,16 +266,14 @@ class UserRepository {
       elevation: 0.0,
       backgroundColor: Colors.white, // status bar color
       brightness: Brightness.light,
-      title:ListTile(
-        contentPadding: EdgeInsets.only(top:10,bottom:10),
-        title: UserRepository().textQ(title,18,Colors.black,FontWeight.bold,TextAlign.left),
-
-        leading: CircleAvatar(
+      title: UserRepository().textQ(title,18,Colors.black,FontWeight.bold,TextAlign.left),
+      leading: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: CircleAvatar(
             radius:20.0,
             backgroundImage: AssetImage('assets/images/logoOnBoardTI.png')
         ),
-      ),//
-
+      ),
       actions:widget,// status bar brightness
     );
 
@@ -279,8 +281,6 @@ class UserRepository {
   appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
-
     return  AppBar(
       elevation: 0.0,
       backgroundColor: Colors.white, // status bar color
@@ -307,15 +307,15 @@ class UserRepository {
       elevation: 0.0,
       backgroundColor: Colors.white, // status bar color
       brightness: Brightness.light,
-      title:ListTile(
-        contentPadding: EdgeInsets.only(top:10,bottom:10),
-        title: UserRepository().textQ(title,18,Colors.black,FontWeight.bold,TextAlign.left),
-        leading: CircleAvatar(
+      title:UserRepository().textQ(title,18,Colors.black,FontWeight.bold,TextAlign.left),
+      leading: Padding(
+        padding: EdgeInsets.all(8.0),
+        child:  CircleAvatar(
             radius:20.0,
             backgroundImage: AssetImage('assets/images/logoOnBoardTI.png')
         ),
-      ),//
-      //
+      ),
+
       bottom: TabBar(
           indicatorColor: Colors.green,
           labelColor: Colors.green,
@@ -499,6 +499,42 @@ class UserRepository {
       return true;
     }
     return false;
+  }
+  Future getImageFile(ImageSource source) async {
+    var image = await ImagePicker.pickImage(source: source);
+    File croppedFile = await ImageCropper.cropImage(
+      sourcePath: image.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+      ],
+      androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Thaibah Cropper Image',
+          toolbarColor: Colors.green,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false
+      ),
+      iosUiSettings: IOSUiSettings(
+        minimumAspectRatio: 1.0,
+      ),
+      maxWidth: 512,
+      maxHeight: 512,
+    );
+
+    final quality = 90;
+    final tmpDir = (await getTemporaryDirectory()).path;
+    final target ="$tmpDir/${DateTime.now().millisecondsSinceEpoch}-$quality.png";
+
+    var result = await FlutterImageCompress.compressAndGetFile(
+      croppedFile.path,
+      target,
+      format: CompressFormat.png,
+      quality: 90,
+    );
+
+    return result;
+
+
   }
   Future getDataUser(param) async{
     int id;

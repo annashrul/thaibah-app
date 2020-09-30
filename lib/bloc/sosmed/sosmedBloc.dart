@@ -26,14 +26,14 @@ class SosmedBloc extends BaseBloc{
 
 class InboxSosmedBloc extends BaseBloc{
   bool _isDisposed = false;
-  final PublishSubject<ListInboxSosmedModel> _serviceController = new PublishSubject<ListInboxSosmedModel>();
-  Observable<ListInboxSosmedModel> get getResult => _serviceController.stream;
-  fetchListInboxSosmed(var page, var limit) async {
+  final PublishSubject<ListInboxModel> _serviceController = new PublishSubject<ListInboxModel>();
+  Observable<ListInboxModel> get getResult => _serviceController.stream;
+  fetchListInboxSosmed(var where) async {
     if(_isDisposed) {
       print('false');
     }else{
-      ListInboxSosmedModel listInboxSosmedModel =  await repository.fetchListInboxSosmed(page,limit);
-      _serviceController.sink.add(listInboxSosmedModel);
+      ListInboxModel listInboxModel =  await repository.fetchListInboxSosmed(where);
+      _serviceController.sink.add(listInboxModel);
     }
   }
   void dispose() {

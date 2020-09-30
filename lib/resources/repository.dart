@@ -242,7 +242,7 @@ class Repository{
 
   //######################################### SOSIAL MEDIA #################################################//
   Future<ListSosmedModel> fetchListSosmed(var page, var limit,var param) => sosmedProvider.fetchListSosmed(page,limit,param);
-  Future<ListInboxSosmedModel> fetchListInboxSosmed(var page, var limit) => sosmedProvider.fetchListInboxSosmed(page,limit);
+  Future<ListInboxModel> fetchListInboxSosmed(var where) => sosmedProvider.fetchListInboxSosmed(where);
   Future<ListDetailSosmedModel> fetchListDetailSosmed(var id) => sosmedProvider.fetchListDetailSosmed(id);
   Future<ListLikeSosmedModel> fetchListLikeSosmed(var id) => sosmedProvider.fetchListLikeSosmed(id);
   //######################################### DONASI #################################################//

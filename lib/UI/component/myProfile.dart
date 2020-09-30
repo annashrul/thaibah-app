@@ -103,46 +103,10 @@ class _MyProfileState extends State<MyProfile> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
-      appBar:AppBar(
-        elevation: 1.0,
-        backgroundColor: Colors.white, // status bar color
-        brightness: Brightness.light,
-        title: isLoading?ListTile(
-          contentPadding: EdgeInsets.only(top:10,bottom:10),
-          title: SkeletonFrame(width: 50,height:15),
-          subtitle: SkeletonFrame(width: 50,height:15),
-          leading: CircleAvatar(
-              radius:20.0,
-              backgroundImage: NetworkImage(ApiService().noImage)
-          ),
-
-        ):ListTile(
-          contentPadding: EdgeInsets.only(top:10,bottom:10),
-          title: UserRepository().textQ(name,14,Colors.black.withOpacity(0.7),FontWeight.bold,TextAlign.left),
-          subtitle: GestureDetector(
-            child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  UserRepository().textQ(kdReferral,12,Colors.grey.withOpacity(0.7),FontWeight.bold,TextAlign.left),
-                  SizedBox(width: 5),
-                  Icon(Icons.content_copy, color: Colors.grey, size: 15,),
-                ]
-            ),
-            onTap: () {
-              Clipboard.setData(new ClipboardData(text: '$kdReferral'));
-              UserRepository().notifNoAction(scaffoldKey, context,"Kode Referral Berhasil Disalin","success");
-            },
-          ),
-          leading: CircleAvatar(
-              radius:20.0,
-              backgroundImage: NetworkImage(picture)
-          ),
-        ),
-      ),
+      appBar:UserRepository().appBarNoButton(context,"Profile",<Widget>[]),
       body: isLoading?UserRepository().loadingWidget():Container(
         padding: EdgeInsets.only(top:10.0),
         color: Colors.white,
-
         child: LiquidPullToRefresh(
             color: ThaibahColour.primary2,
             backgroundColor:Colors.white,

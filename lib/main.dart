@@ -131,11 +131,6 @@ class SplashState extends State<Splash> {
   bool isLoading = false;
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
-      print("LATITUDE IN PIN $lat");
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setDouble('latPin',lat);
-      prefs.setDouble('lngPin',lng);
-      // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => DashboardThreePage()), (Route<dynamic> route) => false);
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
     }
     else{

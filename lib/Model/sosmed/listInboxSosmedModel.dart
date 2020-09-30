@@ -1,27 +1,27 @@
 // To parse this JSON data, do
 //
-//     final listInboxSosmedModel = listInboxSosmedModelFromJson(jsonString);
+//     final listInboxModel = listInboxModelFromJson(jsonString);
 
 import 'dart:convert';
 
 import 'package:thaibah/Model/base_model.dart';
 
-ListInboxSosmedModel listInboxSosmedModelFromJson(String str) => ListInboxSosmedModel.fromJson(json.decode(str));
+ListInboxModel listInboxModelFromJson(String str) => ListInboxModel.fromJson(json.decode(str));
 
-String listInboxSosmedModelToJson(ListInboxSosmedModel data) => json.encode(data.toJson());
+String listInboxModelToJson(ListInboxModel data) => json.encode(data.toJson());
 
-class ListInboxSosmedModel extends BaseModel {
-  Result result;
-  String msg;
-  String status;
-
-  ListInboxSosmedModel({
+class ListInboxModel extends BaseModel {
+  ListInboxModel({
     this.result,
     this.msg,
     this.status,
   });
 
-  factory ListInboxSosmedModel.fromJson(Map<String, dynamic> json) => ListInboxSosmedModel(
+  Result result;
+  String msg;
+  String status;
+
+  factory ListInboxModel.fromJson(Map<String, dynamic> json) => ListInboxModel(
     result: Result.fromJson(json["result"]),
     msg: json["msg"],
     status: json["status"],
@@ -35,12 +35,6 @@ class ListInboxSosmedModel extends BaseModel {
 }
 
 class Result {
-  List<Datum> data;
-  int count;
-  int currentPage;
-  String perpage;
-  int lastPage;
-
   Result({
     this.data,
     this.count,
@@ -48,6 +42,12 @@ class Result {
     this.perpage,
     this.lastPage,
   });
+
+  List<Datum> data;
+  int count;
+  int currentPage;
+  int perpage;
+  int lastPage;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
@@ -67,15 +67,6 @@ class Result {
 }
 
 class Datum {
-  String id;
-  String title;
-  String caption;
-  String type;
-  DateTime createdAt;
-  DateTime updatedAt;
-  DatumData data;
-  String idMember;
-
   Datum({
     this.id,
     this.title,
@@ -85,7 +76,18 @@ class Datum {
     this.updatedAt,
     this.data,
     this.idMember,
+    this.status,
   });
+
+  String id;
+  String title;
+  String caption;
+  String type;
+  DateTime createdAt;
+  DateTime updatedAt;
+  DatumData data;
+  String idMember;
+  int status;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
     id: json["id"],
@@ -96,6 +98,7 @@ class Datum {
     updatedAt: DateTime.parse(json["updated_at"]),
     data: DatumData.fromJson(json["data"]),
     idMember: json["id_member"],
+    status: json["status"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -107,17 +110,11 @@ class Datum {
     "updated_at": updatedAt.toIso8601String(),
     "data": data.toJson(),
     "id_member": idMember,
+    "status": status,
   };
 }
 
 class DatumData {
-  String appId;
-  DataData data;
-  Contents headings;
-  Contents contents;
-  int priority;
-  List<String> includePlayerIds;
-
   DatumData({
     this.appId,
     this.data,
@@ -126,6 +123,13 @@ class DatumData {
     this.priority,
     this.includePlayerIds,
   });
+
+  String appId;
+  DataData data;
+  Contents headings;
+  Contents contents;
+  int priority;
+  List<String> includePlayerIds;
 
   factory DatumData.fromJson(Map<String, dynamic> json) => DatumData(
     appId: json["app_id"],
@@ -147,11 +151,11 @@ class DatumData {
 }
 
 class Contents {
-  String en;
-
   Contents({
     this.en,
   });
+
+  String en;
 
   factory Contents.fromJson(Map<String, dynamic> json) => Contents(
     en: json["en"],
@@ -163,21 +167,17 @@ class Contents {
 }
 
 class DataData {
-  String type;
-  String id;
-
   DataData({
     this.type,
-    this.id,
   });
+
+  String type;
 
   factory DataData.fromJson(Map<String, dynamic> json) => DataData(
     type: json["type"],
-    id: json["id"] == null ? null : json["id"],
   );
 
   Map<String, dynamic> toJson() => {
     "type": type,
-    "id": id == null ? null : id,
   };
 }

@@ -61,11 +61,9 @@ class PinScreenState extends State<PinScreen> {
         },
       );
     });
-//    print("################## STATUS LOADING $isLoading ###########################");
     var res= await MemberProvider().forgotPin();
     if(res is ResendOtp){
       setState(() {Navigator.pop(context);});
-
       ResendOtp results = res;
       if(results.status == 'success'){
         setState(() {
@@ -179,9 +177,7 @@ class PinScreenState extends State<PinScreen> {
   }
 
   Future _check(/*String txtPin,*/ BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setDouble('lat',lat);
-    prefs.setDouble('lng',lng);
+
     widget.callback(context, true);
   }
 

@@ -83,7 +83,6 @@ class MemberProvider {
     final nohp = await userRepository.getDataUser('phone');
     return await client.post(ApiService().baseUrl+"auth/resendotp",
         headers: {'username':ApiService().username,'password':ApiService().password},
-
         body: {
           "nohp":"$nohp",
           "type":"resend",

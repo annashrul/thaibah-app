@@ -18,6 +18,7 @@ import 'package:thaibah/UI/Homepage/beranda.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/donasi/history_donasi.dart';
+import 'package:thaibah/UI/component/donasi/screenInboxDonasi.dart';
 import 'package:thaibah/UI/component/donasi/widget_donasi.dart';
 import 'package:thaibah/UI/component/home/widget_artikel.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
@@ -59,7 +60,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   bool isLoading=false;
 
   Future<void> loadArtikel() async {
-    await newsBloc.fetchNewsList(1, 4,'Pengumuman');
+    await newsBloc.fetchNewsList(1, 4,'artikel');
     setState(() {
       isLoading=false;
     });
@@ -211,7 +212,6 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     var iOS = new IOSInitializationSettings();
     var initSetttings = new InitializationSettings(android, iOS);
     flutterLocalNotificationsPlugin.initialize(initSetttings, onSelectNotification: onSelectNotification);
-
     loadDonasi();
     loadArtikel();
     loadPrayer();
@@ -233,52 +233,34 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
       key: scaffoldKey,
-      appBar:AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.white, // status bar color
-        brightness: Brightness.light,
-        title:ListTile(
-          contentPadding: EdgeInsets.only(top:10,bottom:10),
-          title: UserRepository().textQ('Home',18,Colors.black,FontWeight.bold,TextAlign.left),
-          leading: CircleAvatar(
-              radius:20.0,
-              backgroundImage: AssetImage('assets/images/logoOnBoardTI.png')
-          ),
-          trailing: InkWell(
-            child: Icon(Icons.account_circle,color: Colors.grey),
-            onTap: (){
-              UserRepository().loadingQ(context);
-            },
-          ),
-        ),
-        actions: [
-          Stack(
-            children: <Widget>[
-              GestureDetector(
-                onTap: (){
-                },
-                child: Container(
-                  margin:EdgeInsets.only(top:16.0,right:10),
-                  child: Icon(Icons.notification_important,color: Colors.grey),
-                ),
+      appBar: UserRepository().appBarNoButton(context, "Beranda",<Widget>[
+        Stack(
+          children: <Widget>[
+            GestureDetector(
+              onTap: (){
+                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>ScreenInboxDonasi()));
+              },
+              child: Container(
+                margin:EdgeInsets.only(top:16.0,right:10),
+                child: Icon(Icons.notifications_none,color: Colors.grey),
               ),
-              Positioned(
-                right: 5,
-                top: 11,
-                child: new Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: new BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  constraints: BoxConstraints(minWidth: 13, minHeight: 13,),
-                  child: UserRepository().textQ("0",12,Colors.white,FontWeight.bold,TextAlign.center),
+            ),
+            Positioned(
+              right: 5,
+              top: 11,
+              child: new Container(
+                padding: EdgeInsets.all(2),
+                decoration: new BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(100),
                 ),
-              )
-            ],
-          ),
-        ],//
-      ),
+                constraints: BoxConstraints(minWidth: 13, minHeight: 13,),
+                child: UserRepository().textQ("0",12,Colors.white,FontWeight.bold,TextAlign.center),
+              ),
+            )
+          ],
+        ),
+      ]),
 
 
       body: LiquidPullToRefresh(
@@ -356,7 +338,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           UserRepository().textQ("Sosial Media",14,Colors.black,FontWeight.bold,TextAlign.left),
-                          UserRepository().textQ("Posting kegiatan kamu",12,Colors.grey,FontWeight.normal,TextAlign.left),
+                          UserRepository().textQ("Postingan teratas kegiatan member thaibah",12,Colors.grey,FontWeight.normal,TextAlign.left),
                         ],
                       ),
                       InkWell(
@@ -404,18 +386,42 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
+        isLoading?Container(
+          padding:EdgeInsets.all(10),
+          decoration:BoxDecoration(
+            borderRadius:  BorderRadius.circular(100.0),
+          ) ,
+          child: SkeletonFrame(width:50,height: 50),
+        ):
         CardEmoney(imgUrl:'ALQURAN.png',title:'Al-Quran',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));
-
         }),
-        CardEmoney(imgUrl:'DOA.png',title:'Doa Harian',xFunction: (){
+        isLoading?Container(
+          padding:EdgeInsets.all(10),
+          decoration:BoxDecoration(
+            borderRadius:  BorderRadius.circular(100.0),
+          ) ,
+          child: SkeletonFrame(width:50,height: 50),
+        ):CardEmoney(imgUrl:'DOA.png',title:'Doa Harian',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));
 
         },),
-        CardEmoney(imgUrl:'HADIS.png',title:'Hadits',xFunction: (){
+        isLoading?Container(
+          padding:EdgeInsets.all(10),
+          decoration:BoxDecoration(
+            borderRadius:  BorderRadius.circular(100.0),
+          ) ,
+          child: SkeletonFrame(width:50,height: 50),
+        ):CardEmoney(imgUrl:'HADIS.png',title:'Hadits',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));
         },),
-        CardEmoney(imgUrl:'ASMA.png',title:'Asma Allah',xFunction: (){
+        isLoading?Container(
+          padding:EdgeInsets.all(10),
+          decoration:BoxDecoration(
+            borderRadius:  BorderRadius.circular(100.0),
+          ) ,
+          child: SkeletonFrame(width:50,height: 50),
+        ):CardEmoney(imgUrl:'ASMA.png',title:'Asma Allah',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));
         },),
       ],
@@ -430,7 +436,13 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
 
   Widget cardThreeSection(BuildContext context) {
 
-    return Container(
+    return isLoading?Container(
+      padding:EdgeInsets.all(15),
+      decoration:BoxDecoration(
+        borderRadius:  BorderRadius.circular(100.0),
+      ) ,
+      child: SkeletonFrame(width:double.infinity,height:100),
+    ):Container(
       padding: EdgeInsets.only(left:15,right:15),
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -506,7 +518,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
         stream: listDonasiBloc.getResult,
         builder: (context, AsyncSnapshot<ListDonasiModel> snapshot) {
           if(snapshot.hasData){
-            return Padding(
+            return snapshot.data.result.data.length>0?Padding(
               padding: EdgeInsets.only(left:5.0,right:5.0),
               child: ListView.builder(
                   shrinkWrap: true,
@@ -524,10 +536,11 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                       verifikasiPenggalang: snapshot.data.result.data[index].verifikasiPenggalang.toString(),
                       terkumpul: snapshot.data.result.data[index].terkumpul,
                       callback: ()=>loadDonasi(),
+                      noDeadline: snapshot.data.result.data[index].nodeadline,
                     );
                   }
               ),
-            );
+            ):UserRepository().noData();
           }
           else if(snapshot.hasError){
             return Text(snapshot.error.toString());
@@ -544,7 +557,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
         stream: newsBloc.allNews,
         builder: (context,AsyncSnapshot<NewsModel> snapshot){
           if(snapshot.hasData){
-            return ListView.builder(
+            return snapshot.data.result.data.length>0?ListView.builder(
                 primary: true,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -560,7 +573,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                     link: snapshot.data.result.data[index].link,
                   );
                 }
-            );
+            ):UserRepository().noData();
           }
           else if(snapshot.hasError){
             return Text(snapshot.error.toString());

@@ -250,7 +250,7 @@ class _MyFeedState extends State<MyFeed> {
                 Stack(
                   children: <Widget>[
                     new IconButton(
-                        icon: Icon(Icons.notifications_none),
+                        icon: Icon(Icons.notifications_none,color: Colors.black,),
                         onPressed: () {
                           deleteCountInbox();
                           print('tap');
@@ -324,6 +324,9 @@ class _MyFeedState extends State<MyFeed> {
         }
     );
   }
+
+
+
   Widget buildContent(AsyncSnapshot<ListSosmedModel> snapshot, BuildContext context){
     return snapshot.data.result.data.length > 0 ? isLoading ?UserRepository().loadingWidget():  Container(
       child:  LiquidPullToRefresh(
@@ -338,11 +341,30 @@ class _MyFeedState extends State<MyFeed> {
               scrollDirection: Axis.vertical,
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
-                String caption = '';
-                if(snapshot.data.result.data[index].caption.length > 400){
-                  caption = snapshot.data.result.data[index].caption.substring(0,400)+ " ....";
+
+
+                String sukai='';
+                if(snapshot.data.result.data[index].isLike == true){
+                  sukai = 'disukai oleh anda dan ${int.parse(snapshot.data.result.data[index].likes)-1} orang lainnya ';
                 }else{
-                  caption = snapshot.data.result.data[index].caption;
+                  if(int.parse(snapshot.data.result.data[index].likes) > 0 ){
+                    sukai = 'disukai oleh ${int.parse(snapshot.data.result.data[index].likes)} orang ';
+                  }
+                  else{
+                    sukai = '0';
+                  }
+
+                }
+
+                String caption = '';
+                if(snapshot.data.result.data[index].caption.substring(0,1) == "<"){
+                  caption = 'konten tidak tersedia';
+                }else{
+                  if(snapshot.data.result.data[index].caption.length > 200){
+                    caption = snapshot.data.result.data[index].caption.substring(0,200)+ " ....";
+                  }else{
+                    caption = snapshot.data.result.data[index].caption;
+                  }
                 }
                 return Dismissible(
                     key: Key(index.toString()),
@@ -355,43 +377,56 @@ class _MyFeedState extends State<MyFeed> {
                         ).whenComplete(_bloc.fetchListSosmed(1, perpage,'ada'));
                       },
                       child: Container(
-                        padding: EdgeInsets.all(15.0),
+
                         child: Column(
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                CircleAvatar(
+                            Container(
+                              child: ListTile(
+                                leading: CircleAvatar(
                                   backgroundImage: NetworkImage(snapshot.data.result.data[index].penulisPicture),
                                   radius: 20.0,
                                 ),
-                                SizedBox(width: 7.0),
-                                Column(
+                                title: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    UserRepository().textQ(snapshot.data.result.data[index].penulis, 14, Colors.black,FontWeight.bold,TextAlign.left),
+                                    UserRepository().textQ(snapshot.data.result.data[index].penulis, 14, Colors.black,FontWeight.bold, TextAlign.left),
                                     SizedBox(height: 5.0),
-                                    UserRepository().textQ(snapshot.data.result.data[index].createdAt, 12, Colors.grey,FontWeight.bold,TextAlign.left),
+                                    UserRepository().textQ(snapshot.data.result.data[index].createdAt, 12, Colors.grey,FontWeight.normal, TextAlign.left),
                                   ],
                                 ),
-                              ],
+                                trailing: Container(
+                                    margin: EdgeInsets.only(right: 10.0),
+                                    child:InkWell(
+                                        onTap:(){
+                                          UserRepository().loadingQ(context);
+                                          share(snapshot.data.result.data[index].picture,snapshot.data.result.data[index].caption,index);
+                                          // share(snapshot.data.result.picture,snapshot.data.result.caption);
+                                        },
+                                        child:new Icon(FontAwesomeIcons.shareAlt)
+                                    )
+                                ),
+                              ),
                             ),
 
                             SizedBox(height: 20.0),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                child:Linkify(
-                                  onOpen: (link) async {
-                                    if (await canLaunch(link.url)) {
-                                      await launch(link.url);
-                                    } else {
-                                      throw 'Could not launch $link';
-                                    }
-                                  },
-                                  text: removeAllHtmlTags(caption),
-                                  style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:ThaibahFont().fontQ),
-                                  linkStyle: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ),
+                            Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  child:Linkify(
+                                    onOpen: (link) async {
+                                      if (await canLaunch(link.url)) {
+                                        await launch(link.url);
+                                      } else {
+                                        throw 'Could not launch $link';
+                                      }
+                                    },
+                                    text: removeAllHtmlTags(caption),
+                                    style: TextStyle(fontSize:12.0,color:Colors.black,fontFamily:ThaibahFont().fontQ),
+                                    linkStyle: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -419,42 +454,39 @@ class _MyFeedState extends State<MyFeed> {
                             ),
 
                             SizedBox(height: 10.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.only(left:15,right:15),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
 
-                                    InkWell(
-                                      onTap:(){
-                                        setState(() {
-                                          UserRepository().loadingQ(context);
-                                        });
-                                        sendLikeOrUnLike(snapshot.data.result.data[index].id,snapshot.data.result.data[index].isLike);
-                                      },
-                                      child:Icon(FontAwesomeIcons.thumbsUp, size: 15.0, color: Colors.blue),
-                                    ),
-                                    UserRepository().textQ(' ${snapshot.data.result.data[index].likes}', 12, Colors.grey,FontWeight.bold,TextAlign.left),
-                                  ],
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    UserRepository().textQ('${snapshot.data.result.data[index].comments} comments  •  ', 12, Colors.grey,FontWeight.bold,TextAlign.left),
-                                    InkWell(
-                                      onTap:(){
-                                        share(snapshot.data.result.data[index].picture,snapshot.data.result.data[index].caption,index);
-                                      },
-                                      child:Icon(FontAwesomeIcons.share, size: 20.0,color: Colors.grey,),
-                                    )
-                                  ],
-                                ),
-                              ],
+                                      InkWell(
+                                          onTap:(){
+                                            UserRepository().loadingQ(context);
+                                            sendLikeOrUnLike(snapshot.data.result.data[index].id,snapshot.data.result.data[index].isLike);
+                                          },
+                                          child:Icon(FontAwesomeIcons.thumbsUp, size: 15.0, color: Colors.black)
+                                      ),
+                                      UserRepository().textQ(' $sukai', 10, Colors.black, FontWeight.bold,TextAlign.left)
+                                    ],
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Icon(FontAwesomeIcons.comments, size: 15.0, color: Colors.black),
+                                      SizedBox(width: 5.0,),
+                                      UserRepository().textQ('${snapshot.data.result.data[index].comments} komentar', 10, Colors.black, FontWeight.bold,TextAlign.left),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                             SizedBox(height: 10.0),
                             Container(
-                              color: Colors.grey[400],
+                              color: Colors.grey[200],
                               width: MediaQuery.of(context).size.width,
-                              height: 5.0,
+                              height: 3.0,
 
                             )
 

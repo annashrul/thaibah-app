@@ -190,25 +190,33 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                 },
                 child: Column(
                   children: <Widget>[
+
                     Container(
-                      padding: EdgeInsets.only(left:15,right:15,top:10),
-                      child: Row(
-                        children: <Widget>[
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(snapshot.data.result.data[index].picture),
-                            radius: 20.0,
-                          ),
-                          SizedBox(width: 7.0),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              UserRepository().textQ(snapshot.data.result.data[index].penulis, 14, Colors.black,FontWeight.bold, TextAlign.left),
-                              SizedBox(height: 5.0),
-                              UserRepository().textQ(snapshot.data.result.data[index].createdAt, 12, Colors.grey,FontWeight.normal, TextAlign.left),
-                            ],
-                          ),
-                        ],
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(snapshot.data.result.data[index].penulisPicture),
+                          radius: 20.0,
+                        ),
+                        title: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            UserRepository().textQ(snapshot.data.result.data[index].penulis, 14, Colors.black,FontWeight.bold, TextAlign.left),
+                            SizedBox(height: 5.0),
+                            UserRepository().textQ(snapshot.data.result.data[index].createdAt, 12, Colors.grey,FontWeight.normal, TextAlign.left),
+                          ],
+                        ),
+                        trailing: Container(
+                            margin: EdgeInsets.only(right: 10.0),
+                            child:InkWell(
+                                onTap:(){
+                                  UserRepository().loadingQ(context);
+                                  share(snapshot.data.result.data[index].picture,snapshot.data.result.data[index].caption,index);
+                                  // share(snapshot.data.result.picture,snapshot.data.result.caption);
+                                },
+                                child:new Icon(FontAwesomeIcons.shareAlt)
+                            )
+                        ),
                       ),
                     ),
 
@@ -262,7 +270,6 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-
                               InkWell(
                                   onTap:(){
                                     UserRepository().loadingQ(context);
@@ -276,17 +283,9 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
                           ),
                           Row(
                             children: <Widget>[
-                              UserRepository().textQ('${snapshot.data.result.data[index].comments} komentar  •  ', 10, Colors.black, FontWeight.bold,TextAlign.left),
-
-                              // Text('${snapshot.data.result.data[index].comments} komentar  •  ', style: TextStyle(fontFamily:'Rubik',fontWeight: FontWeight.bold, fontSize:ScreenUtilQ.getInstance().setSp(30))),
-
-                              InkWell(
-                                onTap:(){
-                                  UserRepository().loadingQ(context);
-                                  share(snapshot.data.result.data[index].picture,snapshot.data.result.data[index].caption,index);
-                                },
-                                child:Icon(FontAwesomeIcons.share, size: 15.0,color: Colors.black,),
-                              )
+                              Icon(FontAwesomeIcons.comments, size: 15.0, color: Colors.black),
+                              SizedBox(width: 5.0,),
+                              UserRepository().textQ('${snapshot.data.result.data[index].comments} komentar', 10, Colors.black, FontWeight.bold,TextAlign.left),
                             ],
                           ),
                         ],

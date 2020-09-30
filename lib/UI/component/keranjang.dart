@@ -10,7 +10,7 @@ import 'package:thaibah/Model/MLM/listCartModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/component/MLM/checkoutSuplemen.dart';
-import 'package:thaibah/UI/component/address/addAddress.dart';
+import 'package:thaibah/UI/component/address/formAddress.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/MLM/getDetailChekoutSuplemenProvider.dart';
@@ -64,7 +64,7 @@ class _KeranjangState extends State<Keranjang> {
       if(results.msg == 'Alamat kosong.'){
         setState(() {isLoading  = false;});
         UserRepository().notifWithAction(scaffoldKey, context, 'Silahkan isi  alamat lengkap untuk pengiriman barang ke tempat anda', 'failed','BUAT ALAMAT',(){
-          Navigator.push(context, CupertinoPageRoute(builder: (context) =>  AddAddress()));
+          Navigator.push(context, CupertinoPageRoute(builder: (context) =>  FormAddress(param: '')));
         });
       }else{
         UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");

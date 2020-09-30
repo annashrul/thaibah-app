@@ -195,6 +195,7 @@ class _LoginPhoneState extends State<LoginPhone> {
             warna2=result.result.tema.warna2;
             isStatus=result.result.status.toString();
           });
+
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
               new CupertinoPageRoute(builder: (BuildContext context)=>PinScreen(param: result.result.otp.toString(),
                   callback: _callBackPin
@@ -310,7 +311,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                           SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
                           Container(
                             width: double.infinity,
-                            height: typeOtp==true?200:150,
+                            height: typeOtp==false?170:150,
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(0.0),
@@ -324,69 +325,86 @@ class _LoginPhoneState extends State<LoginPhone> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-
-                                  Text("Masuk", style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(60),fontFamily:ThaibahFont().fontQ,letterSpacing: .6,fontWeight: FontWeight.bold),),
+                                  UserRepository().textQ("Masuk", 18, Colors.black,FontWeight.bold, TextAlign.left),
                                   SizedBox(height: ScreenUtilQ.getInstance().setHeight(18)),
-                                  Text("No WhatsApp (Silahkan Masukan No WhatsApp Yang Telah Anda Daftarkan)",
-                                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(34)),
+                                  UserRepository().textQ("Silahkan masukan no whatsApp yang telah anda daftarkan", 12, Colors.black,FontWeight.bold, TextAlign.left),
+                                  SizedBox(height: ScreenUtilQ.getInstance().setHeight(18)),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child:  Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Container(
+                                          child: CountryCodePicker(
+                                            onChanged: (CountryCode  countryCode){
+                                              setState(() {
+                                                codeCountry = "${countryCode.dialCode.replaceAll('+', '')}";
+                                              });
+                                            },
+                                            initialSelection: 'ID',
+                                            favorite: ['+62','ID'],
+                                            showCountryOnly: true,
+                                            showOnlyCountryWhenClosed: false,
+                                            alignLeft: true,
+                                            textStyle: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik',fontWeight: FontWeight.bold,color:Colors.grey),
+                                          ),
+                                          width: MediaQuery.of(context).size.width/5,
+                                        ),
+                                        Container(
+                                          width: MediaQuery.of(context).size.width/2,
+                                          child: TextFormField(
+                                            style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                                            controller: _noHpController,
+                                            maxLines: 1,
+                                            autofocus: false,
+                                            decoration: InputDecoration(
+                                              enabledBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.grey[200]),
+                                              ),
+                                              focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                              ),
+                                              hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                                            ),
+                                            keyboardType: TextInputType.number,
+                                            textInputAction: TextInputAction.done,
+                                            focusNode: _noHpFocus,
+                                            inputFormatters: <TextInputFormatter>[
+                                              WhitelistingTextInputFormatter.digitsOnly
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
+                                  SizedBox(height:typeOtp==false?10.0:0.0),
                                   Row(
-                                    children: <Widget>[
-                                      Container(
-                                        child: CountryCodePicker(
-                                          onChanged: (CountryCode  countryCode){
-                                            setState(() {
-                                              codeCountry = "${countryCode.dialCode.replaceAll('+', '')}";
-                                            });
-                                          },
-                                          textStyle: TextStyle(fontFamily: 'Rubik',fontSize: ScreenUtilQ.getInstance().setSp(30)),
-                                          initialSelection: 'ID',
-                                          favorite: ['+62','ID'],
-                                          showCountryOnly: true,
-                                          showOnlyCountryWhenClosed: false,
-                                          alignLeft: true,
-                                        ),
-                                        width: MediaQuery.of(context).size.width/3.1-30.0,
-                                      ),
-
-                                      new SizedBox(
-                                        width: 0.0,
-                                      ),
-                                      Container(
-                                        width: MediaQuery.of(context).size.width/1.7-30.0,
-                                        child: TextFormField(
-                                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                                          // maxLength: 15,
-                                          controller: _noHpController,
-                                          keyboardType: TextInputType.number,
-                                          textInputAction: TextInputAction.done,
-                                          inputFormatters: <TextInputFormatter>[
-                                            WhitelistingTextInputFormatter.digitsOnly
-                                          ],
-                                          focusNode: _noHpFocus,
-                                          decoration: InputDecoration(hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30))),
-                                        ),
-                                      ),
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      typeOtp==false?UserRepository().textQ("Kirim otp via ${_switchValue?'sms':'whatsApp'}", 12, Colors.black,FontWeight.bold, TextAlign.left):Text(''),
+                                      typeOtp==false?SizedBox(
+                                          width: 70,
+                                          height: 10,
+                                          child: Switch(
+                                            activeColor: ThaibahColour.primary2,
+                                            value: _switchValue,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _switchValue = value;
+                                              });
+                                            },
+                                          )
+                                      ):Container(),
+                                      // SizedBox(height:typeOtp==false?5.0:0.0),
                                     ],
-                                  ),
-                                  SizedBox(height:typeOtp==true?10.0:0.0),
-
-                                  typeOtp==true?Text("Kirim OTP Via ${_switchValue?'SMS':'WhatsApp'}", style: TextStyle(fontFamily: ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold),):Text(''),
-                                  SizedBox(height:typeOtp==true?5.0:0.0),
-                                  typeOtp==true?SizedBox(
-                                      width: 70,
-                                      height: 10,
-                                      child: Switch(
-                                        activeColor: ThaibahColour.primary2,
-                                        value: _switchValue,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _switchValue = value;
-                                          });
-                                        },
-                                      )
-                                  ):Container()
-
+                                  )
                                 ],
                               ),
                             ),
@@ -394,7 +412,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                           SizedBox(height: ScreenUtilQ.getInstance().setHeight(20)),
                           Align(
                             alignment: Alignment.centerLeft,
-                            child: Text("*Pastikan Handphone Anda Terkoneksi Dengan Internet*",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontSize: ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,color:Colors.red)),
+                            child: UserRepository().textQ("Pastikan handphone anda terkoneksi dengan internet", 12, Colors.red,FontWeight.bold, TextAlign.left),
                           ),
                           SizedBox(height: ScreenUtilQ.getInstance().setHeight(40)),
                           Column(
@@ -406,6 +424,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                                   UserRepository().notifNoAction(_scaffoldKey, context, "Anda Tidak Terhubung Dengan Internet","failed");
                                 }else{
                                   if(_noHpController.text == ''){
+                                    _noHpFocus.requestFocus();
                                     UserRepository().notifNoAction(_scaffoldKey, context, "Anda Belum Memasukan No WhatsApp","failed");
                                   }else{
                                     setState(() {

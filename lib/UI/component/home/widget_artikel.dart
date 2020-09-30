@@ -38,7 +38,7 @@ class _ScreenArtikelState extends State<ScreenArtikel> with AutomaticKeepAliveCl
 
   Future<void> refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    newsBloc.fetchNewsList(1, perpage,'Pengumuman');
+    newsBloc.fetchNewsList(1, perpage,'artikel');
   }
   Future<bool> _loadMore() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
@@ -49,7 +49,7 @@ class _ScreenArtikelState extends State<ScreenArtikel> with AutomaticKeepAliveCl
   void initState() {
     // TODO: implement initState
     super.initState();
-    newsBloc.fetchNewsList(1, perpage,'Pengumuman');
+    newsBloc.fetchNewsList(1, perpage,'artikel');
   }
 
   @override

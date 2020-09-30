@@ -9,19 +9,18 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listInboxSosmedModel.dart';
-import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 
-class InboxSosmed extends StatefulWidget {
+class ScreenInboxDonasi extends StatefulWidget {
   @override
-  _InboxSosmedState createState() => _InboxSosmedState();
+  _ScreenInboxDonasiState createState() => _ScreenInboxDonasiState();
 }
 
-class _InboxSosmedState extends State<InboxSosmed> {
+class _ScreenInboxDonasiState extends State<ScreenInboxDonasi> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
   final _bloc = InboxSosmedBloc();
@@ -31,7 +30,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
   void load() {
     perpage = perpage += 10;
     setState(() {isLoading = false;});
-    _bloc.fetchListInboxSosmed('&perpage=$perpage');
+    _bloc.fetchListInboxSosmed('&type=donasi&age=$perpage');
 
   }
   Future<void> refresh() async {
@@ -54,7 +53,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
       General results = res;
       if(results.status == 'success'){
         Navigator.pop(context);
-        _bloc.fetchListInboxSosmed('&perpage=$perpage');
+        _bloc.fetchListInboxSosmed('&type=donasi&age=$perpage');
         UserRepository().notifNoAction(scaffoldKey, context,'pesan berhasil di hapus', "success");
       }else{
         Navigator.pop(context);
@@ -67,7 +66,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _bloc.fetchListInboxSosmed('&perpage=$perpage');
+    _bloc.fetchListInboxSosmed('&type=donasi&age=$perpage');
   }
 
   @override
@@ -85,7 +84,7 @@ class _InboxSosmedState extends State<InboxSosmed> {
       appBar: UserRepository().appBarWithButton(context, "Pesan Masuk",(){Navigator.pop(context);},<Widget>[]),
 
       // appBar: UserRepository().appBarWithButton(context,"Pesan Masuk",ThaibahColour.primary1,ThaibahColour.primary2, (){Navigator.pop(context);}, Container()),
-        body: Container(
+      body: Container(
         margin: EdgeInsets.only(top:5.0),
         child: StreamBuilder(
             stream: _bloc.getResult,
@@ -124,9 +123,9 @@ class _InboxSosmedState extends State<InboxSosmed> {
             return Material(
               child: InkWell(
                 onTap: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => DetailSosmed(id: snapshot.data.result.data[index].id)),
-                  );
+                  // Navigator.of(context, rootNavigator: true).push(
+                  //   new CupertinoPageRoute(builder: (context) => DetailSosmed(id: snapshot.data.result.data[index].id)),
+                  // );
                 },
                 child: Container(
                   margin: EdgeInsets.fromLTRB(15, 5, 15, 5),
@@ -224,6 +223,4 @@ class _InboxSosmedState extends State<InboxSosmed> {
       key: _refresh,
     ) : UserRepository().noData();
   }
-
-
 }
