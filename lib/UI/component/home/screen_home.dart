@@ -116,7 +116,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
         city = prayerModel.result.city;
       });
 
-
+      _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
 
     } else {
       throw Exception('Failed to load info');
@@ -217,7 +217,6 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     loadPrayer();
     isLoading=true;
     _timeString = DateFormat('hh:mm:ss').format(DateTime.now());
-    _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
   }
 
   @override
@@ -518,7 +517,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
         stream: listDonasiBloc.getResult,
         builder: (context, AsyncSnapshot<ListDonasiModel> snapshot) {
           if(snapshot.hasData){
-            return snapshot.data.result.data.length>0?Padding(
+            return Padding(
               padding: EdgeInsets.only(left:5.0,right:5.0),
               child: ListView.builder(
                   shrinkWrap: true,
@@ -540,7 +539,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                     );
                   }
               ),
-            ):UserRepository().noData();
+            );
           }
           else if(snapshot.hasError){
             return Text(snapshot.error.toString());
@@ -557,7 +556,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
         stream: newsBloc.allNews,
         builder: (context,AsyncSnapshot<NewsModel> snapshot){
           if(snapshot.hasData){
-            return snapshot.data.result.data.length>0?ListView.builder(
+            return ListView.builder(
                 primary: true,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -573,7 +572,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                     link: snapshot.data.result.data[index].link,
                   );
                 }
-            ):UserRepository().noData();
+            );
           }
           else if(snapshot.hasError){
             return Text(snapshot.error.toString());

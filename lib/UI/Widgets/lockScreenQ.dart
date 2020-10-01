@@ -314,7 +314,7 @@ class _LockScreenQState extends State<LockScreenQ> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.green,
+                color: Colors.grey[200],
                 blurRadius: 10,
                 spreadRadius: 0,
               )
@@ -351,7 +351,7 @@ class _LockScreenQState extends State<LockScreenQ> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.green,
+                color: Colors.grey[200],
                 blurRadius: 10,
                 spreadRadius: 0,
               )
@@ -388,7 +388,7 @@ class _LockScreenQState extends State<LockScreenQ> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.green,
+                color: Colors.grey[200],
                 blurRadius: 10,
                 spreadRadius: 0,
               )

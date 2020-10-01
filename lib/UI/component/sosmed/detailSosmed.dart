@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -144,26 +145,12 @@ class _DetailSosmedState extends State<DetailSosmed> {
     });
 
   }
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
-  final userRepository = UserRepository();
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     load();
-    loadTheme();
   }
 
   @override
@@ -179,23 +166,14 @@ class _DetailSosmedState extends State<DetailSosmed> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
     return Scaffold(
       key: _scaffoldKey,
-        appBar: UserRepository().appBarWithButton(context, "Detail Postingan",(){Navigator.pop(context);},<Widget>[]),
-
-        // appBar:UserRepository().appBarWithButton(context,"Detail Postingan",warna1,warna2,(){Navigator.pop(context);},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Detail Postingan",(){Navigator.pop(context);},<Widget>[]),
       body: Scrollbar(
           child: RefreshIndicator(
             child: StreamBuilder(
                 stream: _blocDetail.getResult,
                 builder: (context, AsyncSnapshot<ListDetailSosmedModel> snapshot){
                   if (snapshot.hasData) {
-                    String sukai='';
-                    if(int.parse(snapshot.data.result.likes) > 0){
-                      sukai = 'disukai oleh ${int.parse(snapshot.data.result.likes)} orang';
-                    }
-                    else{
-                      sukai = '0';
-                    }
-
+                    String sukai='disukai oleh ${int.parse(snapshot.data.result.likes)} orang';
                     return ListView(
                       children: <Widget>[
                         Column(
@@ -239,7 +217,7 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                         onTap:(){
                                           share(snapshot.data.result.picture,snapshot.data.result.caption);
                                         },
-                                        child:new Icon(FontAwesomeIcons.shareAlt)
+                                        child:new Icon(FontAwesomeIcons.shareAlt,color: Colors.grey,)
                                     )
                                   ),
                                 ],
@@ -247,46 +225,46 @@ class _DetailSosmedState extends State<DetailSosmed> {
                             ),
                             Flexible(
                               fit: FlexFit.loose,
-                              child: Container(
-                                  padding:EdgeInsets.only(left:15.0,right:15.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Linkify(
-                                        onOpen: (link) async {
-                                          print('tap link');
-                                          if (await canLaunch(link.url)) {
-                                            await launch(link.url);
-                                          } else {
-                                            throw 'Could not launch $link';
-                                          }
-                                        },
-                                        text: snapshot.data.result.caption,
-                                        style: TextStyle(fontFamily:ThaibahFont().fontQ),
-                                        linkStyle: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ),
-                                      ),
-                                      SizedBox(height: 10.0),
-                                      InkWell(
-                                        onDoubleTap: (){
-                                          sendLikeOrUnLike(snapshot.data.result.isLike);
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(10.0),
-                                                topRight: Radius.circular( 10.0)
-                                            ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: EdgeInsets.only(left:15,right:15),
+                                    child: Linkify(
+                                      onOpen: (link) async {
+                                        print('tap link');
+                                        if (await canLaunch(link.url)) {
+                                          await launch(link.url);
+                                        } else {
+                                          throw 'Could not launch $link';
+                                        }
+                                      },
+                                      text: snapshot.data.result.caption,
+                                      style: TextStyle(fontFamily:ThaibahFont().fontQ),
+                                      linkStyle: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.0),
+                                  InkWell(
+                                      onDoubleTap: (){
+                                        sendLikeOrUnLike(snapshot.data.result.isLike);
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10.0),
+                                              topRight: Radius.circular( 10.0)
                                           ),
-                                          child: Center(
-                                              child:Image.network(
-                                                snapshot.data.result.picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
-                                              )
-                                          ),
-                                        )
-                                      ),
+                                        ),
+                                        child: Center(
+                                            child:Image.network(
+                                              snapshot.data.result.picture,fit: BoxFit.fitWidth,filterQuality: FilterQuality.high,width: MediaQuery.of(context).size.width/1,
+                                            )
+                                        ),
+                                      )
+                                  ),
 
-                                    ],
-                                  )
+                                ],
                               ),
                             ),
                           ],
@@ -325,16 +303,20 @@ class _DetailSosmedState extends State<DetailSosmed> {
                                             _blocDetail.fetchListDetailSosmed(widget.id); //you get details from screen2 here
                                           });
                                         },
-                                        child:UserRepository().textQ(sukai,10, Colors.grey,FontWeight.bold,TextAlign.left),
+                                        child:UserRepository().textQ(sukai,10, Colors.black,FontWeight.bold,TextAlign.left),
                                       ),
-                                      new SizedBox(width: 16.0),
-                                      new Icon(FontAwesomeIcons.comment,size: 15, color: Colors.black),
-                                      new SizedBox(width: 10.0),
-                                      UserRepository().textQ("${snapshot.data.result.comments} komentar",10, Colors.grey,FontWeight.bold,TextAlign.left),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Icon(FontAwesomeIcons.comments, size: 15.0, color: Colors.black),
+                                      SizedBox(width: 5.0,),
+                                      UserRepository().textQ('${snapshot.data.result.comments} komentar', 10, Colors.black, FontWeight.bold,TextAlign.left),
                                     ],
                                   ),
                                 ],
                               ),
+
                             ),
                             Container(padding:EdgeInsets.only(left:15.0,right:15.0),child: Divider(),),
                             buildContent(snapshot, context)

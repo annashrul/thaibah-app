@@ -30,6 +30,8 @@ import 'package:thaibah/resources/sosmed/sosmed.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
+import 'listLikeSosmed.dart';
+
 class MyFeed extends StatefulWidget {
 
   @override
@@ -341,8 +343,6 @@ class _MyFeedState extends State<MyFeed> {
               scrollDirection: Axis.vertical,
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
-
-
                 String sukai='';
                 if(snapshot.data.result.data[index].isLike == true){
                   sukai = 'disukai oleh anda dan ${int.parse(snapshot.data.result.data[index].likes)-1} orang lainnya ';
@@ -469,7 +469,21 @@ class _MyFeedState extends State<MyFeed> {
                                           },
                                           child:Icon(FontAwesomeIcons.thumbsUp, size: 15.0, color: Colors.black)
                                       ),
-                                      UserRepository().textQ(' $sukai', 10, Colors.black, FontWeight.bold,TextAlign.left)
+                                      GestureDetector(
+                                        onTap: ()async{
+                                          await Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) => ListLikeSosmed(
+                                                id: snapshot.data.result.data[index].id,
+                                              ),
+                                            ),
+                                          ).then((val){
+                                            load(); //you get details from screen2 here
+                                          });
+                                        },
+                                        child:UserRepository().textQ(sukai,10, Colors.black,FontWeight.bold,TextAlign.left),
+                                      ),
                                     ],
                                   ),
                                   Row(
@@ -604,51 +618,9 @@ class BottomWidget extends StatefulWidget {
 class _BottomWidgetState extends State<BottomWidget> {
   var captionController = TextEditingController();
   final FocusNode captionFocus = FocusNode();
-  Future<File> file;
-  String base64Image;
-  File tmpFile;
   File _image;
-  String fileName;
   String nama='';
-  Future<Directory> getTemporaryDirectory() async {
-    return Directory.systemTemp;
-  }
 
-  getImageFile() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    File croppedFile = await ImageCropper.cropImage(
-      sourcePath: image.path,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.square,
-      ],
-      androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Thaibah Crop Image',
-          toolbarColor: Colors.green,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false
-      ),
-      iosUiSettings: IOSUiSettings(
-        minimumAspectRatio: 1.0,
-      ),
-      maxWidth: 512,
-      maxHeight: 512,
-    );
-    final quality = 90;
-    final tmpDir = (await getTemporaryDirectory()).path;
-    final target ="$tmpDir/${DateTime.now().millisecondsSinceEpoch}-$quality.png";
-
-    var result = await FlutterImageCompress.compressAndGetFile(
-      croppedFile.path,
-      target,
-      format: CompressFormat.png,
-      quality: 90,
-    );
-
-    setState(() {
-      _image = result;
-    });
-  }
 
 
 
@@ -677,17 +649,16 @@ class _BottomWidgetState extends State<BottomWidget> {
               ),
             ),
             trailing: InkWell(
-                onTap: (){
+                onTap: ()async{
                   print(_image);
                   if(captionController.text == ''){
                     FocusScope.of(context).requestFocus(FocusNode());
-                  }else if(_image==null){
-                    UserRepository().notifAlertQ(context,"warning","Perhatian","Apakah Anda Yakin Tidak Akan Menggunakan Gambar ?", "Ambil Gambar", "Oke", (){
-                      Navigator.pop(context);
-                      getImageFile();
-                    },
-                            (){Navigator.pop(context);}
-                    );
+                  }
+                  else if(_image==null){
+                    final img = await UserRepository().getImageFile(ImageSource.gallery);
+                    setState(() {
+                      _image=img;
+                    });
                   }else{
                     Navigator.of(context).pop();
                     captionFocus.unfocus();
@@ -729,7 +700,10 @@ class _BottomWidgetState extends State<BottomWidget> {
           Divider(),
           InkWell(
             onTap: () async {
-              getImageFile();
+              final img = await UserRepository().getImageFile(ImageSource.gallery);
+              setState(() {
+                _image = img;
+              });
             },
             child: ListTile(
               title: UserRepository().textQ("Ambil Photo",12,Colors.grey,FontWeight.bold,TextAlign.left),

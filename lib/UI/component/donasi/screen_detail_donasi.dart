@@ -89,28 +89,16 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                        height: 200,
-                        child: Stack(
-                          children: <Widget>[
-                            CachedNetworkImage(
-                              imageUrl: ApiService().noImage,
-                              placeholder: (context, url) => Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                              imageBuilder: (context, imageProvider) => Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  image: DecorationImage(
-                                    image: imageProvider,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                          ],
-                        )
+                        height: 300,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: NetworkImage(
+                                snapshot.data.result.gambar,
+                            )
+                          )
+                        ),
                     ),
                     Container(
                       color: Colors.white,
@@ -164,8 +152,12 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
                             child: ListTile(
                               title:UserRepository().textQ(snapshot.data.result.penggalang,11,Colors.black,FontWeight.bold,TextAlign.left),
                               leading: CircleAvatar(
-                                  radius:20.0,
-                                  backgroundImage: NetworkImage(snapshot.data.result.pictPenggalang)
+                                backgroundColor: Colors.transparent,
+                                radius:20.0,
+                                backgroundImage: NetworkImage(
+                                  snapshot.data.result.pictPenggalang,
+                                  scale: 1.0
+                                )
                               ),
                               subtitle: UserRepository().textQ(snapshot.data.result.verifikasiPenggalang==1?'Sudah terverifikasi':'Belum terverifikasi',10,Colors.grey,FontWeight.normal,TextAlign.left),
 

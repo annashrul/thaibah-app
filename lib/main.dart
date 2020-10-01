@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -101,7 +102,7 @@ class _MyAppState extends State<MyApp>  with WidgetsBindingObserver, SingleTicke
       DeviceOrientation.portraitDown,
     ]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.light, statusBarColor: Colors.transparent));
-
+    initializeDateFormatting('id');
     return StreamProvider<UserLocation>(
         create: (context) => LocationService().locationStream,
         child: WillPopScope(
@@ -283,42 +284,7 @@ class SplashState extends State<Splash> {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(color: Colors.transparent),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                flex: 4,
-                child: Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        radius: 50.0,
-                        child: isLoading?CircularProgressIndicator(strokeWidth: 10):SvgPicture.asset(
-                          'assets/images/svg/splash.svg',
-                          height: ScreenUtilQ.getInstance().setHeight(150),
-                          width: ScreenUtilQ.getInstance().setWidth(150),
-                        ),
-                      ),
-                      SizedBox(height: 20.0,),
-                      Text('Pengecekan $label ...',style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ),)
-                    ],
-                  ),
-                ),
-              ),
-
-            ],
-          ),
-
-        ],
-      ),
+      body: UserRepository().loadingWidget(),
     );
   }
 }
@@ -331,7 +297,6 @@ class IntroScreen extends StatefulWidget {
 }
 
 class _IntroScreenState extends State<IntroScreen> {
-
   List<PageViewModel> wrapOnboarding = [];
   var cek = [];
   bool isLoading = false;

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/MLM/detailHistoryPembelianSuplemen.dart';
@@ -81,26 +82,12 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
   }
 
 
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
-  Future loadTheme() async{
-    final userRepository = UserRepository();
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadTheme();
+    initializeDateFormatting('id');
     detailHistoryPembelianSuplemenBloc.fetchDetailHistoryPemblianSuplemenList(widget.id);
   }
 
@@ -165,7 +152,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               RichText(text: TextSpan(text:'Tanggal Pembelian', style: TextStyle(color:Colors.grey,fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                              RichText(text: TextSpan(text:'${DateFormat.yMMMMd().format(DateTime.parse(snapshot.data.result.detail.createdAt))} ${DateFormat.Hms().format(DateTime.parse(snapshot.data.result.detail.createdAt))}', style: TextStyle(color: Colors.black, fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
+                              RichText(text: TextSpan(text:'${DateFormat.yMMMMEEEEd('id').format(DateTime.parse(snapshot.data.result.detail.createdAt))} ${DateFormat.Hms().format(DateTime.parse(snapshot.data.result.detail.createdAt))}', style: TextStyle(color: Colors.black, fontSize: 12.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
                             ],
                           ),
                           SizedBox(height: 0.0),
@@ -350,7 +337,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topRight: Radius.circular(10)),
                 ),
-                color: statusLevel!='0'?warna1:ThaibahColour.primary1,
+                color: ThaibahColour.primary1,
                 onPressed: (){
                   if(resi == 'kosong'){
                     setState(() {
@@ -382,7 +369,7 @@ class _DetailHistorySuplemenState extends State<DetailHistorySuplemen> {
                 shape:RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
                 ),
-                color:statusLevel!='0'?warna2:ThaibahColour.primary2,
+                color:ThaibahColour.primary2,
                 onPressed: (){
                   if(resi == 'kosong' || resi.substring(0,3) == 'COD'){
                     setState(() {

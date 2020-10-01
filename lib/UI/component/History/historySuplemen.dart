@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/historyPembelianSuplemen.dart';
@@ -59,17 +60,9 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
     load();
     return true;
   }
-  Color warna1;
-  Color warna2;
+
   final userRepository=UserRepository();
-  Future loadTheme() async{
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-    });
-  }
+
 
   DateTime _dateTime;
   DateTimePickerLocale _locale = DateTimePickerLocale.id;
@@ -110,7 +103,8 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
   @override
   void initState() {
     super.initState();
-    loadTheme();
+
+    initializeDateFormatting('id');
     var date = new DateTime.now().toString();
     var dateParse = DateTime.parse(date);
     var formattedDate = "${dateParse.year}-${dateParse.month.toString().padLeft(2, '0')}-${dateParse.day.toString().padLeft(2, '0')}";
@@ -130,87 +124,97 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return Column(
       children: <Widget>[
-        Padding(padding: EdgeInsets.only(top:10)),
-        Row(
-          children: <Widget>[
-            new Flexible(
-              child: Padding(
-                padding: EdgeInsets.only(left:17.0,top:0.0),
+        Padding(
+          padding: EdgeInsets.only(top:10,left:10,right:10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              new Flexible(
                 child: GestureDetector(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      TextField(
-                        style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                        readOnly: true,
-                        controller: _tgl_pertama,
-                        keyboardType: TextInputType.url,
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                          labelText: 'Dari',
-                          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
-                          hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                          hintText: 'yyyy-MM-dd',
+                      UserRepository().textQ("Dari",12,Colors.black,FontWeight.bold,TextAlign.left),
+                      SizedBox(height: 10.0),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                        decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(10)
                         ),
+                        child: TextFormField(
+                          readOnly: true,
+                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                          controller: _tgl_pertama,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey[200]),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                          ),
+                          textInputAction: TextInputAction.done,
+                          onTap: () {_showDatePicker('1');},
+                          onChanged: (value) {
+                            setState(() {
+                              _tgl_pertama.text =
+                              '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
+                            });
+                          },
+                        ),
+                      ),
 
-                        onTap: () {_showDatePicker('1');},
-                        onChanged: (value) {
-                          setState(() {
-                            _tgl_pertama.text =
-                            '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
-                          });
-                        },
+
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 5.0),
+              new Flexible(
+                child:GestureDetector(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      UserRepository().textQ("Sampai",12,Colors.black,FontWeight.bold,TextAlign.left),
+                      SizedBox(height: 10.0),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                        decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: TextFormField(
+                          readOnly: true,
+                          style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily: ThaibahFont().fontQ,color: Colors.grey),
+                          controller: _tgl_kedua,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                            enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                            focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none,),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
+                          ),
+                          textInputAction: TextInputAction.done,
+                          onTap: () {_showDatePicker('2');},
+                          onChanged: (value) {
+                            setState(() {
+                              _tgl_kedua.text = '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
+                            });
+                          },
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
-            new Flexible(
-              child: Padding(
-                padding: EdgeInsets.only(left:8.0,right:15.0,top:0.0),
-                child: GestureDetector(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      // Text('Sampai',style: TextStyle(color:Colors.black,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(30))),
-                      TextField(
-                        style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                        readOnly: true,
-                        controller: _tgl_kedua,
-                        keyboardType: TextInputType.url,
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                          labelText: 'Sampai',
-                          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(40),fontFamily: ThaibahFont().fontQ),
-                          hintStyle: TextStyle(color: Colors.grey, fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily: ThaibahFont().fontQ),
-                          hintText: 'yyyy-MM-dd',
-                        ),
-                        onTap: () {_showDatePicker('2');},
-                        onChanged: (value) {
-                          setState(() {
-                            _tgl_kedua.text = '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-          ],
+            ],
+          ),
         ),
+
         Padding(
           padding: EdgeInsets.only(left:10.0,right:10.0,top:10.0),
           child: UserRepository().buttonQ(context,(){setState(() {
@@ -282,7 +286,7 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
                                 "${status}",
                                 statColor,
                                 snapshot.data.result.data[index].price.toString(),
-                                DateFormat.yMMMd().add_jm().format(snapshot.data.result.data[index].createdAt.toLocal()),
+                                DateFormat.yMMMMEEEEd('id').add_jm().format(snapshot.data.result.data[index].createdAt.toLocal()),
                                 oddColour: (index % 2 == 0) ? Colors.white : Color(0xFFF7F7F9)
                             ),
                           );

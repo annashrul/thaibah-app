@@ -328,7 +328,7 @@ class UserRepository {
 
 
   }
-  appBarWithTabButton(BuildContext context, title,Color color1, Color color2,Map<String,dynamic> lbl,Function callback){
+  appBarWithTabButton(BuildContext context, title,Map<String,dynamic> lbl,Function callback){
     List<Tab> tab = new List();
     lbl.forEach((key, value) {
       tab.add(Tab(text: value));
@@ -417,14 +417,14 @@ class UserRepository {
     );
     return cek;
   }
-  textQ(String txt,double size,Color color,FontWeight fontWeight,TextAlign textAlign){
+  textQ(String txt,double size,Color color,FontWeight fontWeight,TextAlign textAlign,{TextDecoration textDecoration}){
     return RichText(
       textAlign: textAlign,
       softWrap: true,
-
       text: TextSpan(
         text:txt,
         style: TextStyle(
+          decoration: textDecoration,
           fontSize:size,color: color,fontFamily:ThaibahFont().fontQ,fontWeight:fontWeight,
         ),
 

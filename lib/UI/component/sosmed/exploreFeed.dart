@@ -16,6 +16,7 @@ import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
+import 'package:thaibah/UI/component/sosmed/listLikeSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
@@ -95,7 +96,6 @@ class _ExploreFeedState extends State<ExploreFeed> {
 
   }
   Future sendLikeOrUnLike(id,isLike,BuildContext context) async{
-
     var res = await SosmedProvider().sendLikeOrUnLike(id);
     if(res.toString() == 'timeout' || res.toString() == 'error'){
       Navigator.of(context).pop(false);
@@ -238,19 +238,7 @@ class _ExploreFeedState extends State<ExploreFeed> {
               scrollDirection: Axis.vertical,
               itemCount: snapshot.data.result.data.length,
               itemBuilder: (context,index){
-                String sukai='';
-                if(snapshot.data.result.data[index].isLike == true){
-                  sukai = 'disukai oleh anda dan ${int.parse(snapshot.data.result.data[index].likes)-1} orang lainnya ';
-                }else{
-                  if(int.parse(snapshot.data.result.data[index].likes) > 0 ){
-                    sukai = 'disukai oleh ${int.parse(snapshot.data.result.data[index].likes)} orang ';
-                  }
-                  else{
-                    sukai = '0';
-                  }
-
-                }
-
+                String sukai='disukai oleh ${int.parse(snapshot.data.result.data[index].likes)} orang ';
                 String caption = '';
                 if(snapshot.data.result.data[index].caption.substring(0,1) == "<"){
                   caption = 'konten tidak tersedia';
@@ -354,7 +342,6 @@ class _ExploreFeedState extends State<ExploreFeed> {
                           children: <Widget>[
                             Row(
                               children: <Widget>[
-
                                 InkWell(
                                     onTap:(){
                                       UserRepository().loadingQ(context);
@@ -362,7 +349,22 @@ class _ExploreFeedState extends State<ExploreFeed> {
                                     },
                                     child:Icon(FontAwesomeIcons.thumbsUp, size: 15.0, color: Colors.black)
                                 ),
-                                UserRepository().textQ(' $sukai', 10, Colors.black, FontWeight.bold,TextAlign.left)
+                                SizedBox(width: 5.0,),
+                                GestureDetector(
+                                  onTap: ()async{
+                                    await Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                        builder: (context) => ListLikeSosmed(
+                                          id: snapshot.data.result.data[index].id,
+                                        ),
+                                      ),
+                                    ).then((val){
+                                      load(); //you get details from screen2 here
+                                    });
+                                  },
+                                  child:UserRepository().textQ(sukai,10, Colors.black,FontWeight.bold,TextAlign.left,textDecoration: TextDecoration.underline),
+                                ),
                               ],
                             ),
                             Row(

@@ -17,27 +17,12 @@ class _IndexHistoryState extends State<IndexHistory> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool isLoading = false;
-
-
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
   final userRepository = UserRepository();
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadTheme();
   }
 
   @override
@@ -46,23 +31,20 @@ class _IndexHistoryState extends State<IndexHistory> {
       "Produk":"Produk",
       "PPPOB":"PPOB"
     };
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            key: scaffoldKey,
-            appBar:UserRepository().appBarWithTabButton(context,"Riwayat Pembelian",warna1,warna2, row,(){Navigator.of(context).pop();}),
-            body: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                children: <Widget>[
-                  HistorySuplemen(),
-                  HistoryPPOB(),
-                ]
-            ),
+    return DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          key: scaffoldKey,
+          appBar:UserRepository().appBarWithTabButton(context,"Riwayat Pembelian", row,(){Navigator.of(context).pop();}),
+          body: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
+              children: <Widget>[
+                HistorySuplemen(),
+                HistoryPPOB(),
+              ]
+          ),
 
-          )
-      ),
+        )
     );
   }
 

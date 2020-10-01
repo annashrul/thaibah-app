@@ -58,7 +58,7 @@ class _HistoryUIState extends State<HistoryUI> with AutomaticKeepAliveClientMixi
           length: 4,
           child: Scaffold(
             key: scaffoldKey,
-            appBar: UserRepository().appBarWithTabButton(context, 'Riwayat Transaksi', warna1, warna2,row,(){
+            appBar: UserRepository().appBarWithTabButton(context, 'Riwayat Transaksi',row,(){
               Navigator.of(context).pop();
             }),
             body: TabBarView(

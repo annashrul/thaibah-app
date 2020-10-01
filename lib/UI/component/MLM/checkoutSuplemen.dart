@@ -276,7 +276,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                     value: value,
                     child: Row(
                       children: [
-                        UserRepository().textQ(value,10,Colors.black,FontWeight.bold,TextAlign.left)
+                        UserRepository().textQ(value,12,Colors.grey,FontWeight.bold,TextAlign.left)
                       ],
                     ),
                   );
@@ -360,7 +360,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       value: "$cek",
                       child: Row(
                         children: [
-                          UserRepository().textQ(items.name,10,Colors.black,FontWeight.bold,TextAlign.left)
+                          UserRepository().textQ(items.name,12,Colors.grey,FontWeight.bold,TextAlign.left)
                         ],
                       ),
                     );
@@ -408,7 +408,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       value: "$cek",
                       child: Row(
                         children: [
-                          UserRepository().textQ(items.name,10,Colors.black,FontWeight.bold,TextAlign.left)
+                          UserRepository().textQ(items.name,12,Colors.grey,FontWeight.bold,TextAlign.left)
                         ],
                       ),
                     );
@@ -454,7 +454,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       value: "$cek",
                       child: Row(
                         children: [
-                          UserRepository().textQ(items.subdistrictName,10,Colors.black,FontWeight.bold,TextAlign.left)
+                          UserRepository().textQ(items.subdistrictName,12,Colors.grey,FontWeight.bold,TextAlign.left)
                         ],
                       ),
                     );
@@ -501,7 +501,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       value: "${items.kurir}",
                       child: Row(
                         children: [
-                          UserRepository().textQ(items.kurir,10,Colors.black,FontWeight.bold,TextAlign.left)
+                          UserRepository().textQ(items.kurir,12,Colors.grey,FontWeight.bold,TextAlign.left)
                         ],
                       ),
                     );
@@ -551,7 +551,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
                       value: "$jasper",
                       child: Row(
                         children: [
-                          UserRepository().textQ("${snapshot.data.result.kurir} - ${items.description} | ${formatter.format(items.cost)} | ${items.estimasi} (hari)",10,Colors.black,FontWeight.bold,TextAlign.left)
+                          UserRepository().textQ("${snapshot.data.result.kurir} - ${items.description} | ${formatter.format(items.cost)} | ${items.estimasi} (hari)",12,Colors.grey,FontWeight.bold,TextAlign.left)
                         ],
                       ),
                     );
@@ -754,7 +754,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               margin: EdgeInsets.only(top:20.0,bottom:10.0),
               color: Colors.white,
               padding:EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
-              child:Text('Daftar Produk', style: TextStyle(color:Colors.green,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+              child:UserRepository().textQ("Daftar Produk",14,Colors.green,FontWeight.bold,TextAlign.left),
             ),
             ProdukCheckoutSuplemen(),
             Container(
@@ -763,7 +763,7 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Informasi Pengiriman', style: TextStyle(color:Colors.green,fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold)),
+                  UserRepository().textQ("Informasi Pengiriman",14,Colors.green,FontWeight.bold,TextAlign.left),
                 ],
               ),
             ),

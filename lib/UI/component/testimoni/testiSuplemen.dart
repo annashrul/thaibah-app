@@ -31,9 +31,6 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
   bool isLoading=false;
   bool isLoading1=false;
   TabController _tabController;
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
   bool isLoadingShare = false;
   int cek = 0;
   int perpage=10;
@@ -97,16 +94,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
       print(e);
     }
   }
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
+
   int cloneIndex=0;
   Future<void> refresh() async{
     setState(() {
@@ -154,7 +142,6 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
     isLoading1=true;
     loadTestimoni('');
     loadCategory();
-    loadTheme();
   }
 
   final _itemExtent = 56.0;
@@ -173,7 +160,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                 snap: false,
                 elevation: 5,
                 backgroundColor: Colors.white,
-                title: isLoading1?Center(child: CircularProgressIndicator(strokeWidth: 10,valueColor: new AlwaysStoppedAnimation<Color>(statusLevel!='0'?warna1:ThaibahColour.primary1)),):TabBar(
+                title: isLoading1?SkeletonFrame(width:double.infinity,height: 50):TabBar(
                   controller: _tabController,
                   isScrollable: true,
                   onTap: (index) {
@@ -190,7 +177,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                         padding: const EdgeInsets.all(10.0),
                         child: UserRepository().textQ(categoryString[index], 12, Colors.white,FontWeight.bold, TextAlign.center)
                       ),
-                      decoration: BoxDecoration(color: index == _tabController.index ? warna1 : Colors.black12, borderRadius: BorderRadius.circular(20)),
+                      decoration: BoxDecoration(color: index == _tabController.index ? Colors.black : Colors.black12, borderRadius: BorderRadius.circular(20)),
                     ),
                   )),
                   labelPadding: EdgeInsets.symmetric(horizontal: 0),
@@ -204,16 +191,7 @@ class _TestiSuplemenState extends State<TestiSuplemen> with SingleTickerProvider
                 padding: EdgeInsets.all(2.0),
                 sliver: SliverGrid(
                   delegate: SliverChildBuilderDelegate((BuildContext context,int index){
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          child: Center(
-                            child: CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(statusLevel!='0'?warna1:ThaibahColour.primary1)),
-                          ),
-                        )
-                      ],
-                    );
+                    return UserRepository().loadingWidget();
                   },childCount: 1),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 1,
