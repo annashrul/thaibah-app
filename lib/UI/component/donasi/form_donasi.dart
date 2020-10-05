@@ -31,7 +31,7 @@ class _FormDonasiState extends State<FormDonasi> {
   TextEditingController nameController = TextEditingController();
   TextEditingController noController = TextEditingController();
   TextEditingController msgController = TextEditingController();
-  String bankCodeController='',name='';
+  String bankId='',name='';
   bool _switchValue=true;
   final userRepository=UserRepository();
   Future<void> load() async {
@@ -43,6 +43,7 @@ class _FormDonasiState extends State<FormDonasi> {
   }
 
   Future donasi() async{
+    var expBank = bankId.split('|');
     if(nominalController.text==''||nominalController.text=='0'){
       UserRepository().notifNoAction(_scaffoldKey, context,'nominal donasi tidak boleh kosonh',"failed");
       await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
@@ -55,7 +56,7 @@ class _FormDonasiState extends State<FormDonasi> {
     }
     else{
       UserRepository().loadingQ(context);
-      var res = await CheckoutDonasiProvider().checkoutDonasi(widget.id,nominalController.text,_switchValue?'1':'0',msgController.text,bankCodeController);
+      var res = await CheckoutDonasiProvider().checkoutDonasi(widget.id,nominalController.text,_switchValue?'1':'0',msgController.text,expBank[0]);
       if(res is Prefix2.CheckoutDonasiModel){
         Prefix2.CheckoutDonasiModel result = res;
         if(result.status=='success'){
@@ -72,7 +73,7 @@ class _FormDonasiState extends State<FormDonasi> {
                 no_rekening: result.result.noRekening,
                 picture:result.result.picture,
                 id_deposit:result.result.idDeposit,
-                bank_code : bankCodeController
+                bank_code : expBank[1]
             )),
           );
 
@@ -116,7 +117,7 @@ class _FormDonasiState extends State<FormDonasi> {
               builder: (context,AsyncSnapshot<ListAvailableBankModel> snapshot) {
                 if(snapshot.hasError) print(snapshot.error);
                 if(snapshot.hasData){
-                  bankCodeController= bankCodeController==''?snapshot.data.result[0].idBank:bankCodeController;
+                  bankId = bankId==''?"${snapshot.data.result[0].idBank}|${snapshot.data.result[0].bankCode}":bankId;
                   // BankCodeController = snapshot.data.result[0].code + " | "+ snapshot.data.result[0].name;
                   return Container(
                       width: double.infinity,
@@ -128,13 +129,14 @@ class _FormDonasiState extends State<FormDonasi> {
                       child: DropdownButton<String>(
                         isDense: true,
                         isExpanded: true,
-                        value: bankCodeController,
+                        value: bankId,
                         icon: Icon(Icons.arrow_drop_down),
                         iconSize: 20,
                         underline: SizedBox(),
                         onChanged: (String newValue) {
+
                           setState(() {
-                            bankCodeController = newValue;
+                            bankId = newValue;
                           });
                         },
                         items: snapshot.data.result.map((Result items){
@@ -144,8 +146,10 @@ class _FormDonasiState extends State<FormDonasi> {
                           }else{
                             name = items.name;
                           }
+
+                          // print("BANK ${items.idBank},${items.picture}, ${items.bankCode.toString()}");
                           return new DropdownMenuItem<String>(
-                            value: items.idBank,
+                            value: "${items.idBank}|${items.bankCode.toString()}",
                             child: Row(
                               children: [
                                 Image.network(items.picture,width: 50,height: 10,),

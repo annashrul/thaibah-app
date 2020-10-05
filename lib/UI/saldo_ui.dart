@@ -53,7 +53,6 @@ class _SaldoUIState extends State<SaldoUI> {
             new CupertinoPageRoute(builder: (context) => Pin(saldo: widget.saldo,param:'topup')),
           );
         });
-
       }else{
         var rplcComa = moneyController.text.replaceAll(",", "");
         var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);

@@ -49,26 +49,14 @@ class _BuktiTransferState extends State<BuktiTransfer> {
     }
   }
 
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
+
   final userRepository = UserRepository();
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadTheme();
   }
 
   @override
@@ -77,9 +65,7 @@ class _BuktiTransferState extends State<BuktiTransfer> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
 
     return Scaffold(
-        appBar: UserRepository().appBarWithButton(context, "Upload Bukti Transfer",(){Navigator.pop(context);},<Widget>[]),
-
-        // appBar:UserRepository().appBarWithButton(context,'Upload Bukti Transfer',warna1,warna2,(){Navigator.of(context).pop();},Container()),
+      appBar: UserRepository().appBarWithButton(context, "Upload Bukti Transfer",(){Navigator.pop(context);},<Widget>[]),
       body: Container(
         padding: EdgeInsets.all(20.0),
         child: Column(
@@ -101,36 +87,28 @@ class _BuktiTransferState extends State<BuktiTransfer> {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
 
+
+
+
+    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
+    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
+
     return Container(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Container(
-              width: MediaQuery.of(context).size.width/1,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [statusLevel!='0'?warna1:ThaibahColour.primary1,statusLevel!='0'?warna2:ThaibahColour.primary2]),
-                  borderRadius: BorderRadius.circular(0.0),
-                  boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-              ),
-              height: kBottomNavigationBarHeight,
-              child: FlatButton(
-                shape:RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(0)),
-                ),
-                color: statusLevel!='0'?warna1:ThaibahColour.primary2,
-                onPressed: (){
-                  if(_image!=null){
-                    setState(() {
-                      UserRepository().loadingQ(context);
-                    });
-                    upload();
-                  }
-                },
-                child: Text("SIMPAN", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(45),fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
-              )
-          )
-        ],
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+      child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+              color: Colors.transparent
+          ),
+          height: kBottomNavigationBarHeight,
+          child: UserRepository().buttonQ(context,(){
+            if(_image!=null){
+              setState(() {
+                UserRepository().loadingQ(context);
+              });
+              upload();
+            }
+          },"Simpan"),
       ),
     );
   }

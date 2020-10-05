@@ -279,8 +279,15 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
       ),
       bottomNavigationBar:InkWell(
         onTap: (){
-          if(widget.noDeadline!=0&&widget.toDeadline.toLowerCase()!='selesai'){
+          print("TODEADLINE ${widget.toDeadline}");
+          print("NODEADLINE ${widget.noDeadline}");
+          if(widget.noDeadline==1){
             Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDonasi(id: widget.id))).whenComplete(() => detailDonasiBloc.fetchDetailDonasi(widget.id));
+          }
+          else{
+            if(widget.noDeadline!=0&&widget.toDeadline.toLowerCase()!='selesai.'){
+              Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDonasi(id: widget.id))).whenComplete(() => detailDonasiBloc.fetchDetailDonasi(widget.id));
+            }
           }
         },
         child: Container(
@@ -290,9 +297,6 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
             borderRadius: BorderRadius.circular(0.0),
           ),
           padding: EdgeInsets.only(top:20.0),
-          // child: UserRepository().buttonQ(context,(){
-          //   Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDonasi(id: widget.id))).whenComplete(() => detailDonasiBloc.fetchDetailDonasi(widget.id));
-          // }, 'Donasi'),
           child:UserRepository().textQ('Donasi',14,Colors.white,FontWeight.bold,TextAlign.center),
         ),
       )

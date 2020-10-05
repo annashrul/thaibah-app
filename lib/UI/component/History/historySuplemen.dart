@@ -103,7 +103,6 @@ class _HistorySuplemenState extends State<HistorySuplemen> {
   @override
   void initState() {
     super.initState();
-
     initializeDateFormatting('id');
     var date = new DateTime.now().toString();
     var dateParse = DateTime.parse(date);

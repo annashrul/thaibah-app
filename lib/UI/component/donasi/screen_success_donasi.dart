@@ -54,27 +54,12 @@ class _ScreenSuccessDonasiState extends State<ScreenSuccessDonasi> {
       General result = res;
       if(result.status=='success'){
         setState(() {Navigator.pop(context);});
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return RichAlertDialogQ(
-                alertTitle: richTitle("Donasi Anda Akan Segera Di Proses"),
-                alertSubtitle: richSubtitle("Harap Menuggu Paling Lambat 15 Menit"),
-                alertType: RichAlertType.SUCCESS,
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("Kembali"),
-                    onPressed: (){
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
-                    },
-                  ),
-                ],
-              );
-            }
-        );
+        UserRepository().notifAlertQ(context, "success","Donasi Anda Akan Segera Di Proses", "Harap Menuggu Paling Lambat 15 Menit","Kembali","Beranda", ()=>Navigator.pop(context), (){
+          Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
+        });
       }
       else{
-        setState(() {Navigator.pop(context);});
+
         setState(() {Navigator.pop(context);});
         UserRepository().notifNoAction(scaffoldKey, context,result.msg,"failed");
       }
@@ -134,43 +119,37 @@ class _ScreenSuccessDonasiState extends State<ScreenSuccessDonasi> {
                 ),
                 SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(
-                    'Silahkan transfer tepat sebesar',
-                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(36)),
-                    textAlign: TextAlign.center,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                  child: UserRepository().textQ("Silahkan transfer tepat sebesar :", 12, Colors.black, FontWeight.bold, TextAlign.left),
                 ),
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                     child: Container(
-                      color:ThaibahColour.primary2,
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                      child: Text(
-                        widget.amount,
-                        style: TextStyle(color:Colors.white,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(40)),
-                        textAlign: TextAlign.center,
+                      decoration: BoxDecoration(
+                          color:Colors.green,
+                          borderRadius: BorderRadius.circular(10)
                       ),
+                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                      child:UserRepository().textQ(widget.amount, 18, Colors.white, FontWeight.bold, TextAlign.center),
                     )
                 ),
 
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                  child: Text(
-                    'Pembayaran dapat dilakukan ke rekening berikut :',
-                    style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(30)),
-                    textAlign: TextAlign.center,
-                  ),
+                  child: UserRepository().textQ("Pembayaran dapat dilakukan ke rekening berikut : ", 12, Colors.black, FontWeight.bold, TextAlign.left),
                 ),
                 Card(
                   elevation: 0.0,
                   margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: Container(
-                    padding:EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(color: Colors.white),
+                    padding: new EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)
+                    ),
                     child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
                       leading: Container(
                         width: 90.0,
                         height: 50.0,
@@ -197,16 +176,17 @@ class _ScreenSuccessDonasiState extends State<ScreenSuccessDonasi> {
                           ),
                         ),
                       ),
-                      title: Text(widget.atas_nama,style: TextStyle(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                      // title: Text(widget.atas_nama,style: TextStyle(fontSize:  ScreenUtilQ.getInstance().setSp(30),fontFamily: 'Rubik',fontWeight: FontWeight.bold),),
+                      title:UserRepository().textQ(widget.atas_nama, 12, Colors.black, FontWeight.bold,TextAlign.left),
                       subtitle: GestureDetector(
                         onTap: () {
                           Clipboard.setData(new ClipboardData(text: widget.no_rekening));
-                          key.currentState.showSnackBar(new SnackBar(content: new Text("no rekening berhasil disalin",style: TextStyle(fontSize:  ScreenUtilQ.getInstance().setSp(20),fontFamily: 'Rubik'),)));
+                          key.currentState.showSnackBar(new SnackBar(content:UserRepository().textQ("no rekening berhasil disalin", 12, Colors.white, FontWeight.bold,TextAlign.center)));
                         },
                         child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Text( widget.no_rekening,style: TextStyle(fontFamily: 'Rubik',fontSize:  ScreenUtilQ.getInstance().setSp(30)),),
+                              UserRepository().textQ(widget.no_rekening, 12, Colors.black.withOpacity(0.7), FontWeight.bold,TextAlign.left),
                               SizedBox(width: 5),
                               Icon(Icons.content_copy, color: Colors.black, size: 15,),
                             ]
@@ -219,7 +199,10 @@ class _ScreenSuccessDonasiState extends State<ScreenSuccessDonasi> {
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                     child: Container(
-                      color:ThaibahColour.primary2,
+                      decoration: BoxDecoration(
+                          color:Colors.green,
+                          borderRadius: BorderRadius.circular(10)
+                      ),
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                       child: Text(
                         'VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT',
@@ -282,33 +265,14 @@ class _ScreenSuccessDonasiState extends State<ScreenSuccessDonasi> {
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
 
     return Container(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Container(
-              width: MediaQuery.of(context).size.width/1,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [ThaibahColour.primary1,ThaibahColour.primary2]),
-                  borderRadius: BorderRadius.circular(0.0),
-                  boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-              ),
-              height: kBottomNavigationBarHeight,
-              child: FlatButton(
-                shape:RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(0)),
-                ),
-                color:ThaibahColour.primary2,
-                onPressed: (){
-                  _lainnyaModalBottomSheet(context);
-                  // Navigator.of(context, rootNavigator: true).push(
-                  //   new CupertinoPageRoute(builder: (context) => BuktiTransfer(id_deposit: widget.id_deposit)),
-                  // );
-                },
-                child: Text("SAYA SUDAH TRANSFER", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,fontWeight:FontWeight.bold,color: Colors.white)),
-              )
-          )
-        ],
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+      child: Container(
+        width:double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+        ),
+        height: kBottomNavigationBarHeight,
+        child: UserRepository().buttonQ(context,(){_lainnyaModalBottomSheet(context);},"Saya sudah transfer"),
       ),
     );
   }
