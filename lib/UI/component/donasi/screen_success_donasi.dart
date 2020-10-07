@@ -10,7 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
-import 'package:thaibah/UI/component/History/buktiTransfer.dart';
+import 'package:thaibah/UI/Widgets/uploadImage.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/transfer/buktiTransfer.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/richAlertDialogQ.dart';
@@ -27,60 +28,10 @@ class ScreenSuccessDonasi extends StatefulWidget {
 }
 
 class _ScreenSuccessDonasiState extends State<ScreenSuccessDonasi> {
-  double _height;
-  double _width;
-  File _image;
-  Future<File> file;
-  String base64Image;
-  File tmpFile;
-  bool isLoading = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  String fileName;
   var hari  = DateFormat.d().format( DateTime.now().add(Duration(days: 3)));
   var bulan = DateFormat.M().format( DateTime.now());
   var tahun = DateFormat.y().format( DateTime.now());
-
-  Future upload(File img) async{
-    UserRepository().loadingQ(context);
-    if(img != null){
-      fileName = img.path.split("/").last;
-      var type = fileName.split('.');
-      base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(img.readAsBytesSync());
-    }else{
-      base64Image = "";
-    }
-    var res = await CheckoutDonasiProvider().uploadBuktiTransferDonasi(widget.id_deposit,base64Image);
-    if(res is General){
-      General result = res;
-      if(result.status=='success'){
-        setState(() {Navigator.pop(context);});
-        UserRepository().notifAlertQ(context, "success","Donasi Anda Akan Segera Di Proses", "Harap Menuggu Paling Lambat 15 Menit","Kembali","Beranda", ()=>Navigator.pop(context), (){
-          Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
-        });
-      }
-      else{
-
-        setState(() {Navigator.pop(context);});
-        UserRepository().notifNoAction(scaffoldKey, context,result.msg,"failed");
-      }
-    }
-  }
-
-  void _lainnyaModalBottomSheet(context){
-    showModalBottomSheet(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-        backgroundColor: Colors.white,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal:18,vertical: 10 ),
-          child: WidgetUploadBuktiTransferDonasi(callback: (File img){
-            upload(img);
-          }),
-        )
-    );
-  }
-
 
   final userRepository = UserRepository();
 
@@ -93,21 +44,15 @@ class _ScreenSuccessDonasiState extends State<ScreenSuccessDonasi> {
 
   @override
   Widget build(BuildContext context) {
-    _height = MediaQuery.of(context).size.height;
-    _width = MediaQuery.of(context).size.width;
     final key = new GlobalKey<ScaffoldState>();
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
     return Scaffold(
         key: key,
         appBar: UserRepository().appBarWithButton(context, "Transaksi Berhasil",(){
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
         },<Widget>[]),
-
-
         resizeToAvoidBottomInset: false,
-
         body: Scrollbar(
             child: ListView(
               children: <Widget>[
@@ -256,95 +201,41 @@ class _ScreenSuccessDonasiState extends State<ScreenSuccessDonasi> {
               ],
             )
         ),
-        bottomNavigationBar: _bottomNavBarBeli(context)
-    );
-  }
-
-  Widget _bottomNavBarBeli(BuildContext context){
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
-    return Container(
-      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      child: Container(
-        width:double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-        ),
-        height: kBottomNavigationBarHeight,
-        child: UserRepository().buttonQ(context,(){_lainnyaModalBottomSheet(context);},"Saya sudah transfer"),
-      ),
-    );
-  }
-}
-
-class WidgetUploadBuktiTransferDonasi extends StatefulWidget {
-  final Function(File bukti) callback;
-  WidgetUploadBuktiTransferDonasi({this.callback});
-  @override
-  _WidgetUploadBuktiTransferDonasiState createState() => _WidgetUploadBuktiTransferDonasiState();
-}
-
-class _WidgetUploadBuktiTransferDonasiState extends State<WidgetUploadBuktiTransferDonasi> {
-  File _image;
-  Future<File> file;
-  String base64Image;
-  File tmpFile;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        SizedBox(height:10.0),
-        Container(
-          padding: EdgeInsets.only(top:10.0),
-          width: 50,
-          height: 10.0,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius:  BorderRadius.circular(10.0),
-          ),
-        ),
-        InkWell(
-          onTap: () async {
-            try{
-              var image = await ImagePicker.pickImage(
-                source: ImageSource.gallery,
-                maxHeight: 800, maxWidth: 600,
-              );
-              setState(() {
-                _image = image;
-              });
-            }catch(e){
-              print(e);
-            }
-          },
-          child: ListTile(
-            contentPadding: EdgeInsets.all(0.0),
-            title: UserRepository().textQ("Upload Bukti Transfer",12,Colors.grey,FontWeight.bold,TextAlign.left),
-            leading: CircleAvatar(
-              backgroundColor: Colors.transparent,
-              child: Center(child: Icon(Icons.satellite, color: Colors.grey)),
+        bottomNavigationBar:Container(
+          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          child: Container(
+            width:double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
             ),
-            trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey,size: 20,),
+            height: kBottomNavigationBarHeight,
+            child: UserRepository().buttonQ(context,(){
+              UserRepository().myModal(context,UploadImage(
+                callback: (String img) async{
+                  UserRepository().loadingQ(context);
+                  var res = await CheckoutDonasiProvider().uploadBuktiTransferDonasi(widget.id_deposit,img);
+                  if(res is General){
+                    General result = res;
+                    if(result.status=='success'){
+                      setState(() {Navigator.pop(context);});
+                      UserRepository().notifAlertQ(context, "success","Donasi Anda Akan Segera Di Proses", "Harap Menuggu Paling Lambat 15 Menit","Profile","Beranda", (){
+                        Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: 'profile',)), (Route<dynamic> route) => false);
+                      }, (){
+                        Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
+                      });
+                    }
+                    else{
+                      setState(() {Navigator.pop(context);});
+                      setState(() {Navigator.pop(context);});
+                      UserRepository().notifNoAction(scaffoldKey, context,result.msg,"failed");
+                    }
+                  }
+                },
+              ));
+            },"Saya sudah transfer"),
           ),
-        ),
-        Divider(),
-        Container(
-          padding:EdgeInsets.all(5.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius:  BorderRadius.circular(100.0),
-          ),
-          child: _image == null ?Image.network("http://lequytong.com/Content/Images/no-image-02.png"): new Image.file(_image,width: 1300,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high,),
-        ),
-        UserRepository().buttonQ(context, ()=>widget.callback(_image),'Simpan')
-      ],
+        )
     );
-
-
   }
 }
 

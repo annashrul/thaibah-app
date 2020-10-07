@@ -12,31 +12,17 @@ class CardHeader extends StatefulWidget {
 }
 
 class _CardHeaderState extends State<CardHeader> {
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
   final userRepository = UserRepository();
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadTheme();
   }
   @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
     return Container(
       margin: EdgeInsets.all(10.0),
       decoration: new BoxDecoration(
@@ -46,21 +32,34 @@ class _CardHeaderState extends State<CardHeader> {
         ),
         borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
       ),
-//        color: Color.fromRGBO(178,223,219,1),
-//        decoration: BoxDecoration(gradient: RadialGradient(colors: [Color(0xFF015FFF), Color(0xFF015FFF)])),
       padding: EdgeInsets.all(5.0),
       child: Column(
         children: <Widget>[
           Center(
             child: Padding(
               padding: EdgeInsets.all(5.0),
-              child: Text("Saldo Anda",style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(36),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              child:UserRepository().textQ("Saldo Anda",12,Colors.black,FontWeight.bold,TextAlign.center)
+              // child: Text("Saldo Anda",style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(36),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
             ),
           ),
+          SizedBox(height: 5),
+          Center(
+            child: Container(
+              padding: EdgeInsets.only(top:10.0),
+              width: 50,
+              height: 2.0,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius:  BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          SizedBox(height: 5),
           Center(
             child: Padding(
               padding: EdgeInsets.all(5.0),
-              child: Text(widget.saldo,style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(36),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              // child: Text(widget.saldo,style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(36),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              child:UserRepository().textQ(widget.saldo,12,ThaibahColour.primary1,FontWeight.bold,TextAlign.center),
             ),
           ),
         ],

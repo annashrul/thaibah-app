@@ -6,8 +6,6 @@ import 'package:thaibah/Model/donasi/checkoutDonasiModel.dart' as Prefix2;
 import 'package:thaibah/Model/generalModel.dart' as Prefix1;
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'package:thaibah/UI/component/detail/detailTopUp.dart';
-import 'package:thaibah/UI/component/donasi/screen_detail_donasi.dart';
 import 'package:thaibah/UI/component/donasi/screen_success_donasi.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/user_repo.dart';

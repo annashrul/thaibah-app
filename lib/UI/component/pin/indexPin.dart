@@ -3,16 +3,14 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/resendOtpModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/lockScreenQ.dart';
 import 'package:thaibah/UI/component/dataDiri/indexMember.dart';
+import 'package:thaibah/UI/component/deposit/formDeposit.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
-import 'package:thaibah/UI/saldo_ui.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -119,7 +117,7 @@ class _PinState extends State<Pin> {
           }else{
             Timer(Duration(seconds: 3), () {
               Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(
-                  builder: (BuildContext context) => widget.param=='topup' ? SaldoUI(saldo: widget.saldo,name: name) : WidgetIndex(param: '',)
+                  builder: (BuildContext context) => widget.param=='topup' ? FormDeposit(saldo: widget.saldo,name: name) : WidgetIndex(param: '',)
               ), (Route<dynamic> route) => false);
             });
           }

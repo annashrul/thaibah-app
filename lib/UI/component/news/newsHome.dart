@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Model/newsModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
-import 'package:thaibah/UI/detail_berita_ui.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/news/detail_berita_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
 
 

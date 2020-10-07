@@ -1,25 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:isolate';
-import 'dart:math';
 import 'dart:ui';
-import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Model/onboardingModel.dart' as Prefix2;
 import 'package:thaibah/Model/pageViewModel.dart';
 import 'package:thaibah/Model/user_location.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
-import 'package:thaibah/UI/loginPhone.dart';
-import 'package:thaibah/UI/splash/introViews.dart';
+import 'UI/Widgets/onboarding/introViews.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/auth/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:http/http.dart' show Client, Response;
 import 'package:thaibah/config/user_repo.dart';
@@ -30,6 +23,7 @@ import 'DBHELPER/userDBHelper.dart';
 import 'Model/checkerModel.dart';
 import 'UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'UI/Widgets/pin_screen.dart';
+import 'UI/Widgets/updatePage.dart';
 
 void main() async {
   runApp(MyApp());
@@ -381,23 +375,6 @@ class _IntroScreenState extends State<IntroScreen> {
     return new Scaffold(
         body: isLoading?Container(child: Center(child: CircularProgressIndicator(),),):wrapOnboarding!=[]?Stack(
           children: <Widget>[
-            // Column(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   crossAxisAlignment: CrossAxisAlignment.center,
-            //   children: [
-            //     ClipRRect(
-            //       borderRadius: BorderRadius.circular(8),
-            //       child: Container(
-            //         height: 10,
-            //         child: LinearProgressIndicator(
-            //           value: 0.90, // percent filled
-            //           valueColor: AlwaysStoppedAnimation<Color>(ThaibahColour.primary2),
-            //           backgroundColor: Color(0xFFFFDAB8),
-            //         ),
-            //       ),
-            //     )
-            //   ],
-            // ),
             IntroViewsFlutter(
               wrapOnboarding,
               onTapDoneButton: (){

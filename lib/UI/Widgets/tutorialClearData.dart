@@ -1,8 +1,9 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/pageViewModel.dart';
-import 'package:thaibah/UI/splash/introViews.dart';
 import 'package:thaibah/config/api.dart';
+
+import 'onboarding/introViews.dart';
 
 class TutorialClearData extends StatefulWidget {
   @override

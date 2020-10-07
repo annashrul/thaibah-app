@@ -16,17 +16,15 @@ import 'package:thaibah/Model/kotaModel.dart' as prefix1;
 import 'package:thaibah/Model/ongkirModel.dart' as prefix3;
 import 'package:thaibah/Model/provinsiModel.dart';
 import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
-import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'package:thaibah/UI/component/History/detailHistorySuplemen.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/MLM/detailHistorySuplemen.dart';
 import 'package:thaibah/UI/component/MLM/produkCheckoutSuplemen.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart';
 import 'package:thaibah/bloc/ongkirBloc.dart' as prefix4;
-import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/productMlmProvider.dart';
 
@@ -203,28 +201,14 @@ class _CheckOutSuplemenState extends State<CheckOutSuplemen>{
       _currentItemSelectedKecamatan = val;
     });
   }
-
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
   final userRepository = UserRepository();
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
+
 
 
   @override
   void initState() {
     super.initState();
     pilih();
-    loadTheme();
     _handleRadioValueChange2(_radioValue2);
     totQty   = widget.totQty;
     totBayar = widget.total;

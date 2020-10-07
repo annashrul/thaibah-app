@@ -22,12 +22,25 @@ class LocationService  with ChangeNotifier  {
               latitude: locationData.latitude,
               longitude: locationData.longitude,
             ));
+
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            prefs.setDouble('lat',locationData.latitude);
-            prefs.setDouble('lng',locationData.longitude);
 
+            if(prefs.getDouble('lat')==locationData.latitude&&prefs.getDouble('lng')==locationData.longitude){
+              prefs.remove('lat');
+              prefs.remove('lng');
 
-            print("LATITUDE DAN LONGITUDE ${prefs.getDouble('lat')} - ${prefs.getDouble('lng')}");
+              print("REMOVE LATITUDE");
+              prefs.setDouble('lat',locationData.latitude);
+              prefs.setDouble('lng',locationData.longitude);
+              print("SESSION LATITUDE DAN LONGITUDE ${prefs.getDouble('lat')} - ${prefs.getDouble('lng')}");
+              print("LOCAL LATITUDE DAN LONGITUDE ${locationData.latitude} - ${locationData.longitude}");
+            }
+            else{
+              prefs.setDouble('lat',locationData.latitude);
+              prefs.setDouble('lng',locationData.longitude);
+            }
+            // print("LIST SESSION ${prefs.getDList('lat')}");
+
           }
         });
       }

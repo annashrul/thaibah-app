@@ -5,7 +5,7 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/detailNewsPerCategoryModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'package:thaibah/UI/detail_berita_ui.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/news/detail_berita_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
 

@@ -6,8 +6,9 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/newsModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
+import 'package:thaibah/config/api.dart';
 
-import '../../detail_berita_ui.dart';
+import '../news/detail_berita_ui.dart';
 
 class WidgetTopSlider extends StatefulWidget {
   @override
@@ -77,7 +78,7 @@ class _WidgetTopSliderState extends State<WidgetTopSlider> with AutomaticKeepAli
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0),bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
                       image: DecorationImage(
-                          image: CachedNetworkImageProvider(snapshot.data.result.data[index].picture==''||snapshot.data.result.data[index].picture==null?IconImgs.noImage:snapshot.data.result.data[index].picture),
+                          image: CachedNetworkImageProvider(snapshot.data.result.data[index].picture==''||snapshot.data.result.data[index].picture==null?ApiService().noImage:snapshot.data.result.data[index].picture),
                           fit: BoxFit.fill
                       )
                   ),

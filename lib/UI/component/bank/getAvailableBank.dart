@@ -7,8 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/depositManual/listAvailableBank.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
-import 'package:thaibah/UI/component/History/detailDeposit.dart';
-import 'package:thaibah/UI/component/detail/detailTopUp.dart';
+import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
+import 'package:thaibah/UI/component/deposit/successScreenDeposit.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/deposit/detailDeposit.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/virtualAccount/virtualAccountProvider.dart';
@@ -57,7 +58,7 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
       }else{
         setState(() {Navigator.pop(context);});
         Navigator.of(context, rootNavigator: true).push(
-          new CupertinoPageRoute(builder: (context) => DetailTopUp(
+          new CupertinoPageRoute(builder: (context) => SuccessScreenDeposit(
               amount: res.result.amount,
               raw_amount: res.result.rawAmount,
               unique: res.result.unique,
@@ -79,27 +80,14 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
     });
     var test = await VirtualAccountProvider().fetchAvailableBank();
     adminFee = test.result.adminFee;
-//    totalPembayaran = widget.amount - adminFee;
   }
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
+
   final userRepository = UserRepository();
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
+
   @override
   void initState() {
     super.initState();
     cek();
-    loadTheme();
     listAvailableBankBloc.fetchListAvailableBank();
     _isLoading=false;
 
@@ -113,7 +101,6 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
     return  Scaffold(
         key: scaffoldKey,
         appBar: UserRepository().appBarWithButton(context, "Metode Pembayaran",(){Navigator.pop(context);},<Widget>[]),
-
         body: StreamBuilder(
           stream: listAvailableBankBloc.getResult,
           builder: (context, AsyncSnapshot<ListAvailableBankModel> snapshot) {
@@ -122,15 +109,40 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
             } else if (snapshot.hasError) {
               return Text(snapshot.error.toString());
             }
-
-            return Container(child:Center(child:CircularProgressIndicator(strokeWidth: 10, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1))));
+            return ListView.builder(
+              padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),
+              itemCount: 6,
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  elevation: 0.0,
+                  margin: new EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10.0)
+                    ),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                      leading: Container(
+                        width: 90.0,
+                        height: 100.0,
+                        padding: EdgeInsets.all(10),
+                        child: SkeletonFrame(width: 90,height: 50),
+                      ),
+                      title: SkeletonFrame(width: 100,height: 15),
+                      subtitle: SkeletonFrame(width: 70,height: 15),
+                    ),
+                  ),
+                );
+              },
+            );
           },
         ),
         bottomNavigationBar: Container(
           width: ScreenUtilQ.getInstance().setWidth(710),
           height: ScreenUtilQ.getInstance().setHeight(100),
           decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [statusLevel!='0'?warna1:ThaibahColour.primary1,statusLevel!='0'?warna2:ThaibahColour.primary2]),
+              gradient: LinearGradient(colors: [ThaibahColour.primary1,ThaibahColour.primary2]),
               borderRadius: BorderRadius.circular(0.0),
               boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
           ),
@@ -162,88 +174,42 @@ class _GetAvailableBankState extends State<GetAvailableBank> {
   Widget buildContent(AsyncSnapshot<ListAvailableBankModel> snapshot, BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-
     if(snapshot.data.result.length > 0){
-      return Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18.0),
-            child: Text(
-              'Pilih Bank Yang Akan Dituju',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(40),fontFamily:ThaibahFont().fontQ),
-              textAlign: TextAlign.center,
+      return ListView.builder(
+        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),
+        itemCount: snapshot.data.result.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: (){
+              setState(() {
+                UserRepository().loadingQ(context);
+              });
+              create(snapshot.data.result[index].idBank,snapshot.data.result[index].picture,snapshot.data.result[index].bankCode.toString());
+            },
+            child:Container(
+              margin: EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                leading: Image.network(
+                  snapshot.data.result[index].picture,
+                  fit: BoxFit.fitWidth,
+                ),
+                // title: Text(snapshot.data.result[index].atasNama,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),),
+                title: UserRepository().textQ(snapshot.data.result[index].atasNama, 12, Colors.black, FontWeight.bold, TextAlign.left),
+                subtitle: UserRepository().textQ(snapshot.data.result[index].noRekening, 12, Colors.black, FontWeight.bold, TextAlign.left),
+                trailing: Icon(Icons.navigate_next),
+                // subtitle:Text(snapshot.data.result[index].noRekening, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold)),
+              ),
             ),
-          ),
-          Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),
-                itemCount: snapshot.data.result.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        UserRepository().loadingQ(context);
-                      });
-                      create(snapshot.data.result[index].idBank,snapshot.data.result[index].picture,snapshot.data.result[index].bankCode.toString());
-                    },
-                    child:Card(
-                      elevation: 0.0,
-                      margin: new EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
-                      child: Container(
-                        decoration: BoxDecoration(color: Colors.white),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                          leading: Container(
-                            width: 90.0,
-                            height: 50.0,
-                            padding: EdgeInsets.all(10),
-                            child: CircleAvatar(
-                              minRadius: 150,
-                              maxRadius: 150,
-                              child: CachedNetworkImage(
-                                imageUrl: snapshot.data.result[index].picture,
-                                placeholder: (context, url) => Center(
-                                  child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-                                ),
-                                errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                imageBuilder: (context, imageProvider) => Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: new BorderRadius.circular(0.0),
-                                    color: Colors.white,
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          title: Text(
-                            snapshot.data.result[index].atasNama,style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Row(
-                            children: <Widget>[
-                              Text(snapshot.data.result[index].noRekening, style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(30),fontFamily:ThaibahFont().fontQ,color: Colors.black, fontWeight: FontWeight.bold))
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              )
-          )
-        ],
+          );
+        },
       );
     }else{
-      return Column(
-        children: <Widget>[
-          Container(
-              child: Center(child:Text("Data Tidak Tersedia",style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold,fontSize: 20,fontFamily:ThaibahFont().fontQ),))
-          ),
-        ],
-      );
+      return UserRepository().noData();
     }
 
   }

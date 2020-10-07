@@ -13,7 +13,7 @@ import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../detail_berita_ui.dart';
+import '../news/detail_berita_ui.dart';
 
 
 class ScreenArtikel extends StatefulWidget {

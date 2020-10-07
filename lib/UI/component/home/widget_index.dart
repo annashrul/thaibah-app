@@ -6,34 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/user_location.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
-import 'package:thaibah/UI/component/History/detailHistoryPPOB.dart';
-import 'package:thaibah/UI/component/about.dart';
-import 'package:thaibah/UI/component/donasi/history_donasi.dart';
-import 'package:thaibah/UI/component/donasi/widget_donasi.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/History/mainHistoryTransaksi.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/about/about.dart';
 import 'package:thaibah/UI/component/home/screen_home.dart';
-import 'package:thaibah/UI/component/home/widget_artikel.dart';
-import 'package:thaibah/UI/component/myProfile.dart';
-import 'package:thaibah/UI/component/profile_our_business.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/profile/myProfile.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
-import 'package:thaibah/UI/component/testimoni/testi.dart';
-import 'package:thaibah/UI/produk_mlm_ui.dart';
+import 'package:thaibah/UI/component/testimoni/testimoniProduk.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/MLM/produk_mlm_ui.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/location_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../detail_berita_ui.dart';
-import '../../history_ui.dart';
-import '../../jaringan_ui.dart';
-import '../../loginPhone.dart';
+import '../news/detail_berita_ui.dart';
+import '../MLM/jaringan_ui.dart';
+import '../auth/loginPhone.dart';
 
 class WidgetIndex extends StatefulWidget {
   final String param;
@@ -135,22 +128,22 @@ class _WidgetIndexState extends State<WidgetIndex>{
         Navigator.push(context, MaterialPageRoute(builder: (context) => DetailBeritaUI(id: notify['id'],category: notify['category'])));
       }
       if (notify["type"] == "transaksi_bonus") {
-        Navigator.push(context,MaterialPageRoute(builder: (context) => HistoryUI(page: 'home')));
+        Navigator.push(context,MaterialPageRoute(builder: (context) => MainHistoryTransaksi(page: 'home')));
       }
       if (notify["type"] == "transaksi_suplemen") {
-        Navigator.push(context,MaterialPageRoute(builder: (context) => HistoryUI(page: 'home')));
+        Navigator.push(context,MaterialPageRoute(builder: (context) => MainHistoryTransaksi(page: 'home')));
       }
       if (notify["type"] == "transaksi_tanah") {
-        Navigator.push(context,MaterialPageRoute(builder: (context) => HistoryUI(page: 'home')));
+        Navigator.push(context,MaterialPageRoute(builder: (context) => MainHistoryTransaksi(page: 'home')));
       }
-      if (notify["type"] == "transaksi_ppob") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DetailHistoryPPOB(kdTrx: notify['id']),
-          ),
-        );
-      }
+      // if (notify["type"] == "transaksi_ppob") {
+      //       //   Navigator.push(
+      //       //     context,
+      //       //     MaterialPageRoute(
+      //       //       builder: (context) => DetailHistoryPPOB(kdTrx: notify['id']),
+      //       //     ),
+      //       //   );
+      //       // }
       if (notify["type"] == "feed_komentar") {
         Navigator.push(
           context,
@@ -163,7 +156,7 @@ class _WidgetIndexState extends State<WidgetIndex>{
         updateApk();
       }
       if (notify["type"] == "transaksi_saldo") {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryUI(page: 'home')));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => MainHistoryTransaksi(page: 'home')));
       }
       if (notify["type"] == "member") {
         Navigator.push(context, MaterialPageRoute(builder: (context) => JaringanUI(kdReferral: '')));
@@ -179,7 +172,6 @@ class _WidgetIndexState extends State<WidgetIndex>{
           lng = event.longitude;
         });
       }
-
     });
   }
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -202,7 +194,7 @@ class _WidgetIndexState extends State<WidgetIndex>{
     ScreenHome(),
     ProdukMlmUI(),
     About(),
-    Testimoni(),
+    TestimoniProduk(),
     MyProfile(),
   ];
 
@@ -302,7 +294,7 @@ class _WidgetIndexState extends State<WidgetIndex>{
                             minWidth: 40,
                             onPressed: () {
                               setState(() {
-                                currentScreen = Testimoni(); // if user taps on this dashboard tab will be active
+                                currentScreen = TestimoniProduk(); // if user taps on this dashboard tab will be active
                                 currentTab = 3;
                               });
                             },

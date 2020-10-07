@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thaibah/Model/categoryModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'package:thaibah/UI/detailNewsPerCategory.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/news/detailNewsPerCategory.dart';
 import 'package:thaibah/bloc/categoryBloc.dart';
 
 class CategoryHome extends StatefulWidget {

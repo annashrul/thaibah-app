@@ -27,7 +27,7 @@ class SosmedProvider {
         ApiService().baseUrl+url,
         headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
-    print("###########################################################Sosial Media###############################################################");
+    print("###########################################################Sosial Media ${ApiService().baseUrl+url}###############################################################");
     print('socmed?page=$page&limit=$limit');
     print(response.body);
     if (response.statusCode == 200) {

@@ -4,14 +4,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Model/newsModel.dart';
-import 'package:thaibah/UI/Homepage/index.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/Widgets/theme.dart' as AppTheme;
 import 'package:thaibah/UI/component/home/widget_index.dart';
-import 'package:thaibah/UI/detail_berita_ui.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/news/detail_berita_ui.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
-import 'package:thaibah/config/api.dart';
 
 class NewsPage extends StatefulWidget {
   @override

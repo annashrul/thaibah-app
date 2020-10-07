@@ -15,7 +15,7 @@ import 'package:thaibah/Model/checkerMemberModel.dart';
 import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/alertq.dart';
-import 'package:thaibah/UI/loginPhone.dart';
+import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/auth/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
@@ -23,11 +23,30 @@ import 'package:thaibah/resources/gagalHitProvider.dart';
 
 
 class UserRepository {
+
+  myModal(BuildContext context,Widget child){
+    return showModalBottomSheet(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+        backgroundColor: Colors.white,
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal:18,vertical: 10 ),
+          child: child,
+        )
+    );
+  }
+
+  allReplace(String saldo){
+    String rplcComa = saldo.replaceAll(",", "");
+    String sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
+    return sbtrLast3;
+  }
+
   fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
-
   noData(){
     return Center(
       child: Column(
@@ -39,7 +58,6 @@ class UserRepository {
       ),
     );
   }
-
   loadingWidget(){
     return Center(
       child: Column(
@@ -53,8 +71,6 @@ class UserRepository {
       ),
     );
   }
-
-
   notifAlertQ(BuildContext context,param,title,desc,txtBtn1,txtBtn2,Function callback1,Function callback2){
     AlertType alertType;
     if(param=='success'){
@@ -110,7 +126,6 @@ class UserRepository {
       },
     );
   }
-
   requestTimeOut(Function callback){
     return Container(
       child: Center(
