@@ -7,23 +7,23 @@ import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
+import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/Model/onboardingModel.dart' as Prefix2;
 import 'package:thaibah/Model/pageViewModel.dart';
 import 'package:thaibah/Model/user_location.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/UI/Widgets/onboarding/introViews.dart';
+import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/Widgets/updatePage.dart';
+import 'package:thaibah/UI/component/auth/loginPhone.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
-import 'UI/Widgets/onboarding/introViews.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/auth/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:http/http.dart' show Client, Response;
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/resources/location_service.dart';
-import 'Constants/constants.dart';
-import 'DBHELPER/userDBHelper.dart';
-import 'Model/checkerModel.dart';
-import 'UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
-import 'UI/Widgets/pin_screen.dart';
-import 'UI/Widgets/updatePage.dart';
 
 void main() async {
   runApp(MyApp());
@@ -36,9 +36,8 @@ class MyApp extends StatefulWidget {
 }
 
 
-class _MyAppState extends State<MyApp>  with WidgetsBindingObserver, SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin  {
-  @override
-  bool get wantKeepAlive => true;
+class _MyAppState extends State<MyApp> {
+
   final dbHelper = DbHelper.instance;
   final serviceLocation = LocationService();
   double lat,lng;
@@ -50,7 +49,6 @@ class _MyAppState extends State<MyApp>  with WidgetsBindingObserver, SingleTicke
   void initState() {
     super.initState();
     loadLocation();
-    WidgetsBinding.instance.addObserver(this);
     serviceLocation.locationStream.listen((event) {
       if(mounted){
         setState(() {
@@ -66,28 +64,9 @@ class _MyAppState extends State<MyApp>  with WidgetsBindingObserver, SingleTicke
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
   }
   Timer _timer;
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // TODO: implement didChangeAppLifecycleState
-    super.didChangeAppLifecycleState(state);
-
-    if(state == AppLifecycleState.inactive){
-      print("########################### IN ACTIVE ######################");
-    }
-    if(state == AppLifecycleState.paused){
-      print("########################### PAUSED ######################");
-    }
-    if(state == AppLifecycleState.resumed){
-      print("########################### RESUME ######################");
-    }
-    if(state == AppLifecycleState.detached){
-      print("########################### DETACHED ######################");
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {

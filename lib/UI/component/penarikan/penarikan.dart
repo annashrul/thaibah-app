@@ -1,26 +1,26 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
-import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/myBankModel.dart' as prefix0;
+import 'package:thaibah/Model/penarikan/penarikanDetailModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/Widgets/nominalCepat.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
-import 'package:thaibah/UI/Widgets/radioItem.dart';
+import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/Widgets/wrapperForm.dart';
 import 'package:thaibah/UI/component/bank/indexBank.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
-import 'package:thaibah/bloc/withdrawBloc.dart';
 import 'package:thaibah/config/flutterMaskedText.dart';
-import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
+import 'package:thaibah/resources/withdrawProvider.dart';
 import '../home/widget_index.dart';
 
 class Penarikan extends StatefulWidget {
@@ -30,7 +30,7 @@ class Penarikan extends StatefulWidget {
   _PenarikanState createState() => _PenarikanState();
 }
 
-class _PenarikanState extends State<Penarikan> {
+class _PenarikanState extends State<Penarikan>{
   var moneyController = MoneyMaskedTextControllerQ(decimalSeparator: '.', thousandSeparator: ',');
   var scaffoldKey = GlobalKey<ScaffoldState>();
   String bankCodeController=null;
@@ -38,21 +38,17 @@ class _PenarikanState extends State<Penarikan> {
   TextEditingController accHolderNameController = TextEditingController();
   TextEditingController accNumberController = TextEditingController();
   final FocusNode saldoFocus = FocusNode();
-
   var amount;
-  Future allReplace(String saldo) async {
-    var rplcComa = saldo.replaceAll(",", "");
-    var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
-    moneyController.updateValue(double.parse(sbtrLast3));
-    amount = sbtrLast3;
-  }
-
   final userRepository = UserRepository();
+  final formatter = new NumberFormat("#,###");
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    myBankBloc.fetchMyBankList();
+    initializeDateFormatting('id');
+
   }
 
 
@@ -78,11 +74,11 @@ class _PenarikanState extends State<Penarikan> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    UserRepository().textQ("Bank",10,Colors.black,FontWeight.bold,TextAlign.left),
+                    UserRepository().textQ("Bank ",12,Colors.black,FontWeight.bold,TextAlign.left),
                     SizedBox(height: 10.0),
                     _bank(context),
                     SizedBox(height: 10.0),
-                    UserRepository().textQ("Nominal",10,Colors.black,FontWeight.bold,TextAlign.left),
+                    UserRepository().textQ("Nominal",12,Colors.black,FontWeight.bold,TextAlign.left),
                     SizedBox(height: 10.0),
                     Container(
                       width: double.infinity,
@@ -111,10 +107,11 @@ class _PenarikanState extends State<Penarikan> {
                       ),
                     ),
                     SizedBox(height: 10.0),
-                    UserRepository().textQ("Pilih nominal cepat",10,Colors.black,FontWeight.bold,TextAlign.left),
+                    UserRepository().textQ("Pilih nominal cepat",12,Colors.black,FontWeight.bold,TextAlign.left),
                     NominalCepat(
                       callback: (var param){
-                        allReplace(param);
+                        amount = UserRepository().allReplace(param);
+                        moneyController.updateValue(double.parse(amount));
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -123,8 +120,14 @@ class _PenarikanState extends State<Penarikan> {
                         UserRepository().notifNoAction(scaffoldKey, context, "Lengkapi Form Yang Tersedia", "failed");
                       }
                       else{
-                        print('bus');
-                        _pinBottomSheet(context);
+                        if(int.parse(UserRepository().replaceNominal(moneyController.text)) > int.parse(widget.saldoMain)){
+                          UserRepository().notifNoAction(scaffoldKey, context, "Nominal melebihi saldo utama anda", "failed");
+                        }
+                        else{
+                          print('bus');
+                          _pinBottomSheet(context);
+                        }
+
                       }
                     },'Simpan')
                   ],
@@ -148,14 +151,14 @@ class _PenarikanState extends State<Penarikan> {
   _bank(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-    myBankBloc.fetchMyBankList();
+
     return StreamBuilder(
         stream: myBankBloc.allBank,
         builder: (context,AsyncSnapshot<prefix0.MyBankModel> snapshot) {
           if(snapshot.hasError) print(snapshot.error);
           if(snapshot.hasData){
             if(snapshot.data.result.length > 0){
-              bankCodeController= bankCodeController==''?snapshot.data.result[0].id:bankCodeController;
+              bankCodeController = bankCodeController==null?snapshot.data.result[0].id:bankCodeController;
               return Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -228,13 +231,8 @@ class _PenarikanState extends State<Penarikan> {
                 ),
               );
             }
-
           }else{
-            return new Center(
-                child: new LinearProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))
-                )
-            );
+            return SkeletonFrame(width: double.infinity,height: 50);
           }
         }
     );
@@ -256,27 +254,45 @@ class _PenarikanState extends State<Penarikan> {
     print('bus');
     if(isTrue){
       UserRepository().loadingQ(context);
-      var rplcComa = moneyController.text.replaceAll(",", "");
-      var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
-      var res = await withdrawBloc.fetchWithdraw(sbtrLast3, bankCodeController);
+      var res = await WithdrawProvider().withdraw(UserRepository().replaceNominal(moneyController.text), bankCodeController);
       Navigator.of(context).pop();
-      if(res is GeneralInsertId){
-        GeneralInsertId results = res;
+      if(res is PenarikanDetailModel){
+        PenarikanDetailModel results = res;
         if(results.status=="success"){
           UserRepository().notifAlertQ(context, "success","Transaksi berhasil", "Terimakasih Telah Melakukan Transaksi", "profile", "beranda", (){
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: 'profile',)), (Route<dynamic> route) => false);
+            Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: 'profile',)), (Route<dynamic> route) => false);
           }, (){
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
+            Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
           });
         }
         else{
-          Navigator.of(context).pop();
-          scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));
+          UserRepository().notifAlertQ(context, "warning","Perhatian", "${results.msg} penarikan terakhir sebesar Rp ${formatter.format(int.parse(results.result.amount))} pada hari ${DateFormat.yMMMMEEEEd('id').format(results.result.createdAt.toLocal())}", "kembali", "batalkan pernarikan", (){
+            Navigator.pop(context);
+            Navigator.pop(context);
+          }, ()async{
+            Navigator.pop(context);
+            UserRepository().loadingQ(context);
+            var check = await WithdrawProvider().cancelWithdraw(results.result.id);
+            if(check is General){
+              General responses = check;
+              if(responses.status=='success'){
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                UserRepository().notifNoAction(scaffoldKey, context,responses.msg,"success");
+              }
+              else{
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                UserRepository().notifNoAction(scaffoldKey, context,responses.msg,"failed");
+              }
+            }
+          });
+          // scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));
         }
       }else{
         General results = res;
         Navigator.of(context).pop();
-        scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(results.msg)));
+        UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
       }
     }
   }

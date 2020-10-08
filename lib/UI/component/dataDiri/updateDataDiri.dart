@@ -2,14 +2,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/UI/Widgets/uploadImage.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -36,34 +37,10 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
   final FocusNode nohpFocus       = FocusNode();
   String txtPath='photo belum dipilih';
   String dropdownValue = 'pria';
-  Future<File> file;
   File _image;
-  File _image2;
-  bool _isLoading = false;
-  String base64Image;
-  String base64Image2;
-
-  Color warna1;
-  Color warna2;
-  String statusLevel ='0';
+  String base64Image='';
   final userRepository = UserRepository();
-  Future loadTheme() async{
-    final levelStatus = await userRepository.getDataUser('statusLevel');
-    final color1 = await userRepository.getDataUser('warna1');
-    final color2 = await userRepository.getDataUser('warna2');
-    setState(() {
-      warna1 = hexToColors(color1);
-      warna2 = hexToColors(color2);
-      statusLevel = levelStatus;
-    });
-  }
-
-
-
-  String fileName;
-  String fileName2;
   String codeCountry = '';
-
   Future loadUser() async{
     final no = widget.nohp;
     final name = widget.name;
@@ -77,17 +54,15 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
     final dbHelper = DbHelper.instance;
     Map<String, dynamic> row;
     final id = await userRepository.getDataUser('id');
-    if(_image != null){
-      fileName = _image.path.split("/").last;
-      var type = fileName.split('.');
-      base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(_image.readAsBytesSync());
+    if(base64Image!=''){
       row = {
         DbHelper.columnId   : id,
         DbHelper.columnName : nameController.text,
         DbHelper.columnPhone : nohpController.text,
         DbHelper.columnPicture : base64Image,
       };
-    }else{
+    }
+    else{
       base64Image = "";
       row = {
         DbHelper.columnId   : id,
@@ -117,7 +92,6 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
   @override
   void initState() {
     super.initState();
-    loadTheme();
     loadUser();
     dropdownValue = 'pria';
   }
@@ -274,11 +248,23 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                     UserRepository().textQ("Pilih photo profile", 12, Colors.black,FontWeight.bold, TextAlign.left),
                     SizedBox(height: ScreenUtilQ.getInstance().setHeight(18)),
                     InkWell(
-                      onTap: ()async {
-                        final img = await userRepository.getImageFile(ImageSource.gallery);
-                        setState(() {
-                          _image = img;
-                        });
+                      onTap: (){
+                        // final img = await userRepository.getImageFile(ImageSource.gallery);
+                        // setState(() {
+                        //   _image = img;
+                        // });
+                        UserRepository().myModal(context,UploadImage(
+                          callback: (String img){
+                            setState(() {
+                              base64Image = img;
+                            });
+                            Navigator.pop(context);
+                            // Uint8List bytes = base64Image.decode();
+                            // Uint8List bytes = BASE64.decode(_base64);
+                            // Base64Decoder().convert(base64Image);
+                            // print("BASE ${Base64Decoder().convert(base64Image)}");
+                          },
+                        ));
 
                       },
                       child: Container(
@@ -293,11 +279,11 @@ class _UpdateDataDiriState extends State<UpdateDataDiri> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               CircleAvatar(
-                                backgroundImage: _image==null?NetworkImage(ApiService().noImage):FileImage(_image),
+                                backgroundImage: NetworkImage(ApiService().noImage),
                                 radius: 10.0,
                               ),
                               SizedBox(width:10.0),
-                              UserRepository().textQ(_image!=null?'photo berhasil dipilih':'photo belum dipilih', 12, Colors.grey, FontWeight.bold, TextAlign.left)
+                              UserRepository().textQ(base64Image!=''?(base64Image.length>40?base64Image.substring(0,40):base64Image):'photo belum dipilih', 12, Colors.grey, FontWeight.bold, TextAlign.left)
                             ],
                           )
                       ),

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/MLM/getDetailChekoutSuplemenModel.dart';

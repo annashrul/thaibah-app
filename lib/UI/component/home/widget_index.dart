@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,24 +8,24 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/user_location.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/History/mainHistoryTransaksi.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/about/about.dart';
+import 'package:thaibah/UI/component/History/mainHistoryTransaksi.dart';
+import 'package:thaibah/UI/component/MLM/jaringan_ui.dart';
+import 'package:thaibah/UI/component/MLM/produk_mlm_ui.dart';
+import 'package:thaibah/UI/component/about/about.dart';
+import 'package:thaibah/UI/component/auth/loginPhone.dart';
 import 'package:thaibah/UI/component/home/screen_home.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/profile/myProfile.dart';
+import 'package:thaibah/UI/component/news/detail_berita_ui.dart';
+import 'package:thaibah/UI/component/profile/myProfile.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/UI/component/testimoni/testimoniProduk.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/MLM/produk_mlm_ui.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/location_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../news/detail_berita_ui.dart';
-import '../MLM/jaringan_ui.dart';
-import '../auth/loginPhone.dart';
 
 class WidgetIndex extends StatefulWidget {
   final String param;
@@ -212,12 +211,12 @@ class _WidgetIndexState extends State<WidgetIndex>{
                 bucket: bucket,
               ),
               floatingActionButton: FloatingActionButton(
-                backgroundColor: currentTab == 2 ? Colors.green : Colors.white,
+                backgroundColor: currentTab == 2 ? ThaibahColour.primary1 : Colors.white,
                 child: SvgPicture.asset(
                   ApiService().assetsLocal+"t.svg",
                   height: ScreenUtilQ.getInstance().setHeight(50),
                   width: ScreenUtilQ.getInstance().setWidth(50),
-                  color: currentTab == 2 ? Colors.white : Colors.green,
+                  color: currentTab == 2 ? Colors.white : ThaibahColour.primary1,
                 ),
                 onPressed: () {
                   setState(() {

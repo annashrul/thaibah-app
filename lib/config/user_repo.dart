@@ -24,6 +24,12 @@ import 'package:thaibah/resources/gagalHitProvider.dart';
 
 class UserRepository {
 
+  replaceNominal(txt){
+    var rplcComa = txt.replaceAll(",", "");
+    var sbtrLast3 = rplcComa.substring(0,rplcComa.length-3);
+    return sbtrLast3;
+  }
+
   myModal(BuildContext context,Widget child){
     return showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),

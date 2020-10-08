@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Model/downlineModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/auth/regist_ui.dart';
+import 'package:thaibah/UI/component/auth/regist_ui.dart';
 import 'package:thaibah/bloc/downlineBloc.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/config/user_repo.dart';

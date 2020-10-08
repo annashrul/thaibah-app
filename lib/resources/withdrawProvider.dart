@@ -5,6 +5,7 @@ import 'package:http/http.dart' show Client, Response;
 import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/historyPenarikanModel.dart';
+import 'package:thaibah/Model/penarikan/penarikanDetailModel.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 
@@ -25,7 +26,27 @@ class WithdrawProvider {
           print(response.body);
       var results;
       if(response.statusCode==200){
-        results = GeneralInsertId.fromJson(json.decode(response.body));
+        results = PenarikanDetailModel.fromJson(json.decode(response.body));
+      }else if(response.statusCode == 400){
+        results = General.fromJson(json.decode(response.body));
+      }
+      return results;
+    });
+  }
+
+  Future cancelWithdraw(var id) async {
+    final pin = await userRepository.getDataUser('pin');
+    final token = await userRepository.getDataUser('token');
+    return await client.post(ApiService().baseUrl+"transaction/withdraw/approve",
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
+        body: {
+          "id_withdraw":"$id",
+          "status":'2',
+        }).then((Response response) {
+      print(response.body);
+      var results;
+      if(response.statusCode==200){
+        results = General.fromJson(json.decode(response.body));
       }else if(response.statusCode == 400){
         results = General.fromJson(json.decode(response.body));
       }

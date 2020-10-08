@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/generalInsertId.dart';
@@ -41,44 +42,50 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
 
   Future save() async{
     if(moneyController.text == null || moneyController.text == '0.00'){
-      UserRepository().notifNoAction(scaffoldKey, context,"Nominal Harus Diisi","failed");
+      UserRepository().notifNoAction(scaffoldKey, context,"Nominal harus diisi","failed");
     }else{
-      final ktp = await userRepository.getDataUser('ktp');
-      if(ktp == '-' || ktp == ''){
-        UserRepository().notifAlertQ(context, "warning","Perhatian","Silahkan upload KTP anda","Batal","Oke",(){
-          Navigator.pop(context);
-        },(){
-          Navigator.pop(context);
-          UserRepository().myModal(
-            context,
-            UploadImage(callback: (String img) async{
-              var res = await updateMemberBloc.fetchUpdateMember('', '', '','', '',img);
-              UserRepository().loadingQ(context);
-              if(res.status == 'success'){
-                final dbHelper = DbHelper.instance;
-                final id = await userRepository.getDataUser('id');
-                Map<String, dynamic> row = {
-                  DbHelper.columnId   : id,
-                  DbHelper.columnKtp : img,
-                };
-                await dbHelper.update(row);
-                Navigator.pop(context);
-                Navigator.pop(context);
-                UserRepository().notifNoAction(scaffoldKey, context, "upload ktp berhasil", "success");
-              }
-              else{
-            Navigator.pop(context);
-            Navigator.pop(context);
-            UserRepository().notifNoAction(scaffoldKey, context, "upload ktp gagal", "failed");
-          }
-            })
-          );
-
-        });
+      if(int.parse(UserRepository().replaceNominal(moneyController.text)) > int.parse(widget.saldoBonus)){
+        UserRepository().notifNoAction(scaffoldKey, context,"Nominal melebihi saldo bonus anda","failed");
       }
       else{
-        _pinBottomSheet(context);
+        final ktp = await userRepository.getDataUser('ktp');
+        if(ktp == '-' || ktp == ''){
+          UserRepository().notifAlertQ(context, "warning","Perhatian","Silahkan upload KTP anda","Batal","Oke",(){
+            Navigator.pop(context);
+          },(){
+            Navigator.pop(context);
+            UserRepository().myModal(
+                context,
+                UploadImage(callback: (String img) async{
+                  var res = await updateMemberBloc.fetchUpdateMember('', '', '','', '',img);
+                  UserRepository().loadingQ(context);
+                  if(res.status == 'success'){
+                    final dbHelper = DbHelper.instance;
+                    final id = await userRepository.getDataUser('id');
+                    Map<String, dynamic> row = {
+                      DbHelper.columnId   : id,
+                      DbHelper.columnKtp : img,
+                    };
+                    await dbHelper.update(row);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    UserRepository().notifNoAction(scaffoldKey, context, "upload ktp berhasil", "success");
+                  }
+                  else{
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    UserRepository().notifNoAction(scaffoldKey, context, "upload ktp gagal", "failed");
+                  }
+                })
+            );
+
+          });
+        }
+        else{
+          _pinBottomSheet(context);
+        }
       }
+
     }
   }
 
@@ -94,6 +101,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
 
 
 
+  final formatter = new NumberFormat("#,###");
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +134,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                   children: [
                     Column(
                       children: [
-                        UserRepository().textQ('Saldo Utama', 12, Colors.black,FontWeight.bold,TextAlign.center),
+                        UserRepository().textQ('Saldo Utama', 14, Colors.black,FontWeight.bold,TextAlign.center),
                         SizedBox(height: 5),
                         Center(
                           child: Container(
@@ -140,12 +148,12 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                           ),
                         ),
                         SizedBox(height: 5),
-                        UserRepository().textQ(widget.saldo, 12,ThaibahColour.primary1,FontWeight.bold,TextAlign.center)
+                        UserRepository().textQ("Rp "+formatter.format(int.parse(widget.saldo)), 14,ThaibahColour.primary1,FontWeight.bold,TextAlign.center)
                       ],
                     ),
                     Column(
                       children: [
-                        UserRepository().textQ('Saldo Bonus', 12, Colors.black,FontWeight.bold,TextAlign.center),
+                        UserRepository().textQ('Saldo Bonus', 14, Colors.black,FontWeight.bold,TextAlign.center),
                         SizedBox(height: 5),
                         Center(
                           child: Container(
@@ -159,7 +167,7 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
                           ),
                         ),
                         SizedBox(height: 5),
-                        UserRepository().textQ(widget.saldoBonus, 12,ThaibahColour.primary1,FontWeight.bold,TextAlign.center)
+                        UserRepository().textQ("Rp "+formatter.format(int.parse(widget.saldoBonus)), 14,ThaibahColour.primary1,FontWeight.bold,TextAlign.center)
                       ],
                     )
                   ],
@@ -244,15 +252,15 @@ class _PenukaranBonusState extends State<PenukaranBonus> {
   _callBackPin(BuildContext context,bool isTrue) async{
     if(isTrue){
       UserRepository().loadingQ(context);
-      var res = await transferBonusBloc.fetchTransferBonus(amount);
+      var res = await transferBonusBloc.fetchTransferBonus(UserRepository().replaceNominal(moneyController.text));
       if(res is GeneralInsertId){
         GeneralInsertId results = res;
         if(results.status=="success"){
           setState(() {Navigator.of(context).pop();});
           UserRepository().notifAlertQ(context, "success","Transaksi berhasil", "Terimakasih Telah Melakukan Transaksi", "profile", "beranda", (){
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: 'profile',)), (Route<dynamic> route) => false);
+            Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: 'profile',)), (Route<dynamic> route) => false);
           },(){
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
+            Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
           });
         }
         else{

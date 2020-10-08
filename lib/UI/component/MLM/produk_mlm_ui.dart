@@ -3,28 +3,24 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
+import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
+import 'package:thaibah/UI/component/MLM/keranjang.dart';
 import '../auth/loginPhone.dart';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:thaibah/Model/MLM/listCartModel.dart';
 import 'package:thaibah/Model/productMlmSuplemenModel.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/MLM/keranjang.dart';
 import 'package:thaibah/bloc/productMlmBloc.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/productMlmSuplemenProvider.dart';
-
-import '../../Widgets/SCREENUTIL/ScreenUtilQ.dart';
-import '../../Widgets/loadMoreQ.dart';
-import '../../Widgets/skeletonFrame.dart';
 import 'package:http/http.dart' as http;
-import 'package:thaibah/UI/Widgets/tutorialClearData.dart';
 
 class ProdukMlmUI extends StatefulWidget {
 

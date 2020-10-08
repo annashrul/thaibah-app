@@ -11,10 +11,8 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/depositManual/historyDepositModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
-import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/deposit/detailDeposit.dart';
+import 'package:thaibah/UI/component/deposit/detailDeposit.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
-import 'package:thaibah/config/dateRangePickerQ.dart' as DateRagePicker;
 import 'package:thaibah/config/user_repo.dart';
 
 class HistoryDeposit extends StatefulWidget {

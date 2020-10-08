@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/config/user_repo.dart';
 
@@ -13,7 +14,7 @@ class CardHeader extends StatefulWidget {
 
 class _CardHeaderState extends State<CardHeader> {
   final userRepository = UserRepository();
-
+  final formatter = new NumberFormat("#,###");
   @override
   void initState() {
     // TODO: implement initState
@@ -38,8 +39,7 @@ class _CardHeaderState extends State<CardHeader> {
           Center(
             child: Padding(
               padding: EdgeInsets.all(5.0),
-              child:UserRepository().textQ("Saldo Anda",12,Colors.black,FontWeight.bold,TextAlign.center)
-              // child: Text("Saldo Anda",style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(36),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+              child:UserRepository().textQ("Saldo Anda",14,Colors.black,FontWeight.bold,TextAlign.center)
             ),
           ),
           SizedBox(height: 5),
@@ -58,8 +58,7 @@ class _CardHeaderState extends State<CardHeader> {
           Center(
             child: Padding(
               padding: EdgeInsets.all(5.0),
-              // child: Text(widget.saldo,style: TextStyle(color: Colors.black, fontSize:ScreenUtilQ.getInstance().setSp(36),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-              child:UserRepository().textQ(widget.saldo,12,ThaibahColour.primary1,FontWeight.bold,TextAlign.center),
+              child:UserRepository().textQ("Rp "+formatter.format(int.parse(widget.saldo)),14,ThaibahColour.primary1,FontWeight.bold,TextAlign.center),
             ),
           ),
         ],

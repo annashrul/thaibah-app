@@ -46,7 +46,7 @@ class _FormDepositState extends State<FormDeposit> {
         });
       }else{
         Navigator.of(context, rootNavigator: true).push(
-          new CupertinoPageRoute(builder: (context) => GetAvailableBank(amount:int.parse(amount),name: widget.name,saldo:widget.saldo)),
+          new CupertinoPageRoute(builder: (context) => GetAvailableBank(amount:UserRepository().replaceNominal(moneyController.text),name: widget.name,saldo:widget.saldo)),
         );
       }
     }
@@ -74,7 +74,7 @@ class _FormDepositState extends State<FormDeposit> {
             children: <Widget>[
               CardHeader(saldo: widget.saldo),
               Padding(
-                padding: EdgeInsets.only(left: 10, right: 10, top: 16, bottom: 8),
+                padding: EdgeInsets.only(left: 10, right: 10, top: 16, bottom: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,17 +131,15 @@ class _FormDepositState extends State<FormDeposit> {
                         moneyController.updateValue(double.parse(amount));
                       },
                     ),
+                    UserRepository().buttonQ(context, (){
+                      setState(() {isLoading = true;});
+                      getBank();
+                    }, 'Simpan')
                   ],
                 ),
               ),
 
-              Padding(
-                padding: EdgeInsets.only(left:10,right:10),
-                child: UserRepository().buttonQ(context, (){
-                  setState(() {isLoading = true;});
-                  getBank();
-                }, 'Simpan'),
-              )
+
 
             ],
           ),

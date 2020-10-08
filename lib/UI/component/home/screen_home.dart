@@ -1,25 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:isolate';
-
-import 'package:android_alarm_manager/android_alarm_manager.dart';
-import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/donasi/listDonasiModel.dart';
-import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/islamic/imsakiyahModel.dart';
 import 'package:thaibah/Model/newsModel.dart';
-import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/cardSaldo.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
@@ -27,26 +17,18 @@ import 'package:thaibah/UI/component/donasi/screenInboxDonasi.dart';
 import 'package:thaibah/UI/component/donasi/widget_donasi.dart';
 import 'package:thaibah/UI/component/home/widget_artikel.dart';
 import 'package:thaibah/UI/component/home/widget_top_slider.dart';
+import 'package:thaibah/UI/component/islamic/asma_ui.dart';
+import 'package:thaibah/UI/component/islamic/doaHarian.dart';
 import 'package:thaibah/UI/component/islamic/masjidTerdekat.dart';
+import 'package:thaibah/UI/component/islamic/quran_list_ui.dart';
 import 'package:thaibah/UI/component/islamic/subDoaHadist.dart';
-import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/UI/component/sosmed/exploreFeed.dart';
-import 'package:thaibah/UI/component/sosmed/listLikeSosmed.dart';
 import 'package:thaibah/UI/component/sosmed/listSosmed.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/islamic/doaHarian.dart';
 import 'package:thaibah/bloc/donasi/donasiBloc.dart';
 import 'package:thaibah/bloc/newsBloc.dart';
-import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
-import 'package:thaibah/resources/gagalHitProvider.dart';
-import 'package:thaibah/resources/sosmed/sosmed.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:wc_flutter_share/wc_flutter_share.dart';
-
-import '../islamic/asma_ui.dart';
-import '../islamic/quran_list_ui.dart';
 
 
 
@@ -202,13 +184,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   Future onSelectNotification(String payload) async {
     print(payload);
   }
-  bool _hasMore;
-  int _pageNumber;
-  bool _error;
-  bool _loading;
-  final int _defaultPhotosPerPageCount = 10;
-  List<Photo> _photos;
-  final int _nextPageThreshold = 5;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -223,12 +199,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     loadPrayer();
     isLoading=true;
     _timeString = DateFormat('hh:mm:ss').format(DateTime.now());
-    _hasMore = true;
-    _pageNumber = 1;
-    _error = false;
-    _loading = true;
-    _photos = [];
-    fetchPhotos();
+
 
   }
 
@@ -236,7 +207,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _timer.cancel();
+    // _timer.cancel();
   }
 
   @override
@@ -364,7 +335,6 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                   )
               ),
               ListSosmed(),
-              getBody()
             ],
           ),
         ),
@@ -586,120 +556,6 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
       ),
     );
   }
-  Widget getBody() {
-    if (_photos.isEmpty) {
-      if (_loading) {
-        return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: CircularProgressIndicator(),
-            ));
-      } else if (_error) {
-        return Center(
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  _loading = true;
-                  _error = false;
-                  fetchPhotos();
-                });
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text("Error while loading photos, tap to try agin"),
-              ),
-            ));
-      }
-    } else {
-      return ListView.builder(
-          primary: true,
-          shrinkWrap: true,
-          // physics: const NeverScrollableScrollPhysics(),
-          itemCount: _photos.length + (_hasMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index == _photos.length - _nextPageThreshold) {
-              fetchPhotos();
-            }
-            if (index == _photos.length) {
-              if (_error) {
-                return Center(
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          _loading = true;
-                          _error = false;
-                          fetchPhotos();
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Text("Error while loading photos, tap to try agin"),
-                      ),
-                    ));
-              } else {
-                return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: CircularProgressIndicator(),
-                    ));
-              }
-            }
-            final Photo photo = _photos[index];
-            return Card(
-              child: Column(
-                children: <Widget>[
-                  Image.network(
-                    photo.thumbnailUrl,
-                    fit: BoxFit.fitWidth,
-                    width: double.infinity,
-                    height: 160,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(photo.title,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                  ),
-                ],
-              ),
-            );
-          });
-    }
-    return Container();
-  }
 
-  Future<void> fetchPhotos() async {
-    try {
-      final response = await http.get(
-          "https://jsonplaceholder.typicode.com/photos?_page=$_pageNumber");
-      List<Photo> fetchedPhotos = Photo.parseList(json.decode(response.body));
-      setState(() {
-        _hasMore = fetchedPhotos.length == _defaultPhotosPerPageCount;
-        _loading = false;
-        _pageNumber = _pageNumber + 1;
-        _photos.addAll(fetchedPhotos);
-      });
-      print("https://jsonplaceholder.typicode.com/photos?_page=$_pageNumber");
-    } catch (e) {
-      setState(() {
-        _loading = false;
-        _error = true;
-      });
-    }
-  }
 }
 
-class Photo {
-  final String title;
-  final String thumbnailUrl;
-
-  Photo(this.title, this.thumbnailUrl);
-
-  factory Photo.fromJson(Map<String, dynamic> json) {
-    return Photo(json["title"], json["thumbnailUrl"]);
-  }
-
-  static List<Photo> parseList(List<dynamic> list) {
-    return list.map((i) => Photo.fromJson(i)).toList();
-  }
-}

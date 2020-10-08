@@ -8,9 +8,10 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/Model/authModel.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/typeOtpModel.dart';
+import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
+import 'package:thaibah/UI/component/auth/regist_ui.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/auth/regist_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:thaibah/bloc/authBloc.dart';
 import 'dart:async';
@@ -19,7 +20,6 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/location_service.dart';
-import '../../Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:http/http.dart' as http;
 import 'package:thaibah/Model/userLocalModel.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
@@ -155,9 +155,9 @@ class _LoginPhoneState extends State<LoginPhone> {
     }else{
       if(typeOtp==false){_valType = null;}
       if(_switchValue){
-        _valType='sms';
-      }else{
         _valType='whatsapp';
+      }else{
+        _valType='sms';
       }
       print(_valType);
       var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId,_valType,"${androidInfo.brand} ${androidInfo.device}");
@@ -379,7 +379,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      typeOtp==false?UserRepository().textQ("Kirim otp via ${_switchValue?'sms':'whatsApp'}", 12, Colors.black,FontWeight.bold, TextAlign.left):Text(''),
+                                      typeOtp==false?UserRepository().textQ("Kirim otp via ${_switchValue?'whatsapp':'sms'}", 12, Colors.black,FontWeight.bold, TextAlign.left):Text(''),
                                       typeOtp==false?SizedBox(
                                           width: 70,
                                           height: 10,

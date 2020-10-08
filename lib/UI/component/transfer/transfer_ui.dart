@@ -13,7 +13,7 @@ import 'package:thaibah/Model/transferDetailModel.dart';
 import 'package:thaibah/UI/Widgets/cardHeader.dart';
 import 'package:thaibah/UI/Widgets/nominalCepat.dart';
 import 'package:thaibah/UI/Widgets/wrapperForm.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/transfer/detailTransfer.dart';
+import 'package:thaibah/UI/component/transfer/detailTransfer.dart';
 import 'package:thaibah/bloc/configBloc.dart';
 import 'package:thaibah/bloc/memberBloc.dart';
 import 'package:thaibah/config/flutterMaskedText.dart';
@@ -67,18 +67,22 @@ class _TransferUIState extends State<TransferUI> {
       }
     }
   }
+
+ 
+
   Future sendTransferDetail() async {
     String referral_penerima = penerimaController.text != "" ? penerimaController.text : _currentItemSelectedContact ;
     String pesan = pesanController.text!=''?pesanController.text:'-';
-    String saldo = widget.saldo.replaceAll(",", "").substring(0,widget.saldo.length-5);
-    if(int.parse(amount)>int.parse(saldo.replaceAll("Rp",'').replaceAll(" ",""))){
+    print("##################################### ${UserRepository().replaceNominal(moneyMaskedTextController.text)} #####################################");
+
+    if(int.parse(UserRepository().replaceNominal(moneyMaskedTextController.text)) > int.parse(widget.saldo)) {
       setState(() {
         Navigator.pop(context);
       });
-      UserRepository().notifNoAction(scaffoldKey, context,"nominal lebih besar dari saldo utama","failed");
+      UserRepository().notifNoAction(scaffoldKey, context,"Nominal melebihi saldo utama anda","failed");
     }
     else{
-      var res = await TransferProvider().transferDetail(amount, referral_penerima, pesan);
+      var res = await TransferProvider().transferDetail(UserRepository().replaceNominal(moneyMaskedTextController.text), referral_penerima, pesan);
       if(res is TransferDetailModel){
         TransferDetailModel results = res;
         if(results.status == 'success'){
@@ -113,6 +117,7 @@ class _TransferUIState extends State<TransferUI> {
         UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
       }
     }
+
 
 
   }
@@ -163,6 +168,8 @@ class _TransferUIState extends State<TransferUI> {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
     return Scaffold(
+        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomPadding: true,
         key: scaffoldKey,
         appBar: UserRepository().appBarWithButton(context, 'Transfer', (){Navigator.of(context).pop();}, <Widget>[
           InkWell(
@@ -186,12 +193,12 @@ class _TransferUIState extends State<TransferUI> {
             children: <Widget>[
               CardHeader(saldo: widget.saldo),
               Padding(
-                padding: EdgeInsets.only(left: 10, right: 10, top: 16, bottom: 8),
+                padding: EdgeInsets.only(left: 10, right: 10, top: 16, bottom: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    UserRepository().textQ("Nominal",10,Colors.black,FontWeight.bold,TextAlign.left),
+                    UserRepository().textQ("Nominal",12,Colors.black,FontWeight.bold,TextAlign.left),
                     SizedBox(height: 10.0),
                     Container(
                       width: double.infinity,
@@ -227,14 +234,15 @@ class _TransferUIState extends State<TransferUI> {
                       ),
                     ),
                     SizedBox(height: 10.0),
+                    UserRepository().textQ("Penerima",12,Colors.black,FontWeight.bold,TextAlign.left),
+                    SizedBox(height: 10.0),
                     StreamBuilder(
                         stream: configBloc.getResult,
                         builder: (context,AsyncSnapshot<ConfigModel> snapshot){
                           return snapshot.hasData ?  snapshot.data.result.transfer == 'all' ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              UserRepository().textQ("Penerima",10,Colors.black,FontWeight.bold,TextAlign.left),
-                              SizedBox(height: 10.0),
+
                               Container(
                                 width: double.infinity,
                                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
@@ -290,7 +298,7 @@ class _TransferUIState extends State<TransferUI> {
                         }
                     ),
                     SizedBox(height: 10.0),
-                    UserRepository().textQ("Pesan",10,Colors.black,FontWeight.bold,TextAlign.left),
+                    UserRepository().textQ("Pesan",12,Colors.black,FontWeight.bold,TextAlign.left),
                     SizedBox(height: 10.0),
                     Container(
                       width: double.infinity,

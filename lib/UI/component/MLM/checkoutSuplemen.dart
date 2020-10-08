@@ -19,7 +19,7 @@ import 'package:thaibah/Model/provinsiModel.dart' as prefix0;
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/pin_screen.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/MLM/detailHistorySuplemen.dart';
+import 'package:thaibah/UI/component/MLM/detailHistorySuplemen.dart';
 import 'package:thaibah/UI/component/MLM/produkCheckoutSuplemen.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
 import 'package:thaibah/bloc/MLM/detailChekoutSuplemenBloc.dart';
