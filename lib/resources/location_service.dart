@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/Model/user_location.dart';
 
 class LocationService  with ChangeNotifier  {
@@ -28,12 +27,11 @@ class LocationService  with ChangeNotifier  {
             if(prefs.getDouble('lat')==locationData.latitude&&prefs.getDouble('lng')==locationData.longitude){
               prefs.remove('lat');
               prefs.remove('lng');
-
-              print("REMOVE LATITUDE");
+              // print("REMOVE LATITUDE");
               prefs.setDouble('lat',locationData.latitude);
               prefs.setDouble('lng',locationData.longitude);
-              print("SESSION LATITUDE DAN LONGITUDE ${prefs.getDouble('lat')} - ${prefs.getDouble('lng')}");
-              print("LOCAL LATITUDE DAN LONGITUDE ${locationData.latitude} - ${locationData.longitude}");
+              // print("SESSION LATITUDE DAN LONGITUDE ${prefs.getDouble('lat')} - ${prefs.getDouble('lng')}");
+              // print("LOCAL LATITUDE DAN LONGITUDE ${locationData.latitude} - ${locationData.longitude}");
             }
             else{
               prefs.setDouble('lat',locationData.latitude);

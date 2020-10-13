@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +6,11 @@ import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/buttonBottom.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/transfer/buktiTransfer.dart';
+import 'package:thaibah/UI/Widgets/uploadImage.dart';
 import 'package:thaibah/UI/component/deposit/formDeposit.dart';
 import 'package:thaibah/UI/component/home/widget_index.dart';
+import 'package:thaibah/UI/component/transfer/buktiTransfer.dart';
 import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
-import 'package:thaibah/config/richAlertDialogQ.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/depositManual/detailDepositProvider.dart';
 
@@ -75,7 +72,38 @@ class _DetailDepositState extends State<DetailDeposit> {
     }
     return Scaffold(
         key: scaffoldKey,
-        appBar: UserRepository().appBarWithButton(context, "Riwayat Deposit",(){Navigator.pop(context);},<Widget>[]),
+        appBar: UserRepository().appBarWithButton(context, "Riwayat Deposit",(){Navigator.pop(context);},<Widget>[
+          InkWell(
+              child: Container(
+                padding: EdgeInsets.only(right:10),
+                child: Icon(Icons.cloud_upload,color: Colors.grey),
+              ),
+              onTap:(){
+                UserRepository().myModal(
+                    context,
+                    UploadImage(callback: (String img) async{
+                      UserRepository().loadingQ(context);
+                      var res = await uploadBuktiTransferBloc.fetchUploadBuktiTransfer(widget.id_deposit, img);
+                      if(res.status == 'success'){
+                        setState(() {Navigator.pop(context);});
+                        UserRepository().notifAlertQ(context, "success","Upload Bukti Transfer Berhasil", "Silahkan Tunggu Konfirmasi Dari Admin","Profile","Beranda", (){
+                          Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: 'profile',)), (Route<dynamic> route) => false);
+                        }, (){
+                          Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (BuildContext context) => WidgetIndex(param: '',)), (Route<dynamic> route) => false);
+                        });
+
+                      }
+                      else{
+                        setState(() {Navigator.pop(context);});
+                        setState(() {Navigator.pop(context);});
+                        UserRepository().notifNoAction(scaffoldKey, context,res.msg,"failed");
+                      }
+                    })
+                );
+                // _lainnyaModalBottomSheet(context,'barcode',widget.qr);
+              }
+          ),
+        ]),
         body: Container(
           color: Color(0xFFf7f8fc),
           child: ListView(
@@ -125,50 +153,7 @@ class _DetailDepositState extends State<DetailDeposit> {
         )
     );
   }
-  Widget _bottomNavBarBeli(BuildContext context){
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-    return Container(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Container(
-              height: kBottomNavigationBarHeight,
-              child: FlatButton(
-                shape:RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(10)),
-                ),
-                color: Colors.green,
-                onPressed: (){
-                  UserRepository().notifAlertQ(context, "warning","Perhatian","Anda yakin akan membatalkan deposit anda", "batal","oke",(){Navigator.pop(context);}, (){
-                    Navigator.pop(context);
-                    UserRepository().loadingQ(context);
-                    cancelDeposit();
-                  });
-                },
-                child: Text(isLoading ? "Pengecekan data ...." : "Batalkan Deposit", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),color: Colors.white,fontFamily: ThaibahFont().fontQ)),
-              )
-          ),
-          Container(
-              height: kBottomNavigationBarHeight,
-              child: FlatButton(
-                shape:RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
-                ),
-                color: Colors.green,
-                onPressed: (){
-                  Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => BuktiTransfer(id_deposit: widget.id_deposit)),
-                  );
-                },
-                child: Text("Upload Bukti Transfer", style: TextStyle(fontSize:ScreenUtilQ.getInstance().setSp(40),color: Colors.white,fontFamily: ThaibahFont().fontQ)),
-              )
-          ),
-        ],
-      ),
-    );
-  }
+
 }
 
 

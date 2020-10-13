@@ -22,7 +22,7 @@ class RadioItem extends StatelessWidget {
       decoration: new BoxDecoration(
         color: Colors.transparent,
         border: new Border.all(
-            width: 1.0,
+            width: 2.0,
             color: _item.isSelected ? ThaibahColour.primary1 : Colors.grey[200]
         ),
         borderRadius: const BorderRadius.all(const Radius.circular(10.0)),

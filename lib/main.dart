@@ -81,7 +81,6 @@ class _MyAppState extends State<MyApp> {
         child: WillPopScope(
           child: MaterialApp(
             color: Colors.white,
-            // theme: new ThemeData(scaffoldBackgroundColor: const Color(0xFFEFEFEF)),
             debugShowCheckedModeBanner: false,
             home:  Splash(),
           ),
@@ -379,6 +378,7 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 }
+
 
 
 

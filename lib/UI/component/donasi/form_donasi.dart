@@ -43,12 +43,12 @@ class _FormDonasiState extends State<FormDonasi> {
   Future donasi() async{
     var expBank = bankId.split('|');
     if(nominalController.text==''||nominalController.text=='0'){
-      UserRepository().notifNoAction(_scaffoldKey, context,'nominal donasi tidak boleh kosonh',"failed");
+      UserRepository().notifNoAction(_scaffoldKey, context,'nominal donasi tidak boleh kosong',"failed");
       await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
       nominalFocus.requestFocus();
     }
     else if(nameController.text==''){
-      UserRepository().notifNoAction(_scaffoldKey, context,'nama tidak boleh kosonh',"failed");
+      UserRepository().notifNoAction(_scaffoldKey, context,'nama tidak boleh kosong',"failed");
       await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
       nameFocus.requestFocus();
     }

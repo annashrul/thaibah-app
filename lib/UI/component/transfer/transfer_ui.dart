@@ -323,6 +323,7 @@ class _TransferUIState extends State<TransferUI> {
                       ),
                     ),
                     SizedBox(height: 10.0),
+                    UserRepository().textQ("Pilih nominal cepat",12,Colors.black,FontWeight.bold,TextAlign.left),
                     NominalCepat(
                       callback: (var param){
                         amount = UserRepository().allReplace(param);

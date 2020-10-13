@@ -9,6 +9,7 @@ import 'package:thaibah/Model/pageViewModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/onboarding/introViews.dart';
 import 'package:thaibah/config/api.dart';
+import 'package:thaibah/config/user_repo.dart';
 import '../home/widget_index.dart';
 
 class UpgradePlatinum extends StatefulWidget {
@@ -80,30 +81,7 @@ class _UpgradePlatinumState extends State<UpgradePlatinum> {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(width: 750, height: 1334, allowFontScaling: true);
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.keyboard_backspace,color: Colors.white),
-            onPressed: (){
-              Navigator.of(context).pop();
-            },
-          ),
-          centerTitle: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF116240),
-                  Color(0xFF30cc23)
-                ],
-              ),
-            ),
-          ),
-          elevation: 1.0,
-          automaticallyImplyLeading: true,
-          title: new Text("Upgrade Platinum", style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: 'Rubik')),
-        ),
+        appBar: UserRepository().appBarWithButton(context,"Upgrade Platinum",(){Navigator.of(context);},<Widget>[]),
         body: isLoading?Container(child: Center(child: CircularProgressIndicator())):Stack(
           children: <Widget>[
             Container(

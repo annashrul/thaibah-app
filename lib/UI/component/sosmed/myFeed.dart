@@ -1,17 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:thaibah/Constants/constants.dart';
@@ -20,7 +15,6 @@ import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/Model/sosmed/listSosmedModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
-import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/sosmed/detailSosmed.dart';
 import 'package:thaibah/UI/component/sosmed/inboxSosmed.dart';
 import 'package:thaibah/bloc/sosmed/sosmedBloc.dart';
@@ -29,7 +23,6 @@ import 'package:thaibah/resources/gagalHitProvider.dart';
 import 'package:thaibah/resources/sosmed/sosmed.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
-
 import 'listLikeSosmed.dart';
 
 class MyFeed extends StatefulWidget {
@@ -163,26 +156,18 @@ class _MyFeedState extends State<MyFeed> {
   bool isLoadingShare=false,isLoadingLikeOrUnLike=false;
   int like=0;
   Future share(img,caption,index) async{
-    setState(() {
-      UserRepository().loadingQ(context);
-    });
     var response = await Client().get(img);
     final bytes = response.bodyBytes;
-    Timer(Duration(seconds: 1), () async {
-      setState(() {
-        Navigator.pop(context);
-      });
-      await WcFlutterShare.share(
-        sharePopupTitle: 'Thaibah Share Sosial Media',
-        bytesOfFile:bytes,
-        subject: '',
-        text: '$caption',
-        fileName: 'share.png',
-        mimeType: 'image/png',
-
-      );
-
-    });
+    await WcFlutterShare.share(
+      sharePopupTitle: 'Thaibah Share Sosial Media',
+      bytesOfFile:bytes,
+      subject: '',
+      text: '$caption',
+      fileName: 'share.png',
+      mimeType: 'image/png',
+    );
+    await Future.delayed(Duration(seconds: 1));
+    Navigator.pop(context);
 
   }
   Future sendLikeOrUnLike(id,isLike) async{

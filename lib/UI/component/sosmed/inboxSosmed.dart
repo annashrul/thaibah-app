@@ -124,9 +124,9 @@ class _InboxSosmedState extends State<InboxSosmed> {
             return Material(
               child: InkWell(
                 onTap: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    new CupertinoPageRoute(builder: (context) => DetailSosmed(id: snapshot.data.result.data[index].id)),
-                  );
+                  // Navigator.of(context, rootNavigator: true).push(
+                  //   new CupertinoPageRoute(builder: (context) => DetailSosmed(id: snapshot.data.result.data[index].id)),
+                  // );
                 },
                 child: Container(
                   margin: EdgeInsets.fromLTRB(15, 5, 15, 5),

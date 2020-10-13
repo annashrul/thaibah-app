@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' show Client;
-import 'package:sqlite_at_runtime/sqlite_at_runtime.dart';
+// import 'package:sqlite_at_runtime/sqlite_at_runtime.dart';
 
 import 'package:thaibah/Model/promosiModel.dart';
 import 'package:thaibah/config/api.dart';

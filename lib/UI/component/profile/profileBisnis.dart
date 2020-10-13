@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -10,6 +11,7 @@ import 'package:thaibah/UI/Widgets/cardSaldo.dart';
 import 'package:thaibah/UI/component/History/mainHistoryTransaksi.dart';
 import 'package:thaibah/UI/component/MLM/history_product.dart';
 import 'package:thaibah/UI/component/MLM/jaringan_ui.dart';
+import 'package:thaibah/UI/component/MLM/upgradePlatinum.dart';
 import 'package:thaibah/UI/component/deposit/formDeposit.dart';
 import 'package:thaibah/UI/component/deposit/historyDeposit.dart';
 import 'package:thaibah/UI/component/penarikan/historyPenarikan.dart';
@@ -71,13 +73,13 @@ class _ProfileBisnisState extends State<ProfileBisnis>{
   var titleSaldo=['Saldo Utama','Saldo Bonus','Saldo Voucher','Saldo Platinum'];
   var valueSaldo=[];
   loadArr(){
-    valueJaringan.add(widget.omsetJaringan);
+    valueJaringan.add("Rp ${formatter.format(int.parse(widget.omsetJaringan))}.00");
     valueJaringan.add("${widget.jmlJaringan} Orang");
     valueJaringan.add("${widget.downline} Orang");
     valueJaringan.add("${widget.sponsor} Orang");
 
-    valueSaldo.add(widget.saldoUtama);
-    valueSaldo.add(widget.saldoBonus);
+    valueSaldo.add("Rp ${formatter.format(int.parse(widget.saldoUtama))}.00");
+    valueSaldo.add("Rp ${formatter.format(int.parse(widget.saldoBonus))}.00");
     valueSaldo.add(widget.saldoVoucher);
     valueSaldo.add(widget.saldoPlatinum);
 
@@ -128,17 +130,23 @@ class _ProfileBisnisState extends State<ProfileBisnis>{
               children: [
                 UserRepository().textQ(widget.name,14,Colors.black.withOpacity(0.7),FontWeight.bold,TextAlign.left),
                 SizedBox(width: 5),
-                widget.levelPlatinum == 0 ?Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: new BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(6),
+                widget.levelPlatinum == 0 ?InkWell(
+                  onTap: (){
+                    Navigator.of(context).push(new CupertinoPageRoute(builder: (_) => UpgradePlatinum()));
+                  },
+
+                  child: Container(
+                    padding: EdgeInsets.all(2),
+                    decoration: new BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 14,
+                      minHeight: 14,
+                    ),
+                    child:UserRepository().textQ('upgrade',10,Colors.white,FontWeight.bold,TextAlign.center),
                   ),
-                  constraints: BoxConstraints(
-                    minWidth: 14,
-                    minHeight: 14,
-                  ),
-                  child:UserRepository().textQ('upgrade',10,Colors.white,FontWeight.bold,TextAlign.center),
                 ):(widget.levelPlatinum == 1 ? Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)) :
                 Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
                 // Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)
@@ -274,7 +282,7 @@ class _ProfileBisnisState extends State<ProfileBisnis>{
                             customlistDetails(context,'Riwayat Transaksi','lihat riwayat transaksi anda', MainHistoryTransaksi(page: 'home'),(){}),
                             customlistDetails(context,'Riwayat Penarikan','lihat riwayat penarikan anda', HistoryPenarikan(),(){}),
                             customlistDetails(context,'Riwayat Pembelian','lihat riwayat pembelian produk anda',HistoryProduct(),(){}),
-                            customlistDetails(context,'Riwayat Top Up','lihat riwayat top up anda',HistoryDeposit(saldo: widget.saldoUtama),(){}),
+                            customlistDetails(context,'Riwayat Deposit','lihat riwayat deposit anda',HistoryDeposit(saldo: widget.saldoUtama),(){}),
                           ],
                         )
                     ),

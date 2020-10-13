@@ -15,7 +15,7 @@ import 'package:thaibah/Model/checkerMemberModel.dart';
 import 'package:thaibah/Model/checkerModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/alertq.dart';
-import 'file:///E:/THAIBAH/mobile/thaibah-app/lib/UI/component/auth/loginPhone.dart';
+import 'package:thaibah/UI/component/auth/loginPhone.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/resources/configProvider.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
@@ -84,6 +84,9 @@ class UserRepository {
     }
     if(param=='warning'){
       alertType = AlertType.warning;
+    }
+    if(param=='info'){
+      alertType = AlertType.info;
     }
     if(param=='error'){
       alertType = AlertType.error;
@@ -523,6 +526,7 @@ class UserRepository {
   }
   Future getImageFile(ImageSource source) async {
     var image = await ImagePicker.pickImage(source: source);
+    print("IMAGE PATH UPLOAD ${image.path}");
     File croppedFile = await ImageCropper.cropImage(
       sourcePath: image.path,
       aspectRatioPresets: [

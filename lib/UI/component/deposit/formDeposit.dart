@@ -46,7 +46,7 @@ class _FormDepositState extends State<FormDeposit> {
         });
       }else{
         Navigator.of(context, rootNavigator: true).push(
-          new CupertinoPageRoute(builder: (context) => GetAvailableBank(amount:UserRepository().replaceNominal(moneyController.text),name: widget.name,saldo:widget.saldo)),
+          new CupertinoPageRoute(builder: (context) => GetAvailableBank(amount:int.parse(UserRepository().replaceNominal(moneyController.text)),name: widget.name,saldo:widget.saldo)),
         );
       }
     }

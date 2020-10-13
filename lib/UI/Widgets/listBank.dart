@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:thaibah/Model/bankModel.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/bloc/bankBloc.dart';
-import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 
@@ -28,19 +26,26 @@ class _ListBankState extends State<ListBank> {
       BankCodeController = val;
     });
   }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    bankBloc.fetchBankList();
+  }
   @override
   Widget build(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false)..init(context);
-    bankBloc.fetchBankList();
+
     return StreamBuilder(
         stream: bankBloc.allBank,
         builder: (context,AsyncSnapshot<BankModel> snapshot) {
           if(snapshot.hasError) print(snapshot.error);
           if(snapshot.hasData){
             print("BANK CODE $BankCodeController");
-            BankCodeController= BankCodeController==null?snapshot.data.result[0].code + " | "+ snapshot.data.result[0].name:BankCodeController;
-          // BankCodeController = snapshot.data.result[0].code + " | "+ snapshot.data.result[0].name;
+            // BankCodeController= BankCodeController==null?snapshot.data.result[0].code + " | "+ snapshot.data.result[0].name:BankCodeController;
+            // BankCodeController = snapshot.data.result[0].code + " | "+ snapshot.data.result[0].name;
           return Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -57,7 +62,7 @@ class _ListBankState extends State<ListBank> {
                   underline: SizedBox(),
                   onChanged: (String newValue) {
                     setState(() {
-                      BankCodeController = newValue;
+                      _onDropDownItemSelectedBank(newValue);
                     });
                   },
                   items: snapshot.data.result.map((Result items){
@@ -68,7 +73,7 @@ class _ListBankState extends State<ListBank> {
                       name = items.name;
                     }
                     return new DropdownMenuItem<String>(
-                      value: items.code + " | "+ items.name,
+                      value: items.code + "|"+ items.name,
                       child: Row(
                         children: [
                           CircleAvatar(

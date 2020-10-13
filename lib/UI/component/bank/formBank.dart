@@ -5,10 +5,9 @@ import 'package:thaibah/Model/generalInsertId.dart';
 import 'package:thaibah/Model/generalModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/listBank.dart';
+import 'package:thaibah/UI/component/bank/indexBank.dart';
 import 'package:thaibah/bloc/myBankBloc.dart';
 import 'package:thaibah/config/user_repo.dart';
-
-import 'indexBank.dart';
 
 class FormBank extends StatefulWidget {
   @override
@@ -22,25 +21,37 @@ class _FormBankState extends State<FormBank> {
   String bankCodeController='';
 
   Future simpan() async {
-    var res = await createMyBankBloc.fetchCreateMyBank("", bankCodeController, accNoController.text, accNameController.text);
-    if(res is GeneralInsertId){
-      GeneralInsertId result = res;
-      if(result.status == 'success'){
-        Navigator.of(context).pop();
-        UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"success");
-        await Future.delayed(Duration(seconds: 1000));
-        Navigator.of(context, rootNavigator: true).push(
-          new CupertinoPageRoute(builder: (context) => Bank()),
-        );
-      }
-      else{
+    if(bankCodeController==''){
+      UserRepository().notifNoAction(_scaffoldKey, context, "bank tidak boleh kosong", "failed");
+    }
+    else if(accNoController.text==''){
+      UserRepository().notifNoAction(_scaffoldKey, context, "no rekening tidak boleh kosong", "failed");
+    }
+    else if(accNameController.text==''){
+      UserRepository().notifNoAction(_scaffoldKey, context, "atas nama tidak boleh kosong", "failed");
+    }
+    else{
+      UserRepository().loadingQ(context);
+      var res = await createMyBankBloc.fetchCreateMyBank(bankCodeController.split("|")[1], bankCodeController.split("|")[0], accNoController.text, accNameController.text);
+      if(res is GeneralInsertId){
+        GeneralInsertId result = res;
+        if(result.status == 'success'){
+          Navigator.of(context).pop();
+          UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"success");
+          await Future.delayed(Duration(seconds: 1));
+          Navigator.of(context, rootNavigator: true).push(
+            new CupertinoPageRoute(builder: (context) => Bank()),
+          );
+        }
+        else{
+          setState(() {Navigator.of(context).pop();});
+          UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
+        }
+      }else{
+        General results = res;
         setState(() {Navigator.of(context).pop();});
-        UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
+        UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
       }
-    }else{
-      General results = res;
-      setState(() {Navigator.of(context).pop();});
-      UserRepository().notifNoAction(_scaffoldKey, context,results.msg,"failed");
     }
   }
 
@@ -84,8 +95,11 @@ class _FormBankState extends State<FormBank> {
                       children: <Widget>[
                         UserRepository().textQ("Nama Bank",12,Colors.black,FontWeight.bold,TextAlign.left),
                         SizedBox(height: 10.0),
-                        ListBank(callback: (val){
-                          bankCodeController = val;
+                        ListBank(callback: (String val){
+                          print("CALLBACK BANK $val");
+                          setState(() {
+                            bankCodeController = val;
+                          });
                         }),
                         SizedBox(height: 10.0),
                         UserRepository().textQ("No. Rekening",12,Colors.black,FontWeight.bold,TextAlign.left),
@@ -135,16 +149,8 @@ class _FormBankState extends State<FormBank> {
                         ),
                         SizedBox(height: 10.0),
                         UserRepository().buttonQ(context,(){
-                          if(accNoController.text==''){
-                            UserRepository().notifNoAction(_scaffoldKey, context, "no rekening tidak boleh kosong", "failed");
-                          }
-                          else if(accNameController.text==''){
-                            UserRepository().notifNoAction(_scaffoldKey, context, "no rekening tidak boleh kosong", "failed");
-                          }
-                          else{
-                            UserRepository().loadingQ(context);
-                            simpan();
-                          }
+
+                          simpan();
 
                         }, 'Simpan')
                       ],

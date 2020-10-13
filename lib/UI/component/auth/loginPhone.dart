@@ -302,7 +302,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                           SizedBox(height: ScreenUtilQ.getInstance().setHeight(180)),
                           Container(
                             width: double.infinity,
-                            height: typeOtp==false?170:150,
+                            height: typeOtp!=false?170:150,
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(0.0),
@@ -374,13 +374,13 @@ class _LoginPhoneState extends State<LoginPhone> {
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height:typeOtp==false?10.0:0.0),
+                                  SizedBox(height:typeOtp!=false?10.0:0.0),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      typeOtp==false?UserRepository().textQ("Kirim otp via ${_switchValue?'whatsapp':'sms'}", 12, Colors.black,FontWeight.bold, TextAlign.left):Text(''),
-                                      typeOtp==false?SizedBox(
+                                      typeOtp!=false?UserRepository().textQ("Kirim otp via ${_switchValue?'whatsapp':'sms'}", 12, Colors.black,FontWeight.bold, TextAlign.left):Text(''),
+                                      typeOtp!=false?SizedBox(
                                           width: 70,
                                           height: 10,
                                           child: Switch(

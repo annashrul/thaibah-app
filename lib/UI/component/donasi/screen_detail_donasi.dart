@@ -1,22 +1,16 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:thaibah/Constants/constants.dart';
-import 'package:thaibah/Model/depositManual/listAvailableBank.dart' as Prefix1;
-import 'package:thaibah/Model/donasi/checkoutDonasiModel.dart';
 import 'package:thaibah/Model/donasi/detailDonasiModel.dart';
-import 'package:thaibah/Model/generalModel.dart';
-import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/donasi/form_donasi.dart';
-import 'package:thaibah/bloc/depositManual/listAvailableBankBloc.dart';
+import 'package:thaibah/UI/component/donasi/widget_donasi.dart';
+import 'package:thaibah/UI/component/home/screen_home.dart';
 import 'package:thaibah/bloc/donasi/donasiBloc.dart';
-import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
-import 'package:thaibah/resources/donasi/donasiProvider.dart';
 
 class ScreenDetailDonasi extends StatefulWidget {
 
@@ -42,7 +36,7 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
   @override
   Widget build(BuildContext context) {
     final formatter = new NumberFormat("#,###");
-
+    // print(ScreenHome().createState().lineSection(context).);
     return Scaffold(
       key:_scaffoldKey,
       body: StreamBuilder(
@@ -224,7 +218,7 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
                                   ],
                                 );
                               }
-                          ):UserRepository().textQ('tidak ada donatur', 12,Colors.grey,FontWeight.bold, TextAlign.center)
+                          ):UserRepository().textQ('tidak ada donatur', 12,Colors.grey,FontWeight.bold, TextAlign.center),
                         ],
                       ),
                     )
@@ -288,6 +282,13 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
             if(widget.toDeadline.toLowerCase()!='selesai.'){
               Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDonasi(id: widget.id))).whenComplete(() => detailDonasiBloc.fetchDetailDonasi(widget.id));
             }
+            else{
+              UserRepository().notifAlertQ(context,"warning","Perhatian","Donasi ini sudah selesai. terimakasih atas partisipasinya", "Oke","Lihat Donasi",(){
+                Navigator.pop(context);
+              }, (){
+                Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => WidgetDonasi(any:'',noScaffold: '',)));
+              });
+            }
           }
         },
         child: Padding(
@@ -304,6 +305,26 @@ class _ScreenDetailDonasiState extends State<ScreenDetailDonasi> {
         ),
       )
     );
+  }
+
+  Widget _btnBottom(BuildContext context){
+    return UserRepository().buttonQ(context,(){
+      if(widget.noDeadline==1){
+        Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDonasi(id: widget.id))).whenComplete(() => detailDonasiBloc.fetchDetailDonasi(widget.id));
+      }
+      else{
+        if(widget.toDeadline.toLowerCase()!='selesai.'){
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDonasi(id: widget.id))).whenComplete(() => detailDonasiBloc.fetchDetailDonasi(widget.id));
+        }
+        else{
+          UserRepository().notifAlertQ(context,"warning","Perhatian","Donasi ini sudah selesai. terimakasih atas partisipasinya", "Oke","Lihat Donasi",(){
+            Navigator.pop(context);
+          }, (){
+            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => WidgetDonasi(any:'',noScaffold: '',)));
+          });
+        }
+      }
+    },"Donasi");
   }
 
 

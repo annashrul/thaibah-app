@@ -106,9 +106,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
         isya = new DateFormat('HHmmss').format(prayerModel.result.isha);
         city = prayerModel.result.city;
       });
-
-      // _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
-
+      _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
     } else {
       throw Exception('Failed to load info');
     }
@@ -207,7 +205,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    // _timer.cancel();
+    _timer.cancel();
   }
 
   @override
@@ -229,19 +227,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                 child: Icon(Icons.notifications_none,color: Colors.grey),
               ),
             ),
-            Positioned(
-              right: 5,
-              top: 11,
-              child: new Container(
-                padding: EdgeInsets.all(2),
-                decoration: new BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                constraints: BoxConstraints(minWidth: 13, minHeight: 13,),
-                child: UserRepository().textQ("0",12,Colors.white,FontWeight.bold,TextAlign.center),
-              ),
-            )
+
           ],
         ),
       ]),
@@ -273,7 +259,22 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
               cardThreeSection(context),
               SizedBox(height: 15.0),
               lineSection(context),
-              titleSection(context,"Donasi Terbaru","Mari kita bantu mereka yang membutuhkan"),
+              Padding(
+                  padding: EdgeInsets.all(15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          UserRepository().textQ("Donasi Terbaru",14,Colors.black,FontWeight.bold,TextAlign.left),
+                          UserRepository().textQ("Mari kita bantu mereka yang membutuhkan",12,Colors.grey,FontWeight.normal,TextAlign.left),
+                        ],
+                      ),
+                    ],
+                  )
+              ),
               donasi(context),
               Container(
                 padding: EdgeInsets.only(left:15,right:15),
@@ -320,7 +321,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           UserRepository().textQ("Sosial Media",14,Colors.black,FontWeight.bold,TextAlign.left),
-                          UserRepository().textQ("Postingan teratas kegiatan member thaibah",12,Colors.grey,FontWeight.normal,TextAlign.left),
+                          UserRepository().textQ("Kegiatan member thaibah",12,Colors.grey,FontWeight.normal,TextAlign.left),
                         ],
                       ),
                       InkWell(
@@ -366,41 +367,72 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        isLoading?Container(
-          padding:EdgeInsets.all(10),
-          decoration:BoxDecoration(
-            borderRadius:  BorderRadius.circular(100.0),
-          ) ,
-          child: SkeletonFrame(width:50,height: 50),
+        isLoading?Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding:EdgeInsets.all(10),
+              decoration:BoxDecoration(
+                borderRadius:  BorderRadius.circular(100.0),
+              ) ,
+              child: SkeletonFrame(width:50,height: 50),
+            ),
+            SizedBox(height: 5.0),
+            SkeletonFrame(width:50,height: 15)
+          ],
         ):
         CardEmoney(imgUrl:'ALQURAN.png',title:'Al-Quran',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));
         }),
-        isLoading?Container(
-          padding:EdgeInsets.all(10),
-          decoration:BoxDecoration(
-            borderRadius:  BorderRadius.circular(100.0),
-          ) ,
-          child: SkeletonFrame(width:50,height: 50),
+        isLoading?Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding:EdgeInsets.all(10),
+              decoration:BoxDecoration(
+                borderRadius:  BorderRadius.circular(100.0),
+              ) ,
+              child: SkeletonFrame(width:50,height: 50),
+            ),
+            SizedBox(height: 5.0),
+            SkeletonFrame(width:50,height: 15)
+          ],
         ):CardEmoney(imgUrl:'DOA.png',title:'Doa Harian',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));
-
         },),
-        isLoading?Container(
-          padding:EdgeInsets.all(10),
-          decoration:BoxDecoration(
-            borderRadius:  BorderRadius.circular(100.0),
-          ) ,
-          child: SkeletonFrame(width:50,height: 50),
+        isLoading?Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding:EdgeInsets.all(10),
+              decoration:BoxDecoration(
+                borderRadius:  BorderRadius.circular(100.0),
+              ) ,
+              child: SkeletonFrame(width:50,height: 50),
+            ),
+            SizedBox(height: 5.0),
+            SkeletonFrame(width:50,height: 15)
+          ],
         ):CardEmoney(imgUrl:'HADIS.png',title:'Hadits',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));
         },),
-        isLoading?Container(
-          padding:EdgeInsets.all(10),
-          decoration:BoxDecoration(
-            borderRadius:  BorderRadius.circular(100.0),
-          ) ,
-          child: SkeletonFrame(width:50,height: 50),
+        isLoading?Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding:EdgeInsets.all(10),
+              decoration:BoxDecoration(
+                borderRadius:  BorderRadius.circular(100.0),
+              ) ,
+              child: SkeletonFrame(width:50,height: 50),
+            ),
+            SizedBox(height: 5.0),
+            SkeletonFrame(width:50,height: 15)
+          ],
         ):CardEmoney(imgUrl:'ASMA.png',title:'Asma Allah',xFunction: (){
           Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));
         },),

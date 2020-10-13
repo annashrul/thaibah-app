@@ -149,19 +149,20 @@ class _CardEmoneyState extends State<CardEmoney> {
               // mainAxisSize:MainAxisSize.min ,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(5.0),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100.0),
-                      color: Colors.grey[200]
-                  ),
+                  padding: EdgeInsets.all(0.0),
+                  // decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.circular(100.0),
+                  //     color: Colors.grey[200]
+                  // ),
                   child: CircleAvatar(
+                    backgroundColor: Colors.grey[200],
                       foregroundColor: Colors.grey,
                       radius: 20,
                       backgroundImage: NetworkImage("${ApiService().assetsServer}${widget.imgUrl}")
                   ),
                 ),
                 SizedBox(height: 5.0),
-                UserRepository().textQ(widget.title, 12, Colors.grey,FontWeight.bold,TextAlign.center),
+                UserRepository().textQ(widget.title, 12, Colors.black,FontWeight.bold,TextAlign.center),
                 // Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
               ],
             )
