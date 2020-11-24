@@ -20,10 +20,12 @@ class _IndexAddressState extends State<IndexAddress> {
   TextEditingController mainAddressController = TextEditingController();
   final userRepository = UserRepository();
   int row=0;
+  bool isLoading=false;
   Future cek() async{
     var test = await AddressProvider().fetchAlamat();
     setState(() {
       row = test.result.length;
+      isLoading=false;
     });
   }
 
@@ -59,23 +61,26 @@ class _IndexAddressState extends State<IndexAddress> {
     super.initState();
     loadTheme();
     cek();
+    isLoading=true;
     provinsiBloc.fetchProvinsiist();
+
   }
 
 
 
   Widget _buildAddCardButton() {
-    return IconButton(
-      icon: Icon(Icons.add, color: Colors.black,),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FormAddress(param: '',),
-          ),
-        );
-      },
+    return isLoading?Container():IconButton(
+        icon: Icon(Icons.add, color: Colors.black,),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FormAddress(param: '',),
+            ),
+          );
+        }
     );
+
 
   }
 
@@ -84,7 +89,9 @@ class _IndexAddressState extends State<IndexAddress> {
     addressBloc.fetchAddressList();
     return Scaffold(
       key: scaffoldKey,
-      appBar: row>=1?UserRepository().appBarWithButton(context, "Tambah Alamat",(){Navigator.pop(context);},<Widget>[]):UserRepository().appBarWithButton(context, "Tambah Alamat",(){Navigator.pop(context);},<Widget>[_buildAddCardButton()]),
+      appBar: UserRepository().appBarWithButton(context, "Daftar Alamat",(){Navigator.pop(context);},<Widget>[
+        row>=1?Container():_buildAddCardButton()]
+      ),
       body: StreamBuilder(
         stream: addressBloc.allAddress,
         builder: (context, AsyncSnapshot<AddressModel> snapshot) {

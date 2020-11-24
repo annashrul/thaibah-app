@@ -51,34 +51,35 @@ class _FormAddressState extends State<FormAddress> {
     setState(() {});
   }
   Future create() async{
+    print("create ${_currentItemSelectedProvinsi.split("|")[0]}");
     print("${sProv} - $sKota - $sKec");
     var res = await AddressProvider().fetchCreateAddress(
         "Alamat Rumah",
         name,
         "${mainAddressController.text}$tKecamatan$tKota$tProvinsi",
-        sProv,
-        sKota,
-        sKec,
+        _currentItemSelectedKota.split("|")[0],
+        _currentItemSelectedProvinsi.split("|")[0],
+        _currentItemSelectedKecamatan.split("|")[0],
         nohp
     );
+    Navigator.of(context).pop();
     if(res is GeneralInsertId){
       GeneralInsertId result = res;
       if(result.status == 'success'){
         UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"success");
-        await Future.delayed(Duration(seconds: 1000));
+        await Future.delayed(Duration(seconds: 2));
         Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_context) => IndexAddress()),);
       }else{
-        Navigator.pop(context);
         UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"success");
       }
     }else{
       General result = res;
-      Navigator.pop(context);
       UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"success");
     }
-
   }
   Future update() async{
+    print("${mainAddressController.text}, $tKecamatan, $tKota, $tProvinsi");
+    print("$sProv, $sKota, $sKec, $nohp");
     var res = await updateAddressBloc.fetcUpdateAddress(
         "Alamat Rumah",
         name,
@@ -227,9 +228,10 @@ class _FormAddressState extends State<FormAddress> {
                             UserRepository().loadingQ(context);
                             if(widget.param==''){
                               create();
+                              print("acuy");
                             }
                             else{
-
+                              update();
                             }
 
                           }

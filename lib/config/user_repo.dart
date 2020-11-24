@@ -70,9 +70,15 @@ class UserRepository {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-          SizedBox(height: 10),
-          textQ("Tunggu Sebentar",14,Colors.black,FontWeight.bold,TextAlign.center)
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+              SizedBox(width: 10),
+              Container(margin: EdgeInsets.only(left: 10),child:textQ("Tunggu sebentar ...",12,Colors.black,FontWeight.bold,TextAlign.center)),
+            ],
+          ),
         ],
       ),
     );
@@ -118,18 +124,14 @@ class UserRepository {
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
-        return ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 100.0),
-            child: AlertDialog(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
-                  SizedBox(height:10.0),
-                  Html(customTextAlign: (_) => TextAlign.center, data:"Tunggu Sebentar .....",defaultTextStyle:TextStyle(fontSize:12,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold))
-                ],
-              ),
-            )
+        return AlertDialog(
+          content: new Row(
+            children: [
+              CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+              SizedBox(width: 10),
+              Container(margin: EdgeInsets.only(left: 10),child:textQ("Tunggu sebentar ...",12,Colors.black,FontWeight.bold,TextAlign.center)),
+            ],
+          ),
         );
 
       },

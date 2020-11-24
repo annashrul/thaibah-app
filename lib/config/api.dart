@@ -1,14 +1,14 @@
 class ApiService {
  // ################################# START RELEASE ############################//
- final bool showCode      = false;
- final String versionCode = '1.3.5';
- final String baseUrl     = "http://thaibah.com:3000/api/v1/";
+ // final bool showCode      = false;
+ // final String versionCode = '1.3.5';
+ // final String baseUrl     = "http://thaibah.com:3000/api/v1/";
  // ################################# END RELEASE ############################//
 
  // ################################# START DEVELOPMENT ############################//
- // final bool showCode       = true;
- // final String versionCode  = '1.2.4';
- // final String baseUrl      = "http://thaibah.com:3010/api/v1/";
+ final bool showCode       = true;
+ final String versionCode  = '1.2.4';
+ final String baseUrl      = "http://thaibah.com:3010/api/v1/";
  // ################################# END DEVELOPMENT ############################//
 
  final String assetsLocal  = "assets/images/";

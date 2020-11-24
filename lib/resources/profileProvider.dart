@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' show Client;
 import 'package:thaibah/Model/profileModel.dart';
@@ -14,14 +15,18 @@ class ProfileProvider {
       final response = await client.get(
           ApiService().baseUrl+'member/myprofile',
           headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
-      );
+      ).timeout(Duration(seconds: 60));
       if (response.statusCode == 200) {
         return compute(profileModelFromJson,response.body);
       } else {
         throw Exception('Failed to load profile');
       }
-    } catch(e){
-      return 'gagal';
+    } on TimeoutException catch (_) {
+      print('TimeoutException');
+      return 'TimeoutException';
+    } on SocketException catch (_) {
+      print('SocketException');
+      return 'SocketException';
     }
   }
 }

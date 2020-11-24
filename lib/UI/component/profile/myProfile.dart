@@ -29,19 +29,22 @@ class _MyProfileState extends State<MyProfile> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final formatter = new NumberFormat("#,###");
   final userRepository = UserRepository();
-  bool isLoading=false, modeUpdate=false,moreThenOne=false,isLoadingShare=false,retry=false;
+  bool isLoading=false, modeUpdate=false,moreThenOne=false,isLoadingShare=false;
+  int retry=0;
   int jumlahJaringan=0,counterHit=0;
   String name='',picture='',qr='',kdReferral='',saldo='',rawSaldo='',saldoMain='',saldoBonus='',saldoVoucher='',saldoPlatinum='',downline='';
   String kaki1='',kaki2='',kaki3='',privacyPolicy='',omsetJaringan='',id='';
   String sponsor='';
   int levelPlatinum=0;
+  bool isTimeout=false;
   Future<void> loadData() async{
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     var res = await ProfileProvider().fetchProfile();
     if(res is ProfileModel){
       setState(() {
-        isLoading = false; retry = false;
+        isTimeout=false;
+        isLoading = false;
         var result = res.result;
         jumlahJaringan=result.jumlahJaringan;
         name=result.name;picture=result.picture;qr=result.qr;kdReferral=result.kdReferral;saldo=result.saldo;
@@ -59,7 +62,8 @@ class _MyProfileState extends State<MyProfile> {
     else{
       GagalHitProvider().fetchRequest('profile','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
       setState(() {
-        isLoading = false;retry = true;
+        isLoading = false;
+        isTimeout=true;
       });
     }
 
@@ -81,7 +85,13 @@ class _MyProfileState extends State<MyProfile> {
       key: scaffoldKey,
       backgroundColor: Colors.white,
       appBar:UserRepository().appBarNoButton(context,"Profile",<Widget>[]),
-      body: isLoading?UserRepository().loadingWidget():Container(
+      body: isLoading?UserRepository().loadingWidget():isTimeout?UserRepository().requestTimeOut((){
+        setState(() {
+          retry+=1;
+          isLoading=true;
+        });
+        loadData();
+      }):Container(
         padding: EdgeInsets.only(top:10.0),
         color: Colors.white,
         child: LiquidPullToRefresh(

@@ -114,7 +114,6 @@ class _WidgetHistoryTransaksiState extends State<WidgetHistoryTransaksi> {
     _tgl_pertama.text = formattedDate;
     _tgl_kedua.text = formattedDate;
     _dateTime = DateTime.parse(formattedDate);
-    print("WIDGET ${widget.label}");
     historyBloc.fetchHistoryList(widget.label, 1, perpage, _tgl_pertama.text,_tgl_kedua.text,'');
   }
   @override
