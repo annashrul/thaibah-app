@@ -53,7 +53,7 @@ class _MyFeedState extends State<MyFeed> {
       base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(img.readAsBytesSync());
     }
     else{
-      base64Image = "";
+      base64Image = "-";
     }
     var res = await SosmedProvider().sendFeed(caption, base64Image);
     if(res is GeneralInsertId){
@@ -514,6 +514,7 @@ class _MyFeedState extends State<MyFeed> {
             minChildSize: 0.25,
             builder: (BuildContext context, ScrollController scrollController) {
               return BottomWidget(sendFeed: (String caption, File img){
+                print("FILE IMAGE $img");
                 setState(() {
                   UserRepository().loadingQ(context);
                 });
@@ -600,12 +601,13 @@ class _BottomWidgetState extends State<BottomWidget> {
                   if(captionController.text == ''){
                     FocusScope.of(context).requestFocus(FocusNode());
                   }
-                  else if(_image==null){
-                    final img = await UserRepository().getImageFile(ImageSource.gallery);
-                    setState(() {
-                      _image=img;
-                    });
-                  }else{
+                  // else if(_image==null){
+                  //   final img = await UserRepository().getImageFile(ImageSource.gallery);
+                  //   setState(() {
+                  //     _image=null;
+                  //   });
+                  // }
+                  else{
                     Navigator.of(context).pop();
                     captionFocus.unfocus();
                     widget.sendFeed(captionController.text,_image);

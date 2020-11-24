@@ -106,7 +106,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
         isya = new DateFormat('HHmmss').format(prayerModel.result.isha);
         city = prayerModel.result.city;
       });
-      _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
+      // _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
     } else {
       throw Exception('Failed to load info');
     }

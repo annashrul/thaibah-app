@@ -55,8 +55,9 @@ class _ExploreFeedState extends State<ExploreFeed> {
       base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(img.readAsBytesSync());
     }
     else{
-      base64Image = "";
+      base64Image = "-";
     }
+    print("BASE64 IMAGE $base64Image");
     var res = await SosmedProvider().sendFeed(caption, base64Image);
     if(res is GeneralInsertId){
       GeneralInsertId results = res;
@@ -437,6 +438,7 @@ class _ExploreFeedState extends State<ExploreFeed> {
             minChildSize: 0.25,
             builder: (BuildContext context, ScrollController scrollController) {
               return BottomWidget(sendFeed: (String caption, File img){
+                print("FILE IMAGE $img");
                 setState(() {
                   UserRepository().loadingQ(context);
                 });
