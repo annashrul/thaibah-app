@@ -33,7 +33,7 @@ class _ScreenArtikelState extends State<ScreenArtikel> with AutomaticKeepAliveCl
     setState(() {
       perpage = perpage += 10;
     });
-    newsBloc.fetchNewsList(1, perpage,'Pengumuman');
+    newsBloc.fetchNewsList(1, perpage,'artikel');
   }
 
   Future<void> refresh() async {

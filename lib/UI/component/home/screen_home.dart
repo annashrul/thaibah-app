@@ -63,7 +63,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   Timer _timer;
   NewsModel newsModel;
   Future loadArtikel() async {
-    final res = await BaseProvider().getProvider("berita?page=1&limit=4", newsModelFromJson);
+    final res = await BaseProvider().getProvider("berita?page=1&limit=4&category=artikel", newsModelFromJson);
     print("############################## RESPONSE RES ARTIKEL $res");
     if(res==ApiService().timeoutException||res==ApiService().socketException){
       setState(() {
