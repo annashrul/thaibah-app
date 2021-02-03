@@ -13,6 +13,7 @@ import 'package:thaibah/Model/newsModel.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/cardSaldo.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
+import 'package:thaibah/UI/component/auth/loginPhone.dart';
 import 'package:thaibah/UI/component/donasi/screenInboxDonasi.dart';
 import 'package:thaibah/UI/component/donasi/widget_donasi.dart';
 import 'package:thaibah/UI/component/home/widget_artikel.dart';
@@ -29,6 +30,8 @@ import 'package:thaibah/bloc/newsBloc.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:http/http.dart' as http;
+import 'package:thaibah/resources/baseProvider.dart';
+import 'package:thaibah/resources/logoutProvider.dart';
 
 
 
@@ -49,6 +52,8 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   static String name= '';
   bool isLoading=false;
   bool isLoadmore=false;
+  bool isToken=false;
+  bool isTimeout=false;
   var sekarang;String echoWaktu='',echoKetWaktu;
   var shubuh,sunrise,dzuhur,ashar,magrib,isya;
   var city;
@@ -56,11 +61,46 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   String _timeString;
   PrayerModel prayerModel;
   Timer _timer;
-  Future<void> loadArtikel() async {
-    await newsBloc.fetchNewsList(1, 4,'artikel');
-    setState(() {
-      isLoading=false;
-    });
+  NewsModel newsModel;
+  Future loadArtikel() async {
+    final res = await BaseProvider().getProvider("berita?page=1&limit=4", newsModelFromJson);
+    print("############################## RESPONSE RES ARTIKEL $res");
+    if(res==ApiService().timeoutException||res==ApiService().socketException){
+      setState(() {
+        isLoading=false;
+        isTimeout=true;
+        isToken=false;
+      });
+    }
+    else if(res==ApiService().tokenExpiredError){
+      setState(() {
+        isLoading=false;
+        isTimeout=true;
+        isToken=true;
+      });
+      UserRepository().notifDialog(context,"Informasi !!!", "Sesi anda telah habis", ()async{
+        UserRepository().loadingQ(context);
+        final res = await LogoutProvider().logout();
+        if(res==true){
+          setState(() {
+            Navigator.pop(context);
+          });
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+        }
+      });
+    }
+    else{
+      if(res is NewsModel){
+        NewsModel result=res;
+        setState(() {
+          isLoading=false;
+          isTimeout=false;
+          isToken=false;
+          newsModel = NewsModel.fromJson(result.toJson());
+        });
+      }
+    }
+
   }
   Future<void> loadDonasi() async {
     final lat = await userRepository.getDataUser('latitude');
@@ -106,7 +146,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
         isya = new DateFormat('HHmmss').format(prayerModel.result.isha);
         city = prayerModel.result.city;
       });
-      // _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
+      _timer = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
     } else {
       throw Exception('Failed to load info');
     }
@@ -182,7 +222,11 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
   Future onSelectNotification(String payload) async {
     print(payload);
   }
-
+  Future loadAll()async{
+    await loadArtikel();
+    await loadDonasi();
+    await loadPrayer();
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -192,13 +236,9 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     var iOS = new IOSInitializationSettings();
     var initSetttings = new InitializationSettings(android, iOS);
     flutterLocalNotificationsPlugin.initialize(initSetttings, onSelectNotification: onSelectNotification);
-    loadDonasi();
-    loadArtikel();
-    loadPrayer();
     isLoading=true;
+    loadAll();
     _timeString = DateFormat('hh:mm:ss').format(DateTime.now());
-
-
   }
 
   @override
@@ -233,7 +273,7 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
       ]),
 
 
-      body: LiquidPullToRefresh(
+      body: isToken?UserRepository().modeUpdate(context):LiquidPullToRefresh(
         color: ThaibahColour.primary2,
         backgroundColor:Colors.white,
         key: _refresh,
@@ -556,35 +596,24 @@ class _ScreenHomeState extends State<ScreenHome> with AutomaticKeepAliveClientMi
     );
   }
   Widget cardSixSection(BuildContext context){
-    return Padding(
+    return isLoading?LoadingArtikel():Padding(
       padding: EdgeInsets.only(left:5.0,right:5.0),
-      child: StreamBuilder(
-        stream: newsBloc.allNews,
-        builder: (context,AsyncSnapshot<NewsModel> snapshot){
-          if(snapshot.hasData){
-            return ListView.builder(
-                primary: true,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                itemCount: snapshot.data.result.data.length,
-                itemBuilder:(context,index){
-                  return WidgetArtikel(
-                    id: snapshot.data.result.data[index].id,
-                    category: snapshot.data.result.data[index].category,
-                    image:snapshot.data.result.data[index].picture ,
-                    title:snapshot.data.result.data[index].title ,
-                    desc:snapshot.data.result.data[index].caption ,
-                    link: snapshot.data.result.data[index].link,
-                  );
-                }
+      child: ListView.builder(
+          primary: true,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          itemCount: newsModel.result.data.length,
+          itemBuilder:(context,index){
+            return WidgetArtikel(
+              id: newsModel.result.data[index].id,
+              category: newsModel.result.data[index].category,
+              image:newsModel.result.data[index].picture ,
+              title:newsModel.result.data[index].title ,
+              desc:newsModel.result.data[index].caption ,
+              link: newsModel.result.data[index].link,
             );
           }
-          else if(snapshot.hasError){
-            return Text(snapshot.error.toString());
-          }
-          return LoadingArtikel();
-        }
       ),
     );
   }

@@ -210,6 +210,10 @@ class _RegistState extends State<Regist> {
               UserRepository().notifNoAction(_scaffoldKey, context,result.msg,"failed");
             }
           }
+          else if(res=='block'){
+            setState(() {Navigator.pop(context);});
+            UserRepository().notifNoAction(_scaffoldKey, context,"maaf, anda telah memenuhi batas permintaan otp. silahkan coba lagi besok","failed");
+          }
           else{
             General results = res;
             setState(() {Navigator.pop(context);});

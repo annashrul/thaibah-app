@@ -53,11 +53,14 @@ class LoginProvider {
         "typeotp":"$typeotp",
         "brand":"$brand",
       }).then((Response response) {
-        print(response.body);
       var results;
       if(response.statusCode == 200){
         results = AuthModel.fromJson(jsonDecode(response.body));
-      }else{
+      }
+      else if(response.statusCode==429){
+        results  = 'block';
+      }
+      else{
         results = General.fromJson(jsonDecode(response.body));
       }
       print(results);

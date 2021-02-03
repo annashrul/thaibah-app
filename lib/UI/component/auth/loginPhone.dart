@@ -161,6 +161,8 @@ class _LoginPhoneState extends State<LoginPhone> {
       }
       print(_valType);
       var res = await authNoHpBloc.fetchAuthNoHp(no, onesignalUserId,_valType,"${androidInfo.brand} ${androidInfo.device}");
+      print("RESPONSE CODE AUTH $res");
+
       if(res is AuthModel){
         AuthModel result = res;
         if(result.status == 'success'){
@@ -192,36 +194,17 @@ class _LoginPhoneState extends State<LoginPhone> {
                   callback: _callBackPin
               )), (Route<dynamic> route) => false
           );
-          // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-          //     new CupertinoPageRoute(builder: (BuildContext context)=>SecondScreen(
-          //       otp: result.result.otp.toString(),
-          //       id:result.result.id.toString(),
-          //       name: result.result.name.toString(),
-          //       address: result.result.address.toString(),
-          //       email: result.result.email.toString(),
-          //       picture: result.result.picture.toString(),
-          //       cover: result.result.cover.toString(),
-          //       socketid: result.result.socketid.toString(),
-          //       kdReferral: result.result.kdReferral.toString(),
-          //       kdUnique: result.result.kdUnique.toString(),
-          //       token: result.result.token.toString(),
-          //       pin: result.result.pin.toString(),
-          //       noHp: result.result.noHp.toString(),
-          //       ktp: result.result.ktp.toString(),
-          //       levelStatus:result.result.levelStatus.toString(),
-          //       warna1:result.result.tema.warna1,
-          //       warna2:result.result.tema.warna2,
-          //       latitude:lat,
-          //       longitude:lng,
-          //       status:result.result.status.toString(),
-          //     )), (Route<dynamic> route) => false
-          // );
+          //
         }
         else{
           print("######### STATUS ${result.status}");
           setState(() {Navigator.pop(context);});
           UserRepository().notifNoAction(_scaffoldKey, context,"No WhatsApp Tidak Terdaftar","failed");
         }
+      }
+      else if(res=='block'){
+        setState(() {Navigator.pop(context);});
+        UserRepository().notifNoAction(_scaffoldKey, context,"maaf, anda telah memenuhi batas permintaan otp. silahkan coba lagi 15 menit kemudian","failed");
       }
       else{
         General results = res;

@@ -83,6 +83,31 @@ class UserRepository {
       ),
     );
   }
+
+  notifDialog(BuildContext context,title,desc,Function callback1,{titleBtn1='Oke'}){
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return Center(
+            child: AlertDialog(
+              title:RichText(text: TextSpan(text:title, style: TextStyle(color: Colors.black, fontSize: 14,fontFamily:  ThaibahFont().fontQ))),
+              content:RichText(text: TextSpan(text:desc, style: TextStyle(color: Colors.black, fontSize: 12,fontFamily:  ThaibahFont().fontQ))),
+              // content:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style: Theme.of(context).textTheme.caption, children: [TextSpan(text:widget.wrongPassContent),],),),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed:callback1,
+                  child:RichText(text: TextSpan(text:titleBtn1, style: TextStyle(color: Colors.black, fontSize: 12,fontFamily:  ThaibahFont().fontQ))),
+                ),
+
+              ],
+            ),
+          );
+        }
+    );
+  }
+
+
   notifAlertQ(BuildContext context,param,title,desc,txtBtn1,txtBtn2,Function callback1,Function callback2){
     AlertType alertType;
     if(param=='success'){
@@ -625,7 +650,10 @@ class UserRepository {
     if(param=='cover'){return cover;}
     if(param=='socketId'){return socketId;}
     if(param=='kdUnique'){return kdUnique;}
+    // final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NDZlNGQyNy01ZDQzLTQ5ODYtOWZmMi1iOTU0ZjYwZmZlZDMiLCJpYXQiOjE2MDgwMzU3MzMsImV4cCI6MTYxMDYyNzczM30.DY_U7ZaB-RapIGBkdyzRxtBxvAgqFwGSFt2NFvrJM1I';
+
     if(param=='token'){return token;}
+    // if(param=='token'){return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NDZlNGQyNy01ZDQzLTQ5ODYtOWZmMi1iOTU0ZjYwZmZlZDMiLCJpYXQiOjE2MDgwMzU3MzMsImV4cCI6MTYxMDYyNzczM30.DY_U7ZaB-RapIGBkdyzRxtBxvAgqFwGSFt2NFvrJM1I';}
     if(param=='phone'){return phone;}
     if(param=='pin'){return pin;}
     if(param=='referral'){return referral;}

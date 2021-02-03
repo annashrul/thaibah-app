@@ -50,7 +50,7 @@ class AlertQ {
           Animation<double> secondaryAnimation) {
         return _buildDialog();
       },
-      barrierDismissible: style.isOverlayTapDismiss,
+      barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierColor: style.overlayColor,
       transitionDuration: style.animationDuration,

@@ -73,7 +73,9 @@ class MemberProvider {
       }else if(response.statusCode == 400){
         results =  General.fromJson(json.decode(response.body));
       }
-      print(results.status);
+      else if(response.statusCode==429){
+        results  = 'block';
+      }
       return results;
     });
   }

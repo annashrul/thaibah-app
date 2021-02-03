@@ -62,9 +62,14 @@ class _KeranjangState extends State<Keranjang> {
       General results = test;
       if(results.msg == 'Alamat kosong.'){
         setState(() {isLoading  = false;});
-        UserRepository().notifWithAction(scaffoldKey, context, 'Silahkan isi  alamat lengkap untuk pengiriman barang ke tempat anda', 'failed','BUAT ALAMAT',(){
-          Navigator.push(context, CupertinoPageRoute(builder: (context) =>  FormAddress(param: '')));
-        });
+        UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
+        await Future.delayed(Duration(seconds: 3));
+        Navigator.push(context, CupertinoPageRoute(builder: (context) =>  FormAddress(param: '')));
+        //
+        // UserRepository().
+        // UserRepository().notifWithAction(scaffoldKey, context, 'Silahkan isi  alamat lengkap untuk pengiriman barang ke tempat anda', 'failed','BUAT ALAMAT',(){
+        //   Navigator.push(context, CupertinoPageRoute(builder: (context) =>  FormAddress(param: '')));
+        // });
       }else{
         UserRepository().notifNoAction(scaffoldKey, context,results.msg,"failed");
       }

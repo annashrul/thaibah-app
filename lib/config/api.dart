@@ -1,14 +1,14 @@
 class ApiService {
- // ################################# START RELEASE ############################//
- // final bool showCode      = false;
- // final String versionCode = '1.3.5';
- // final String baseUrl     = "http://thaibah.com:3000/api/v1/";
- // ################################# END RELEASE ############################//
+ // ################################# START PRODUCTION ############################//
+ final bool showCode      = false;
+ final String versionCode = '1.3.6';
+ final String baseUrl     = "http://thaibah.com:3000/api/v1/";
+ // ################################# END PRODUCTION ############################//
 
  // ################################# START DEVELOPMENT ############################//
- final bool showCode       = true;
- final String versionCode  = '1.2.4';
- final String baseUrl      = "http://thaibah.com:3010/api/v1/";
+ // final bool showCode       = true;
+ // final String versionCode  = '1.2.4';
+ // final String baseUrl      = "http://thaibah.com:3010/api/v1/";
  // ################################# END DEVELOPMENT ############################//
 
  final String assetsLocal  = "assets/images/";
@@ -22,5 +22,9 @@ class ApiService {
  final int timerActivity   = 120;
  final bool isActivity     = false;
  final String deviceId     = '6a4c55fd-d96d-427f-8634-d2c4b9d96d69';
+ final String tokenExpiredError     = 'TokenExpiredError';
+ final String timeoutException     = 'TimeoutException';
+ final String socketException     = 'SocketException';
+
 }
 

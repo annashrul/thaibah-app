@@ -16,6 +16,7 @@ import 'package:thaibah/UI/component/profile/profileBisnis.dart';
 import 'package:thaibah/UI/component/sosmed/myFeed.dart';
 import 'package:thaibah/config/user_repo.dart';
 import 'package:thaibah/resources/gagalHitProvider.dart';
+import 'package:thaibah/resources/logoutProvider.dart';
 import 'package:thaibah/resources/memberProvider.dart';
 import 'package:thaibah/resources/profileProvider.dart';
 import 'package:thaibah/DBHELPER/userDBHelper.dart';
@@ -41,6 +42,7 @@ class _MyProfileState extends State<MyProfile> {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     var res = await ProfileProvider().fetchProfile();
+    print("RESPONSE PROFILE $res");
     if(res is ProfileModel){
       setState(() {
         isTimeout=false;
@@ -57,6 +59,22 @@ class _MyProfileState extends State<MyProfile> {
         id=result.id;
         sponsor=result.sponsor;
         levelPlatinum = result.levelPlatinumRaw;
+      });
+    }
+    else if(res=='TokenExpiredError'){
+      setState(() {
+        isLoading = false;
+        isTimeout=true;
+      });
+      UserRepository().notifDialog(context,"Informasi !!!", "Sesi anda telah habis", ()async{
+        UserRepository().loadingQ(context);
+        final res = await LogoutProvider().logout();
+        if(res==true){
+          setState(() {
+            Navigator.pop(context);
+          });
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+        }
       });
     }
     else{

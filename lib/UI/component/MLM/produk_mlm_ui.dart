@@ -1,12 +1,16 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
+import 'package:thaibah/DBHELPER/userDBHelper.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
 import 'package:thaibah/UI/Widgets/loadMoreQ.dart';
 import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/UI/component/MLM/keranjang.dart';
+import 'package:thaibah/resources/logoutProvider.dart';
+import 'package:thaibah/resources/memberProvider.dart';
 import '../auth/loginPhone.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info/device_info.dart';
@@ -103,7 +107,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   }
   bool modeUpdate = false;
 
-
+  bool isTokenExpired=false;
 
   Future loadData(var page, var limit) async{
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -114,21 +118,45 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
           ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
           headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
       ).timeout(Duration(seconds: ApiService().timerActivity));
+      print("################ STATUS CODE PRODUK ${jsonString.statusCode} ####################");
+      final jsonResponse = json.decode(jsonString.body);
       if (jsonString.statusCode == 200) {
-        final jsonResponse = json.decode(jsonString.body);
         productMlmSuplemenModel = new ProductMlmSuplemenModel.fromJson(jsonResponse);
         setState(() {
           isLoading = false;retry = false;
         });
-      } else {
-        throw Exception('Failed to load photos');
+      } else if(jsonString.statusCode == 400) {
+        if(jsonResponse['name']=='TokenExpiredError'){
+          setState(() {
+            isLoading = false;retry = false;isTokenExpired=true;
+          });
+
+          UserRepository().notifDialog(context,"Informasi !!!", "Sesi anda telah habis", ()async{
+            UserRepository().loadingQ(context);
+            final res = await LogoutProvider().logout();
+            if(res==true){
+              setState(() {
+                Navigator.pop(context);
+              });
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPhone()), (Route<dynamic> route) => false);
+            }
+          });
+        }
       }
-    }catch(e){
-      setState(() {
-        isLoading = false;retry = true;
-      });
-      GagalHitProvider().fetchRequest('produk','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+    }on TimeoutException catch (_) {
+      print("################ TimeoutException PRODUK ####################");
+      return 'TimeoutException';
+    } on SocketException catch (_) {
+      print("################ SocketException PRODUK ####################");
+      return 'SocketException';
     }
+
+    // catch(e){
+    //   setState(() {
+    //     isLoading = false;retry = true;
+    //   });
+    //   GagalHitProvider().fetchRequest('produk','brand = ${androidInfo.brand}, device = ${androidInfo.device}, model = ${androidInfo.model}');
+    // }
 
   }
 
@@ -207,7 +235,7 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   Widget buildContent(BuildContext context) {
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    return  isLoading ? _loading() :  productMlmSuplemenModel.result.data.length > 0 ? RefreshIndicator(
+    return  isTokenExpired?Container():isLoading ? _loading() :  productMlmSuplemenModel.result.data.length > 0 ? RefreshIndicator(
       child: Padding(
           padding: const EdgeInsets.only(top:0.0,left:10.0,right:10.0,bottom:5.0),
           child: LoadMoreQ(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' show Client;
@@ -18,7 +19,14 @@ class ProfileProvider {
       ).timeout(Duration(seconds: 60));
       if (response.statusCode == 200) {
         return compute(profileModelFromJson,response.body);
-      } else {
+      }
+      else if(response.statusCode == 400){
+        final jsonResponse = json.decode(response.body);
+        if(jsonResponse['name']=='TokenExpiredError'){
+          return 'TokenExpiredError';
+        }
+      }
+      else {
         throw Exception('Failed to load profile');
       }
     } on TimeoutException catch (_) {
