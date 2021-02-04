@@ -648,7 +648,8 @@ class _BottomWidgetState extends State<BottomWidget> {
           Divider(),
           InkWell(
             onTap: () async {
-              final img = await UserRepository().getImageFile(ImageSource.gallery);
+              var img = await UserRepository().getImageFiles('galeri');
+              // final img = await UserRepository().getImageFiles(ImageSource.gallery);
               setState(() {
                 _image = img;
               });

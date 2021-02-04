@@ -29,6 +29,7 @@ class _ScreenArtikelState extends State<ScreenArtikel> with AutomaticKeepAliveCl
   int perpage=5;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
+
   void load() {
     setState(() {
       perpage = perpage += 10;
@@ -40,11 +41,13 @@ class _ScreenArtikelState extends State<ScreenArtikel> with AutomaticKeepAliveCl
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     newsBloc.fetchNewsList(1, perpage,'artikel');
   }
+
   Future<bool> _loadMore() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     load();
     return true;
   }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -113,7 +116,6 @@ class _ScreenArtikelState extends State<ScreenArtikel> with AutomaticKeepAliveCl
 }
 
 
-
 class WidgetArtikel extends StatefulWidget {
   final String id;
   final String category;
@@ -138,7 +140,7 @@ class _WidgetArtikelState extends State<WidgetArtikel> {
     }
     return InkWell(
       child: Container(
-        padding: EdgeInsets.all(10.0),
+        padding: EdgeInsets.only(left:10.0,right:10.0),
         child: new Stack(
           alignment: Alignment.bottomCenter,
           children: <Widget>[

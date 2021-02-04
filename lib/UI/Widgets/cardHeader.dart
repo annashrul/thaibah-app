@@ -58,7 +58,7 @@ class _CardHeaderState extends State<CardHeader> {
           Center(
             child: Padding(
               padding: EdgeInsets.all(5.0),
-              child:UserRepository().textQ("Rp "+formatter.format(int.parse(widget.saldo)),14,ThaibahColour.primary1,FontWeight.bold,TextAlign.center),
+              child:UserRepository().textQ(widget.saldo,14,ThaibahColour.primary1,FontWeight.bold,TextAlign.center),
             ),
           ),
         ],

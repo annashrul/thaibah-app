@@ -16,6 +16,7 @@ import 'package:thaibah/UI/component/MLM/jaringan_ui.dart';
 import 'package:thaibah/UI/component/MLM/produk_mlm_ui.dart';
 import 'package:thaibah/UI/component/about/about.dart';
 import 'package:thaibah/UI/component/auth/loginPhone.dart';
+import 'package:thaibah/UI/component/home/home_screen.dart';
 import 'package:thaibah/UI/component/home/screen_home.dart';
 import 'package:thaibah/UI/component/news/detail_berita_ui.dart';
 import 'package:thaibah/UI/component/profile/myProfile.dart';
@@ -46,7 +47,8 @@ class _WidgetIndexState extends State<WidgetIndex>{
     if(widget.param == 'home' || widget.param == ''){
       setState(() {
         currentTab = 0;
-        currentScreen = ScreenHome();
+        // currentScreen = ScreenHome();
+        currentScreen = HomeScreen();
       });
     }
     if(widget.param == 'produk'){
@@ -110,7 +112,7 @@ class _WidgetIndexState extends State<WidgetIndex>{
   void initState() {
     // TODO: implement initState
     super.initState();
-    currentScreen = ScreenHome();
+    currentScreen = HomeScreen();
     loadLocation();
     cekPath();
     checkModeUpdate();
@@ -190,7 +192,7 @@ class _WidgetIndexState extends State<WidgetIndex>{
 
   }
   final List<Widget> screens = [
-    ScreenHome(),
+    HomeScreen(),
     ProdukMlmUI(),
     About(),
     TestimoniProduk(),
@@ -241,7 +243,7 @@ class _WidgetIndexState extends State<WidgetIndex>{
                             minWidth: 40,
                             onPressed: () {
                               setState(() {
-                                currentScreen = ScreenHome(); // if user taps on this dashboard tab will be active
+                                currentScreen = HomeScreen(); // if user taps on this dashboard tab will be active
                                 currentTab = 0;
                               });
                             },

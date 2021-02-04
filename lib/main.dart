@@ -218,7 +218,8 @@ class SplashState extends State<Splash> {
         Navigator.of(context, rootNavigator: true).pushReplacement(
             new CupertinoPageRoute(builder: (context) => IntroScreen())
         );
-      }else{
+      }
+      else{
         if(statusLogin=='1'){
           setState(() {isLoading=false;});
           Navigator.of(context, rootNavigator: true).pushReplacement(

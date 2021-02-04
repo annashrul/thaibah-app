@@ -1,8 +1,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:thaibah/Constants/constants.dart';
 import 'package:thaibah/UI/Widgets/SCREENUTIL/ScreenUtilQ.dart';
+import 'package:thaibah/UI/Widgets/skeletonFrame.dart';
 import 'package:thaibah/config/api.dart';
 import 'package:thaibah/config/autoSizeTextQ.dart';
 import 'package:thaibah/config/user_repo.dart';
@@ -143,28 +145,29 @@ class _CardEmoneyState extends State<CardEmoney> {
           widget.xFunction();
         },
         child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              // mainAxisSize:MainAxisSize.min ,
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(0.0),
-                  // decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.circular(100.0),
-                  //     color: Colors.grey[200]
-                  // ),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.grey[200],
-                      foregroundColor: Colors.grey,
-                      radius: 20,
-                      backgroundImage: NetworkImage("${ApiService().assetsServer}${widget.imgUrl}")
+            child: Container(
+              decoration:BoxDecoration(
+                // border: Border.all(color: Colors.black,width: 1.0),
+                borderRadius:  BorderRadius.circular(10.0),
+              ),
+              padding: EdgeInsets.all(0.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                      child: SvgPicture.network(
+                        "${ApiService().baseAssetsRevisi}${widget.imgUrl}.svg",
+                        placeholderBuilder: (context) => SkeletonFrame(width: ScreenUtilQ.getInstance().setWidth(60),height: ScreenUtilQ.getInstance().setHeight(60)),
+                        height: ScreenUtilQ.getInstance().setHeight(80),
+                        width: ScreenUtilQ.getInstance().setWidth(80),
+                      )
                   ),
-                ),
-                SizedBox(height: 5.0),
-                UserRepository().textQ(widget.title, 12, Colors.black,FontWeight.bold,TextAlign.center),
-                // Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
-              ],
+                  SizedBox(height: 5.0),
+                  UserRepository().textQ(widget.title, 12, Colors.black,FontWeight.bold,TextAlign.center),
+                  // Text(widget.title,textAlign: TextAlign.center, style: TextStyle(color:ThaibahColour.primary1,fontSize:ScreenUtilQ.getInstance().setSp(30),fontWeight: FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
+                ],
+              ),
             )
         ),
       ),

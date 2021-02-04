@@ -74,7 +74,7 @@ class UserRepository {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+              CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
               SizedBox(width: 10),
               Container(margin: EdgeInsets.only(left: 10),child:textQ("Tunggu sebentar ...",12,Colors.black,FontWeight.bold,TextAlign.center)),
             ],
@@ -152,7 +152,7 @@ class UserRepository {
         return AlertDialog(
           content: new Row(
             children: [
-              CircularProgressIndicator(strokeWidth: 10.0, valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
+              CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
               SizedBox(width: 10),
               Container(margin: EdgeInsets.only(left: 10),child:textQ("Tunggu sebentar ...",12,Colors.black,FontWeight.bold,TextAlign.center)),
             ],
@@ -468,10 +468,12 @@ class UserRepository {
     );
     return cek;
   }
-  textQ(String txt,double size,Color color,FontWeight fontWeight,TextAlign textAlign,{TextDecoration textDecoration}){
+  textQ(String txt,double size,Color color,FontWeight fontWeight,TextAlign textAlign,{TextDecoration textDecoration,int maxLines=null}){
     return RichText(
+      overflow: TextOverflow.ellipsis,
       textAlign: textAlign,
       softWrap: true,
+      maxLines: maxLines,
       text: TextSpan(
         text:txt,
         style: TextStyle(
@@ -551,40 +553,52 @@ class UserRepository {
     }
     return false;
   }
-  Future getImageFile(ImageSource source) async {
-    var image = await ImagePicker.pickImage(source: source);
-    print("IMAGE PATH UPLOAD ${image.path}");
-    File croppedFile = await ImageCropper.cropImage(
-      sourcePath: image.path,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.square,
-      ],
-      androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Thaibah Cropper Image',
-          toolbarColor: Colors.green,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false
-      ),
-      iosUiSettings: IOSUiSettings(
-        minimumAspectRatio: 1.0,
-      ),
-      maxWidth: 512,
-      maxHeight: 512,
-    );
+  Future getImageFiles(param) async {
+    // var image = await ImagePicker.pickImage(source: source);
+    // print("IMAGE PATH UPLOAD ${image.path}");
+    // File croppedFile = await ImageCropper.cropImage(
+    //   sourcePath: image.path,
+    //   aspectRatioPresets: [
+    //     CropAspectRatioPreset.square,
+    //   ],
+    //   androidUiSettings: AndroidUiSettings(
+    //       toolbarTitle: 'Thaibah Cropper Image',
+    //       toolbarColor: Colors.green,
+    //       toolbarWidgetColor: Colors.white,
+    //       initAspectRatio: CropAspectRatioPreset.original,
+    //       lockAspectRatio: false
+    //   ),
+    //   iosUiSettings: IOSUiSettings(
+    //     minimumAspectRatio: 1.0,
+    //   ),
+    //   maxWidth: 512,
+    //   maxHeight: 512,
+    // );
+    //
+    // final quality = 90;
+    // final tmpDir = (await getTemporaryDirectory()).path;
+    // final target ="$tmpDir/${DateTime.now().millisecondsSinceEpoch}-$quality.png";
+    //
+    // var result = await FlutterImageCompress.compressAndGetFile(
+    //   croppedFile.path,
+    //   target,
+    //   format: CompressFormat.png,
+    //   quality: 90,
+    // );
+    //
+    // return result;
+    ImageSource imageSource;
+    if(param == 'kamera'){
+      imageSource = ImageSource.camera;
+    }
+    else{
+      imageSource = ImageSource.gallery;
+    }
+    final picker = ImagePicker();
+    // var image = await ImagePicker.pickImage(source: source);
+    final pickedFile = await picker.getImage(source: imageSource);
+    return File(pickedFile.path);
 
-    final quality = 90;
-    final tmpDir = (await getTemporaryDirectory()).path;
-    final target ="$tmpDir/${DateTime.now().millisecondsSinceEpoch}-$quality.png";
-
-    var result = await FlutterImageCompress.compressAndGetFile(
-      croppedFile.path,
-      target,
-      format: CompressFormat.png,
-      quality: 90,
-    );
-
-    return result;
 
 
   }
@@ -626,6 +640,7 @@ class UserRepository {
       socketId = row['socket_id'];
       kdUnique = row['kd_unique'];
       token = row['token'];
+      // token = ApiService().token;
       phone = row['phone'];
       pin = row['pin'];
       referral = row['referral'];
@@ -650,10 +665,7 @@ class UserRepository {
     if(param=='cover'){return cover;}
     if(param=='socketId'){return socketId;}
     if(param=='kdUnique'){return kdUnique;}
-    // final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NDZlNGQyNy01ZDQzLTQ5ODYtOWZmMi1iOTU0ZjYwZmZlZDMiLCJpYXQiOjE2MDgwMzU3MzMsImV4cCI6MTYxMDYyNzczM30.DY_U7ZaB-RapIGBkdyzRxtBxvAgqFwGSFt2NFvrJM1I';
-
     if(param=='token'){return token;}
-    // if(param=='token'){return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NDZlNGQyNy01ZDQzLTQ5ODYtOWZmMi1iOTU0ZjYwZmZlZDMiLCJpYXQiOjE2MDgwMzU3MzMsImV4cCI6MTYxMDYyNzczM30.DY_U7ZaB-RapIGBkdyzRxtBxvAgqFwGSFt2NFvrJM1I';}
     if(param=='phone'){return phone;}
     if(param=='pin'){return pin;}
     if(param=='referral'){return referral;}

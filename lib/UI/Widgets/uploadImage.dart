@@ -55,18 +55,22 @@ class _UploadImageState extends State<UploadImage> {
                 setState(() {
                   dropdownValue  = newValue;
                 });
-                if(newValue=='galeri'){
-                  final imgGallery = await UserRepository().getImageFile(ImageSource.gallery);
-                  setState(() {
-                    _image = imgGallery;
-                  });
-                }
-                if(newValue=='kamera'){
-                  final imgGallery = await UserRepository().getImageFile(ImageSource.camera);
-                  setState(() {
-                    _image = imgGallery;
-                  });
-                }
+                var img = await UserRepository().getImageFiles(newValue);
+                setState(() {
+                  _image = img;
+                });
+                // if(newValue=='galeri'){
+                //   // final imgGallery = await UserRepository().getImageFile(ImageSource.gallery);
+                //   setState(() {
+                //     _image = img;
+                //   });
+                // }
+                // if(newValue=='kamera'){
+                //   final imgGallery = await UserRepository().getImageFile(ImageSource.camera);
+                //   setState(() {
+                //     _image = imgGallery;
+                //   });
+                // }
               },
               items: <String>['pilih','kamera', 'galeri'].map<DropdownMenuItem<String>>((String value) {
                 return new DropdownMenuItem<String>(

@@ -154,6 +154,7 @@ class _TestimoniProdukState extends State<TestimoniProduk> with SingleTickerProv
           child: CustomScrollView(
             slivers: <Widget>[
               SliverAppBar(
+                automaticallyImplyLeading: false,
                 floating: true,
                 pinned: false,
                 snap: false,

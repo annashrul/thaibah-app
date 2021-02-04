@@ -301,10 +301,10 @@ class _HistoryProductState extends State<HistoryProduct> {
                                       RichText(text: TextSpan(text:status, style: TextStyle(fontSize: 12.0,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold,color:statColor))),
                                     ],
                                   ),
-                                  SizedBox(
-                                    height: 20.0,
-                                    child: RichText(text: TextSpan(text:kdTrx, style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 12,fontWeight: FontWeight.bold))),
-                                  ),
+                                  // SizedBox(
+                                  //   height: 20.0,
+                                  //   child: RichText(text: TextSpan(text:kdTrx, style: TextStyle(color: Colors.green,fontFamily:ThaibahFont().fontQ,fontSize: 12,fontWeight: FontWeight.bold))),
+                                  // ),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
