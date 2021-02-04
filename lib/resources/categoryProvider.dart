@@ -13,7 +13,7 @@ class CategoryProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'category?type=$param',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print("###########################################################KATEGORI###############################################################");
     print(response.body);

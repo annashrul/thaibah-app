@@ -15,7 +15,7 @@ class ProfileProvider {
     try{
       final response = await client.get(
           ApiService().baseUrl+'member/myprofile',
-          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
       ).timeout(Duration(seconds: 60));
       if (response.statusCode == 200) {
         return compute(profileModelFromJson,response.body);

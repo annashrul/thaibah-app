@@ -17,7 +17,7 @@ class AddressProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.post(
         ApiService().baseUrl+'transaction/checkout/detail',
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
       body: {}
     );
     print(response.statusCode);
@@ -36,7 +36,7 @@ class AddressProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/addr/list',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print(response.statusCode);
     print(response.body);
@@ -53,7 +53,7 @@ class AddressProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'id',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (response.statusCode == 200) {
       return compute(getAddressModelFromJson,response.body);
@@ -66,7 +66,7 @@ class AddressProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"member/addr/delete",
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
       body: {
         "id":"$id",
       }).then((Response response) {
@@ -85,7 +85,7 @@ class AddressProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"member/addr/update",
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
       body: {
         "title":"$title",
         "name":"$name",
@@ -112,7 +112,7 @@ class AddressProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"member/addr/create",
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
       body: {
         "title":"$title",
         "name":"$name",

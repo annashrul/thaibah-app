@@ -21,7 +21,7 @@ class TestimoniProvider {
 		final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'testi?tipe=$param&page=$page&limit=$limit',
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print("===> TESTIMONI ${response.body} <===");
     if (response.statusCode == 200) {

@@ -82,7 +82,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
   Future loadArtikel() async {
     final res = await BaseProvider().getProvider("berita?page=1&limit=4&category=artikel", newsModelFromJson);
-    print("############################## RESPONSE RES ARTIKEL $res");
     if(res==ApiService().timeoutException||res==ApiService().socketException){
       setState(() {
         isLoading=false;
@@ -179,7 +178,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _levelPlatinum = (info.result.levelPlatinum);
           levelPlatinumRaw = (info.result.levelPlatinumRaw);
           _saldoPlatinum = (info.result.saldoPlatinum);
-          print("LEVEL PLATINUM ${info.result.levelPlatinum}");
         }
         else {
           setState(() {
@@ -214,32 +212,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void dispose(){
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    print("########################## DISPOSE #######################");
   }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // TODO: implement didChangeAppLifecycleState
     super.didChangeAppLifecycleState(state);
     if(state == AppLifecycleState.inactive){
-      print("########################### IN ACTIVE ######################");
     }
     if(state == AppLifecycleState.paused){
-      print("########################### PAUSED ######################");
     }
     if(state == AppLifecycleState.resumed){
-      print("########################### RESUME ######################");
-
     }
 //    List<AppLifecycleState> cik = [];
     if(state == AppLifecycleState.detached){
-      print("########################### detached ######################");
-
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return isToken?UserRepository().modeUpdate(context):LiquidPullToRefresh(
+    return isToken?UserRepository().modeUpdate(context):modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() : LiquidPullToRefresh(
       color: ThaibahColour.primary2,
       backgroundColor:Colors.white,
       key: _refresh,
@@ -253,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget buildContent(BuildContext context){
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    return modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() : Column(
+    return Column(
       children: <Widget>[
         Container(
           padding:EdgeInsets.only(top:20.0,left:0.0,right:0.0,bottom:10.0),
@@ -344,11 +335,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
                   saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
                   saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
-              ):cardSaldoNoPlatinum(
-                  context,_saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
-                  _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
-                  _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
-                  _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
+              ):CardSaldoNoPlatinum(
+                  saldoMain:_saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
+                  saldoBonus:_saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
+                  saldoVoucher:_saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
+                  saldoPlatinum:_saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
               ),
               Container(
                 padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
@@ -468,8 +459,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ],
         ):
         CardEmoney(imgUrl:'Icon_Utama_TopUp',title:'Deposit',xFunction: (){
-          // print(_saldoMain);
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDeposit(saldo: _saldoMain,name: _name))).whenComplete(() => loadData());
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDeposit(saldo: UserRepository().replaceRp(_saldoMain),name: _name))).whenComplete(() => loadData());
         }),
         isLoading?Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -486,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SkeletonFrame(width:50,height: 15)
           ],
         ):CardEmoney(imgUrl:'Icon_Utama_Transfer',title:'Transfer',xFunction: (){
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:_saldoMain,qr:_qr))).whenComplete(() => loadData());
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:UserRepository().replaceRp(_saldoMain),qr:_qr))).whenComplete(() => loadData());
         },),
         isLoading?Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -503,7 +493,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SkeletonFrame(width:50,height: 15)
           ],
         ):CardEmoney(imgUrl:'Icon_Utama_Penarikan',title:'Penarikan',xFunction: (){
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>Penarikan(saldoMain: _saldoMain))).whenComplete(() => loadData());
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>Penarikan(saldoMain: UserRepository().replaceRp(_saldoMain)))).whenComplete(() => loadData());
         },),
         isLoading?Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -629,127 +619,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-
-  /* STRUKTUR WIDGET CARD ISLAMIC */
-  Widget buildCardIcon(BuildContext context){
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    return Container(
-      decoration: BoxDecoration(
-        color:isLoading?Colors.transparent:Colors.green,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0),bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
-      ),
-      margin: const EdgeInsets.only(left:15.0,right: 15.0,top: 10.0,bottom: 0.0),
-      child: GridView.count(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        childAspectRatio: 1.1,
-        crossAxisCount: 4,
-        children: <Widget>[
-          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Baca_Alquran.svg',title: 'Al-Quran',xFunction: (){
-            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => QuranListUI()));
-          }),
-          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Waktu_Shalat.svg',title: 'Waktu Sholat',xFunction: (){
-            // Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PrayerList(lng: widget.lng,lat: widget.lat)));
-          }),
-          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Masjid_Terdekat.svg',title: 'Masjid',xFunction: (){
-            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));
-          }),
-          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Doa_Harian.svg',title: 'Doa Harian',xFunction: (){
-            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));
-          }),
-          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Hadits.svg',title: 'Hadits',xFunction: (){
-            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));
-          }),
-          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Asmaul_Husna.svg',title: 'Asmaul Husna',xFunction: (){
-            Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => AsmaUI()));
-          }),
-          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Kalender_Hijriah.svg',title: 'Kalender',xFunction: (){
-            // Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));
-          }),
-          WrapperIcon(imgUrl: ApiService().iconUrl+'Icon_Utama_Lainnya.svg',title: 'Lainnya',xFunction: (){
-            _lainnyaModalBottomSheet(context,'ppob');
-          }),
-
-        ],
-      ),
-    );
-  }
-  /* STRUKTUR WIDGET TITLE */
-  Widget titleQ(String title,Color warna,bool param,type){
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    return Padding(
-      padding: const EdgeInsets.only(left: 15.0,right: 15.0),
-      child: GestureDetector(
-        onTap: (){
-
-          if(type == 'news'){
-            Navigator.of(context, rootNavigator: true).push(
-              new CupertinoPageRoute(builder: (context) => NewsPage()),
-            );
-          }
-          if(type == 'level'){
-            // Navigator.of(context, rootNavigator: true).push(
-            //   new CupertinoPageRoute(builder: (context) => InfoRoyaltiLevel()),
-            // );
-          }
-          if(type == 'inspirasi'){
-            Navigator.of(context, rootNavigator: true).push(
-              new CupertinoPageRoute(builder: (context) => MyFeed()),
-            );
-          }
-        },
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : Text("$title",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(30),color: warna)),
-            isLoading?SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 16) : param == true ? type == 'level' ? Text("Info Jenjang Karir",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize:  ScreenUtilQ.getInstance().setSp(26),color: warna)) : Text("Lihat Semua",style: TextStyle(fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold, fontSize: ScreenUtilQ.getInstance().setSp(26),color: warna)) : Container(),
-          ],
-        ),
-      ),
-    );
-  }
-  /* STRUKTUR WIDGET FITUR LAINNYA */
-  Widget moreStructure(var iconUrl,var page,String title){
-
-    return Column(
-//      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-//      mainAxisSize:MainAxisSize.min ,
-      children: <Widget>[
-        InkWell(
-            onTap: () {
-//               if(page == 'pulsa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PulsaUI(nohp: _nohp))).whenComplete(loadData);}
-//               if(page == 'listrik'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ListrikUI(nohp: _nohp))).whenComplete(loadData);}
-//               if(page == 'telepon'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'telkom',title:'Telepon / Internet'))).whenComplete(loadData);}
-// //            if(page == 'zakat'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => ZakatUI())).whenComplete(loadData);}
-//               if(page == 'masjid'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => MasjidTerdekat(lat:latitude.toString(),lng:longitude.toString())));}
-//               if(page == 'hadis'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => SubDoaHadist(id:'0',title: 'hadis',param: 'hadis')));}
-//               if(page == 'doa'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => DoaHarian(param:'doa')));}
-//               if(page == 'kalender'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => Kalender()));}
-//               if(page == 'emoney'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPrabayar(nohp:_nohp,param: "E_MONEY",title:'E-Money'))).whenComplete(loadData);}
-//               if(page == 'bpjs'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'BPJS',title:'BPJS'))).whenComplete(loadData);}
-// //            if(page == 'asuransi'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'ASURANSI',title:'Asuransi'))).whenComplete(loadData);}
-// //            if(page == 'telpPasca'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'TELEPHONE_PASCABAYAR',title:'Telepon Pascabayar')));}
-//               if(page == 'pdam'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'PDAM',title:'PDAM'))).whenComplete(loadData);}
-//               if(page == 'multiFinance'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: 'MULTIFINANCE',title:'Multi Finance'))).whenComplete(loadData);}
-// //            if(page == 'wifiId'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPrabayar(nohp:_nohp,param: "VOUCHER_WIFIID",title:'Voucher Wifi ID'))).whenComplete(loadData);}
-//               if(page == 'tvKabel'){Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => PpobPascabayar(param: "PEMBAYARAN_TV",title:'Tv Kabel'))).whenComplete(loadData);}
-            },
-            child: SvgPicture.network(
-              ApiService().iconUrl+iconUrl,
-              placeholderBuilder: (context) => CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF30CC23))),
-              height: ScreenUtilQ.getInstance().setHeight(60),
-              width: ScreenUtilQ.getInstance().setWidth(60),
-            )
-        ),
-        SizedBox(height: 10),
-        Text(title.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,fontSize: 10,fontFamily:ThaibahFont().fontQ),)
-      ],
-    );
-  }
   /* STRUKTUR WIDGET LOADING */
   Widget _loading(){
     return Column(
@@ -1030,148 +899,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         )
       ],
-    );
-  }
-  void _lainnyaModalBottomSheet(context, String param){
-    showModalBottomSheet(
-        isScrollControlled: param == 'barcode' ? false : true,
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (BuildContext bc){
-          if(param == 'barcode'){
-            return Wrap(
-              children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width/1,
-                  child: Material(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
-                      elevation: 5.0,
-                      color:Colors.grey[50],
-                      child: Column(
-                          children: <Widget>[
-                            SizedBox(height: 20,),
-                            Text("Scan Kode Referral Anda ..", style: TextStyle(color: Colors.black,fontSize: 14,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-                            SizedBox(height: 10.0,),
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              child: Image.network(_qr,fit: BoxFit.contain,),
-                            )
-                          ]
-                      )
-                  ),
-                )
-              ],
-            );
-          }
-          else if(param == 'compass'){
-            return MainCompass();
-          }
-          else{
-            return Wrap(
-              children: <Widget>[
-                Container(
-                  color: Colors.white,
-                  child: Column(
-
-                      children: <Widget>[
-                        SizedBox(height: 20),
-                        Text("FITUR LAINNYA", style: TextStyle(color: Colors.black,fontSize: 16,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
-                        SizedBox(height: 15),
-                        Divider(),
-                        SizedBox(height: 30),
-                        GridView.count(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          crossAxisCount: 4,
-                          children: <Widget>[
-                            moreStructure("revisi/pulsa.svg", "pulsa", "Pulsa"),
-                            moreStructure("revisi/Icon_PPOB_LISTRIK.svg", "listrik", "Listrik"),
-                            moreStructure("revisi/Icon_PPOB_TELEPON_PASCA_BAYAR.svg", "telepon", "Telepon/Internet"),
-//                            moreStructure("revisi/Icon_PPOB_ZAKAT.svg", "zakat", "Zakat"),
-                            moreStructure("revisi/Icon_PPOB_E _ MONEY.svg", "emoney", "E-Money"),
-                            moreStructure("revisi/Icon_PPOB_BPJS.svg", "bpjs", "BPJS"),
-//                            moreStructure("revisi/Icon_PPOB_Asuransi.svg", "asuransi", "Asuransi"),
-                            moreStructure("revisi/Icon_PPOB_PDAM.svg", "pdam", "PDAM"),
-                            moreStructure("revisi/Icon_PPOB_MultiFinance.svg", "multiFinance", "Multi Finance"),
-//                            moreStructure("revisi/Icon_PPOB_VOUCHER_WIFI_ID.svg", "wifiId", "Wifi ID"),
-                            moreStructure("revisi/Icon_PPOB_TV_KABEL.svg", "tvKabel", "Tv Kabel"),
-                          ],
-                        )
-                      ]
-                  ),
-                )
-              ],
-            );
-          }
-        }
-    );
-  }
-  Widget cardSaldoNoPlatinum(BuildContext context,saldoMain,saldoBonus,saldoVoucher,saldoPlatinum) {
-    ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
-    ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    return Container(
-        padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(3.0),
-              child: Center(
-                child:  Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Utama', style: TextStyle(color:Colors.white,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                    SizedBox(height:2.0),
-                    RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoMain, style: TextStyle(color:Colors.yellowAccent,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Padding(
-              padding: EdgeInsets.all(3.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Bonus', style: TextStyle(color:Colors.white,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                  SizedBox(height:2.0),
-                  RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoBonus, style: TextStyle(color:Colors.yellowAccent,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-
-                ],
-              ),
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Padding(
-                padding: EdgeInsets.all(3.0),
-                child:Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Voucher', style: TextStyle(color:Colors.white,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                    SizedBox(height:2.0),
-                    RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoVoucher, style: TextStyle(color:Colors.yellowAccent,fontSize: 10.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                  ],
-                )
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height/30,width: 1.0,child: Container(color: Colors.white),),
-            Padding(
-                padding: EdgeInsets.only(left:3.0),
-                child:Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      RichText(textAlign: TextAlign.center,text: TextSpan(text:'Saldo Platinum', style: TextStyle(color:Colors.white,fontSize: 11.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                      SizedBox(height:2.0),
-                      RichText(textAlign: TextAlign.center,text: TextSpan(text:saldoPlatinum, style: TextStyle(color:Colors.yellowAccent,fontSize: 11.0,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold))),
-                    ],
-                  ),
-                )
-            )
-          ],
-        )
     );
   }
 }

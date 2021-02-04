@@ -14,7 +14,7 @@ class DetailCheckoutSuplemenProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.post(
         ApiService().baseUrl+'transaction/checkout/detail',
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {}
     );
     print(response.statusCode);

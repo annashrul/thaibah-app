@@ -15,7 +15,7 @@ class TransferProvider {
     final pin = await userRepository.getDataUser('pin');
     final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/transfer",
-        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "saldo":"$saldo",
           "referral_penerima":"$referral_penerima",
@@ -30,7 +30,7 @@ class TransferProvider {
   Future transferDetail(var nominal,var referral_penerima,var pesan) async {
     final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/transfer/detail",
-      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
       body: {
         "nominal":"$nominal",
         "referral_penerima":"$referral_penerima",
@@ -50,7 +50,7 @@ class TransferProvider {
     final pin = await userRepository.getDataUser('pin');
     final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/transfer/bonus",
-      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
       body: {
         "saldo":"$saldo",
         "pin":"$pin"

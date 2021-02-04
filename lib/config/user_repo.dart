@@ -30,6 +30,10 @@ class UserRepository {
     return sbtrLast3;
   }
 
+  replaceRp(txt){
+    return "${replaceNominal(txt)}".split(" ")[1];
+  }
+
   myModal(BuildContext context,Widget child){
     return showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
@@ -144,7 +148,7 @@ class UserRepository {
       ],
     ).show();
   }
-  loadingQ(BuildContext context){
+  loadingQ(BuildContext context,{String title='Tunggu sebentar ...'}){
     return showDialog(
       barrierDismissible: false,
       context: context,
@@ -154,7 +158,7 @@ class UserRepository {
             children: [
               CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThaibahColour.primary1)),
               SizedBox(width: 10),
-              Container(margin: EdgeInsets.only(left: 10),child:textQ("Tunggu sebentar ...",12,Colors.black,FontWeight.bold,TextAlign.center)),
+              Container(margin: EdgeInsets.only(left: 10),child:textQ(title,12,Colors.black,FontWeight.bold,TextAlign.center)),
             ],
           ),
         );

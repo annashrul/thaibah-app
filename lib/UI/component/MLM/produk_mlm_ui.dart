@@ -51,8 +51,10 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
   bool moreThenOne = false;
   int counterHit =0;
   Future addCart(var id, var harga, var qty, var weight) async{
-    setState(() {});
+    UserRepository().loadingQ(context);
+
     var res = await ProductMlmSuplemenProvider().addProduct(id,harga,qty,weight);
+    Navigator.pop(context);
     if(res.status == 'success'){
       countCart();
       UserRepository().notifNoAction(scaffoldKey, context,"Produk Berhasil Dimasukan Ke Keranjang","success");
@@ -63,6 +65,8 @@ class _ProdukMlmUIState extends State<ProdukMlmUI> with SingleTickerProviderStat
 
 //      return showInSnackBar(res.msg);
     }
+    setState(() {});
+
   }
   Future<void> countCart() async{
     var res = await ProductMlmSuplemenProvider().fetchListCart();

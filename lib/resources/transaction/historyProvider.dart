@@ -19,7 +19,7 @@ class HistoryProvider {
     print(url);
     final response = await client.get(
       ApiService().baseUrl+url,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print(response.statusCode);
     if (response.statusCode == 200) {

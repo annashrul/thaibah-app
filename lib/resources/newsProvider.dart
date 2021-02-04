@@ -19,7 +19,7 @@ class NewsProvider {
     }
     final response = await client.get(
       url,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (response.statusCode == 200) {
       return compute(newsModelFromJson,response.body);
@@ -32,7 +32,7 @@ class NewsProvider {
 		final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'berita/get/'+id,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (response.statusCode == 200) {
       return compute(newsDetailModelFromJson,response.body);
@@ -46,7 +46,7 @@ class NewsProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'berita?category='+title,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (response.statusCode == 200) {
       return compute(newsModelFromJson,response.body);
@@ -59,7 +59,7 @@ class NewsProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'berita?page=$page&limit=$limit&category='+title,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print("###########################################################DETAIL NESW PER CATEGORY###############################################################");
     print("########################'berita?berita?page=$page&limit=$limit&category=$title###########################");

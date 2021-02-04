@@ -43,6 +43,7 @@ class _LoginPhoneState extends State<LoginPhone> {
   List<UserLocalModel> contactList;
   bool typeOtp = true;
   TypeOtpModel typeOtpModel;
+  bool isLoading=false;
   Future<void> loadData() async {
     try{
       var jsonString = await http.get(
@@ -53,15 +54,25 @@ class _LoginPhoneState extends State<LoginPhone> {
         typeOtpModel = new TypeOtpModel.fromJson(jsonResponse);
         setState(() {
           typeOtp=typeOtpModel.result.typeOtp;
+          isLoading=false;
         });
         print(typeOtp);
       } else {
+        setState(() {
+          isLoading=false;
+        });
         throw Exception('Failed to load info');
       }
     } on TimeoutException catch(e){
       print('timeout: $e');
+      setState(() {
+        isLoading=false;
+      });
     } on Error catch (e) {
       print('Error: $e');
+      setState(() {
+        isLoading=false;
+      });
     }
   }
   UserLocalModel userLocalModel;
@@ -227,7 +238,7 @@ class _LoginPhoneState extends State<LoginPhone> {
     });
     super.initState();
     loadData();
-
+    isLoading=true;
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
     var settings = {
       OSiOSSettings.autoPrompt: false,
@@ -248,7 +259,7 @@ class _LoginPhoneState extends State<LoginPhone> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      body:LayoutBuilder(
+      body:isLoading?UserRepository().loadingWidget():LayoutBuilder(
           builder: (context,constraints){
             return Stack(
               fit: StackFit.expand,
@@ -359,7 +370,7 @@ class _LoginPhoneState extends State<LoginPhone> {
                                   ),
                                   SizedBox(height:typeOtp!=false?10.0:0.0),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       typeOtp!=false?UserRepository().textQ("Kirim otp via ${_switchValue?'whatsapp':'sms'}", 12, Colors.black,FontWeight.bold, TextAlign.left):Text(''),

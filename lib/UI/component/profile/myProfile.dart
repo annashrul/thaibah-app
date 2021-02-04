@@ -171,7 +171,9 @@ class _MyProfileState extends State<MyProfile> {
                 })
               ],
             ),
-            onRefresh: refresh
+            onRefresh: refresh,
+          showChildOpacityTransition: false,
+
         ),
       ),
 

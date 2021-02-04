@@ -52,6 +52,7 @@ class _RegistState extends State<Regist> {
   String codeCountry = '',no='',_valType='whatsapp';
   bool _secureText = true,_secureText1 = true,typeOtp = true;
   TypeOtpModel typeOtpModel;
+  bool isLoading=false;
   showHide() {
     setState(() {
       _secureText = !_secureText;
@@ -237,16 +238,26 @@ class _RegistState extends State<Regist> {
         final jsonResponse = json.decode(jsonString.body);
         typeOtpModel = new TypeOtpModel.fromJson(jsonResponse);
         setState(() {
-          Navigator.pop(context);
+          // Navigator.pop(context);
+          isLoading=false;
           typeOtp=typeOtpModel.result.typeOtp;
         });
       } else {
+        setState(() {
+          isLoading=false;
+        });
         throw Exception('Failed to load info');
       }
     } on TimeoutException catch(e){
       print('timeout: $e');
+      setState(() {
+        isLoading=false;
+      });
     } on Error catch (e) {
       print('Error: $e');
+      setState(() {
+        isLoading=false;
+      });
     }
   }
 
@@ -257,6 +268,8 @@ class _RegistState extends State<Regist> {
     if(widget.kdReferral!=''){
       reffController.text=widget.kdReferral;
     }
+    isLoading=true;
+    loadData();
   }
   @override
   Widget build(BuildContext context) {
@@ -267,7 +280,7 @@ class _RegistState extends State<Regist> {
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
       appBar: UserRepository().appBarWithButton(context, "Form Pendaftaran",(){Navigator.pop(context);},<Widget>[]),
-      body: ListView(
+      body: isLoading?UserRepository().loadingWidget():ListView(
         children: <Widget>[
           Container(
             padding:EdgeInsets.only(left:15.0,right:15.0,bottom: 10.0),

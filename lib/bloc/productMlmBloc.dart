@@ -68,6 +68,7 @@ class ListCartBloc extends BaseBloc {
       ListCartModel listCart =  await repository.fetchListCart();
       _serviceController.sink.add(listCart);
     }
+
   }
   void dispose() {
     _serviceController.close();

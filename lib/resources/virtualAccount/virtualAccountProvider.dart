@@ -15,7 +15,7 @@ class VirtualAccountProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'transaction/virtual/available',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (response.statusCode == 200) {
       return compute(getAvailableVirtualModelFromJson,response.body);
@@ -28,7 +28,7 @@ class VirtualAccountProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"transaction/virtual/create",
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
       body: {
         "amount":"$amount",
         "name":"$name",

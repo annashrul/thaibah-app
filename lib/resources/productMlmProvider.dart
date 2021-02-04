@@ -18,7 +18,7 @@ class ProductMlmProvider {
 		final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=kavling',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (response.statusCode == 200) {
       return compute(productMlmModelFromJson, response.body);
@@ -31,7 +31,7 @@ class ProductMlmProvider {
 		final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm/get/'+id,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if(response.statusCode == 200){
       return compute(productMlmDetailModelFromJson, response.body);
@@ -43,7 +43,7 @@ class ProductMlmProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm/get/'+id,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if(response.statusCode == 200){
       return compute(productMlmDetailModelFromJson, response.body);
@@ -56,7 +56,7 @@ class ProductMlmProvider {
     final pin = await userRepository.getDataUser('pin');
     final token = await userRepository.getDataUser('token');
     return  await client.post(ApiService().baseUrl+"transaction/checkout",
-        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "id_product":"$id",
           "price":"$price",
@@ -74,7 +74,7 @@ class ProductMlmProvider {
     final pin = await userRepository.getDataUser('pin');
     final token = await userRepository.getDataUser('token');
     final response = await client.post(ApiService().baseUrl+"transaction/checkoutcart",
-        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
         body: {"total":"$total","jasper":"$jasper","ongkir":"$ongkir","alamat":"$alamat","pin":"$pin","type_alamat":"$type_alamat","voucher":"$voucher", "pembayaran":"$pembayaran",});
     if(response.statusCode == 200){
       return  CheckoutToDetailModel.fromJson(json.decode(response.body));

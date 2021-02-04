@@ -11,7 +11,7 @@ class BaseProvider{
   Future getProvider(url,param)async{
     try{
       final token= await userRepository.getDataUser('token');
-      Map<String, String> head={'Authorization':token,'username': ApiService().username, 'password': ApiService().password,"Content-Type": "application/json"};
+      Map<String, String> head={'Authorization':token,'username': ApiService().username, 'password': ApiService().password};
       final response = await client.get("${ApiService().baseUrl}$url", headers:head).timeout(Duration(seconds: ApiService().timerActivity));
       if (response.statusCode == 200) {
         return param(response.body);

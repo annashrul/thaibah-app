@@ -19,7 +19,7 @@ class MemberProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/get/$id',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (response.statusCode == 200) {
       return compute(memberModelFromJson,response.body);
@@ -30,7 +30,7 @@ class MemberProvider {
 
   Future fetchCreateMember(var pin, var name,var ismobile,var no_hp, var referral/*, var ktp*/) async {
     return await client.post(ApiService().baseUrl+"auth/register",
-        headers: {'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'username':ApiService().username,'password':ApiService().password},
 
         body: {
         "pin":"$pin",
@@ -60,7 +60,7 @@ class MemberProvider {
       cek = referral;
     }
     return await client.post(ApiService().baseUrl+"auth/resendotp",
-        headers: {'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'username':ApiService().username,'password':ApiService().password},
         body: {
           "nohp":"$nohp",
           "type":"$type",
@@ -84,7 +84,7 @@ class MemberProvider {
     final nama = await userRepository.getDataUser('name');
     final nohp = await userRepository.getDataUser('phone');
     return await client.post(ApiService().baseUrl+"auth/resendotp",
-        headers: {'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'username':ApiService().username,'password':ApiService().password},
         body: {
           "nohp":"$nohp",
           "type":"resend",
@@ -106,7 +106,7 @@ class MemberProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"member/update",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "name":"$name",
           "no_hp":"$no_hp",
@@ -123,7 +123,7 @@ class MemberProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"member/update",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "pin":"$pin",
         }).then((Response response) {
@@ -137,7 +137,7 @@ class MemberProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/contact',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (response.statusCode == 200) {
       return compute(contactModelFromJson,response.body);
@@ -151,7 +151,7 @@ class MemberProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"auth/logout",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {}).then((Response response) {
       return General.fromJson(json.decode(response.body));
     });

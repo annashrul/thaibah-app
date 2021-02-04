@@ -19,7 +19,7 @@ class HistoryPembelianProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'pembelian/tanah?page=$page&limit=$limit&datefrom=$from&dateto=$to',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print(response.body);
     if (response.statusCode == 200) {
@@ -33,7 +33,7 @@ class HistoryPembelianProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'pembelian/suplemen?page=$page&limit=$limit&datefrom=$from&dateto=$to',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print("####################################### HISTORY PEMBELIAN SUPLEMEN #######################################");
     print(response.body);
@@ -50,7 +50,7 @@ class HistoryPembelianProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'pembelian/ppob?page=$page&limit=$limit&datefrom=$from&dateto=$to',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print("####################################### HISTORY PEMBELIAN PPOB #######################################");
     print(response.body);
@@ -65,7 +65,7 @@ class HistoryPembelianProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'ppob/cektrx/$kdTrx',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     if (response.statusCode == 200) {
       return compute(detailHistoryPpobModelFromJson,response.body);
@@ -79,7 +79,7 @@ class HistoryPembelianProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'pembelian/suplemen/get/$id',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
     );
     print("####################################### DETAIL HISTORY PEMBELIAN SUPLEMEN #######################################");
     print(response.body);
@@ -94,7 +94,7 @@ class HistoryPembelianProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"ongkir/cekResi",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "resi":"$resi",
           "kurir":"$kurir",
@@ -114,7 +114,7 @@ class HistoryPembelianProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"pembelian/konfirmasi",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
         body: {
           "id":"$id",
         }).then((Response response) {

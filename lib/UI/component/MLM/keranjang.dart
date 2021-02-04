@@ -303,11 +303,12 @@ class SingleCartProductState extends State<SingleCartProduct> {
   }
 
   Future delete(id) async{
+    Navigator.of(context).pop();
+    UserRepository().loadingQ(context);
     var res = await ProductMlmSuplemenProvider().deleteProduct(id);
     if(res.status == 'success'){
-
       listCartBloc.fetchListCart();
-
+      Navigator.of(context).pop();
     }else{
       print("#################### GAGAL MENGHAPUS DATA PRODUCT ###########################");
     }
@@ -401,7 +402,6 @@ class SingleCartProductState extends State<SingleCartProduct> {
 //                                  _isLoading = true;
 //                                });
 //                                delete(id);
-                                  Navigator.of(context).pop();
                                 },
                               ),
                             ],
