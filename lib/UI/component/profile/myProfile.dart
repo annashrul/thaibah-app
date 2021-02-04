@@ -137,7 +137,7 @@ class _MyProfileState extends State<MyProfile> {
                   levelRoyalti: saldoBonus,
                   levelPlatinum: levelPlatinum,
                 ), (){}),
-                customlistDetails(context,'Donasi','halaman riwayat donasi anda',HistoryDonasi(),(){}),
+                // customlistDetails(context,'Donasi','halaman riwayat donasi anda',HistoryDonasi(),(){}),
                 customlistDetails(context,'Sosial Media','posting kegiatan anda',MyFeed(),(){}),
                 customlistDetails(context,'Kebijakan & Privasi','kebijakan & privasi aplikasi thaibah',PrivacyPolicy(privasi: privacyPolicy),(){}),
                 customlistDetails(context,'Pengaturan','atur identitas dan keamanan akun anda',IndexMember(id: id),(){}),

@@ -57,7 +57,6 @@ class _ListSosmedState extends State<ListSosmed> with AutomaticKeepAliveClientMi
     );
   }
   Future sendLikeOrUnLike(id,isLike,BuildContext context) async{
-
     var res = await SosmedProvider().sendLikeOrUnLike(id);
     if(res.toString() == 'timeout' || res.toString() == 'error'){
       Navigator.of(context).pop(false);
