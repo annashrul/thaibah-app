@@ -13,7 +13,7 @@ class DownlineProvider {
     final referral = await userRepository.getDataUser('referral');
     final response = await client.get(
       ApiService().baseUrl+'member/jaringan/$referral?ismobile=ya',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("##################################################### INDEX DOWNLINE ###############################################");
     print(response.body);
@@ -28,7 +28,7 @@ class DownlineProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/jaringan/$kdReff?ismobile=ya',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("##################################################### DETAIL DOWNLINE ###############################################");
     print(response.body);

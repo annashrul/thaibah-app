@@ -12,7 +12,7 @@ class ListAvailableBankProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'transaction/deposit/availablebank',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print(response.body);
     if (response.statusCode == 200) {

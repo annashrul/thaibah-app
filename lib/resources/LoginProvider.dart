@@ -46,7 +46,7 @@ class LoginProvider {
 
   Future fetchLoginNoHp(var nohp,var deviceid,var typeotp,var brand) async {
     return await client.post(ApiService().baseUrl+"auth/login",
-      headers: {'username':ApiService().username,'password':ApiService().password},
+      headers: {'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
       body: {
         "nohp":"$nohp",
         "deviceid":"$deviceid",

@@ -18,7 +18,7 @@ class ProductMlmSuplemenProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'product/mlm?page=$page&limit=$limit&category=suplemen',
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     ).timeout(Duration(microseconds: ApiService().timerActivity));
 		try{
       print("########################### PRODUK SUPLEMEN ############################");
@@ -40,7 +40,7 @@ class ProductMlmSuplemenProvider {
 		final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm/get/'+id,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     if(response.statusCode == 200){
       return compute(productMlmDetailModelFromJson, response.body);
@@ -55,7 +55,7 @@ class ProductMlmSuplemenProvider {
 		final pin = await userRepository.getDataUser('pin');
 		final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"transaction/checkout/tanah",
-      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
+      headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
       body: {
         "id_product":"$id",
         "price":"$price",
@@ -79,7 +79,7 @@ class ProductMlmSuplemenProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'product/mlm/listcart',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print(response.body);
     if (response.statusCode == 200) {
@@ -93,7 +93,7 @@ class ProductMlmSuplemenProvider {
   Future<General> addProduct(var id,var price,var qty,var weight) async{
     final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"product/mlm/addtocart",
-        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {
           "id_product":"$id",
           "price":"$price",
@@ -108,7 +108,7 @@ class ProductMlmSuplemenProvider {
   Future<General> updateProduct(var id,var qty) async{
     final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"product/mlm/updateqty",
-        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {
           "id":"$id",
           "qty":"$qty",
@@ -120,7 +120,7 @@ class ProductMlmSuplemenProvider {
   Future<General> deleteProduct(var id) async{
     final token = await userRepository.getDataUser('token');
     return await client.post(ApiService().baseUrl+"product/mlm/deletecart",
-        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {
           "id":"$id",
         }).then((Response response) {

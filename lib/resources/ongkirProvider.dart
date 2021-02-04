@@ -15,7 +15,7 @@ class OngkirProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'ongkir/provinsi',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print(response.body);
     if (response.statusCode == 200) {
@@ -29,7 +29,7 @@ class OngkirProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'ongkir/kota/'+idProv,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     // print(response.body);
     if (response.statusCode == 200) {
@@ -45,7 +45,7 @@ class OngkirProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'ongkir/kecamatan/'+idKota,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     // print(response.body);
     if (response.statusCode == 200) {
@@ -62,7 +62,7 @@ class OngkirProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"ongkir/cekHarga",
-        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization': token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {
           'dari':dari,
           'ke':ke,

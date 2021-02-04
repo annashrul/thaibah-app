@@ -12,7 +12,7 @@ class HistoryDepositProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'transaction/deposit/list?page=$page&limit=$limit&datefrom=$from&dateto=$to',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     if (response.statusCode == 200) {
       return compute(historyDepositModelFromJson,response.body);

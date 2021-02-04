@@ -21,7 +21,7 @@ class IslamicProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'islamic/listsurat',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     if (response.statusCode == 200) {
       return compute(suratModelFromJson,response.body);
@@ -42,7 +42,7 @@ class IslamicProvider {
     print(url);
     final response = await client.get(
       ApiService().baseUrl+url,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     if (response.statusCode == 200) {
       return compute(ayatModelFromJson,response.body);
@@ -55,7 +55,7 @@ class IslamicProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"islamic/myquran/$param/set",
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
       body: {
         "id_ayat":"$id",
       }).then((Response response) {
@@ -74,7 +74,7 @@ class IslamicProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
       ApiService().baseUrl+"islamic/myquran/note/set",
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
       body: {
         "id_ayat" : "$id",
         "note"    : "$note",
@@ -94,7 +94,7 @@ class IslamicProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'islamic/myquran/$param',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("###################################### $param ################################");
     print('islamic/myquran/$param');
@@ -110,7 +110,7 @@ class IslamicProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'category?type=$type',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     if (response.statusCode == 200) {
       return compute(categoryDoaModelFromJson,response.body);
@@ -123,7 +123,7 @@ class IslamicProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'category/sub?type=$type&id=$id',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     if (response.statusCode == 200) {
       return compute(subCategoryDoaModelFromJson,response.body);
@@ -136,7 +136,7 @@ class IslamicProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'islamic/hijriah?bln=$bln&thn=$thn',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("########################### KALENDER #############################");
     print('islamic/hijriah?bln=$bln&thn=$thn');
@@ -152,7 +152,7 @@ class IslamicProvider {
     var _url = q!='' ? 'islamic/$type?q=$q' : 'islamic/$type?id=$id';
     final response = await client.get(
       ApiService().baseUrl+_url,
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("################################## $type ####################################");
     print(_url);

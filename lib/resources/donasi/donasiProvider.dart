@@ -18,7 +18,7 @@ class DonasiProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'donasi?page=1$where',
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("DONASI ${response.body}");
     if (response.statusCode == 200) {

@@ -25,7 +25,7 @@ class SosmedProvider {
     }
     final response = await client.get(
         ApiService().baseUrl+url,
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("###########################################################Sosial Media ${ApiService().baseUrl+url}###############################################################");
     print('socmed?page=$page&limit=$limit');
@@ -42,7 +42,7 @@ class SosmedProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'notif?page=1$where',
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("###########################################################Inbox Sosial Media###############################################################");
     print(response.body);
@@ -57,7 +57,7 @@ class SosmedProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'socmed/like/get/$id',
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("###########################################################like Sosial Media###############################################################");
     print(response.body);
@@ -72,7 +72,7 @@ class SosmedProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
         ApiService().baseUrl+'socmed/get/$id',
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("###########################################################Detail Sosial Media###############################################################");
 
@@ -93,7 +93,7 @@ class SosmedProvider {
     try{
       final response = await client.post(
           ApiService().baseUrl+"socmed/comment",
-          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
           body: {
             "caption":"$caption",
             "id_content":"$id",
@@ -120,7 +120,7 @@ class SosmedProvider {
     try{
       final response =  await client.post(
           ApiService().baseUrl+"socmed/like",
-          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+          headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
           body: {"id_content":"$id","deviceid":"$deviceId"}
       ).timeout(Duration(seconds: ApiService().timerActivity));
       if(response.statusCode == 200){
@@ -145,7 +145,7 @@ class SosmedProvider {
     final deviceId = await userRepository.getDeviceId();
     return await client.post(
         ApiService().baseUrl+"socmed/create",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {
           "caption":"$caption",
           "picture":"$picture",
@@ -166,7 +166,7 @@ class SosmedProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"socmed/delete",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {
           "id":"$id",
         }).then((Response response) {
@@ -186,7 +186,7 @@ class SosmedProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"notif/delete",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {
           "id":"$id",
         }).then((Response response) {
@@ -206,7 +206,7 @@ class SosmedProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"notif/read_notif",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {}).then((Response response) {
       var results;
       print(response.statusCode);

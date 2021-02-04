@@ -15,7 +15,7 @@ class MyBankProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'member/bank/list',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     if (response.statusCode == 200) {
       return compute(myBankModelFromJson,response.body);
@@ -29,7 +29,7 @@ class MyBankProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"member/bank/create",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {
           "bankname":"$bankname",
           "bankcode":"$bankcode",
@@ -51,7 +51,7 @@ class MyBankProvider {
     final token = await userRepository.getDataUser('token');
     return await client.post(
         ApiService().baseUrl+"member/bank/delete",
-        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password},
+        headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"},
         body: {
           "id":"$id",
         }).then((Response response) {

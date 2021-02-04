@@ -13,7 +13,7 @@ class InspirationProvider {
     final token = await userRepository.getDataUser('token');
     final response = await client.get(
       ApiService().baseUrl+'info/inspiration?page=$page&limit=$limit',
-      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password}
+      headers: {'Authorization':token,'username':ApiService().username,'password':ApiService().password,"Content-Type": "application/json"}
     );
     print("######################################## INSPIRASI #################################");
     print('info/inspiration?page=$page&limit=$limit');
