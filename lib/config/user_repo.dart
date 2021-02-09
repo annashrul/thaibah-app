@@ -472,7 +472,7 @@ class UserRepository {
     );
     return cek;
   }
-  textQ(String txt,double size,Color color,FontWeight fontWeight,TextAlign textAlign,{TextDecoration textDecoration,int maxLines=null}){
+  textQ(String txt,double size,Color color,FontWeight fontWeight,TextAlign textAlign,{double letterSpacing=0.0,TextDecoration textDecoration,int maxLines=null}){
     return RichText(
       overflow: TextOverflow.ellipsis,
       textAlign: textAlign,
@@ -481,6 +481,7 @@ class UserRepository {
       text: TextSpan(
         text:txt,
         style: TextStyle(
+          letterSpacing: letterSpacing,
           decoration: textDecoration,
           fontSize:size,color: color,fontFamily:ThaibahFont().fontQ,fontWeight:fontWeight,
         ),

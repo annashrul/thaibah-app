@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thaibah/Constants/constants.dart';
@@ -172,9 +173,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _picture = (info.result.picture);
           _qr = (info.result.qr);
           _saldo = (info.result.saldo);
-          _saldoMain = (info.result.saldoMain);
-          _saldoBonus = (info.result.saldoBonus);
-          _saldoVoucher = (info.result.saldoVoucher);
+          _saldoMain = (formatter.format(int.parse(UserRepository().replaceRp(info.result.saldoMain))));
+          _saldoBonus = (formatter.format(int.parse(UserRepository().replaceRp(info.result.saldoBonus))));
+          _saldoVoucher = (formatter.format(int.parse(UserRepository().replaceRp(info.result.saldoVoucher))));
           _levelPlatinum = (info.result.levelPlatinum);
           levelPlatinumRaw = (info.result.levelPlatinumRaw);
           _saldoPlatinum = (info.result.saldoPlatinum);
@@ -213,6 +214,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
   }
+  final formatter = new NumberFormat("#,###");
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // TODO: implement didChangeAppLifecycleState
@@ -231,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return isToken?UserRepository().modeUpdate(context):modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() : LiquidPullToRefresh(
-      color: ThaibahColour.primary2,
+      color: ThaibahColour.primary1,
       backgroundColor:Colors.white,
       key: _refresh,
       onRefresh: refresh,
@@ -257,6 +260,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
                 // contentPadding: EdgeInsets.only(left:0.0),
@@ -324,29 +329,72 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   },
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-                child: SizedBox(
-                  child: Container(height: 1.0,color: Colors.white),
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left:10.0),
+                    child: UserRepository().textQ("SALDO UTAMA",10,Colors.white,FontWeight.normal,TextAlign.left),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left:10.0),
+                    child: Row(
+                      children: [
+                        UserRepository().textQ("Rp",10,Colors.white,FontWeight.normal,TextAlign.left,letterSpacing: 2.0),
+                        UserRepository().textQ("$_saldoMain",16,Colors.white,FontWeight.bold,TextAlign.left,letterSpacing: 2.0)
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              levelPlatinumRaw==0?CardSaldo(
-                  saldoMain: _saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
-                  saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
-                  saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
-                  saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
-              ):CardSaldoNoPlatinum(
-                  saldoMain:_saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
-                  saldoBonus:_saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
-                  saldoVoucher:_saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
-                  saldoPlatinum:_saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
+              SizedBox(height:5.0),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left:10.0),
+                    child: Row(
+                      children: [
+                        UserRepository().textQ("SALDO BONUS",10,Colors.white,FontWeight.normal,TextAlign.left),
+                        SizedBox(width:5.0),
+                        UserRepository().textQ("Rp $_saldoBonus .-",10,Colors.yellow,FontWeight.bold,TextAlign.left),
+                      ],
+                    ),
+                  ),
+
+                ],
               ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                child: SizedBox(
-                  child: Container(height: 1.0,color: Colors.white),
-                ),
+              SizedBox(height:5.0),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left:10.0),
+                    child: Row(
+                      children: [
+                        UserRepository().textQ("SALDO VOUCHER",10,Colors.white,FontWeight.normal,TextAlign.left),
+                        SizedBox(width:5.0),
+                        UserRepository().textQ("Rp $_saldoVoucher .-",10,Colors.white,FontWeight.normal,TextAlign.left),
+                      ],
+                    ),
+                  ),
+                ],
               ),
+              SizedBox(height:10.0),
+              // levelPlatinumRaw==0?CardSaldo(
+              //     saldoMain: _saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
+              //     saldoBonus: _saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
+              //     saldoVoucher: _saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
+              //     saldoPlatinum: _saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
+              // ):CardSaldoNoPlatinum(
+              //     saldoMain:_saldoMain=='0.00'?_saldoMain:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoMain))}",
+              //     saldoBonus:_saldoBonus=='0.00'?_saldoBonus:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoBonus))}",
+              //     saldoVoucher:_saldoVoucher=='0.00'?_saldoVoucher:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoVoucher))}",
+              //     saldoPlatinum:_saldoPlatinum=='0.00'?_saldoPlatinum:"${MoneyFormat().moneyToLocal(MoneyFormat().moneyToInt(_saldoPlatinum))}"
+              // ),
+
 
               Padding(
                 padding: EdgeInsets.only(left:10,right:10,top:0,bottom:10),
@@ -459,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ],
         ):
         CardEmoney(imgUrl:'Icon_Utama_TopUp',title:'Deposit',xFunction: (){
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDeposit(saldo: UserRepository().replaceRp(_saldoMain),name: _name))).whenComplete(() => loadData());
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDeposit(saldo: UserRepository().replaceNominal(_saldoMain),name: _name))).whenComplete(() => loadData());
         }),
         isLoading?Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -476,7 +524,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SkeletonFrame(width:50,height: 15)
           ],
         ):CardEmoney(imgUrl:'Icon_Utama_Transfer',title:'Transfer',xFunction: (){
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:UserRepository().replaceRp(_saldoMain),qr:_qr))).whenComplete(() => loadData());
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:UserRepository().replaceNominal(_saldoMain),qr:_qr))).whenComplete(() => loadData());
         },),
         isLoading?Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -493,7 +541,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SkeletonFrame(width:50,height: 15)
           ],
         ):CardEmoney(imgUrl:'Icon_Utama_Penarikan',title:'Penarikan',xFunction: (){
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>Penarikan(saldoMain: UserRepository().replaceRp(_saldoMain)))).whenComplete(() => loadData());
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>Penarikan(saldoMain: UserRepository().replaceNominal(_saldoMain)))).whenComplete(() => loadData());
         },),
         isLoading?Column(
           mainAxisAlignment: MainAxisAlignment.center,
