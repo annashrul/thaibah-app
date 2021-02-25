@@ -140,7 +140,7 @@ class _WidgetArtikelState extends State<WidgetArtikel> {
     }
     return InkWell(
       child: Container(
-        padding: EdgeInsets.only(left:10.0,right:10.0),
+        padding: EdgeInsets.only(left:10.0,right:10.0,bottom:10),
         child: new Stack(
           alignment: Alignment.bottomCenter,
           children: <Widget>[

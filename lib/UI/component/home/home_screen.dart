@@ -69,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int levelPlatinumRaw=0,statusMember,counterRTO=0;
   bool retry = false,modeUpdate = false,modeLogout = false,isLoading = false,versi = false,loadingVersion=false,loadingStatusMember=false;
   bool isTimeout=false,isToken=false;
+  bool isLoadingNews=false;
   NewsModel newsModel;
 
   Future<void> refresh() async{
@@ -82,17 +83,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   }
   Future loadArtikel() async {
-    final res = await BaseProvider().getProvider("berita?page=1&limit=4&category=artikel", newsModelFromJson);
+    final res = await BaseProvider().getProvider("berita?page=1&limit=2&category=artikel", newsModelFromJson);
     if(res==ApiService().timeoutException||res==ApiService().socketException){
       setState(() {
-        isLoading=false;
+        isLoadingNews=false;
         isTimeout=true;
         isToken=false;
       });
     }
     else if(res==ApiService().tokenExpiredError){
       setState(() {
-        isLoading=false;
+        isLoadingNews=false;
         isTimeout=true;
         isToken=true;
       });
@@ -111,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if(res is NewsModel){
         NewsModel result=res;
         setState(() {
-          isLoading=false;
+          isLoadingNews=false;
           isTimeout=false;
           isToken=false;
           newsModel = NewsModel.fromJson(result.toJson());
@@ -128,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     final token = await userRepository.getDataUser('token');
     final id = await userRepository.getDataUser('idServer');
+    print("ID MEMBER $id");
     final levelStatus = await userRepository.getDataUser('statusLevel');
     final color1 = await userRepository.getDataUser('warna1');
     final color2 = await userRepository.getDataUser('warna2');
@@ -173,9 +175,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _picture = (info.result.picture);
           _qr = (info.result.qr);
           _saldo = (info.result.saldo);
-          _saldoMain = (formatter.format(int.parse(UserRepository().replaceRp(info.result.saldoMain))));
-          _saldoBonus = (formatter.format(int.parse(UserRepository().replaceRp(info.result.saldoBonus))));
-          _saldoVoucher = (formatter.format(int.parse(UserRepository().replaceRp(info.result.saldoVoucher))));
+          _saldoMain = info.result.saldoRaw;
+          _saldoBonus = info.result.saldoBonusRaw;
+          _saldoVoucher = info.result.saldoVoucherRaw;
+          // _saldoVoucherFormat = (formatter.format(int.parse(UserRepository().replaceRp(info.result.saldoVoucher))));
           _levelPlatinum = (info.result.levelPlatinum);
           levelPlatinumRaw = (info.result.levelPlatinumRaw);
           _saldoPlatinum = (info.result.saldoPlatinum);
@@ -200,6 +203,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    isLoadingNews = true;
     isLoading = true;
     loadData();
     loadArtikel();
@@ -233,13 +237,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return isToken?UserRepository().modeUpdate(context):modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading ? _loading() : LiquidPullToRefresh(
-      color: ThaibahColour.primary1,
-      backgroundColor:Colors.white,
-      key: _refresh,
-      onRefresh: refresh,
-      showChildOpacityTransition: false,
-      child: buildContent(context),
+    return isToken?UserRepository().modeUpdate(context):modeUpdate == true ? UserRepository().modeUpdate(context) : isLoading||isLoadingNews ? _loading() : Scaffold(
+      body: LiquidPullToRefresh(
+        color: ThaibahColour.primary1,
+        backgroundColor:Colors.white,
+        key: _refresh,
+        onRefresh: refresh,
+        showChildOpacityTransition: false,
+        child: buildContent(context),
+      ),
+      key: scaffoldKey,
     );
   }
 
@@ -264,74 +271,110 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
-                // contentPadding: EdgeInsets.only(left:0.0),
+                contentPadding: EdgeInsets.only(left:10.0,right:10.0,top:10),
                 title:GestureDetector(
                   child:  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      UserRepository().textQ(_name,14,Colors.white.withOpacity(0.7),FontWeight.bold,TextAlign.left),
-                      SizedBox(width: 5),
-                      levelPlatinumRaw == 0 ?InkWell(
-                        onTap: (){
-                          Navigator.of(context).push(new CupertinoPageRoute(builder: (_) => UpgradePlatinum()));
-                        },
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              UserRepository().textQ(_name,14,Colors.white.withOpacity(0.7),FontWeight.bold,TextAlign.left),
+                              SizedBox(width: 5),
+                              levelPlatinumRaw == 0 ?InkWell(
+                                onTap: (){
+                                  Navigator.of(context).push(new CupertinoPageRoute(builder: (_) => UpgradePlatinum()));
+                                },
 
-                        child: Container(
-                          padding: EdgeInsets.all(2),
-                          decoration: new BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(6),
+                                child: Container(
+                                  padding: EdgeInsets.all(2),
+                                  decoration: new BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  constraints: BoxConstraints(
+                                    minWidth: 14,
+                                    minHeight: 14,
+                                  ),
+                                  child:UserRepository().textQ('upgrade',10,Colors.white,FontWeight.bold,TextAlign.center),
+                                ),
+                              ):(levelPlatinumRaw == 1 ? Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)) :
+                              Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
+                            ],
                           ),
-                          constraints: BoxConstraints(
-                            minWidth: 14,
-                            minHeight: 14,
+                          SizedBox(height:2.0),
+                          GestureDetector(
+                            child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  UserRepository().textQ(_kdRefferal,12,Colors.white.withOpacity(0.7),FontWeight.bold,TextAlign.left),
+                                  SizedBox(width: 5),
+                                  Icon(Icons.content_copy, color: Colors.white, size: 15,),
+                                ]
+                            ),
+                            onTap: () {
+                              Clipboard.setData(new ClipboardData(text: '${_kdRefferal}'));
+                              UserRepository().notifNoAction(scaffoldKey, context,"Kode Referral Berhasil Disalin","success");
+                            },
                           ),
-                          child:UserRepository().textQ('upgrade',10,Colors.white,FontWeight.bold,TextAlign.center),
-                        ),
-                      ):(levelPlatinumRaw == 1 ? Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)) :
-                      Container(child:Image.asset("${ApiService().assetsLocal}thaibah_platinum_vvip.png",height:20.0,width:20.0)))
-                      // Image.asset("${ApiService().assetsLocal}thaibah_platinum.png",height:20.0,width:20.0)
-                      // Icon(Icons.content_copy, color: Colors.grey, size: 15,),
+
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          FlatButton(
+                            onPressed: ()async{
+                              UserRepository().loadingQ(context);
+                              Timer(Duration(seconds: 1), () async {
+                                Navigator.of(context).pop(false);
+                                await WcFlutterShare.share(
+                                    sharePopupTitle: 'Thaibah Share Link',
+                                    subject: 'Thaibah Share Link',
+                                    text: "https://thaibah.com/signup/${_kdRefferal}\n\n\nAyo Buruan daftar",
+                                    mimeType: 'text/plain'
+                                );
+                              });
+                              // share();
+                            },
+                            color: Color(0xFFEEEEEE),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(Icons.share,color:ThaibahColour.primary1,size: 15),
+                                SizedBox(width: 5.0),
+                                UserRepository().textQ('share link',12,ThaibahColour.primary1,FontWeight.bold,TextAlign.left),
+                              ],
+                            ),
+                          ),
+                          UserRepository().textQ('Ajak mitra anda disini',10,Colors.white,FontWeight.bold,TextAlign.left),
+
+                        ],
+                      )
                     ],
                   ),
-                ),
-                subtitle: GestureDetector(
-                  child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        UserRepository().textQ(_kdRefferal,12,Colors.white.withOpacity(0.7),FontWeight.bold,TextAlign.left),
-                        SizedBox(width: 5),
-                        Icon(Icons.content_copy, color: Colors.white, size: 15,),
-                      ]
-                  ),
-                  onTap: () {
-                    Clipboard.setData(new ClipboardData(text: '${_kdRefferal}'));
-                    UserRepository().notifNoAction(scaffoldKey, context,"Kode Referral Berhasil Disalin","success");
-                  },
                 ),
                 leading: CircleAvatar(
                     radius:20.0,
                     backgroundImage: NetworkImage(_picture)
                 ),
-                trailing: InkWell(
-                  child: Icon(Icons.share,color: Colors.white),
-                  onTap: ()async{
-                    UserRepository().loadingQ(context);
-                    Timer(Duration(seconds: 1), () async {
-                      Navigator.of(context).pop(false);
-                      await WcFlutterShare.share(
-                          sharePopupTitle: 'Thaibah Share Link',
-                          subject: 'Thaibah Share Link',
-                          text: "https://thaibah.com/signup/${_kdRefferal}\n\n\nAyo Buruan daftar",
-                          mimeType: 'text/plain'
-                      );
-                    });
-                    // share();
-                  },
-                ),
+
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding: EdgeInsets.only(left:10.0),
+                    child: UserRepository().textQ("Reseller Area",14,Colors.red,FontWeight.bold,TextAlign.left),
+                  ),
+                  SizedBox(height:5.0),
+
                   Padding(
                     padding: EdgeInsets.only(left:10.0),
                     child: UserRepository().textQ("SALDO UTAMA",10,Colors.white,FontWeight.normal,TextAlign.left),
@@ -341,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     child: Row(
                       children: [
                         UserRepository().textQ("Rp",10,Colors.white,FontWeight.normal,TextAlign.left,letterSpacing: 2.0),
-                        UserRepository().textQ("$_saldoMain",16,Colors.white,FontWeight.bold,TextAlign.left,letterSpacing: 2.0)
+                        UserRepository().textQ("${formatter.format(int.parse(_saldoMain))}",16,Colors.white,FontWeight.bold,TextAlign.left,letterSpacing: 2.0)
                       ],
                     ),
                   ),
@@ -358,7 +401,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       children: [
                         UserRepository().textQ("SALDO BONUS",10,Colors.white,FontWeight.normal,TextAlign.left),
                         SizedBox(width:5.0),
-                        UserRepository().textQ("Rp $_saldoBonus .-",10,Colors.yellow,FontWeight.bold,TextAlign.left),
+                        UserRepository().textQ("Rp ${formatter.format(int.parse(_saldoBonus))} .-",10,Colors.yellow,FontWeight.bold,TextAlign.left),
                       ],
                     ),
                   ),
@@ -376,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       children: [
                         UserRepository().textQ("SALDO VOUCHER",10,Colors.white,FontWeight.normal,TextAlign.left),
                         SizedBox(width:5.0),
-                        UserRepository().textQ("Rp $_saldoVoucher .-",10,Colors.white,FontWeight.normal,TextAlign.left),
+                        UserRepository().textQ("Rp ${formatter.format(int.parse(_saldoVoucher))} .-",10,Colors.white,FontWeight.normal,TextAlign.left),
                       ],
                     ),
                   ),
@@ -507,7 +550,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ],
         ):
         CardEmoney(imgUrl:'Icon_Utama_TopUp',title:'Deposit',xFunction: (){
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDeposit(saldo: UserRepository().replaceNominal(_saldoMain),name: _name))).whenComplete(() => loadData());
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => FormDeposit(
+              saldo: _saldoMain,
+              name: _name
+          ))).whenComplete(() => loadData());
         }),
         isLoading?Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -524,7 +570,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SkeletonFrame(width:50,height: 15)
           ],
         ):CardEmoney(imgUrl:'Icon_Utama_Transfer',title:'Transfer',xFunction: (){
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(saldo:UserRepository().replaceNominal(_saldoMain),qr:_qr))).whenComplete(() => loadData());
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) => TransferUI(
+              saldo:_saldoMain
+              ,qr:_qr
+          ))).whenComplete(() => loadData());
         },),
         isLoading?Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -541,7 +590,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SkeletonFrame(width:50,height: 15)
           ],
         ):CardEmoney(imgUrl:'Icon_Utama_Penarikan',title:'Penarikan',xFunction: (){
-          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>Penarikan(saldoMain: UserRepository().replaceNominal(_saldoMain)))).whenComplete(() => loadData());
+          Navigator.of(context, rootNavigator: true).push(new CupertinoPageRoute(builder: (context) =>Penarikan(
+              saldoMain: _saldoMain
+          ))).whenComplete(() => loadData());
         },),
         isLoading?Column(
           mainAxisAlignment: MainAxisAlignment.center,

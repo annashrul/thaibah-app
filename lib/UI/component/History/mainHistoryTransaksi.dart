@@ -27,27 +27,25 @@ class _MainHistoryTransaksiState extends State<MainHistoryTransaksi> with Automa
       'Voucher':'Voucher',
       'Platinum':'Platinum'
     };
-    return  MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: DefaultTabController(
-          length: 4,
-          child: Scaffold(
-            key: scaffoldKey,
-            appBar: UserRepository().appBarWithTabButton(context, 'Riwayat Transaksi',row,(){
-              Navigator.of(context).pop();
-            }),
-            body: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                children: <Widget>[
-                  WidgetHistoryTransaksi(label: 'master'),
-                  WidgetHistoryTransaksi(label: 'bonus'),
-                  WidgetHistoryTransaksi(label: 'voucher'),
-                  WidgetHistoryTransaksi(label: 'platinum'),
-                ]
-            ),
+    return  DefaultTabController(
+        length: 4,
+        child: Scaffold(
+          primary: true,
+          key: scaffoldKey,
+          appBar: UserRepository().appBarWithTabButton(context, 'Riwayat Transaksi',row,(){
+            Navigator.of(context).pop();
+          }),
+          body: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
+              children: <Widget>[
+                WidgetHistoryTransaksi(label: 'master'),
+                WidgetHistoryTransaksi(label: 'bonus'),
+                WidgetHistoryTransaksi(label: 'voucher'),
+                WidgetHistoryTransaksi(label: 'platinum'),
+              ]
+          ),
 
-          )
-      ),
+        )
     );
   }
   @override

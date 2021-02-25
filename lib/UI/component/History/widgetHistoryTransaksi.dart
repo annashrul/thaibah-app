@@ -248,7 +248,6 @@ class _WidgetHistoryTransaksiState extends State<WidgetHistoryTransaksi> {
             ],
           ),
         ),
-
         Padding(
           padding: EdgeInsets.only(left:10.0,right:10.0,top:10.0),
           child: UserRepository().buttonQ(context,(){_search();},'cari'),
@@ -266,8 +265,6 @@ class _WidgetHistoryTransaksiState extends State<WidgetHistoryTransaksi> {
               },
             )
         ),
-
-
       ],
     );
   }

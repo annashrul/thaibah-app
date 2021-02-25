@@ -146,92 +146,90 @@ class _TestimoniProdukState extends State<TestimoniProduk> with SingleTickerProv
     super.build(context);
     ScreenUtilQ.instance = ScreenUtilQ.getInstance()..init(context);
     ScreenUtilQ.instance = ScreenUtilQ(allowFontScaling: false);
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
         key: _scaffoldKey,
         appBar: UserRepository().appBarNoButton(context,"Testimoni",<Widget>[]),
         body: Scrollbar(
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                automaticallyImplyLeading: false,
-                floating: true,
-                pinned: false,
-                snap: false,
-                elevation: 5,
-                backgroundColor: Colors.white,
-                title: isLoading1?SkeletonFrame(width:double.infinity,height: 50):TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  onTap: (index) {
-                    print(index);
-                    setState(() {
-                      _tabController.index = index;
-                      cloneIndex = index;
-                    });
-                    search(index);
-                  },
-                  tabs: List.generate(categoryString.length, (index) => Tab(
-                    child: Container(
-                      child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: UserRepository().textQ(categoryString[index], 12, Colors.white,FontWeight.bold, TextAlign.center)
+            child: CustomScrollView(
+              slivers: <Widget>[
+                SliverAppBar(
+                  automaticallyImplyLeading: false,
+                  floating: true,
+                  pinned: false,
+                  snap: false,
+                  elevation: 5,
+                  backgroundColor: Colors.white,
+                  title: isLoading1?SkeletonFrame(width:double.infinity,height: 50):TabBar(
+                    controller: _tabController,
+                    isScrollable: true,
+                    onTap: (index) {
+                      print(index);
+                      setState(() {
+                        _tabController.index = index;
+                        cloneIndex = index;
+                      });
+                      search(index);
+                    },
+                    tabs: List.generate(categoryString.length, (index) => Tab(
+                      child: Container(
+                        child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: UserRepository().textQ(categoryString[index], 12, Colors.white,FontWeight.bold, TextAlign.center)
+                        ),
+                        decoration: BoxDecoration(color: index == _tabController.index ? Colors.black : Colors.black12, borderRadius: BorderRadius.circular(20)),
                       ),
-                      decoration: BoxDecoration(color: index == _tabController.index ? Colors.black : Colors.black12, borderRadius: BorderRadius.circular(20)),
-                    ),
-                  )),
-                  labelPadding: EdgeInsets.symmetric(horizontal: 0),
-                  indicatorWeight: 1,
-                  indicatorColor: Colors.transparent,
-                  unselectedLabelColor: Colors.black,
-                  labelColor: Colors.white,
-                ),
-              ),
-              isLoading?SliverPadding(
-                padding: EdgeInsets.all(2.0),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate((BuildContext context,int index){
-                    return UserRepository().loadingWidget();
-                  },childCount: 1),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
+                    )),
+                    labelPadding: EdgeInsets.symmetric(horizontal: 0),
+                    indicatorWeight: 1,
+                    indicatorColor: Colors.transparent,
+                    unselectedLabelColor: Colors.black,
+                    labelColor: Colors.white,
                   ),
                 ),
-              ):
-              LiquidPullToRefresh(
-                  color: Colors.transparent,
-                  backgroundColor:ThaibahColour.primary2,
-                  key: _refresh,
-                  onRefresh:refresh,
-                  child: LoadMoreQ(
-                    child: SliverFixedExtentList(
-                      itemExtent: MediaQuery.of(context).size.height/1.5,
-                      delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                          return contents(
-                              context,
-                              video[index]['video'],
-                              video[index]['name'],
-                              video[index]['caption'],
-                              video[index]['rating'],
-                              video[index]['thumbnail']
-                          );
-                        },
-                        childCount: video.length,
-                      ),
+                isLoading?SliverPadding(
+                  padding: EdgeInsets.all(2.0),
+                  sliver: SliverGrid(
+                    delegate: SliverChildBuilderDelegate((BuildContext context,int index){
+                      return UserRepository().loadingWidget();
+                    },childCount: 1),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 1,
                     ),
-                    whenEmptyLoad: true,
-                    delegate: DefaultLoadMoreDelegate(),
-                    textBuilder: DefaultLoadMoreTextBuilder.english,
-                    isFinish: video.length < perpage,
-                    onLoadMore: _loadMore,
-                  )
+                  ),
+                ):
+                LiquidPullToRefresh(
+                    color: Colors.transparent,
+                    backgroundColor:ThaibahColour.primary2,
+                    key: _refresh,
+                    onRefresh:refresh,
+                    child: LoadMoreQ(
+                      child: SliverFixedExtentList(
+                        itemExtent: MediaQuery.of(context).size.height/1.5,
+                        delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                            return contents(
+                                context,
+                                video[index]['video'],
+                                video[index]['name'],
+                                video[index]['caption'],
+                                video[index]['rating'],
+                                video[index]['thumbnail']
+                            );
+                          },
+                          childCount: video.length,
+                        ),
+                      ),
+                      whenEmptyLoad: true,
+                      delegate: DefaultLoadMoreDelegate(),
+                      textBuilder: DefaultLoadMoreTextBuilder.english,
+                      isFinish: video.length < perpage,
+                      onLoadMore: _loadMore,
+                    )
 
-              )
-            ],
-          )
+                )
+              ],
+            )
         )
-      ),
     );
   }
 
@@ -239,8 +237,8 @@ class _TestimoniProdukState extends State<TestimoniProduk> with SingleTickerProv
 
   Widget contents(BuildContext context,link,title,caption,rating,picture){
     String cap='';
-    if(caption.length > 70){
-      cap = '${caption.substring(0,70)} ...';
+    if(caption.length > 600){
+      cap = '${caption.substring(0,600)} ...';
     }
     else{
       cap = caption;
@@ -279,7 +277,7 @@ class _TestimoniProdukState extends State<TestimoniProduk> with SingleTickerProv
             ),
             Padding(
               padding: EdgeInsets.all(10.0),
-              child: Html(data:caption,defaultTextStyle: TextStyle(color: Colors.black,fontFamily:ThaibahFont().fontQ),)
+              child: Html(data:cap,defaultTextStyle: TextStyle(color: Colors.black,fontFamily:ThaibahFont().fontQ),)
             ),
             Divider()
           ],
