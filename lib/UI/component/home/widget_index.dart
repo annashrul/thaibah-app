@@ -125,8 +125,11 @@ class _WidgetIndexState extends State<WidgetIndex>{
     OneSignal.shared.init("6a4c55fd-d96d-427f-8634-d2c4b9d96d69", iOSSettings: settings);
     OneSignal.shared.setNotificationOpenedHandler((notification) {
       var notify = notification.notification.payload.additionalData;
+      print("============================ NOTIFIKASI ONSIGNAL =============================");
+      print("$notify");
+      print("============================ NOTIFIKASI ONSIGNAL =============================");
       if (notify["type"] == "berita") {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailBeritaUI(id: notify['id'],category: notify['category'])));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailBeritaUI(id: notify['id'],category: notify['category'],link:'-',)));
       }
       if (notify["type"] == "transaksi_bonus") {
         Navigator.push(context,MaterialPageRoute(builder: (context) => MainHistoryTransaksi(page: 'home')));
