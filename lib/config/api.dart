@@ -1,7 +1,8 @@
 class ApiService {
  // ################################# START PRODUCTION ############################//
- final bool showCode      = true;
- final String versionCode = '1.3.7';
+ // final bool showCode      = true;
+ final bool showCode      = false;
+ final String versionCode = '1.3.9';
  final String baseUrl     = "http://thaibah.com:3000/api/v1/";
  // ################################# END PRODUCTION ############################//
 
